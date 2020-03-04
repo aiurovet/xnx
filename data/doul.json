@@ -11,9 +11,11 @@
     "action": [
       { "{resize}": true },
 
-      { "{c}": "google-chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\"" },
-      { "{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\"" },
-      { "{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\"" },
+      { "{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # terribly slow" },
+      { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\" # fails to display svg properly" },
+      { "{c}": "convert \"{i}\" \"{o}\" # not the best quality" },
+      { "{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\" # not the best quality" },
+      { "{c}": "google-chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
 
       { "{TD}": "./" },
 
@@ -33,7 +35,7 @@
       { "{w}": 144, "{h}": 144, "{o}": "android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" },
       { "{w}": 192, "{h}": 192, "{o}": "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" },
 
-      { "{i}": "assets/images/back_your_school.svg" },
+      { "{i}": "assets/images/app.svg" },
 
       { "{w}":  48,  "{h}": 48, "{o}": "android/app/src/main/res/mipmap-mdpi/ic_launcher.png" },
       { "{w}":  72, "{h}":  72, "{o}": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png" },

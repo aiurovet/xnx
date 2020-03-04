@@ -114,7 +114,9 @@ class Config {
     for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(paramValue)); i++) {
       params.forEach((k, v) {
         if ((k != paramName) && (isForAny || (k != PARAM_NAME_COMMAND))) {
-          paramValue = paramValue.replaceAll(k, v);
+          if ((paramName != PARAM_NAME_COMMAND) || (k != PARAM_NAME_INPUT)) {
+            paramValue = paramValue.replaceAll(k, v);
+          }
         }
       });
     }

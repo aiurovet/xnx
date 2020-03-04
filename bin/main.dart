@@ -13,7 +13,10 @@ void main(List<String> args) {
     .catchError((e) {
       var errMsg = e.message;
 
-      if (!StringExt.isNullOrBlank(errMsg)) {
+      if (StringExt.isNullOrBlank(errMsg)) {
+        isOK = true; // help
+      }
+      else {
         print('\n*** ERROR: ${errMsg}\n');
       }
     })
