@@ -7,6 +7,9 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FavoritesManager">
+    <favorites_list name="doul" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -86,10 +89,10 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="615" height="568" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1583243043241" />
-    <state x="737" y="39" width="449" height="514" key="FileChooserDialogImpl" timestamp="1583245201219">
+    <state x="735" y="0" width="449" height="514" key="FileChooserDialogImpl" timestamp="1583326256941">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="737" y="39" width="449" height="514" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1583245201219" />
+    <state x="735" y="0" width="449" height="514" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1583326256941" />
     <state width="1874" height="342" key="GridCell.Tab.0.bottom" timestamp="1583245167797">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -122,14 +125,18 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583245167797" />
-    <state x="448" y="10" width="1014" height="731" key="SettingsEditor" timestamp="1583322512774">
+    <state x="446" y="0" width="1014" height="731" key="SettingsEditor" timestamp="1583326702937">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="448" y="10" width="1014" height="731" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1583322512774" />
+    <state x="446" y="0" width="1014" height="731" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1583326702937" />
     <state width="960" height="525" key="XDebugger.FullValuePopup" timestamp="1583243056779">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="960" height="525" key="XDebugger.FullValuePopup/0.0.1920.1051@0.0.1920.1051" timestamp="1583243056779" />
+    <state x="100" y="100" width="1720" height="851" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1583325708616">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="100" y="100" width="1720" height="851" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1583325708616" />
     <state x="616" y="92" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1583063161240">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
