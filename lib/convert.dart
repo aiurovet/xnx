@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:path/path.dart';
-import 'package:process_run/process_run.dart';
 import 'package:process_run/shell_run.dart';
 
 import 'config.dart';
@@ -31,7 +29,7 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Future<File> resizeInpFile() async {
+  static Future<File> resizeInpFile(Map<String, String> map) async {
     var tmpFileName = (basenameWithoutExtension(inpFilePath) + FILE_TYPE_TMP + extension(inpFilePath));
     tmpFilePath = join(outDirName, tmpFileName);
 
@@ -45,9 +43,9 @@ class Convert {
 
     var text = await inpFile.readAsString();
 
-    text = text
-        .replaceAll(Config.PARAM_NAME_WIDTH, width)
-        .replaceAll(Config.PARAM_NAME_HEIGHT, height);
+    map.forEach((k, v) {
+      text = text.replaceAll(k, v);
+    });
 
     var outDir = Directory(outDirName);
 
@@ -88,12 +86,13 @@ class Convert {
       var inpFilePathEx = inpFilePath;
 
       if (!StringExt.isNullOrEmpty(resizePattern)) {
-        tmpFile = await resizeInpFile();
+        tmpFile = await resizeInpFile(map);
         inpFilePathEx = tmpFilePath;
       }
 
       command = command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePathEx);
-      var exitCodes = (await Shell(verbose: false).run(command));
+
+      var exitCodes = (await Shell(verbose: Config.isVerbose).run(command));
 
       if (tmpFile != null) {
         await tmpFile.delete();

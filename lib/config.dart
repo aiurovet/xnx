@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:path/path.dart';
 
 import 'ext/string.dart';
+import 'help.dart';
 
 class Config {
 
@@ -25,18 +26,24 @@ class Config {
   static String PARAM_NAME_HEIGHT = '{height}';
   static String PARAM_NAME_INPUT = '{input}';
   static String PARAM_NAME_OUTPUT = '{output}';
-  static String PARAM_NAME_RESIZE = '{resize}';
+  static String PARAM_NAME_RESIZE = '{expand-input}';
   static String PARAM_NAME_TOPDIR = '{topDir}';
   static String PARAM_NAME_WIDTH = '{width}';
 
+  static final String PATH_STDIN = '-';
+  static final String PATH_PWD = './';
+
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
   static final RegExp RE_PATH_SEP = RegExp('[\\/\\\\]', caseSensitive: false);
+  static final RegExp RE_PATH_DONE = RegExp('^[\\.\\/\\\\]|[\\:]', caseSensitive: false);
+  static final RegExp RE_PROTOCOL = RegExp('^[a-z]+[\:][\\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
   static String filePath;
+  static bool isVerbose;
   static Map<String, String> params;
   static String topDirName;
 
@@ -64,14 +71,7 @@ class Config {
   static Future<List<Map<String, String>>> exec(List<String> args) async {
     parseArgs(args);
 
-    var file = new File(filePath);
-
-    if (!(await file.exists())) {
-      throw new Exception('No configuration file found: "${filePath}"');
-    }
-
-    var text = await file.readAsString();
-
+    var text = await read();
     var decoded = jsonDecode(text);
     assert(decoded is Map);
 
@@ -153,9 +153,35 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getFullPath(String path) {
-    var full = (path == null ? StringExt.EMPTY : path.replaceAll(RE_PATH_SEP, Platform.pathSeparator));
-    full = canonicalize(full);
+  static String getFullPath(String path, {String separator}) {
+    String full;
+    var prot = StringExt.EMPTY;
+
+    if (StringExt.isNullOrBlank(path)) {
+      full = StringExt.EMPTY;
+    }
+    else {
+      var sep = (separator ?? Platform.pathSeparator);
+      var match = RE_PROTOCOL.firstMatch(path);
+
+      if ((match != null) && (match.start == 0)) {
+        prot = path.substring(0, match.end);
+        full = path.substring(match.end);
+      }
+      else {
+        full = path;
+      }
+
+      if (!isAbsolute(full)) {
+        if (!RE_PATH_DONE.hasMatch(full)) {
+          full = PATH_PWD + full;
+        }
+      }
+
+      full = full.replaceAll(RE_PATH_SEP, sep);
+    }
+    
+    full = prot + canonicalize(full);
 
     return full;
   }
@@ -199,16 +225,29 @@ class Config {
   static void parseArgs(List<String> args) {
     var errMsg = StringExt.EMPTY;
     var isHelp = false;
+    var isHelpAll = false;
+
+    isVerbose = false;
 
     final parser = ArgParser()
-      ..addFlag('help', abbr: 'h', help: 'this help screen', negatable: false, callback: (value) {
+      ..addFlag(Help.OPT_HELP['name'], abbr: Help.OPT_HELP['abbr'], help: Help.OPT_HELP['help'], negatable: Help.OPT_HELP['negatable'], callback: (value) {
         isHelp = value;
       })
-      ..addOption('top-dir', abbr: 'd', help: 'top directory to resolve paths from', valueHelp: 'DIR', defaultsTo: 'the current directory', callback: (value) {
+      ..addFlag(Help.OPT_HELP_ALL['name'], abbr: Help.OPT_HELP_ALL['abbr'], help: Help.OPT_HELP_ALL['help'], negatable: Help.OPT_HELP_ALL['negatable'], callback: (value) {
+        isHelpAll = value;
+
+        if (isHelpAll) {
+          isHelp = true;
+        }
+      })
+      ..addOption(Help.OPT_TOPDIR['name'], abbr: Help.OPT_TOPDIR['abbr'], help: Help.OPT_TOPDIR['help'], valueHelp: Help.OPT_TOPDIR['negatable'], callback: (value) {
         topDirName = value;
       })
-      ..addOption('config', abbr: 'c', help: 'configuration file in json format', valueHelp: 'FILE', defaultsTo: '<DIR${Platform.pathSeparator}${DEF_FILE_NAME}>', callback: (value) {
+      ..addOption(Help.OPT_CONFIG['name'], abbr: Help.OPT_CONFIG['abbr'], help: Help.OPT_CONFIG['help'], valueHelp: Help.OPT_CONFIG['negatable'], callback: (value) {
         filePath = value;
+      })
+      ..addFlag(Help.OPT_VERBOSE['name'], abbr: Help.OPT_VERBOSE['abbr'], help: Help.OPT_VERBOSE['help'], negatable: Help.OPT_VERBOSE['negatable'], callback: (value) {
+        isVerbose = value;
       })
     ;
 
@@ -227,33 +266,66 @@ class Config {
 
       topDirName = canonicalize(topDirName ?? '');
 
-      Directory.current = topDirName;
-
       if (StringExt.isNullOrBlank(filePath)) {
         filePath = DEF_FILE_NAME;
       }
 
-      if (StringExt.isNullOrBlank(extension(filePath))) {
-        filePath = setExtension(filePath, FILE_TYPE_CFG);
+      if (filePath != PATH_STDIN) {
+        if (StringExt.isNullOrBlank(extension(filePath))) {
+          filePath = setExtension(filePath, FILE_TYPE_CFG);
+        }
+
+        if (!isAbsolute(filePath)) {
+          filePath = canonicalize(filePath);
+        }
       }
 
-      if (!isAbsolute(filePath)) {
-        filePath = canonicalize(join(topDirName, filePath));
-      }
+      Directory.current = topDirName;
     }
 
     if (isHelp) {
-      print('''
-
-USAGE:
-
-${APP_NAME} [OPTIONS]
-
-${parser.usage}
-      ''');
-
-      throw new Exception(errMsg);
+      Help.printUsage(parser, isAll: isHelpAll, error: errMsg);
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static Future<String> read() async {
+    String text;
+
+    if (filePath == PATH_STDIN) {
+      text = readInputSync();
+    }
+    else {
+      var file = new File(filePath);
+
+      if (!(await file.exists())) {
+        throw new Exception('Failed to find expected configuration file: "${filePath}"');
+      }
+
+      text = await file.readAsString();
+    }
+
+    return text;
+  }
+
+  static String readInputSync() {
+    final List<int> input = [];
+
+    for (var isEmpty = true; ; isEmpty = false) {
+      var byte = stdin.readByteSync();
+
+      if (byte < 0) {
+        if (isEmpty) {
+          return null;
+        }
+
+        break;
+      }
+      input.add(byte);
+    }
+
+    return utf8.decode(input, allowMalformed: true);
   }
 
   //////////////////////////////////////////////////////////////////////////////

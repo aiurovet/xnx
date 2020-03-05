@@ -30,7 +30,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/data" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.41034484" />
@@ -49,9 +49,12 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" nameIsGenerated="true">
-      <option name="arguments" value="-d &quot;$USER_HOME$/AndroidStudioProjects/back_your_school&quot; -c &quot;$PROJECT_DIR$/data/doul.json&quot;" />
+      <option name="arguments" value="-c data/doul.json -d $USER_HOME$/AndroidStudioProjects/back_your_school/" />
       <option name="filePath" value="$PROJECT_DIR$/bin/main.dart" />
-      <method v="2" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_cat" />
+      </method>
     </configuration>
   </component>
   <component name="SvnConfiguration">
@@ -77,54 +80,62 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="558" y="156" key="#Dart/0.0.1920.1051@0.0.1920.1051" timestamp="1582978495408" />
-    <state x="241" y="62" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583328317144">
+    <state x="226" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583415290915">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="241" y="62" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1583328317144" />
+    <state x="226" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1583415290915" />
+    <state x="712" y="144" width="512" height="490" key="#com.intellij.tools.ToolEditorDialog" timestamp="1583402818990">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="712" y="144" width="512" height="490" key="#com.intellij.tools.ToolEditorDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1583402818990" />
+    <state x="636" y="188" key="#main.dart" timestamp="1583399052216">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="636" y="188" key="#main.dart/0.0.1920.1051@0.0.1920.1051" timestamp="1583399052216" />
     <state x="721" y="147" key="#xdebugger.evaluate" timestamp="1583157654361">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="721" y="147" key="#xdebugger.evaluate/0.0.1920.1051@0.0.1920.1051" timestamp="1583157654361" />
-    <state width="615" height="568" key="DebuggerActiveHint" timestamp="1583243043241">
+    <state width="615" height="568" key="DebuggerActiveHint" timestamp="1583415449780">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="615" height="568" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1583243043241" />
-    <state x="734" y="0" width="449" height="514" key="FileChooserDialogImpl" timestamp="1583328061355">
+    <state width="615" height="568" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1583415449780" />
+    <state x="732" y="0" width="449" height="514" key="FileChooserDialogImpl" timestamp="1583402704319">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="734" y="0" width="449" height="514" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1583328061355" />
-    <state width="1874" height="342" key="GridCell.Tab.0.bottom" timestamp="1583330247205">
+    <state x="732" y="0" width="449" height="514" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1583402704319" />
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1583415516197">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583330247205" />
-    <state width="1874" height="342" key="GridCell.Tab.0.center" timestamp="1583330247205">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583415516197" />
+    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1583415516196">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583330247205" />
-    <state width="1874" height="342" key="GridCell.Tab.0.left" timestamp="1583330247205">
+    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583415516196" />
+    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1583415516196">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583330247205" />
-    <state width="1874" height="342" key="GridCell.Tab.0.right" timestamp="1583330247205">
+    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583415516196" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1583415516196">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583330247205" />
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1583330247206">
+    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583415516196" />
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1583415516155">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583330247206" />
-    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1583330247205">
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583415516155" />
+    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1583415516155">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583330247205" />
-    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1583330247205">
+    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583415516155" />
+    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1583415516155">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583330247205" />
-    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1583330247205">
+    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583415516155" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1583415516155">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583330247205" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583415516155" />
     <state x="446" y="0" width="1014" height="731" key="SettingsEditor" timestamp="1583326702937">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -141,14 +152,18 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="616" y="92" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1920.1051@0.0.1920.1051" timestamp="1583063161240" />
+    <state x="854" y="30" key="com.intellij.tools.ToolSelectDialog.dimensionServiceKey" timestamp="1583402820663">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="854" y="30" key="com.intellij.tools.ToolSelectDialog.dimensionServiceKey/0.0.1920.1051@0.0.1920.1051" timestamp="1583402820662" />
     <state x="100" y="100" width="1720" height="851" key="dock-window-1" timestamp="1583061175539">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="100" y="100" width="1720" height="851" key="dock-window-1/0.0.1920.1051@0.0.1920.1051" timestamp="1583061175539" />
-    <state x="591" y="-30" width="724" height="793" key="find.popup" timestamp="1583241461508">
+    <state x="589" y="-30" width="726" height="824" key="find.popup" timestamp="1583408580033">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="591" y="-30" width="724" height="793" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1583241461508" />
+    <state x="589" y="-30" width="726" height="824" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1583408580033" />
     <state x="100" y="100" width="1720" height="851" key="git4idea.log.GitShowExternalLogAction" timestamp="1583328062116">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -157,5 +172,28 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="624" y="240" key="run.anything.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1583061876949" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/help.dart</url>
+          <line>53</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/convert.dart</url>
+          <line>88</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="DartCommandLineRunConfigurationType">
+        <watch expression="topDirName" language="Dart" />
+        <watch expression="Directory.current" language="Dart" />
+        <watch expression="isAbsolute('file:///s')" language="Dart" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
