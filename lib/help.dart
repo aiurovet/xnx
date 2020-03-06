@@ -62,7 +62,7 @@ DETAILS:
      Please note though,  
 
 1.2. The program also allows you to pass configration by piping some other
-     program's output. In this case, instead of supplying a filename (or path),
+     program\'s output. In this case, instead of supplying a filename (or path),
      just put a dash:
 
      grep -Pi "..." confdir/my.json | doul -c- -d projdir
@@ -73,12 +73,12 @@ DETAILS:
 
 Originally, this tool was written to produce multiple icon files in PNG format
 from a single SVG source. The idea was that knowing width, height, input file
-name and location of expected images (icons), it wouldn't be too hard to create
+name and location of expected images (icons), it wouldn\'t be too hard to create
 some config file, read all that information and run external command with all
-required arguments. And in order to resize properly, the input file's width and
+required arguments. And in order to resize properly, the input file\'s width and
 height had to be adjusted accordingly. However, the application is not really
 bound to that particular task and can be used for different purposes. Generally,
-it doesn't care about specific placeholders and is capable to expand anything.
+it doesn\'t care about specific placeholders and is capable to expand anything.
 
 Configuration file is expected in JSON format with the following guidelines:
 
