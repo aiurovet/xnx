@@ -2,7 +2,8 @@
   "x": {
     "rename": {
       "{command}": "{c}",
-      "{expand-input}": "{E}",
+      "{expand-env}": "{EE}",
+      "{expand-inp}": "{EI}",
       "{height}": "{h}",
       "{input}": "{i}",
       "{output}": "{o}",
@@ -10,15 +11,15 @@
       "{width}": "{w}"
     },
     "action": [
-      { "{E}": true },
+      { "{EE}": true, "{EI}": true },
 
-      { "{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # terribly slow" },
-      { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\" # fails to display svg properly" },
-      { "{c}": "convert \"{i}\" \"{o}\" # not the best quality" },
-      { "{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\" # not the best quality" },
+      { "#_{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # terribly slow" },
+      { "#_{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\" # fails to display svg properly" },
+      { "#_{c}": "convert \"{i}\" \"{o}\" # not the best quality" },
+      { "#_{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\" # not the best quality" },
       { "{c}": "google-chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
 
-      { "{TD}": "/home/ra/AndroidStudioProjects/back_your_school/" },
+      { "{TD}": "${HOME}/AndroidStudioProjects/back_your_school/" },
 
       { "{i}": "assets/images/app_bg.svg" },
 

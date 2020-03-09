@@ -26,7 +26,8 @@ class Config {
   static String PARAM_NAME_HEIGHT = '{height}';
   static String PARAM_NAME_INPUT = '{input}';
   static String PARAM_NAME_OUTPUT = '{output}';
-  static String PARAM_NAME_RESIZE = '{expand-input}';
+  static String PARAM_NAME_EXPAND_ENV = '{expand-env}';
+  static String PARAM_NAME_EXPAND_INP = '{expand-inp}';
   static String PARAM_NAME_TOPDIR = '{topDir}';
   static String PARAM_NAME_WIDTH = '{width}';
 
@@ -109,7 +110,13 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static String expandParamValue(String paramName, {bool isForAny = false}) {
-    var paramValue = params[paramName];
+
+    var canExpandEnv = (params.containsKey(PARAM_NAME_EXPAND_ENV) ? StringExt.parseBool(params[PARAM_NAME_EXPAND_ENV]) : false);
+    var paramValue = (params[paramName] ?? StringExt.EMPTY);
+
+    if (canExpandEnv) {
+      paramValue = StringExt.expandEnvironmentVariables(paramValue);
+    }
 
     for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(paramValue)); i++) {
       params.forEach((k, v) {
@@ -189,13 +196,13 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static bool hasMinKnownParams() {
-    var hasCommand = params.containsKey(PARAM_NAME_COMMAND);
+    //var hasCommand = params.containsKey(PARAM_NAME_COMMAND);
     var hasInput = params.containsKey(PARAM_NAME_INPUT);
     var hasOutput = params.containsKey(PARAM_NAME_OUTPUT);
-    var hasWidth = params.containsKey(PARAM_NAME_WIDTH);
-    var hasHeight = params.containsKey(PARAM_NAME_HEIGHT);
+    //var hasWidth = params.containsKey(PARAM_NAME_WIDTH);
+    //var hasHeight = params.containsKey(PARAM_NAME_HEIGHT);
 
-    var hasKeys = (hasCommand && hasInput && hasOutput && hasWidth && hasHeight);
+    var hasKeys = (/*hasCommand &&*/ hasInput && hasOutput /*&& hasWidth && hasHeight*/);
 
     return hasKeys;
   }
@@ -354,8 +361,11 @@ class Config {
       else if (k == PARAM_NAME_OUTPUT) {
         PARAM_NAME_OUTPUT = v;
       }
-      else if (k == PARAM_NAME_RESIZE) {
-        PARAM_NAME_RESIZE = v;
+      else if (k == PARAM_NAME_EXPAND_ENV) {
+        PARAM_NAME_EXPAND_ENV = v;
+      }
+      else if (k == PARAM_NAME_EXPAND_INP) {
+        PARAM_NAME_EXPAND_INP = v;
       }
       else if (k == PARAM_NAME_TOPDIR) {
         PARAM_NAME_TOPDIR = v;
