@@ -91,7 +91,7 @@ class Convert {
       await outDir.create(recursive: true);
     }
 
-    var isExpandInpOnly = StringExt.isNullOrBlank(command);
+    var isExpandInpOnly = (command == Config.CMD_EXPAND);
 
     if (isExpandInpOnly) {
       tmpFilePath = outFilePath;

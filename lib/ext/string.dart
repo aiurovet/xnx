@@ -39,22 +39,25 @@ extension StringExt on String {
       initEnvironmentVariables();
     }
 
-    var result = input.replaceAllMapped(RE_ENV_NAME, (match) {
-      if ((match != null) && (match.start >= 0)) {
-        var envName = match.group(1);
+    var result = input
+      .replaceAll('\$\$', '\x01')
+      .replaceAllMapped(RE_ENV_NAME, (match) {
+        if ((match != null) && (match.start >= 0)) {
+          var envName = match.group(1);
 
-        if (IS_WINDOWS) {
-          envName = envName.toUpperCase();
-        }
+          if (IS_WINDOWS) {
+            envName = envName.toUpperCase();
+          }
 
-        if (ENVIRONMENT.containsKey(envName)) {
-          return ENVIRONMENT[envName];
+          if (ENVIRONMENT.containsKey(envName)) {
+            return ENVIRONMENT[envName];
+          }
+          else {
+            return EMPTY;
+          }
         }
-        else {
-          return match.group(0);
-        }
-      }
-    });
+      })
+      .replaceAll('\x01', '\$');
 
     return result;
   }

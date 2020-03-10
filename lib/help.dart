@@ -91,25 +91,42 @@ Configuration file is expected in JSON format with the following guidelines:
      pre-defined placeholders:
 
      "rename": {
-       "{command}": "{c}", "{expand-env}": "{EE}", "{expand-inp}": "{EI}",
-       "{height}": "{h}", "{input}": "{i}", "{output}": "{o}",
-       "{topDir}": "{TD}", "{width}": "{w}"
+       "${Config.PARAM_NAME_COMMAND}": "{c}",
+       "${Config.PARAM_NAME_EXPAND_ENV}": "{EE}",
+       "${Config.PARAM_NAME_EXPAND_INP}": "{EI}",
+       "${Config.PARAM_NAME_HEIGHT}": "{h}",
+       "${Config.PARAM_NAME_INPUT}": "{i}",
+       "${Config.PARAM_NAME_OUTPUT}": "{o}",
+       "${Config.PARAM_NAME_TOPDIR}": "{TD}",
+       "${Config.PARAM_NAME_WIDTH}": "{w}"
      },
 
-     Here the key is a pre-defined placeholder, and the value is the translation.
-     As you can see, this can make config file less verbose and easier to read.
-     All pre-defined placeholders are self-descriptive, except "{expand-env}" and
-     "{expand-inp}". The first means that by setting its value to true or false
-     you allow or disallow expansion of environment variables, and the second
-     means that the content of the input file will also be expanded using
-     pre-defined as well as user-defined placeholders, and optionally,
-     environment variables. Then it will be saved to a temporary file, which
-     will be used as an input for the subsequent external command execution.
-     All temporary files will be deleted on the go. If no external command
-     defined, then this will be interpreted as a simple expansion of the input.
-     However, "{expand-input}" flag is still required to be set to true. 
+     Here the key is a pre-defined placeholder, and the value is the placeholder
+     to use instead. As you can see, this can make config file less verbose and
+     easier to read. These placeholders are self-descriptive, except the ones
+     containing \'expand\' in their name. The "${Config.PARAM_NAME_EXPAND_ENV}" means that
+     by setting its value to true or to false you allow or disallow expansion of
+     environment variables, and the "${Config.PARAM_NAME_EXPAND_INP}" means that the content of
+     the input file will also be expanded using pre-defined as well as user-
+     defined placeholders, and optionally, environment variables. Then it will
+     be saved to a temporary file, which will be used as an input for the sub-
+     sequent external command execution. All temporary files will be deleted on
+     the go. If no external command defined, then this will be interpreted as a
+     simple expansion of the input. However, in order to achieve that, the
+     "${Config.PARAM_NAME_EXPAND_INP}" flag is still required to be set to true.
 
-2.4. The sub-node "action" should define an array of associative arrays with the
+2.4. For the sake of source code portability, the environment variables are
+     required to be specified strictly in UNIX/Linux/macOS format:
+     \$ABC_123_DEF4 or \${ABC_123_DEF4} (under Windows though, environment
+     variables will be considered case-insensitive). You can escape expansion
+     by doubling the dollar sign: \$\$ABC.
+
+2.5. Directory separator char in file paths is also required to be specified in
+     UNIX/Linux/macOS style: "abc/def/xyz.svg". For the sake of code portability
+     it is also recommended (but not enforced) to avoid specifying DOS/Windows
+     drive explicitly even if you run the program solely under those OSes.
+
+2.5. The sub-node "action" should define an array of associative arrays with the
      rest of missing information (please note that the next array overwrites
      whatever was defined before, thus only the last command is the actual one;
      on the other hand, you could switch it to another one later like in a sort
@@ -178,14 +195,17 @@ Configuration file is expected in JSON format with the following guidelines:
        { "": null }
      ]
 
-     The last line is totally unnecessary (empty keys are ignored), but allows to
-     end all previous lines with the comma, which is handy enough to keep such
-     last line.
+     The line with the empty key is totally unnecessary, as such keys will be
+     ignored. However, it allows to end all previous lines with the comma, which
+     is handy enough to utilise this approach.
 
-2.5. The given example is the actually used one to produce multiple launcher
-     icons for a flutter app. Interestingly enough, it is forward-compatible
-     with possible new types of project, and a typical example of that would be
-     the addition of the last two data lines for web app generation
+2.6. As you can see, any parameter can be changed at any time affecting sub-
+     sequent data. 
+
+2.7. The given example is the one I used to produce multiple launcher icons for
+     a flutter app. Interestingly enough, it is forward-compatible with possible
+     new types of project, and a typical example of that would be the addition
+     of the last two data lines for web app generation
 ''');
     }
 

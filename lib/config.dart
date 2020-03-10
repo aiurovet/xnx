@@ -20,14 +20,16 @@ class Config {
   static final String CFG_ACTION = 'action';
   static final String CFG_RENAME = 'rename';
 
+  static final String CMD_EXPAND = 'expand-only';
+
   static final int MAX_EXPANSION_ITERATIONS = 10;
 
   static String PARAM_NAME_COMMAND = '{command}';
   static String PARAM_NAME_HEIGHT = '{height}';
   static String PARAM_NAME_INPUT = '{input}';
   static String PARAM_NAME_OUTPUT = '{output}';
-  static String PARAM_NAME_EXPAND_ENV = '{expand-env}';
-  static String PARAM_NAME_EXPAND_INP = '{expand-inp}';
+  static String PARAM_NAME_EXPAND_ENV = '{expand-environment}';
+  static String PARAM_NAME_EXPAND_INP = '{expand-input}';
   static String PARAM_NAME_TOPDIR = '{topDir}';
   static String PARAM_NAME_WIDTH = '{width}';
 
@@ -35,8 +37,8 @@ class Config {
   static final String PATH_PWD = './';
 
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
-  static final RegExp RE_PATH_SEP = RegExp('[\\/\\\\]', caseSensitive: false);
-  static final RegExp RE_PATH_DONE = RegExp('^[\\.\\/\\\\]|[\\:]', caseSensitive: false);
+  static final RegExp RE_PATH_SEP = RegExp('[\\/]', caseSensitive: false);
+  static final RegExp RE_PATH_DONE = RegExp('^[\\/]|[\\:]', caseSensitive: false);
   static final RegExp RE_PROTOCOL = RegExp('^[a-z]+[\:][\\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -151,7 +153,14 @@ class Config {
     });
 
     params.addAll(newParams);
-    newParams[PARAM_NAME_COMMAND] = expandParamValue(PARAM_NAME_COMMAND, isForAny: true);
+
+    var command = expandParamValue(PARAM_NAME_COMMAND, isForAny: true);
+
+    if (StringExt.isNullOrBlank(command)) {
+      throw new Exception('Command is not defined for the output file "${params[PARAM_NAME_OUTPUT]}". Did you miss { "${PARAM_NAME_COMMAND}": "${CMD_EXPAND}" }?');
+    }
+
+    newParams[PARAM_NAME_COMMAND] = command;
 
     lst.add(newParams);
 
@@ -160,7 +169,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getFullPath(String path, {String separator}) {
+  static String getFullPath(String path) {
     String full;
     var prot = StringExt.EMPTY;
 
@@ -168,7 +177,6 @@ class Config {
       full = StringExt.EMPTY;
     }
     else {
-      var sep = (separator ?? Platform.pathSeparator);
       var match = RE_PROTOCOL.firstMatch(path);
 
       if ((match != null) && (match.start == 0)) {
@@ -185,7 +193,7 @@ class Config {
         }
       }
 
-      full = full.replaceAll(RE_PATH_SEP, sep);
+      full = full.replaceAll(RE_PATH_SEP, Platform.pathSeparator);
     }
     
     full = prot + canonicalize(full);
