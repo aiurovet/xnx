@@ -158,6 +158,11 @@ ${parser.usage}
       print('''
 DETAILS:
 
+Copyright (C) Alexander Iurovetski, 2020
+
+Command-line utility to run multiple commands against the same input with
+various parameters, and optionally, to expand placeholders inside the input
+
 ### More about command-line options
 
 1.1. Ability to specify top directory as an option comes very handy if you (or
@@ -274,52 +279,52 @@ Configuration file is expected in JSON format with the following guidelines:
 
       { "{i}": "assets/images/app_bg.svg" },
 
-      { "{w}":  48, "{h}":  48, "{o}": "android/app/src/main/res/drawable-mdpi/ic_launcher_background.png" },
-      { "{w}":  72, "{h}":  72, "{o}": "android/app/src/main/res/drawable-hdpi/ic_launcher_background.png" },
-      { "{w}":  96, "{h}":  96, "{o}": "android/app/src/main/res/drawable-xhdpi/ic_launcher_background.png" },
-      { "{w}": 144, "{h}": 144, "{o}": "android/app/src/main/res/drawable-xxhdpi/ic_launcher_background.png" },
-      { "{w}": 192, "{h}": 192, "{o}": "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_background.png" },
+      { "{w}":   48, "{h}":   48, "{o}": "android/app/src/main/res/drawable-mdpi/ic_launcher_background.png" },
+      { "{w}":   72, "{h}":   72, "{o}": "android/app/src/main/res/drawable-hdpi/ic_launcher_background.png" },
+      { "{w}":   96, "{h}":   96, "{o}": "android/app/src/main/res/drawable-xhdpi/ic_launcher_background.png" },
+      { "{w}":  144, "{h}":  144, "{o}": "android/app/src/main/res/drawable-xxhdpi/ic_launcher_background.png" },
+      { "{w}":  192, "{h}":  192, "{o}": "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_background.png" },
 
       { "{i}": "assets/images/app_fg.svg" },
 
-      { "{w}":  48, "{h}":  48, "{o}": "android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png" },
-      { "{w}":  72, "{h}":  72, "{o}": "android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png" },
-      { "{w}":  96, "{h}":  96, "{o}": "android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png" },
-      { "{w}": 144, "{h}": 144, "{o}": "android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" },
-      { "{w}": 192, "{h}": 192, "{o}": "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" },
+      { "{w}":   48, "{h}":   48, "{o}": "android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png" },
+      { "{w}":   72, "{h}":   72, "{o}": "android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png" },
+      { "{w}":   96, "{h}":   96, "{o}": "android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png" },
+      { "{w}":  144, "{h}":  144, "{o}": "android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" },
+      { "{w}":  192, "{h}":  192, "{o}": "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" },
 
       { "{i}": "assets/images/app.svg" },
 
-      { "{w}":  48,  "{h}": 48, "{o}": "android/app/src/main/res/mipmap-mdpi/ic_launcher.png" },
-      { "{w}":  72, "{h}":  72, "{o}": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png" },
-      { "{w}":  96, "{h}":  96, "{o}": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" },
-      { "{w}": 144, "{h}": 144, "{o}": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" },
-      { "{w}": 192, "{h}": 192, "{o}": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" },
+      { "{w}":   48, "{h}":   48, "{o}": "android/app/src/main/res/mipmap-mdpi/ic_launcher.png" },
+      { "{w}":   72, "{h}":   72, "{o}": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png" },
+      { "{w}":   96, "{h}":   96, "{o}": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" },
+      { "{w}":  144, "{h}":  144, "{o}": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" },
+      { "{w}":  192, "{h}":  192, "{o}": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" },
 
       { "{w}": 1024, "{h}": 1024, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" },
-      { "{w}": 20, "{h}": 20, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" },
-      { "{w}": 40, "{h}": 40, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" },
-      { "{w}": 60, "{h}": 60, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" },
-      { "{w}": 29, "{h}": 29, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" },
-      { "{w}": 58, "{h}": 58, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" },
-      { "{w}": 87, "{h}": 87, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" },
-      { "{w}": 40, "{h}": 40, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" },
-      { "{w}": 80, "{h}": 80, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" },
-      { "{w}": 120, "{h}": 120, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" },
-      { "{w}": 50, "{h}": 50, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@1x.png" },
-      { "{w}": 100, "{h}": 100, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@2x.png" },
-      { "{w}": 57, "{h}": 57, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@1x.png" },
-      { "{w}": 114, "{h}": 114, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@2x.png" },
-      { "{w}": 120, "{h}": 120, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" },
-      { "{w}": 180, "{h}": 180, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" },
-      { "{w}": 72, "{h}": 72, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@1x.png" },
-      { "{w}": 144, "{h}": 144, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png" },
-      { "{w}": 76, "{h}": 76, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" },
-      { "{w}": 152, "{h}": 152, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" },
-      { "{w}": 167, "{h}": 167, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" },
+      { "{w}":   20, "{h}":   20, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" },
+      { "{w}":   40, "{h}":   40, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" },
+      { "{w}":   60, "{h}":   60, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" },
+      { "{w}":   29, "{h}":   29, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" },
+      { "{w}":   58, "{h}":   58, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" },
+      { "{w}":   87, "{h}":   87, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" },
+      { "{w}":   40, "{h}":   40, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" },
+      { "{w}":   80, "{h}":   80, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" },
+      { "{w}":  120, "{h}":  120, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" },
+      { "{w}":   50, "{h}":   50, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@1x.png" },
+      { "{w}":  100, "{h}":  100, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@2x.png" },
+      { "{w}":   57, "{h}":   57, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@1x.png" },
+      { "{w}":  114, "{h}":  114, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@2x.png" },
+      { "{w}":  120, "{h}":  120, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" },
+      { "{w}":  180, "{h}":  180, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" },
+      { "{w}":   72, "{h}":   72, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@1x.png" },
+      { "{w}":  144, "{h}":  144, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png" },
+      { "{w}":   76, "{h}":   76, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" },
+      { "{w}":  152, "{h}":  152, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" },
+      { "{w}":  167, "{h}":  167, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" },
 
-      { "{w}": 192, "{h}": 192, "{o}": "web/icons/Icon-192.png" },
-      { "{w}": 512, "{h}": 512, "{o}": "web/icons/Icon-512.png" },
+      { "{w}":  192, "{h}":  192, "{o}": "web/icons/Icon-192.png" },
+      { "{w}":  512, "{h}":  512, "{o}": "web/icons/Icon-512.png" },
 
       { "": null }
     ]
