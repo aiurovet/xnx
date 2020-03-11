@@ -49,7 +49,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" nameIsGenerated="true">
-      <option name="arguments" value="-c data/doul.json -d $USER_HOME$/AndroidStudioProjects/back_your_school/ -H" />
+      <option name="arguments" value="-c data/doul.json -d $USER_HOME$/AndroidStudioProjects/back_your_school/" />
       <option name="filePath" value="$PROJECT_DIR$/bin/main.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$" />
       <method v="2">
@@ -80,10 +80,10 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="558" y="156" key="#Dart/0.0.1920.1051@0.0.1920.1051" timestamp="1582978495408" />
-    <state x="205" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583932510981">
+    <state x="202" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583933358056">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="205" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1583932510981" />
+    <state x="202" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1583933358056" />
     <state x="712" y="144" width="512" height="490" key="#com.intellij.tools.ToolEditorDialog" timestamp="1583402818990">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -100,26 +100,26 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="615" height="568" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1583931442559" />
-    <state x="732" y="0" width="449" height="514" key="FileChooserDialogImpl" timestamp="1583402704319">
+    <state x="730" y="0" width="449" height="514" key="FileChooserDialogImpl" timestamp="1583933411051">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="732" y="0" width="449" height="514" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1583402704319" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1583932524881">
+    <state x="730" y="0" width="449" height="514" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1583933411051" />
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1583933359799">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524881" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1583932524881">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583933359799" />
+    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1583933359799">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524881" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1583932524881">
+    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583933359799" />
+    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1583933359799">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524881" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1583932524881">
+    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583933359799" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1583933359799">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524881" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583933359799" />
     <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1583932524841">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -172,10 +172,10 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="100" y="100" width="1720" height="851" key="git4idea.log.GitShowExternalLogAction/0.0.1920.1051@0.0.1920.1051" timestamp="1583328062116" />
-    <state x="624" y="240" key="run.anything.popup" timestamp="1583061876949">
+    <state x="624" y="240" key="run.anything.popup" timestamp="1583932764592">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="624" y="240" key="run.anything.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1583061876949" />
+    <state x="624" y="240" key="run.anything.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1583932764592" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
