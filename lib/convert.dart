@@ -60,7 +60,7 @@ class Convert {
       var exitCodes = (await Shell(verbose: Options.isVerbose).run(command));
 
       if (exitCodes.first.exitCode != 0) {
-        throw new Exception('Command failed:\n\n${command}\n\n');
+        throw Exception('Command failed:\n\n${command}\n\n');
       }
 
       await tmpFile.delete();
@@ -70,10 +70,10 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static Future<File> expandInpFile(Map<String, String> map) async {
-    var inpFile = new File(inpFilePath);
+    var inpFile = File(inpFilePath);
 
     if (!(await inpFile.exists())) {
-      throw new Exception('No input file found: "${inpFilePath}"');
+      throw Exception('No input file found: "${inpFilePath}"');
     }
 
     var text = await inpFile.readAsString();
@@ -102,13 +102,13 @@ class Convert {
       tmpFilePath = Path.join(outDirName, tmpFileName);
     }
 
-    var tmpFile = new File(tmpFilePath);
+    var tmpFile = File(tmpFilePath);
 
     if (await tmpFile.exists()) {
       await tmpFile.delete();
     }
 
-    tmpFile = new File(tmpFilePath);
+    tmpFile = File(tmpFilePath);
     await tmpFile.writeAsString(text);
 
     return (isExpandInpOnly ? null : tmpFile);

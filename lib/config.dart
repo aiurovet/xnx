@@ -142,7 +142,7 @@ class Config {
     var command = expandParamValue(PARAM_NAME_COMMAND, isForAny: true);
 
     if (StringExt.isNullOrBlank(command)) {
-      throw new Exception('Command is not defined for the output file "${params[PARAM_NAME_OUTPUT]}". Did you miss { "${PARAM_NAME_COMMAND}": "${CMD_EXPAND}" }?');
+      throw Exception('Command is not defined for the output file "${params[PARAM_NAME_OUTPUT]}". Did you miss { "${PARAM_NAME_COMMAND}": "${CMD_EXPAND}" }?');
     }
 
     newParams[PARAM_NAME_COMMAND] = command;
@@ -190,10 +190,10 @@ class Config {
       text = readInputSync();
     }
     else {
-      var file = new File(Options.configFilePath);
+      var file = File(Options.configFilePath);
 
       if (!(await file.exists())) {
-        throw new Exception('Failed to find expected configuration file: "${Options.configFilePath}"');
+        throw Exception('Failed to find expected configuration file: "${Options.configFilePath}"');
       }
 
       text = await file.readAsString();

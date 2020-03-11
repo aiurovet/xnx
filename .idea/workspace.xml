@@ -49,7 +49,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" nameIsGenerated="true">
-      <option name="arguments" value="-H -c data/doul.json -d $USER_HOME$/AndroidStudioProjects/back_your_school/" />
+      <option name="arguments" value="-c data/doul.json -d $USER_HOME$/AndroidStudioProjects/back_your_school/ -H" />
       <option name="filePath" value="$PROJECT_DIR$/bin/main.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$" />
       <method v="2">
@@ -80,10 +80,10 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="558" y="156" key="#Dart/0.0.1920.1051@0.0.1920.1051" timestamp="1582978495408" />
-    <state x="206" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583932155575">
+    <state x="205" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583932510981">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="206" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1583932155575" />
+    <state x="205" y="0" width="1463" height="803" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1583932510981" />
     <state x="712" y="144" width="512" height="490" key="#com.intellij.tools.ToolEditorDialog" timestamp="1583402818990">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -104,38 +104,38 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="732" y="0" width="449" height="514" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1583402704319" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1583932156945">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1583932524881">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583932156945" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1583932156944">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524881" />
+    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1583932524881">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583932156944" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1583932156944">
+    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524881" />
+    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1583932524881">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583932156944" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1583932156945">
+    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524881" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1583932524881">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583932156945" />
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1583932156905">
+    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524881" />
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1583932524841">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583932156905" />
-    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1583932156905">
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524841" />
+    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1583932524841">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583932156905" />
-    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1583932156905">
+    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524841" />
+    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1583932524841">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583932156905" />
-    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1583932156905">
+    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524841" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1583932524841">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583932156905" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1583932524841" />
     <state x="446" y="0" width="1014" height="731" key="SettingsEditor" timestamp="1583326702937">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -164,10 +164,10 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="100" y="100" width="1720" height="851" key="dock-window-1/0.0.1920.1051@0.0.1920.1051" timestamp="1583061175539" />
-    <state x="539" y="-30" width="776" height="1051" key="find.popup" timestamp="1583930167076">
+    <state x="523" y="-30" width="792" height="1051" key="find.popup" timestamp="1583932587249">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="539" y="-30" width="776" height="1051" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1583930167076" />
+    <state x="523" y="-30" width="792" height="1051" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1583932587249" />
     <state x="100" y="100" width="1720" height="851" key="git4idea.log.GitShowExternalLogAction" timestamp="1583328062116">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>

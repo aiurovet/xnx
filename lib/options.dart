@@ -80,6 +80,7 @@ class Options {
     var isHelpAll = false;
 
     configFilePath = null;
+    startDirName = null;
     isVerbose = false;
 
     final parser = ArgParser()
@@ -112,32 +113,32 @@ class Options {
       errMsg = e.message;
     }
 
-    if (!isHelp) {
-      if (StringExt.isNullOrBlank(startDirName)) {
-        startDirName = null;
-      }
-
-      startDirName = Path.canonicalize(startDirName ?? '');
-
-      if (StringExt.isNullOrBlank(configFilePath)) {
-        configFilePath = DEF_FILE_NAME;
-      }
-
-      if (configFilePath != PATH_STDIN) {
-        if (StringExt.isNullOrBlank(Path.extension(configFilePath))) {
-          configFilePath = Path.setExtension(configFilePath, FILE_TYPE_CFG);
-        }
-
-        if (!Path.isAbsolute(configFilePath)) {
-          configFilePath = getConfigFullPath(args);
-        }
-      }
-
-      Directory.current = startDirName;
-    }
-
     if (isHelp) {
       Options.printUsage(parser, isAll: isHelpAll, error: errMsg);
+    }
+
+    if (StringExt.isNullOrBlank(startDirName)) {
+      startDirName = null;
+    }
+
+    startDirName = Path.canonicalize(startDirName ?? '');
+
+    if (StringExt.isNullOrBlank(configFilePath)) {
+      configFilePath = DEF_FILE_NAME;
+    }
+
+    if (configFilePath != PATH_STDIN) {
+      if (StringExt.isNullOrBlank(Path.extension(configFilePath))) {
+        configFilePath = Path.setExtension(configFilePath, FILE_TYPE_CFG);
+      }
+
+      if (!Path.isAbsolute(configFilePath)) {
+        configFilePath = getConfigFullPath(args);
+      }
+    }
+
+    if (!StringExt.isNullOrBlank(startDirName)) {
+        Directory.current = startDirName;
     }
   }
 
@@ -321,6 +322,6 @@ Configuration file is expected in JSON format with the following guidelines:
 ''');
     }
 
-    throw new Exception(error);
+    throw Exception(error);
   }
 }
