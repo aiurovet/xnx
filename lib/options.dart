@@ -1,46 +1,154 @@
 import 'dart:io';
 import 'package:args/args.dart';
+import 'package:path/path.dart' as Path;
 
 import 'config.dart';
+import 'ext/string.dart';
 
-class Help {
-  static final Map<String, Object> OPT_HELP = {
+class Options {
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static final Map<String, Object> HELP = {
     'name': 'help',
     'abbr': 'h',
     'help': 'this help screen',
     'negatable': false,
   };
-  static final Map<String, Object> OPT_HELP_ALL = {
+  static final Map<String, Object> HELP_ALL = {
     'name': 'help-all',
     'abbr': 'H',
     'help': 'display detailed help, including config file format',
     'negatable': false,
   };
-  static final Map<String, Object> OPT_TOPDIR = {
-    'name': 'top-dir',
+  static final Map<String, Object> STARTDIR = {
+    'name': 'dir',
     'abbr': 'd',
     'help': 'top directory to resolve paths from (default: the current directory)',
     'valueHelp': 'DIR',
   };
-  static final Map<String, Object> OPT_CONFIG = {
+  static final Map<String, Object> CONFIG = {
     'name': 'config',
     'abbr': 'c',
-    'help': 'configuration file in json format (default: <DIR>${Platform.pathSeparator}${Config.DEF_FILE_NAME})',
+    'help': 'configuration file in json format (default: <DIR>${Platform.pathSeparator}${DEF_FILE_NAME})',
     'valueHelp': 'FILE',
   };
-  static final Map<String, Object> OPT_VERBOSE = {
+  static final Map<String, Object> VERBOSE = {
     'name': 'verbose',
     'abbr': 'v',
     'help': 'display all output, including the one from running the external tool',
     'negatable': false,
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+
+  static final String APP_NAME = 'doul';
+  static final String OPT_PREFIX = '-';
+  static final String FILE_TYPE_CFG = '.json';
+  static final String DEF_FILE_NAME = '${APP_NAME}${FILE_TYPE_CFG}';
+  static final String PATH_STDIN = '-';
+
+  static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-]${CONFIG['name']}|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
+  static final RegExp RE_OPT_STARTDIR = RegExp('^[\\-]([\\-]${STARTDIR['name']}|${STARTDIR['abbr']})([\\=]|\$)', caseSensitive: true);
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String configFilePath;
+  static bool isVerbose;
+  static String startDirName;
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String getConfigFullPath(List<String> args) {
+    for (var arg in args) {
+      if (RE_OPT_CONFIG.hasMatch(arg)) {
+        return StringExt.getFullPath(configFilePath);
+      }
+      if (RE_OPT_STARTDIR.hasMatch(arg)) {
+        break;
+      }
+    }
+
+    return StringExt.getFullPath(Path.join(startDirName, configFilePath));
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void parseArgs(List<String> args) {
+    var errMsg = StringExt.EMPTY;
+    var isHelp = false;
+    var isHelpAll = false;
+
+    configFilePath = null;
+    isVerbose = false;
+
+    final parser = ArgParser()
+      ..addFlag(Options.HELP['name'], abbr: Options.HELP['abbr'], help: Options.HELP['help'], negatable: Options.HELP['negatable'], callback: (value) {
+        isHelp = value;
+      })
+      ..addFlag(Options.HELP_ALL['name'], abbr: Options.HELP_ALL['abbr'], help: Options.HELP_ALL['help'], negatable: Options.HELP_ALL['negatable'], callback: (value) {
+        isHelpAll = value;
+
+        if (isHelpAll) {
+          isHelp = true;
+        }
+      })
+      ..addOption(Options.STARTDIR['name'], abbr: Options.STARTDIR['abbr'], help: Options.STARTDIR['help'], valueHelp: Options.STARTDIR['negatable'], callback: (value) {
+        startDirName = Path.canonicalize(StringExt.adjustPath(value));
+      })
+      ..addOption(Options.CONFIG['name'], abbr: Options.CONFIG['abbr'], help: Options.CONFIG['help'], valueHelp: Options.CONFIG['negatable'], callback: (value) {
+        configFilePath = StringExt.adjustPath(value);
+      })
+      ..addFlag(Options.VERBOSE['name'], abbr: Options.VERBOSE['abbr'], help: Options.VERBOSE['help'], negatable: Options.VERBOSE['negatable'], callback: (value) {
+        isVerbose = value;
+      })
+    ;
+
+    try {
+      parser.parse(args);
+    }
+    catch (e) {
+      isHelp = true;
+      errMsg = e.message;
+    }
+
+    if (!isHelp) {
+      if (StringExt.isNullOrBlank(startDirName)) {
+        startDirName = null;
+      }
+
+      startDirName = Path.canonicalize(startDirName ?? '');
+
+      if (StringExt.isNullOrBlank(configFilePath)) {
+        configFilePath = DEF_FILE_NAME;
+      }
+
+      if (configFilePath != PATH_STDIN) {
+        if (StringExt.isNullOrBlank(Path.extension(configFilePath))) {
+          configFilePath = Path.setExtension(configFilePath, FILE_TYPE_CFG);
+        }
+
+        if (!Path.isAbsolute(configFilePath)) {
+          configFilePath = getConfigFullPath(args);
+        }
+      }
+
+      Directory.current = startDirName;
+    }
+
+    if (isHelp) {
+      Options.printUsage(parser, isAll: isHelpAll, error: errMsg);
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static void printUsage(ArgParser parser, {bool isAll = false, String error = null}) {
     print('''
 
 USAGE:
 
-${Config.APP_NAME} [OPTIONS]
+${APP_NAME} [OPTIONS]
 
 ${parser.usage}
       ''');
@@ -51,23 +159,27 @@ DETAILS:
 
 ### More about command-line options
 
-1.1. Ability to specify top folder as an option comes very handy if you (or
+1.1. Ability to specify top directory as an option comes very handy if you (or
      your team) use(s) different OSes with a single version control repository.
      The noted approach allows to escape the need to specify OS-dependent paths
      in versioned files. You can run the program from specific location or put
      it as an option while running from a batch script, console, or by double-
      clicking a launcher (shortcut) icon. You can specify pathname separators
      in any style (forward slashes as in Unix or backslashes as in Windows),
-     the progarm will replace all of those depending on the OS it is run under.
-     Please note though,  
+     the program will replace all of those depending on the OS it is run under.
 
-1.2. The program also allows you to pass configration by piping some other
+1.2. If the path to config file (option -c, --config) is not absolute, then its
+     absolute path will be resolved using either program startup directory, or
+     top directory (option -d, --dir) depending on which option is specified
+     first. Yes, this is non-standard, as all options should not depend on the
+     order of appearance, but in this case it becomes very handy. Anyway, you
+     can avoid the ambiguity by specifying config file using absolute path.
+
+1.3. The program also allows you to pass configration by piping some other
      program\'s output. In this case, instead of supplying a filename (or path),
      just put a dash:
 
      grep -Pi "..." confdir/my.json | doul -c- -d projdir
-
-1.3.  
 
 ### Configuration file format
 
@@ -141,7 +253,7 @@ Configuration file is expected in JSON format with the following guidelines:
        { "{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # terribly slow" },
        { "{c}": "google-chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
 
-       { "{TD}": "\${HOME}" },
+       { "{TD}": "\${HOME}\${USERPROFILE}/AndroidStudioProjects/my_flutter_app" },
 
        { "{i}": "assets/images/app_bg.svg" },
 

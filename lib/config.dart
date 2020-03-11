@@ -1,21 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:args/args.dart';
-import 'package:path/path.dart';
-
 import 'ext/string.dart';
-import 'help.dart';
+import 'options.dart';
 
 class Config {
 
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
-
-  static final String APP_NAME = 'doul';
-  static final String FILE_TYPE_CFG = '.json';
-  static final String DEF_FILE_NAME = '${APP_NAME}${FILE_TYPE_CFG}';
 
   static final String CFG_ACTION = 'action';
   static final String CFG_RENAME = 'rename';
@@ -33,22 +26,14 @@ class Config {
   static String PARAM_NAME_TOPDIR = '{topDir}';
   static String PARAM_NAME_WIDTH = '{width}';
 
-  static final String PATH_STDIN = '-';
-  static final String PATH_PWD = './';
-
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
-  static final RegExp RE_PATH_SEP = RegExp('[\\/]', caseSensitive: false);
   static final RegExp RE_PATH_DONE = RegExp('^[\\/]|[\\:]', caseSensitive: false);
-  static final RegExp RE_PROTOCOL = RegExp('^[a-z]+[\:][\\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  static String filePath;
-  static bool isVerbose;
   static Map<String, String> params;
-  static String topDirName;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -72,7 +57,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static Future<List<Map<String, String>>> exec(List<String> args) async {
-    parseArgs(args);
+    Options.parseArgs(args);
 
     var text = await read();
     var decoded = jsonDecode(text);
@@ -131,7 +116,7 @@ class Config {
     }
 
     if (isParamWithPath(paramName)) {
-      paramValue = getFullPath(paramValue);
+      paramValue = StringExt.getFullPath(paramValue);
     }
 
     return paramValue;
@@ -169,50 +154,11 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getFullPath(String path) {
-    String full;
-    var prot = StringExt.EMPTY;
-
-    if (StringExt.isNullOrBlank(path)) {
-      full = StringExt.EMPTY;
-    }
-    else {
-      var match = RE_PROTOCOL.firstMatch(path);
-
-      if ((match != null) && (match.start == 0)) {
-        prot = path.substring(0, match.end);
-        full = path.substring(match.end);
-      }
-      else {
-        full = path;
-      }
-
-      if (!isAbsolute(full)) {
-        if (!RE_PATH_DONE.hasMatch(full)) {
-          full = PATH_PWD + full;
-        }
-      }
-
-      full = full.replaceAll(RE_PATH_SEP, Platform.pathSeparator);
-    }
-    
-    full = prot + canonicalize(full);
-
-    return full;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   static bool hasMinKnownParams() {
-    //var hasCommand = params.containsKey(PARAM_NAME_COMMAND);
     var hasInput = params.containsKey(PARAM_NAME_INPUT);
     var hasOutput = params.containsKey(PARAM_NAME_OUTPUT);
-    //var hasWidth = params.containsKey(PARAM_NAME_WIDTH);
-    //var hasHeight = params.containsKey(PARAM_NAME_HEIGHT);
 
-    var hasKeys = (/*hasCommand &&*/ hasInput && hasOutput /*&& hasWidth && hasHeight*/);
-
-    return hasKeys;
+    return (hasInput && hasOutput);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -237,85 +183,17 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void parseArgs(List<String> args) {
-    var errMsg = StringExt.EMPTY;
-    var isHelp = false;
-    var isHelpAll = false;
-
-    isVerbose = false;
-
-    final parser = ArgParser()
-      ..addFlag(Help.OPT_HELP['name'], abbr: Help.OPT_HELP['abbr'], help: Help.OPT_HELP['help'], negatable: Help.OPT_HELP['negatable'], callback: (value) {
-        isHelp = value;
-      })
-      ..addFlag(Help.OPT_HELP_ALL['name'], abbr: Help.OPT_HELP_ALL['abbr'], help: Help.OPT_HELP_ALL['help'], negatable: Help.OPT_HELP_ALL['negatable'], callback: (value) {
-        isHelpAll = value;
-
-        if (isHelpAll) {
-          isHelp = true;
-        }
-      })
-      ..addOption(Help.OPT_TOPDIR['name'], abbr: Help.OPT_TOPDIR['abbr'], help: Help.OPT_TOPDIR['help'], valueHelp: Help.OPT_TOPDIR['negatable'], callback: (value) {
-        topDirName = value;
-      })
-      ..addOption(Help.OPT_CONFIG['name'], abbr: Help.OPT_CONFIG['abbr'], help: Help.OPT_CONFIG['help'], valueHelp: Help.OPT_CONFIG['negatable'], callback: (value) {
-        filePath = value;
-      })
-      ..addFlag(Help.OPT_VERBOSE['name'], abbr: Help.OPT_VERBOSE['abbr'], help: Help.OPT_VERBOSE['help'], negatable: Help.OPT_VERBOSE['negatable'], callback: (value) {
-        isVerbose = value;
-      })
-    ;
-
-    try {
-      parser.parse(args);
-    }
-    catch (e) {
-      isHelp = true;
-      errMsg = e.message;
-    }
-
-    if (!isHelp) {
-      if (StringExt.isNullOrBlank(topDirName)) {
-        topDirName = null;
-      }
-
-      topDirName = canonicalize(topDirName ?? '');
-
-      if (StringExt.isNullOrBlank(filePath)) {
-        filePath = DEF_FILE_NAME;
-      }
-
-      if (filePath != PATH_STDIN) {
-        if (StringExt.isNullOrBlank(extension(filePath))) {
-          filePath = setExtension(filePath, FILE_TYPE_CFG);
-        }
-
-        if (!isAbsolute(filePath)) {
-          filePath = canonicalize(filePath);
-        }
-      }
-
-      Directory.current = topDirName;
-    }
-
-    if (isHelp) {
-      Help.printUsage(parser, isAll: isHelpAll, error: errMsg);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   static Future<String> read() async {
     String text;
 
-    if (filePath == PATH_STDIN) {
+    if (Options.configFilePath == Options.PATH_STDIN) {
       text = readInputSync();
     }
     else {
-      var file = new File(filePath);
+      var file = new File(Options.configFilePath);
 
       if (!(await file.exists())) {
-        throw new Exception('Failed to find expected configuration file: "${filePath}"');
+        throw new Exception('Failed to find expected configuration file: "${Options.configFilePath}"');
       }
 
       text = await file.readAsString();

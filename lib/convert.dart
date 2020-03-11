@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:path/path.dart';
+import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
 import 'config.dart';
+import 'options.dart';
 import 'ext/string.dart';
 
 class Convert {
@@ -37,9 +38,9 @@ class Convert {
       command = Config.getParamValue(map, Config.PARAM_NAME_COMMAND);
       inpFilePath = Config.getParamValue(map, Config.PARAM_NAME_INPUT);
       outFilePath = Config.getParamValue(map, Config.PARAM_NAME_OUTPUT);
-      outDirName = dirname(outFilePath);
+      outDirName = Path.dirname(outFilePath);
 
-      print(relative(outFilePath));
+      print(Path.relative(outFilePath));
 
       var outFile = File(outFilePath);
 
@@ -56,7 +57,7 @@ class Convert {
       var inpFilePathEx = (canExpandInp ? tmpFilePath : inpFilePath);
 
       command = command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePathEx);
-      var exitCodes = (await Shell(verbose: Config.isVerbose).run(command));
+      var exitCodes = (await Shell(verbose: Options.isVerbose).run(command));
 
       if (exitCodes.first.exitCode != 0) {
         throw new Exception('Command failed:\n\n${command}\n\n');
@@ -97,8 +98,8 @@ class Convert {
       tmpFilePath = outFilePath;
     }
     else {
-      var tmpFileName = (basenameWithoutExtension(inpFilePath) + FILE_TYPE_TMP + extension(inpFilePath));
-      tmpFilePath = join(outDirName, tmpFileName);
+      var tmpFileName = (Path.basenameWithoutExtension(inpFilePath) + FILE_TYPE_TMP + Path.extension(inpFilePath));
+      tmpFilePath = Path.join(outDirName, tmpFileName);
     }
 
     var tmpFile = new File(tmpFilePath);
@@ -116,7 +117,7 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static getTemporaryPath(String path, String extension) async {
-    return (withoutExtension(path) + FILE_TYPE_TMP + extension);
+    return (Path.withoutExtension(path) + FILE_TYPE_TMP + extension);
   }
 
   //////////////////////////////////////////////////////////////////////////////

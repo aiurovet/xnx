@@ -1,7 +1,7 @@
-import 'dart:collection';
 import 'dart:core';
 
 import 'dart:io';
+import 'package:path/path.dart' as Path;
 
 extension StringExt on String {
   static Map<String, String> ENVIRONMENT;
@@ -18,16 +18,13 @@ extension StringExt on String {
   static final String FALSE = 'false';
 
   static final RegExp RE_ENV_NAME = RegExp('\\\$[\\{]?([A-Z_][A-Z _0-9]*)[\\}]?', caseSensitive: false);
+  static final RegExp RE_PATH_SEP = RegExp('[\\/]', caseSensitive: false);
+  static final RegExp RE_PROTOCOL = RegExp('^[a-z]+[\:][\\/][\\/]+', caseSensitive: false);
 
-  static void initEnvironmentVariables() {
-    if (IS_WINDOWS) {
-      Platform.environment.forEach((k, v) {
-        ENVIRONMENT[k.toUpperCase()] = v;
-      });
-    }
-    else {
-      ENVIRONMENT = Map.from(Platform.environment);
-    }
+  static String adjustPath(String path) {
+    var adjustedPath = (path?.trim() ?? StringExt.EMPTY).replaceAll(RE_PATH_SEP, Platform.pathSeparator);
+
+    return adjustedPath;
   }
 
   static String expandEnvironmentVariables(String input) {
@@ -40,9 +37,8 @@ extension StringExt on String {
     }
 
     var result = input
-      .replaceAll('\$\$', '\x01')
-      .replaceAllMapped(RE_ENV_NAME, (match) {
-        if ((match != null) && (match.start >= 0)) {
+        .replaceAll('\$\$', '\x01')
+        .replaceAllMapped(RE_ENV_NAME, (match) {
           var envName = match.group(1);
 
           if (IS_WINDOWS) {
@@ -55,11 +51,28 @@ extension StringExt on String {
           else {
             return EMPTY;
           }
-        }
-      })
-      .replaceAll('\x01', '\$');
+        })
+        .replaceAll('\x01', '\$');
 
     return result;
+  }
+
+  static String getFullPath(String path) {
+    var isBlank = StringExt.isNullOrBlank(path);
+    var full = Path.canonicalize(isBlank ? StringExt.EMPTY : StringExt.adjustPath(path));
+
+    return full;
+  }
+
+  static void initEnvironmentVariables() {
+    if (IS_WINDOWS) {
+      Platform.environment.forEach((k, v) {
+        ENVIRONMENT[k.toUpperCase()] = v;
+      });
+    }
+    else {
+      ENVIRONMENT = Map.from(Platform.environment);
+    }
   }
 
   static bool isNullOrBlank(String input) {

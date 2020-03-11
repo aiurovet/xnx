@@ -19,7 +19,7 @@
       { "#{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\" # not the best quality" },
       { "{c}": "google-chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
 
-      { "{TD}": "${HOME}/AndroidStudioProjects/back_your_school/" },
+      { "{TD}": "${HOME}${USREPROFILE}/AndroidStudioProjects/back_your_school/" },
 
       { "{i}": "assets/images/app_bg.svg" },
 
