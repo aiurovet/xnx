@@ -1,2 +1,3 @@
 @echo off
-dart2native "%~dp0\..\bin\doul.dart"
+set BIN=%~dp0\bin
+dart2native "%BIN%\doul.dart" -o "%BIN%\windows\doul.exe"
