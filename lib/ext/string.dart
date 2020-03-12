@@ -1,7 +1,7 @@
 import 'dart:core';
 
 import 'dart:io';
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as path;
 
 extension StringExt on String {
   static Map<String, String> ENVIRONMENT;
@@ -57,11 +57,11 @@ extension StringExt on String {
     return result;
   }
 
-  static String getFullPath(String path) {
-    var isBlank = StringExt.isNullOrBlank(path);
-    var full = Path.canonicalize(isBlank ? StringExt.EMPTY : StringExt.adjustPath(path));
+  static String getFullPath(String partialPath) {
+    var isBlank = StringExt.isNullOrBlank(partialPath);
+    var fullPath = path.canonicalize(isBlank ? StringExt.EMPTY : StringExt.adjustPath(partialPath));
 
-    return full;
+    return fullPath;
   }
 
   static void initEnvironmentVariables() {

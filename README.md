@@ -9,11 +9,11 @@ Command-line utility to run multiple commands against the same input with variou
 <pre>
 doul [OPTIONS]
 
--h, --help          this help screen
--H, --help-all      display detailed help, including config file format
--d, --dir (DIR)     top directory to resolve paths from (default: the current directory)
--c, --config (FILE) configuration file in json format (default: (DIR)/doul.json)
--v, --verbose       display all output, including the one from running the external tool
+-h, --help              this help screen
+-H, --help-all          display detailed help, including config file format
+-d, --dir (DIR)         top directory to resolve paths from (default: the current directory)
+-c, --config (FILE)     configuration file in json format (default: (DIR)/doul.json)
+-v, --verbosity (LEVEL) how much information to show (0-5)
 </pre>
 
 ##### DETAILS:

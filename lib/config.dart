@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'ext/string.dart';
+import 'log.dart';
 import 'options.dart';
 
 class Config {
@@ -63,16 +64,22 @@ class Config {
     var decoded = jsonDecode(text);
     assert(decoded is Map);
 
+    Log.information('Processing configuration data');
+
     var all = decoded.values.toList()[0];
 
     if (all is Map) {
       var rename = all[CFG_RENAME];
 
+      Log.information('Processing renames');
+
       if (rename is Map) {
         setActualParamNames(rename);
       }
 
-      params = Map();
+      Log.information('Processing actions');
+
+      params = {};
       params[PARAM_NAME_TOPDIR] = '';
 
       var action = all[CFG_ACTION];
@@ -83,21 +90,35 @@ class Config {
       action.forEach((map) {
         assert(map is Map);
 
+        Log.debug('\n...${map.toString()}');
+
         map.forEach((key, value) {
+          Log.debug('......${key}: ${value}');
+
           addParamValue(key, value);
         });
 
+        Log.debug('...adding to the list of actions');
+
         expandParamValuesAndAddToList(result);
+
+        Log.debug('...completed row processing');
       });
 
+      Log.information('Added ${result.length} commands');
+
       return result;
+    }
+    else {
+      Log.information('No command added');
+
+      return null;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   static String expandParamValue(String paramName, {bool isForAny = false}) {
-
     var canExpandEnv = (params.containsKey(PARAM_NAME_EXPAND_ENV) ? StringExt.parseBool(params[PARAM_NAME_EXPAND_ENV]) : false);
     var paramValue = (params[paramName] ?? StringExt.EMPTY);
 
@@ -125,31 +146,39 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static void expandParamValuesAndAddToList(List<Map<String, String>> lst) {
+Log.debug('DBG: 1');
     if (!hasMinKnownParams()) {
       return;
     }
-    
-    var newParams = Map<String, String>();
+Log.debug('DBG: 2');
+
+    var newParams = {};
 
     params.forEach((k, v) {
+Log.debug('DBG: 2.1: k = ${k}');
       if (k != PARAM_NAME_COMMAND) {
         newParams[k] = expandParamValue(k, isForAny: false);
       }
     });
 
+Log.debug('DBG: 3');
     params.addAll(newParams);
 
     var command = expandParamValue(PARAM_NAME_COMMAND, isForAny: true);
 
+Log.debug('DBG: 4');
     if (StringExt.isNullOrBlank(command)) {
       throw Exception('Command is not defined for the output file "${params[PARAM_NAME_OUTPUT]}". Did you miss { "${PARAM_NAME_COMMAND}": "${CMD_EXPAND}" }?');
     }
 
+Log.debug('DBG: 5');
     newParams[PARAM_NAME_COMMAND] = command;
 
     lst.add(newParams);
 
+Log.debug('DBG: 6');
     removeMinKnownParams();
+Log.debug('DBG: 7');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -184,16 +213,22 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static Future<String> read() async {
+    var inpPath = Options.configFilePath;
+    var isStdIn = (inpPath == Options.PATH_STDIN);
+    var inpName = (isStdIn ? '<stdin>' : '"' + inpPath + '"');
+
+    Log.information('Reading configuration from ${inpName}');
+
     String text;
 
-    if (Options.configFilePath == Options.PATH_STDIN) {
+    if (isStdIn) {
       text = readInputSync();
     }
     else {
-      var file = File(Options.configFilePath);
+      var file = File(inpPath);
 
       if (!(await file.exists())) {
-        throw Exception('Failed to find expected configuration file: "${Options.configFilePath}"');
+        throw Exception('Failed to find expected configuration file: ${inpName}');
       }
 
       text = await file.readAsString();
@@ -203,7 +238,7 @@ class Config {
   }
 
   static String readInputSync() {
-    final List<int> input = [];
+    final input = [];
 
     for (var isEmpty = true; ; isEmpty = false) {
       var byte = stdin.readByteSync();
@@ -215,6 +250,7 @@ class Config {
 
         break;
       }
+
       input.add(byte);
     }
 

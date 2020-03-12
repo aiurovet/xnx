@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as path;
 import 'package:process_run/shell_run.dart';
 
 import 'config.dart';
+import 'log.dart';
 import 'options.dart';
 import 'ext/string.dart';
 
@@ -38,9 +39,15 @@ class Convert {
       command = Config.getParamValue(map, Config.PARAM_NAME_COMMAND);
       inpFilePath = Config.getParamValue(map, Config.PARAM_NAME_INPUT);
       outFilePath = Config.getParamValue(map, Config.PARAM_NAME_OUTPUT);
-      outDirName = Path.dirname(outFilePath);
+      outDirName = path.dirname(outFilePath);
 
-      print(Path.relative(outFilePath));
+      if (Options.isListOnly) {
+        command = command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePath);
+        Log.out(command);
+        continue;
+      }
+
+      Log.information(path.relative(outFilePath));
 
       var outFile = File(outFilePath);
 
@@ -57,7 +64,7 @@ class Convert {
       var inpFilePathEx = (canExpandInp ? tmpFilePath : inpFilePath);
 
       command = command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePathEx);
-      var exitCodes = (await Shell(verbose: Options.isVerbose).run(command));
+      var exitCodes = (await Shell(verbose: (Log.level > Log.LEVEL_OUT)).run(command));
 
       if (exitCodes.first.exitCode != 0) {
         throw Exception('Command failed:\n\n${command}\n\n');
@@ -98,8 +105,8 @@ class Convert {
       tmpFilePath = outFilePath;
     }
     else {
-      var tmpFileName = (Path.basenameWithoutExtension(inpFilePath) + FILE_TYPE_TMP + Path.extension(inpFilePath));
-      tmpFilePath = Path.join(outDirName, tmpFileName);
+      var tmpFileName = (path.basenameWithoutExtension(inpFilePath) + FILE_TYPE_TMP + path.extension(inpFilePath));
+      tmpFilePath = path.join(outDirName, tmpFileName);
     }
 
     var tmpFile = File(tmpFilePath);
@@ -112,12 +119,6 @@ class Convert {
     await tmpFile.writeAsString(text);
 
     return (isExpandInpOnly ? null : tmpFile);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static getTemporaryPath(String path, String extension) async {
-    return (Path.withoutExtension(path) + FILE_TYPE_TMP + extension);
   }
 
   //////////////////////////////////////////////////////////////////////////////

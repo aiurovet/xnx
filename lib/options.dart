@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as path;
 
-import 'config.dart';
 import 'ext/string.dart';
+import 'log.dart';
 
 class Options {
 
@@ -26,18 +26,27 @@ class Options {
     'abbr': 'd',
     'help': 'top directory to resolve paths from (default: the current directory)',
     'valueHelp': 'DIR',
+    'defaultsTo': '.',
   };
   static final Map<String, Object> CONFIG = {
     'name': 'config',
     'abbr': 'c',
     'help': 'configuration file in json format (default: <DIR>${Platform.pathSeparator}${DEF_FILE_NAME})',
     'valueHelp': 'FILE',
+    'defaultsTo': DEF_FILE_NAME,
   };
-  static final Map<String, Object> VERBOSE = {
-    'name': 'verbose',
-    'abbr': 'v',
-    'help': 'display all output, including the one from running the external tool',
+  static final Map<String, Object> LIST_ONLY = {
+    'name': 'list-only',
+    'abbr': 'l',
+    'help': 'display all commands, but do not execute those',
     'negatable': false,
+  };
+  static final Map<String, Object> VERBOSITY = {
+    'name': 'verbosity',
+    'abbr': 'v',
+    'help': 'how much information to show: 0-3 (default: 1)',
+    'valueHelp': 'LEVEL',
+    'defaultsTo': '1',
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -54,7 +63,7 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   static String configFilePath;
-  static bool isVerbose;
+  static bool isListOnly;
   static String startDirName;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -69,7 +78,7 @@ class Options {
       }
     }
 
-    return StringExt.getFullPath(Path.join(startDirName, configFilePath));
+    return StringExt.getFullPath(path.join(startDirName, configFilePath));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -81,7 +90,7 @@ class Options {
 
     configFilePath = null;
     startDirName = null;
-    isVerbose = false;
+    isListOnly = false;
 
     final parser = ArgParser()
       ..addFlag(Options.HELP['name'], abbr: Options.HELP['abbr'], help: Options.HELP['help'], negatable: Options.HELP['negatable'], callback: (value) {
@@ -94,14 +103,22 @@ class Options {
           isHelp = true;
         }
       })
-      ..addOption(Options.STARTDIR['name'], abbr: Options.STARTDIR['abbr'], help: Options.STARTDIR['help'], valueHelp: Options.STARTDIR['negatable'], callback: (value) {
-        startDirName = Path.canonicalize(StringExt.adjustPath(value));
+      ..addFlag(Options.LIST_ONLY['name'], abbr: Options.LIST_ONLY['abbr'], help: Options.LIST_ONLY['help'], negatable: Options.LIST_ONLY['negatable'], callback: (value) {
+        isListOnly = true;
       })
-      ..addOption(Options.CONFIG['name'], abbr: Options.CONFIG['abbr'], help: Options.CONFIG['help'], valueHelp: Options.CONFIG['negatable'], callback: (value) {
+      ..addOption(Options.STARTDIR['name'], abbr: Options.STARTDIR['abbr'], help: Options.STARTDIR['help'], valueHelp: Options.STARTDIR['valueHelp'], defaultsTo: Options.STARTDIR['defaultsTo'], callback: (value) {
+        startDirName = path.canonicalize(StringExt.adjustPath(value));
+      })
+      ..addOption(Options.CONFIG['name'], abbr: Options.CONFIG['abbr'], help: Options.CONFIG['help'], valueHelp: Options.CONFIG['valueHelp'], defaultsTo: Options.CONFIG['defaultsTo'], callback: (value) {
         configFilePath = StringExt.adjustPath(value);
       })
-      ..addFlag(Options.VERBOSE['name'], abbr: Options.VERBOSE['abbr'], help: Options.VERBOSE['help'], negatable: Options.VERBOSE['negatable'], callback: (value) {
-        isVerbose = value;
+      ..addOption(Options.VERBOSITY['name'], abbr: Options.VERBOSITY['abbr'], help: Options.VERBOSITY['help'], valueHelp: Options.VERBOSITY['valueHelp'], defaultsTo: Options.VERBOSITY['defaultsTo'], callback: (value) {
+        switch (int.parse(value)) {
+          case 0: Log.level = Log.LEVEL_SILENT; break;
+          case 2: Log.level = Log.LEVEL_INFORMATION; break;
+          case 3: Log.level = Log.LEVEL_DEBUG; break;
+          default: Log.level = Log.LEVEL_ERROR; break;
+        }
       })
     ;
 
@@ -121,31 +138,32 @@ class Options {
       startDirName = null;
     }
 
-    startDirName = Path.canonicalize(startDirName ?? '');
+    startDirName = path.canonicalize(startDirName ?? '');
 
     if (StringExt.isNullOrBlank(configFilePath)) {
       configFilePath = DEF_FILE_NAME;
     }
 
     if (configFilePath != PATH_STDIN) {
-      if (StringExt.isNullOrBlank(Path.extension(configFilePath))) {
-        configFilePath = Path.setExtension(configFilePath, FILE_TYPE_CFG);
+      if (StringExt.isNullOrBlank(path.extension(configFilePath))) {
+        configFilePath = path.setExtension(configFilePath, FILE_TYPE_CFG);
       }
 
-      if (!Path.isAbsolute(configFilePath)) {
+      if (!path.isAbsolute(configFilePath)) {
         configFilePath = getConfigFullPath(args);
       }
     }
 
     if (!StringExt.isNullOrBlank(startDirName)) {
+        Log.information('Setting current directory to: "${startDirName}"');
         Directory.current = startDirName;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void printUsage(ArgParser parser, {bool isAll = false, String error = null}) {
-    print('''
+  static void printUsage(ArgParser parser, {bool isAll = false, String error}) {
+    stderr.writeln('''
 
 USAGE:
 
@@ -155,7 +173,7 @@ ${parser.usage}
       ''');
 
     if (isAll) {
-      print('''
+      stderr.writeln('''
 DETAILS:
 
 Copyright (C) Alexander Iurovetski, 2020

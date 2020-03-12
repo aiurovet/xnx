@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:doul/convert.dart';
 import 'package:doul/ext/string.dart';
+import 'package:doul/log.dart';
 
 void main(List<String> args) {
   var isOK = false;
@@ -17,7 +18,7 @@ void main(List<String> args) {
         isOK = true; // help
       }
       else {
-        print('\n*** ERROR: ${errMsg}\n');
+        Log.error('\n${errMsg}\n');
       }
     })
     .whenComplete(() {
