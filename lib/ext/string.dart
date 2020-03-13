@@ -18,25 +18,26 @@ extension StringExt on String {
   static final String FALSE = 'false';
 
   static final RegExp RE_ENV_NAME = RegExp('\\\$[\\{]?([A-Z_][A-Z _0-9]*)[\\}]?', caseSensitive: false);
+  static final RegExp RE_IS_WILDCARD = RegExp('[\\*\\?]', caseSensitive: false);
   static final RegExp RE_PATH_SEP = RegExp('[\\/]', caseSensitive: false);
   static final RegExp RE_PROTOCOL = RegExp('^[a-z]+[\:][\\/][\\/]+', caseSensitive: false);
 
-  static String adjustPath(String path) {
-    var adjustedPath = (path?.trim() ?? StringExt.EMPTY).replaceAll(RE_PATH_SEP, Platform.pathSeparator);
+  String adjustPath() {
+    var adjustedPath = trim().replaceAll(RE_PATH_SEP, Platform.pathSeparator);
 
     return adjustedPath;
   }
 
-  static String expandEnvironmentVariables(String input) {
-    if (input == null) {
-      return input;
-    }
+  bool containsWildcards() {
+    return RE_IS_WILDCARD.hasMatch(this);
+  }
 
+  String expandEnvironmentVariables() {
     if (ENVIRONMENT == null) {
-      initEnvironmentVariables();
+      _initEnvironmentVariables();
     }
 
-    var result = input
+    var result = this
         .replaceAll('\$\$', '\x01')
         .replaceAllMapped(RE_ENV_NAME, (match) {
           var envName = match.group(1);
@@ -57,14 +58,13 @@ extension StringExt on String {
     return result;
   }
 
-  static String getFullPath(String partialPath) {
-    var isBlank = StringExt.isNullOrBlank(partialPath);
-    var fullPath = path.canonicalize(isBlank ? StringExt.EMPTY : StringExt.adjustPath(partialPath));
+  String getFullPath() {
+    var fullPath = path.canonicalize(adjustPath());
 
     return fullPath;
   }
 
-  static void initEnvironmentVariables() {
+  static void _initEnvironmentVariables() {
     ENVIRONMENT = {};
 
     if (IS_WINDOWS) {
@@ -87,5 +87,16 @@ extension StringExt on String {
 
   static bool parseBool(String input) {
     return ((input != null) && (input.toLowerCase() == TRUE));
+  }
+
+  RegExp wildcardToRegExp() {
+    if (isNullOrBlank(this)) {
+      return null;
+    }
+    else {
+      var pattern = '^${RegExp.escape(this).replaceAll('\\*', '.*').replaceAll('\\?', '.')}\$';
+
+      return RegExp(pattern, caseSensitive: !IS_WINDOWS);
+    }
   }
 }

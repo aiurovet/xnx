@@ -71,14 +71,14 @@ class Options {
   static String getConfigFullPath(List<String> args) {
     for (var arg in args) {
       if (RE_OPT_CONFIG.hasMatch(arg)) {
-        return StringExt.getFullPath(configFilePath);
+        return configFilePath.getFullPath();
       }
       if (RE_OPT_STARTDIR.hasMatch(arg)) {
         break;
       }
     }
 
-    return StringExt.getFullPath(path.join(startDirName, configFilePath));
+    return path.join(startDirName, configFilePath).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -107,10 +107,10 @@ class Options {
         isListOnly = value;
       })
       ..addOption(Options.STARTDIR['name'], abbr: Options.STARTDIR['abbr'], help: Options.STARTDIR['help'], valueHelp: Options.STARTDIR['valueHelp'], defaultsTo: Options.STARTDIR['defaultsTo'], callback: (value) {
-        startDirName = path.canonicalize(StringExt.adjustPath(value));
+        startDirName = (value ?? StringExt.EMPTY).getFullPath();
       })
       ..addOption(Options.CONFIG['name'], abbr: Options.CONFIG['abbr'], help: Options.CONFIG['help'], valueHelp: Options.CONFIG['valueHelp'], defaultsTo: Options.CONFIG['defaultsTo'], callback: (value) {
-        configFilePath = StringExt.adjustPath(value);
+        configFilePath = (value ?? StringExt.EMPTY).adjustPath();
       })
       ..addOption(Options.VERBOSITY['name'], abbr: Options.VERBOSITY['abbr'], help: Options.VERBOSITY['help'], valueHelp: Options.VERBOSITY['valueHelp'], defaultsTo: Options.VERBOSITY['defaultsTo'], callback: (value) {
         switch (int.parse(value)) {

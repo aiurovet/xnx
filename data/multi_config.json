@@ -19,7 +19,7 @@
 
       { "{TD}": "multi_config/" },
 
-      { "{i}": "{TD}template/appsettings.json" },
+      { "{i}": "{TD}template/*settings.json" },
 
       { "{env}": "Dev",  "{dir}": "{TD}alexi", "{o}": "{TD}{ifn}-{env}{ifx}" },
       { "{env}": "Test", "{dir}": "{TD}alexj", "{o}": "{TD}{ifn}-{env}{ifx}" },

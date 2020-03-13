@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:path/path.dart' as path;
-
-import 'ext/string.dart';
 import 'log.dart';
 import 'options.dart';
+import 'ext/directory.dart';
+import 'ext/string.dart';
 
 class Config {
 
@@ -33,7 +32,7 @@ class Config {
   static String PARAM_NAME_WIDTH = '{width}';
 
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
-  static final RegExp RE_PATH_DONE = RegExp('^[\\/]|[\\:]', caseSensitive: false);
+  static final RegExp RE_PATH_LIST_SEP = RegExp('\\s*,\\s*');
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -62,10 +61,10 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Future<List<Map<String, String>>> exec(List<String> args) async {
+  static List<Map<String, String>> exec(List<String> args) {
     Options.parseArgs(args);
 
-    var text = await read();
+    var text = readSync();
     var decoded = jsonDecode(text);
     assert(decoded is Map);
 
@@ -126,11 +125,18 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static String expandParamValue(String paramName, {bool isForAny = false}) {
-    var canExpandEnv = (params.containsKey(PARAM_NAME_EXPAND_ENV) ? StringExt.parseBool(params[PARAM_NAME_EXPAND_ENV]) : false);
     var paramValue = (params[paramName] ?? StringExt.EMPTY);
 
+    var canExpandEnv = (params.containsKey(PARAM_NAME_EXPAND_ENV) ? StringExt.parseBool(params[PARAM_NAME_EXPAND_ENV]) : false);
+
     if (canExpandEnv) {
-      paramValue = StringExt.expandEnvironmentVariables(paramValue);
+      paramValue = paramValue.expandEnvironmentVariables();
+    }
+
+    if (!isForAny) {
+      if ((paramName == PARAM_NAME_COMMAND) || (paramName == PARAM_NAME_OUTPUT)) {
+        return paramValue;
+      }
     }
 
     var inputFilePath = params[PARAM_NAME_INPUT];
@@ -146,16 +152,21 @@ class Config {
 
     for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(paramValue)); i++) {
       params.forEach((k, v) {
-        if ((k != paramName) && (isForAny || (k != PARAM_NAME_COMMAND))) {
-          if ((paramName != PARAM_NAME_COMMAND) || (k != PARAM_NAME_INPUT)) {
-            paramValue = paramValue.replaceAll(k, v);
-          }
+        if (k != paramName) {
+          paramValue = paramValue.replaceAll(k, v);
         }
       });
     }
 
+    if (paramName == PARAM_NAME_TOPDIR) {
+      if (!path.isAbsolute(paramValue)) {
+        paramValue = path.join(Options.startDirName, paramValue);
+        Directory.current = paramValue.getFullPath();
+      }
+    }
+
     if (isParamWithPath(paramName)) {
-      paramValue = StringExt.getFullPath(paramValue);
+      paramValue = paramValue.getFullPath();
     }
 
     return paramValue;
@@ -168,7 +179,7 @@ class Config {
       return;
     }
 
-    var newParams = Map<String, String>();
+    var newParams = <String, String>{};
 
     params.forEach((k, v) {
       if (k != PARAM_NAME_COMMAND) {
@@ -178,16 +189,88 @@ class Config {
 
     params.addAll(newParams);
 
-    var command = expandParamValue(PARAM_NAME_COMMAND, isForAny: true);
+    var listOfInpFilePaths = getListOfInpFilePaths();
 
-    if (StringExt.isNullOrBlank(command)) {
-      throw Exception('Command is not defined for the output file "${params[PARAM_NAME_OUTPUT]}". Did you miss { "${PARAM_NAME_COMMAND}": "${CMD_EXPAND}" }?');
+    for (var inpFilePath in listOfInpFilePaths) {
+      var oldInpFilePath = params[PARAM_NAME_INPUT];
+      var oldOutFilePath = params[PARAM_NAME_OUTPUT];
+
+      newParams = <String, String>{};
+      newParams.addAll(params);
+
+      newParams[PARAM_NAME_INPUT] = inpFilePath;
+      params[PARAM_NAME_INPUT] = inpFilePath;
+
+      newParams[PARAM_NAME_OUTPUT] = expandParamValue(PARAM_NAME_OUTPUT, isForAny: true);
+      params[PARAM_NAME_OUTPUT] = newParams[PARAM_NAME_OUTPUT];
+
+      var command = expandParamValue(PARAM_NAME_COMMAND, isForAny: true);
+
+      params[PARAM_NAME_INPUT] = oldInpFilePath;
+      params[PARAM_NAME_OUTPUT] = oldOutFilePath;
+
+      if (StringExt.isNullOrBlank(command)) {
+        throw Exception(
+          'Command is not defined for the output file "${params[PARAM_NAME_OUTPUT]}". Did you miss { "${PARAM_NAME_COMMAND}": "${CMD_EXPAND}" }?');
+      }
+
+      newParams[PARAM_NAME_COMMAND] = command;
+      lst.add(newParams);
     }
 
-    newParams[PARAM_NAME_COMMAND] = command;
-    lst.add(newParams);
-
     removeMinKnownParams();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static List<String> getListOfInpFilePaths() {
+    var filePaths = params[PARAM_NAME_INPUT].split(RE_PATH_LIST_SEP);
+    var lstAll = <String>[];
+
+    for (var filePath in filePaths) {
+      var dir = Directory(filePath);
+      List<String> lstCur;
+
+      var pattern = path.basename(filePath);
+
+      if (pattern.containsWildcards()) {
+        var parentDirName = path.dirname(filePath);
+        var hasParentDir = !StringExt.isNullOrBlank(parentDirName);
+
+        if (hasParentDir) {
+          if (!path.isAbsolute(parentDirName)) {
+            parentDirName = path.join(filePath, parentDirName);
+          }
+
+          dir = Directory(parentDirName);
+        }
+
+        lstCur = dir.pathListSync(pattern: pattern,
+            checkExists: false,
+            recursive: hasParentDir,
+            takeDirs: false,
+            takeFiles: true);
+      }
+      else if (dir.existsSync()) {
+        lstCur = dir.pathListSync(pattern: null, checkExists: false, recursive: true, takeDirs: false, takeFiles: true);
+      }
+      else {
+        var file = File(filePath);
+
+        if (file.existsSync()) {
+          lstCur = [file.path];
+        }
+      }
+
+      if ((lstCur?.length ?? 0) > 0) {
+        lstAll.addAll(lstCur);
+      }
+      else {
+        throw Exception('No input found for: ${filePaths}');
+      }
+    }
+
+    return lstAll;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -221,7 +304,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Future<String> read() async {
+  static String readSync() {
     var inpPath = Options.configFilePath;
     var isStdIn = (inpPath == Options.PATH_STDIN);
     var inpName = (isStdIn ? '<stdin>' : '"' + inpPath + '"');
@@ -236,11 +319,11 @@ class Config {
     else {
       var file = File(inpPath);
 
-      if (!(await file.exists())) {
+      if (!file.existsSync()) {
         throw Exception('Failed to find expected configuration file: ${inpName}');
       }
 
-      text = await file.readAsString();
+      text = file.readAsStringSync();
     }
 
     return text;

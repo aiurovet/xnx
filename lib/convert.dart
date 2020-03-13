@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
@@ -14,7 +15,7 @@ class Convert {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final String FILE_TYPE_TMP = '.tmp';
+  static const String FILE_TYPE_TMP = '.tmp';
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -31,8 +32,22 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static String commandToDisplayString(String cmd) {
+    if (cmd == null) {
+      return StringExt.EMPTY;
+    }
+    else if (isExpandInpOnly) {
+      return cmd + ': "${outFilePath}"';
+    }
+    else {
+      return cmd.replaceAll(Config.PARAM_NAME_INPUT, inpFilePath);
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static Future exec(List<String> args) async {
-    var listOfMaps = await Config.exec(args);
+    var listOfMaps = Config.exec(args);
 
     for (var map in listOfMaps) {
       canExpandEnv = StringExt.parseBool(Config.getParamValue(map, Config.PARAM_NAME_EXPAND_ENV));
@@ -43,8 +58,11 @@ class Convert {
       outFilePath = Config.getParamValue(map, Config.PARAM_NAME_OUTPUT);
       outDirName = path.dirname(outFilePath);
 
+      if (Options.isListOnly || isExpandInpOnly) {
+        Log.out(commandToDisplayString(command));
+      }
+
       if (Options.isListOnly) {
-        Log.out(commandToDisplayString());
         continue;
       }
 
@@ -52,11 +70,11 @@ class Convert {
 
       var outFile = File(outFilePath);
 
-      if (await outFile.exists()) {
-        await outFile.delete();
+      if (outFile.existsSync()) {
+        outFile.deleteSync();
       }
 
-      var tmpFile = (canExpandInp ? await expandInpFile(map) : null);
+      var tmpFile = (canExpandInp ? expandInpFile(map) : null);
 
       if (tmpFile == null) {
         continue;
@@ -68,26 +86,26 @@ class Convert {
       var exitCodes = (await Shell(verbose: (Log.level > Log.LEVEL_OUT)).run(command));
 
       if (exitCodes.first.exitCode != 0) {
-        throw Exception('Command failed:\n\n${commandToDisplayString()}\n\n');
+        throw Exception('Command failed:\n\n${commandToDisplayString(command)}\n\n');
       }
 
-      await tmpFile.delete();
+      tmpFile.deleteSync();
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Future<File> expandInpFile(Map<String, String> map) async {
+  static File expandInpFile(Map<String, String> map) {
     var inpFile = File(inpFilePath);
 
-    if (!(await inpFile.exists())) {
+    if (!inpFile.existsSync()) {
       throw Exception('No input file found: "${inpFilePath}"');
     }
 
-    var text = await inpFile.readAsString();
+    var text = (inpFile.readAsStringSync() ?? StringExt.EMPTY);
 
     if (canExpandEnv) {
-      text = StringExt.expandEnvironmentVariables(text);
+      text = text.expandEnvironmentVariables();
     }
 
     map.forEach((k, v) {
@@ -96,8 +114,8 @@ class Convert {
 
     var outDir = Directory(outDirName);
 
-    if (!(await outDir.exists())) {
-      await outDir.create(recursive: true);
+    if (!outDir.existsSync()) {
+      outDir.createSync(recursive: true);
     }
 
     if (isExpandInpOnly) {
@@ -110,25 +128,14 @@ class Convert {
 
     var tmpFile = File(tmpFilePath);
 
-    if (await tmpFile.exists()) {
-      await tmpFile.delete();
+    if (tmpFile.existsSync()) {
+      tmpFile.deleteSync();
     }
 
     tmpFile = File(tmpFilePath);
-    await tmpFile.writeAsString(text);
+    tmpFile.writeAsStringSync(text);
 
     return (isExpandInpOnly ? null : tmpFile);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String commandToDisplayString() {
-    if (isExpandInpOnly) {
-      return command + ': "${outFilePath}"';
-    }
-    else {
-      return command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePath);
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
