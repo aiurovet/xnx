@@ -104,7 +104,7 @@ class Options {
         }
       })
       ..addFlag(Options.LIST_ONLY['name'], abbr: Options.LIST_ONLY['abbr'], help: Options.LIST_ONLY['help'], negatable: Options.LIST_ONLY['negatable'], callback: (value) {
-        isListOnly = true;
+        isListOnly = value;
       })
       ..addOption(Options.STARTDIR['name'], abbr: Options.STARTDIR['abbr'], help: Options.STARTDIR['help'], valueHelp: Options.STARTDIR['valueHelp'], defaultsTo: Options.STARTDIR['defaultsTo'], callback: (value) {
         startDirName = path.canonicalize(StringExt.adjustPath(value));

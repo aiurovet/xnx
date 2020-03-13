@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
+
 import 'ext/string.dart';
 import 'log.dart';
 import 'options.dart';
@@ -21,6 +23,9 @@ class Config {
   static String PARAM_NAME_COMMAND = '{command}';
   static String PARAM_NAME_HEIGHT = '{height}';
   static String PARAM_NAME_INPUT = '{input}';
+  static String PARAM_NAME_INPUT_FILE_DIR = '{input-file-dir}';
+  static String PARAM_NAME_INPUT_FILE_EXT = '{input-file-ext}';
+  static String PARAM_NAME_INPUT_FILE_NAME = '{input-file-name}';
   static String PARAM_NAME_OUTPUT = '{output}';
   static String PARAM_NAME_EXPAND_ENV = '{expand-environment}';
   static String PARAM_NAME_EXPAND_INP = '{expand-input}';
@@ -90,22 +95,24 @@ class Config {
       action.forEach((map) {
         assert(map is Map);
 
-        Log.debug('\n...${map.toString()}');
+        Log.debug('');
 
         map.forEach((key, value) {
-          Log.debug('......${key}: ${value}');
-
-          addParamValue(key, value);
+          if (!StringExt.isNullOrBlank(key)) {
+            Log.debug('...${key}: ${value}');
+            addParamValue(key, value);
+          }
         });
 
-        Log.debug('...adding to the list of actions');
-
-        expandParamValuesAndAddToList(result);
+        if (params.length > 0) {
+          Log.debug('...adding to the list of actions');
+          expandParamValuesAndAddToList(result);
+        }
 
         Log.debug('...completed row processing');
       });
 
-      Log.information('Added ${result.length} commands');
+      Log.information('\nAdded ${result.length} commands\n');
 
       return result;
     }
@@ -125,6 +132,17 @@ class Config {
     if (canExpandEnv) {
       paramValue = StringExt.expandEnvironmentVariables(paramValue);
     }
+
+    var inputFilePath = params[PARAM_NAME_INPUT];
+
+    var inputFilePart = path.dirname(inputFilePath);
+    paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_DIR, inputFilePart);
+
+    inputFilePart = path.basenameWithoutExtension(inputFilePath);
+    paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_NAME, inputFilePart);
+
+    inputFilePart = path.extension(inputFilePath);
+    paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_EXT, inputFilePart);
 
     for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(paramValue)); i++) {
       params.forEach((k, v) {
@@ -146,39 +164,30 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static void expandParamValuesAndAddToList(List<Map<String, String>> lst) {
-Log.debug('DBG: 1');
     if (!hasMinKnownParams()) {
       return;
     }
-Log.debug('DBG: 2');
 
-    var newParams = {};
+    var newParams = Map<String, String>();
 
     params.forEach((k, v) {
-Log.debug('DBG: 2.1: k = ${k}');
       if (k != PARAM_NAME_COMMAND) {
         newParams[k] = expandParamValue(k, isForAny: false);
       }
     });
 
-Log.debug('DBG: 3');
     params.addAll(newParams);
 
     var command = expandParamValue(PARAM_NAME_COMMAND, isForAny: true);
 
-Log.debug('DBG: 4');
     if (StringExt.isNullOrBlank(command)) {
       throw Exception('Command is not defined for the output file "${params[PARAM_NAME_OUTPUT]}". Did you miss { "${PARAM_NAME_COMMAND}": "${CMD_EXPAND}" }?');
     }
 
-Log.debug('DBG: 5');
     newParams[PARAM_NAME_COMMAND] = command;
-
     lst.add(newParams);
 
-Log.debug('DBG: 6');
     removeMinKnownParams();
-Log.debug('DBG: 7');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -279,6 +288,15 @@ Log.debug('DBG: 7');
       }
       else if (k == PARAM_NAME_INPUT) {
         PARAM_NAME_INPUT = v;
+      }
+      else if (k == PARAM_NAME_INPUT_FILE_DIR) {
+        PARAM_NAME_INPUT_FILE_DIR = v;
+      }
+      else if (k == PARAM_NAME_INPUT_FILE_EXT) {
+        PARAM_NAME_INPUT_FILE_EXT = v;
+      }
+      else if (k == PARAM_NAME_INPUT_FILE_NAME) {
+        PARAM_NAME_INPUT_FILE_NAME = v;
       }
       else if (k == PARAM_NAME_OUTPUT) {
         PARAM_NAME_OUTPUT = v;

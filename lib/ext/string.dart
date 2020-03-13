@@ -65,6 +65,8 @@ extension StringExt on String {
   }
 
   static void initEnvironmentVariables() {
+    ENVIRONMENT = {};
+
     if (IS_WINDOWS) {
       Platform.environment.forEach((k, v) {
         ENVIRONMENT[k.toUpperCase()] = v;

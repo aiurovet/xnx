@@ -20,12 +20,13 @@ class Convert {
   // Parameters
   //////////////////////////////////////////////////////////////////////////////
 
-  static String command;
-  static String inpFilePath;
-  static String outDirName;
-  static String outFilePath;
   static bool canExpandEnv;
   static bool canExpandInp;
+  static String command;
+  static String inpFilePath;
+  static bool isExpandInpOnly;
+  static String outDirName;
+  static String outFilePath;
   static String tmpFilePath;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -37,13 +38,13 @@ class Convert {
       canExpandEnv = StringExt.parseBool(Config.getParamValue(map, Config.PARAM_NAME_EXPAND_ENV));
       canExpandInp = StringExt.parseBool(Config.getParamValue(map, Config.PARAM_NAME_EXPAND_INP));
       command = Config.getParamValue(map, Config.PARAM_NAME_COMMAND);
+      isExpandInpOnly = (command == Config.CMD_EXPAND);
       inpFilePath = Config.getParamValue(map, Config.PARAM_NAME_INPUT);
       outFilePath = Config.getParamValue(map, Config.PARAM_NAME_OUTPUT);
       outDirName = path.dirname(outFilePath);
 
       if (Options.isListOnly) {
-        command = command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePath);
-        Log.out(command);
+        Log.out(commandToDisplayString());
         continue;
       }
 
@@ -67,7 +68,7 @@ class Convert {
       var exitCodes = (await Shell(verbose: (Log.level > Log.LEVEL_OUT)).run(command));
 
       if (exitCodes.first.exitCode != 0) {
-        throw Exception('Command failed:\n\n${command}\n\n');
+        throw Exception('Command failed:\n\n${commandToDisplayString()}\n\n');
       }
 
       await tmpFile.delete();
@@ -99,8 +100,6 @@ class Convert {
       await outDir.create(recursive: true);
     }
 
-    var isExpandInpOnly = (command == Config.CMD_EXPAND);
-
     if (isExpandInpOnly) {
       tmpFilePath = outFilePath;
     }
@@ -119,6 +118,17 @@ class Convert {
     await tmpFile.writeAsString(text);
 
     return (isExpandInpOnly ? null : tmpFile);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String commandToDisplayString() {
+    if (isExpandInpOnly) {
+      return command + ': "${outFilePath}"';
+    }
+    else {
+      return command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePath);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

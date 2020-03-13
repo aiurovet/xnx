@@ -1,0 +1,31 @@
+{
+  "x": {
+    "rename": {
+      "{command}": "{c}",
+      "{expand-environment}": "{EE}",
+      "{expand-input}": "{EI}",
+      "{height}": "{h}",
+      "{input}": "{i}",
+      "{input-file-dir}": "{ifd}",
+      "{input-file-ext}": "{ifx}",
+      "{input-file-name}": "{ifn}",
+      "{output}": "{o}",
+      "{topDir}": "{TD}",
+      "{width}": "{w}"
+    },
+    "action": [
+      { "{EE}": true, "{EI}": true },
+      { "{c}": "expand-only" },
+
+      { "{TD}": "multi_config/" },
+
+      { "{i}": "{TD}template/appsettings.json" },
+
+      { "{env}": "Dev",  "{dir}": "{TD}alexi", "{o}": "{TD}{ifn}-{env}{ifx}" },
+      { "{env}": "Test", "{dir}": "{TD}alexj", "{o}": "{TD}{ifn}-{env}{ifx}" },
+      { "{env}": "Prod", "{dir}": "{TD}alexk", "{o}": "{TD}{ifn}-{env}{ifx}" },
+
+      { "": null }
+    ]
+  }
+}
