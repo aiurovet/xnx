@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as path;
 
-import 'ext/string.dart';
+import 'package:doul/ext/string.dart';
 import 'log.dart';
 
 class Options {
@@ -84,6 +84,8 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   static void parseArgs(List<String> args) {
+    Log.setLevel(Log.LEVEL_DEFAULT);
+
     var errMsg = StringExt.EMPTY;
     var isHelp = false;
     var isHelpAll = false;
@@ -93,6 +95,9 @@ class Options {
     isListOnly = false;
 
     final parser = ArgParser()
+      ..addOption(Options.VERBOSITY['name'], abbr: Options.VERBOSITY['abbr'], help: Options.VERBOSITY['help'], valueHelp: Options.VERBOSITY['valueHelp'], defaultsTo: Options.VERBOSITY['defaultsTo'], callback: (value) {
+        Log.setUserLevel(int.parse(value));
+      })
       ..addFlag(Options.HELP['name'], abbr: Options.HELP['abbr'], help: Options.HELP['help'], negatable: Options.HELP['negatable'], callback: (value) {
         isHelp = value;
       })
@@ -107,18 +112,10 @@ class Options {
         isListOnly = value;
       })
       ..addOption(Options.STARTDIR['name'], abbr: Options.STARTDIR['abbr'], help: Options.STARTDIR['help'], valueHelp: Options.STARTDIR['valueHelp'], defaultsTo: Options.STARTDIR['defaultsTo'], callback: (value) {
-        startDirName = (value ?? StringExt.EMPTY).getFullPath();
+        startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
       })
       ..addOption(Options.CONFIG['name'], abbr: Options.CONFIG['abbr'], help: Options.CONFIG['help'], valueHelp: Options.CONFIG['valueHelp'], defaultsTo: Options.CONFIG['defaultsTo'], callback: (value) {
-        configFilePath = (value ?? StringExt.EMPTY).adjustPath();
-      })
-      ..addOption(Options.VERBOSITY['name'], abbr: Options.VERBOSITY['abbr'], help: Options.VERBOSITY['help'], valueHelp: Options.VERBOSITY['valueHelp'], defaultsTo: Options.VERBOSITY['defaultsTo'], callback: (value) {
-        switch (int.parse(value)) {
-          case 0: Log.level = Log.LEVEL_SILENT; break;
-          case 2: Log.level = Log.LEVEL_INFORMATION; break;
-          case 3: Log.level = Log.LEVEL_DEBUG; break;
-          default: Log.level = Log.LEVEL_ERROR; break;
-        }
+        configFilePath = (value == null ? StringExt.EMPTY : (value as String).adjustPath());
       })
     ;
 
@@ -127,7 +124,7 @@ class Options {
     }
     catch (e) {
       isHelp = true;
-      errMsg = e.message;
+      errMsg = e?.toString();
     }
 
     if (isHelp) {
@@ -276,12 +273,12 @@ Configuration file is expected in JSON format with the following guidelines:
   "x": {
     "rename": {
       "{command}": "{c}",
+      "{cur-dir}": "{CD}",
       "{expand-environment}": "{EE}",
       "{expand-input}": "{EI}",
       "{height}": "{h}",
       "{input}": "{i}",
       "{output}": "{o}",
-      "{topDir}": "{TD}",
       "{width}": "{w}"
     },
     "action": [
@@ -293,7 +290,7 @@ Configuration file is expected in JSON format with the following guidelines:
       { "#{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\" # not the best quality" },
       { "{c}": "google-chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
 
-      { "{TD}": "\${HOME}\${USERPROFILE}/AndroidStudioProjects/back_your_school/" },
+      { "{CD}": "back_your_school/" },
 
       { "{i}": "assets/images/app_bg.svg" },
 

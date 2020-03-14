@@ -28,7 +28,7 @@ class Config {
   static String PARAM_NAME_OUTPUT = '{output}';
   static String PARAM_NAME_EXPAND_ENV = '{expand-environment}';
   static String PARAM_NAME_EXPAND_INP = '{expand-input}';
-  static String PARAM_NAME_TOPDIR = '{topDir}';
+  static String PARAM_NAME_CURDIR = '{cur-dir}';
   static String PARAM_NAME_WIDTH = '{width}';
 
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
@@ -84,7 +84,7 @@ class Config {
       Log.information('Processing actions');
 
       params = {};
-      params[PARAM_NAME_TOPDIR] = '';
+      params[PARAM_NAME_CURDIR] = '';
 
       var action = all[CFG_ACTION];
       assert(action is List);
@@ -158,10 +158,10 @@ class Config {
       });
     }
 
-    if (paramName == PARAM_NAME_TOPDIR) {
+    if (paramName == PARAM_NAME_CURDIR) {
       if (!path.isAbsolute(paramValue)) {
-        paramValue = path.join(Options.startDirName, paramValue);
-        Directory.current = paramValue.getFullPath();
+        paramValue = path.join(Options.startDirName, paramValue).getFullPath();
+        Directory.current = paramValue;
       }
     }
 
@@ -183,11 +183,9 @@ class Config {
 
     params.forEach((k, v) {
       if (k != PARAM_NAME_COMMAND) {
-        newParams[k] = expandParamValue(k, isForAny: false);
+        params[k] = expandParamValue(k, isForAny: false);
       }
     });
-
-    params.addAll(newParams);
 
     var listOfInpFilePaths = getListOfInpFilePaths();
 
@@ -286,6 +284,7 @@ class Config {
 
   static bool isParamWithPath(String paramName) {
     return (
+        (paramName == PARAM_NAME_CURDIR) ||
         (paramName == PARAM_NAME_INPUT) ||
         (paramName == PARAM_NAME_OUTPUT)
     );
@@ -390,8 +389,8 @@ class Config {
       else if (k == PARAM_NAME_EXPAND_INP) {
         PARAM_NAME_EXPAND_INP = v;
       }
-      else if (k == PARAM_NAME_TOPDIR) {
-        PARAM_NAME_TOPDIR = v;
+      else if (k == PARAM_NAME_CURDIR) {
+        PARAM_NAME_CURDIR = v;
       }
       else if (k == PARAM_NAME_WIDTH) {
         PARAM_NAME_WIDTH = v;

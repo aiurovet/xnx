@@ -58,7 +58,9 @@ class Convert {
       outFilePath = Config.getParamValue(map, Config.PARAM_NAME_OUTPUT);
       outDirName = path.dirname(outFilePath);
 
-      if (Options.isListOnly || isExpandInpOnly) {
+      var isVerbose = Log.isDetailed();
+
+      if (Options.isListOnly || isExpandInpOnly || !isVerbose) {
         Log.out(commandToDisplayString(command));
       }
 
@@ -83,7 +85,8 @@ class Convert {
       var inpFilePathEx = (canExpandInp ? tmpFilePath : inpFilePath);
 
       command = command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePathEx);
-      var exitCodes = (await Shell(verbose: (Log.level > Log.LEVEL_OUT)).run(command));
+
+      var exitCodes = (await Shell(verbose: isVerbose).run(command));
 
       if (exitCodes.first.exitCode != 0) {
         throw Exception('Command failed:\n\n${commandToDisplayString(command)}\n\n');

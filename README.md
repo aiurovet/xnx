@@ -114,12 +114,12 @@ Configuration file is expected in JSON format with the following guidelines:
   "x": {
     "rename": {
       "{command}": "{c}",
+      "{cur-dir}": "{CD}",
       "{expand-environment}": "{EE}",
       "{expand-input}": "{EI}",
       "{height}": "{h}",
       "{input}": "{i}",
       "{output}": "{o}",
-      "{topDir}": "{TD}",
       "{width}": "{w}"
     },
     "action": [
@@ -131,7 +131,7 @@ Configuration file is expected in JSON format with the following guidelines:
       { "#{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\" # not the best quality" },
       { "{c}": "google-chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
 
-      { "{TD}": "\${HOME}\${USERPROFILE}/AndroidStudioProjects/back_your_school/" },
+      { "{CD}": "back_your_school/" },
 
       { "{w}":   48, "{h}":   48, "{o}": "android/app/src/main/res/drawable-mdpi/ic_launcher_background.png" },
       { "{w}":   72, "{h}":   72, "{o}": "android/app/src/main/res/drawable-hdpi/ic_launcher_background.png" },

@@ -11,7 +11,7 @@ extension DirectoryExt on Directory {
     }
 
     var entities = listSync().toList();
-    var filter = (pattern ?? StringExt.EMPTY).wildcardToRegExp();
+    var filter = (pattern == null ? null : pattern.wildcardToRegExp());
 
     for (var entity in entities) {
       if ((takeDirs && (entity is Directory)) || (takeFiles && (entity is File))) {

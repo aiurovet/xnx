@@ -2,12 +2,12 @@
   "x": {
     "rename": {
       "{command}": "{c}",
+      "{cur-dir}": "{CD}",
       "{expand-environment}": "{EE}",
       "{expand-input}": "{EI}",
       "{height}": "{h}",
       "{input}": "{i}",
       "{output}": "{o}",
-      "{topDir}": "{TD}",
       "{width}": "{w}"
     },
     "action": [
@@ -17,9 +17,9 @@
       { "#{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\" # fails to display svg properly" },
       { "#{c}": "convert \"{i}\" \"{o}\" # not the best quality" },
       { "#{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\" # not the best quality" },
-      { "{c}": "\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\" --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
+      { "{c}": "chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
 
-      { "{TD}": "back_your_school/" },
+      { "{CD}": "back_your_school/" },
 
       { "{i}": "assets/images/app_bg.svg" },
 

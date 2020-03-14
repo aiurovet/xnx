@@ -2,13 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/ext/directory.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.bat" beforeDir="false" afterPath="$PROJECT_DIR$/build.bat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/back_your_school.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/back_your_school.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/multi_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/multi_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/convert.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/convert.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ext/directory.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ext/directory.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/ext/string.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ext/string.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/log.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/log.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/options.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,16 +45,22 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.41034484" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RunManager">
     <configuration name="doul.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-      <option name="arguments" value="-v 1 -c data\back_your_school.json -d ..\..\AndroidStudioProjects" />
+      <option name="arguments" value="-c data/back_your_school.json -d ../../AndroidStudioProjects" />
       <option name="filePath" value="$PROJECT_DIR$/bin/doul.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -75,14 +88,20 @@
     <option name="LAST_COMMIT_MESSAGE" value="Bug fix: uninitialised map, added placeholders for input file dir, name and ext." />
   </component>
   <component name="WindowStateProjectService">
-    <state x="137" y="22" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584111664080">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state x="185" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584167009296">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="137" y="22" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1584111664080" />
-    <state x="409" y="91" key="#doul.dart" timestamp="1584087929528">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state x="185" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584167009296" />
+    <state x="676" y="331" width="567" height="391" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1584161199686">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="676" y="331" width="567" height="391" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1051@0.0.1920.1051" timestamp="1584161199686" />
+    <state x="574" y="101" key="#doul.dart" timestamp="1584160967828">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="409" y="91" key="#doul.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087929528" />
+    <state x="574" y="101" key="#doul.dart/0.0.1920.1051@0.0.1920.1051" timestamp="1584160967828" />
     <state x="409" y="91" key="#main.dart" timestamp="1584087914295">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -91,46 +110,56 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state width="544" height="438" key="DebuggerActiveHint" timestamp="1584111238769">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584166658830">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="544" height="438" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1584111238769" />
-    <state width="1323" height="223" key="GridCell.Tab.0.bottom" timestamp="1584113413136">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1584166658830" />
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1584167464503">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1323" height="223" key="GridCell.Tab.0.center" timestamp="1584113413136">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584167464503" />
+    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1584167464503">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1323" height="223" key="GridCell.Tab.0.left" timestamp="1584113413136">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584167464503" />
+    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1584167464502">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1323" height="223" key="GridCell.Tab.0.right" timestamp="1584113413136">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584167464502" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1584167464503">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1323" height="223" key="GridCell.Tab.1.bottom" timestamp="1584113413950">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584167464503" />
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1584167426903">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1323" height="223" key="GridCell.Tab.1.center" timestamp="1584113413950">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584167426903" />
+    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1584167426903">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1323" height="223" key="GridCell.Tab.1.left" timestamp="1584113413950">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584167426903" />
+    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1584167426903">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1323" height="223" key="GridCell.Tab.1.right" timestamp="1584113413950">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584167426903" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1584167426903">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state x="186" y="9" key="SettingsEditor" timestamp="1584088006277">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584167426903" />
+    <state x="260" y="0" key="SettingsEditor" timestamp="1584161500185">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
+    <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
     <state x="275" y="100" key="Vcs.Push.Dialog.v2" timestamp="1584100191881">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -143,40 +172,25 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="335" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1366.728@0.0.1366.728" timestamp="1584107237888" />
-    <state x="390" y="120" width="586" height="488" key="find.popup" timestamp="1584113373736">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state x="482" y="-30" width="890" height="1051" key="find.popup" timestamp="1584166741140">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="390" y="120" width="586" height="488" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1584113373736" />
+    <state x="482" y="-30" width="890" height="1051" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1584166741140" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/options.dart</url>
-          <line>132</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/options.dart</url>
-          <line>112</line>
-          <option name="timeStamp" value="92" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/options.dart</url>
-          <line>109</line>
-          <option name="timeStamp" value="93" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/ext/string.dart</url>
-          <line>61</line>
-          <option name="timeStamp" value="94" />
+          <url>file://$PROJECT_DIR$/lib/log.dart</url>
+          <line>84</line>
+          <option name="timeStamp" value="130" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="DartCommandLineRunConfigurationType">
-        <watch expression="canExpandInp" language="Dart" />
-        <watch expression="value" language="Dart" />
+        <watch expression="_level" language="Dart" />
       </configuration>
     </watches-manager>
   </component>

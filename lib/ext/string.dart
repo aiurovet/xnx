@@ -1,5 +1,4 @@
 import 'dart:core';
-
 import 'dart:io';
 import 'package:path/path.dart' as path;
 
@@ -37,9 +36,9 @@ extension StringExt on String {
       _initEnvironmentVariables();
     }
 
-    var result = this
-        .replaceAll('\$\$', '\x01')
-        .replaceAllMapped(RE_ENV_NAME, (match) {
+    var result =
+        replaceAll('\$\$', '\x01').
+        replaceAllMapped(RE_ENV_NAME, (match) {
           var envName = match.group(1);
 
           if (IS_WINDOWS) {
@@ -52,8 +51,8 @@ extension StringExt on String {
           else {
             return EMPTY;
           }
-        })
-        .replaceAll('\x01', '\$');
+        }).
+        replaceAll('\x01', '\$');
 
     return result;
   }
@@ -90,13 +89,8 @@ extension StringExt on String {
   }
 
   RegExp wildcardToRegExp() {
-    if (isNullOrBlank(this)) {
-      return null;
-    }
-    else {
-      var pattern = '^${RegExp.escape(this).replaceAll('\\*', '.*').replaceAll('\\?', '.')}\$';
+    var pattern = '^${RegExp.escape(this).replaceAll('\\*', '.*').replaceAll('\\?', '.')}\$';
 
-      return RegExp(pattern, caseSensitive: !IS_WINDOWS);
-    }
+    return RegExp(pattern, caseSensitive: !IS_WINDOWS);
   }
 }
