@@ -12,7 +12,8 @@ void main(List<String> args) {
       isOK = true;
     })
     .catchError((e, stackTrace) {
-      var errMsg = e?.toString();
+      var cleanMsg = RegExp('^Exception\\:\\s*', caseSensitive: false);
+      var errMsg = e?.toString()?.replaceFirst(cleanMsg, StringExt.EMPTY);
 
       if (StringExt.isNullOrBlank(errMsg)) {
         isOK = true; // help
