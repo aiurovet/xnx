@@ -1,0 +1,20 @@
+#!/bin/bash
+
+TOP=$(dirname "${0}")
+TOP=$(realpath "${TOP}")
+
+PRJ=$(basename "${TOP}")
+
+WIN_TOP="${HOME}/.wine/drive_c/users/${USER}/IdeaProjects/${PRJ}"
+WIN_ABV=$(dirname "${WIN_TOP}")
+
+rm -rf "${WIN_TOP}" || exit 1
+cp -pr "${TOP}" "${WIN_ABV}" || exit 1
+
+echo "Copied the latest version"
+
+wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\build" || exit 1
+cp -p "${WIN_TOP}/bin/windows/${PRJ}.exe" "${TOP}/bin/windows/" || exit 1
+
+echo "Successfully completed"
+exit 0
