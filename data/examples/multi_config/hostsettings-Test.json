@@ -1,0 +1,4 @@
+{
+  "DefaultConnection": "Server=Test-host; Database=Test",
+  "Directory": "/home/ra/IdeaProjects/doul/data/examples/multi_config/alexj"
+}

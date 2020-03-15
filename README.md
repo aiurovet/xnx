@@ -42,6 +42,20 @@ doul [OPTIONS]
 
      grep -Pi "..." confdir/my.json | doul -c- -d projdir
 
+
+1.4. Similarly, the program allows you to pass input by piping some other
+     program\'s output. In this case, put a dash instead of a filename for
+     input:
+
+     { ... "{input}": "-" ...  } 
+
+1.5. The program also allows you to print the result of expansion to stdout
+     rather than to file. In this case, put a dash instead of a filename for
+     input (and you won't be able to configure any external command, but rather
+     will be confined to the use of a mere pipe):
+
+     { ... "{output}": "-" ... }
+
 ##### Configuration file format (see full sample file below)
 
 Originally, this tool was written to produce multiple icon files in PNG format
@@ -107,7 +121,7 @@ Configuration file is expected in JSON format with the following guidelines:
      possible new types of project, and a typical example of that would be the
      addition of the last two data lines for web app generation.
 
-##### Full sample configuration file
+##### Full sample configuration file to generate mobile app icons
 
 <pre>
 {

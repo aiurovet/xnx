@@ -3,6 +3,14 @@ import 'dart:io';
 import 'ext/string.dart';
 
 class Log {
+  static const String STUB_LEVEL = '{L}';
+  static const String STUB_MESSAGE = '{M}';
+  static const String STUB_TIME = '{T}';
+
+  static const String FORMAT_DEFAULT = null;
+  static const String FORMAT_SIMPLE = '[${STUB_TIME}] [${STUB_LEVEL}] ${STUB_MESSAGE}';
+
+  static const int LEVEL_OUT_INFO = -2;
   static const int LEVEL_OUT = -1;
   static const int LEVEL_SILENT = 0;
   static const int LEVEL_FATAL = 2;
@@ -20,7 +28,26 @@ class Log {
 
   static final RegExp RE_PREFIX = RegExp('^', multiLine: true);
 
+  static String _format = FORMAT_DEFAULT;
+  static String get format => _format;
+  static void set format(String value) => _format = (StringExt.isNullOrEmpty(value) ? null : value);
+
   static int _level = LEVEL_DEFAULT;
+  static int get level => _level;
+
+  static void set level(int value) =>
+    _level = value < 0 ? LEVEL_WARNING :
+             value >= LEVEL_DEBUG ? LEVEL_DEBUG : value;
+
+  static int get userLevel =>
+    _level == LEVEL_SILENT ? USER_LEVEL_SILENT :
+    _level >= LEVEL_DEBUG ? USER_LEVEL_ULTIMATE :
+    _level >= LEVEL_INFORMATION ? USER_LEVEL_DETAILED : USER_LEVEL_DEFAULT;
+
+  static void set userLevel(int value) =>
+    _level = value <= USER_LEVEL_SILENT ? LEVEL_SILENT :
+             value >= USER_LEVEL_ULTIMATE ? LEVEL_DEBUG :
+             value == USER_LEVEL_DETAILED ? LEVEL_INFORMATION : LEVEL_WARNING;
 
   static void debug(String data) {
     print(data, LEVEL_DEBUG);
@@ -34,8 +61,18 @@ class Log {
     print(data, LEVEL_FATAL);
   }
 
-  static int getLevel() {
-    return _level;
+  static String formatMessage(String msg) {
+    if (msg == null) {
+      return msg;
+    }
+
+    var now = DateTime.now().toString();
+    var lvl = levelToString(level);
+    var pfx = (StringExt.isNullOrEmpty(_format) ? StringExt.EMPTY : _format.replaceFirst(STUB_TIME, now).replaceFirst(STUB_LEVEL, lvl).replaceFirst(STUB_MESSAGE, msg));
+
+    var msgEx = msg.replaceAll(RE_PREFIX, pfx);
+
+    return msgEx;
   }
 
   static bool hasMinLevel(int minLevel) {
@@ -77,48 +114,23 @@ class Log {
     print(data, LEVEL_OUT);
   }
 
+  static void outInfo(String data) {
+    print(data, LEVEL_OUT_INFO);
+  }
+
   static void print(String msg, int level) {
-    if ((level == LEVEL_SILENT) || (msg == null)) {
+    if (((_level == LEVEL_SILENT) && (level != LEVEL_OUT)) || (level == LEVEL_SILENT) || (msg == null)) {
       return;
     }
 
     if (level == LEVEL_OUT) {
       stdout.writeln(msg);
     }
+    else if (level == LEVEL_OUT_INFO) {
+      stderr.writeln(msg);
+    }
     else if (level <= _level) {
-      var now = DateTime.now().toString();
-      var lvl = levelToString(level);
-      var pfx = '[${now}] [${lvl}] ';
-
-      var msgEx = msg.replaceAll(RE_PREFIX, pfx);
-      stderr.writeln(msgEx);
-    }
-  }
-
-  static void setLevel(int level) {
-    if (level < 0) {
-      _level = LEVEL_WARNING;
-    }
-    else if (_level >= LEVEL_DEBUG) {
-      _level = LEVEL_DEBUG;
-    }
-    else {
-      _level = level;
-    }
-  }
-
-  static void setUserLevel(int userLevel) {
-    if (userLevel <= USER_LEVEL_SILENT) {
-      _level = LEVEL_SILENT;
-    }
-    else if (userLevel >= USER_LEVEL_ULTIMATE) {
-      _level = LEVEL_DEBUG;
-    }
-    else if (userLevel == USER_LEVEL_DETAILED) {
-      _level = LEVEL_INFORMATION;
-    }
-    else {
-      _level = LEVEL_WARNING;
+      stderr.writeln(_format == null ? msg : formatMessage(msg));
     }
   }
 

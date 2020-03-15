@@ -1,0 +1,4 @@
+{
+  "DefaultConnection": "Server=Prod-host; Database=Prod",
+  "Directory": "/home/ra/IdeaProjects/doul/data/examples/multi_config/alexk"
+}

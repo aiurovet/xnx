@@ -4,6 +4,7 @@ import 'package:path/path.dart' as path;
 import 'log.dart';
 import 'options.dart';
 import 'ext/directory.dart';
+import 'ext/stdin.dart';
 import 'ext/string.dart';
 
 class Config {
@@ -141,14 +142,16 @@ class Config {
 
     var inputFilePath = params[PARAM_NAME_INPUT];
 
-    var inputFilePart = path.dirname(inputFilePath);
-    paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_DIR, inputFilePart);
+    if (inputFilePath != StringExt.STDIN_PATH) {
+      var inputFilePart = path.dirname(inputFilePath);
+      paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_DIR, inputFilePart);
 
-    inputFilePart = path.basenameWithoutExtension(inputFilePath);
-    paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_NAME, inputFilePart);
+      inputFilePart = path.basenameWithoutExtension(inputFilePath);
+      paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_NAME, inputFilePart);
 
-    inputFilePart = path.extension(inputFilePath);
-    paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_EXT, inputFilePart);
+      inputFilePart = path.extension(inputFilePath);
+      paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_EXT, inputFilePart);
+    }
 
     for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(paramValue)); i++) {
       params.forEach((k, v) {
@@ -196,11 +199,15 @@ class Config {
       newParams = <String, String>{};
       newParams.addAll(params);
 
-      newParams[PARAM_NAME_INPUT] = inpFilePath;
-      params[PARAM_NAME_INPUT] = inpFilePath;
+      if (oldInpFilePath != StringExt.STDIN_PATH) {
+        newParams[PARAM_NAME_INPUT] = inpFilePath;
+        params[PARAM_NAME_INPUT] = inpFilePath;
+      }
 
-      newParams[PARAM_NAME_OUTPUT] = expandParamValue(PARAM_NAME_OUTPUT, isForAny: true);
-      params[PARAM_NAME_OUTPUT] = newParams[PARAM_NAME_OUTPUT];
+      if (oldOutFilePath != StringExt.STDOUT_PATH) {
+        newParams[PARAM_NAME_OUTPUT] = expandParamValue(PARAM_NAME_OUTPUT, isForAny: true);
+        params[PARAM_NAME_OUTPUT] = newParams[PARAM_NAME_OUTPUT];
+      }
 
       var command = expandParamValue(PARAM_NAME_COMMAND, isForAny: true);
 
@@ -222,7 +229,13 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static List<String> getListOfInpFilePaths() {
-    var filePaths = params[PARAM_NAME_INPUT].split(RE_PATH_LIST_SEP);
+    var inpFilePath = params[PARAM_NAME_INPUT];
+
+    if (inpFilePath == StringExt.STDIN_PATH) {
+      return [inpFilePath];
+    }
+
+    var filePaths = inpFilePath.split(RE_PATH_LIST_SEP);
     var lstAll = <String>[];
 
     for (var filePath in filePaths) {
@@ -305,15 +318,15 @@ class Config {
 
   static String readSync() {
     var inpPath = Options.configFilePath;
-    var isStdIn = (inpPath == Options.PATH_STDIN);
-    var inpName = (isStdIn ? '<stdin>' : '"' + inpPath + '"');
+    var isStdIn = (inpPath == StringExt.STDIN_PATH);
+    var inpName = (isStdIn ? StringExt.STDIN_DISP : '"' + inpPath + '"');
 
     Log.information('Reading configuration from ${inpName}');
 
     String text;
 
     if (isStdIn) {
-      text = readInputSync();
+      text = stdin.readAllSync(endByte: StringExt.EOT_CODE);
     }
     else {
       var file = File(inpPath);
@@ -326,26 +339,6 @@ class Config {
     }
 
     return text;
-  }
-
-  static String readInputSync() {
-    final input = [];
-
-    for (var isEmpty = true; ; isEmpty = false) {
-      var byte = stdin.readByteSync();
-
-      if (byte < 0) {
-        if (isEmpty) {
-          return null;
-        }
-
-        break;
-      }
-
-      input.add(byte);
-    }
-
-    return utf8.decode(input, allowMalformed: true);
   }
 
   //////////////////////////////////////////////////////////////////////////////

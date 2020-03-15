@@ -7,6 +7,7 @@ import 'package:process_run/shell_run.dart';
 import 'config.dart';
 import 'log.dart';
 import 'options.dart';
+import 'ext/stdin.dart';
 import 'ext/string.dart';
 
 class Convert {
@@ -26,6 +27,8 @@ class Convert {
   static String command;
   static String inpFilePath;
   static bool isExpandInpOnly;
+  static bool isStdIn;
+  static bool isStdOut;
   static String outDirName;
   static String outFilePath;
   static String tmpFilePath;
@@ -55,13 +58,19 @@ class Convert {
       command = Config.getParamValue(map, Config.PARAM_NAME_COMMAND);
       isExpandInpOnly = (command == Config.CMD_EXPAND);
       inpFilePath = Config.getParamValue(map, Config.PARAM_NAME_INPUT);
+      isStdIn = (inpFilePath == StringExt.STDIN_PATH);
       outFilePath = Config.getParamValue(map, Config.PARAM_NAME_OUTPUT);
-      outDirName = path.dirname(outFilePath);
+      isStdOut = (outFilePath == StringExt.STDOUT_PATH);
+      outDirName = (isStdOut ? StringExt.EMPTY : path.dirname(outFilePath));
+
+      if (isStdOut && !isExpandInpOnly) {
+        throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
+      }
 
       var isVerbose = Log.isDetailed();
 
       if (Options.isListOnly || isExpandInpOnly || !isVerbose) {
-        Log.out(commandToDisplayString(command));
+        Log.outInfo(commandToDisplayString(command));
       }
 
       if (Options.isListOnly) {
@@ -82,10 +91,9 @@ class Convert {
         continue;
       }
 
-      var inpFilePathEx = (canExpandInp ? tmpFilePath : inpFilePath);
+      var inpFilePathEx = (canExpandInp && (tmpFile != null) ? tmpFilePath : inpFilePath);
 
-      command = command.replaceAll(Config.PARAM_NAME_INPUT, inpFilePathEx);
-
+      command = command.replaceAll(Config.PARAM_NAME_INPUT, (isStdOut ? StringExt.EMPTY : inpFilePathEx));
       var exitCodes = (await Shell(verbose: isVerbose).run(command));
 
       if (exitCodes.first.exitCode != 0) {
@@ -99,13 +107,20 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static File expandInpFile(Map<String, String> map) {
-    var inpFile = File(inpFilePath);
+    var text = StringExt.EMPTY;
 
-    if (!inpFile.existsSync()) {
-      throw Exception('No input file found: "${inpFilePath}"');
+    if (isStdIn) {
+      text = stdin.readAllSync(endByte: StringExt.EOT_CODE);
     }
+    else {
+      var inpFile = File(inpFilePath);
 
-    var text = (inpFile.readAsStringSync() ?? StringExt.EMPTY);
+      if (!inpFile.existsSync()) {
+        throw Exception('No input file found: "${inpFilePath}"');
+      }
+
+      text = (inpFile.readAsStringSync() ?? StringExt.EMPTY);
+    }
 
     if (canExpandEnv) {
       text = text.expandEnvironmentVariables();
@@ -115,30 +130,36 @@ class Convert {
       text = text.replaceAll(k, v);
     });
 
-    var outDir = Directory(outDirName);
-
-    if (!outDir.existsSync()) {
-      outDir.createSync(recursive: true);
-    }
-
-    if (isExpandInpOnly) {
-      tmpFilePath = outFilePath;
+    if (isStdOut) {
+      Log.out(text);
+      return null;
     }
     else {
-      var tmpFileName = (path.basenameWithoutExtension(inpFilePath) + FILE_TYPE_TMP + path.extension(inpFilePath));
-      tmpFilePath = path.join(outDirName, tmpFileName);
+      var outDir = Directory(outDirName);
+
+      if (!outDir.existsSync()) {
+        outDir.createSync(recursive: true);
+      }
+
+      if (isExpandInpOnly) {
+        tmpFilePath = outFilePath;
+      }
+      else {
+        var tmpFileName = (path.basenameWithoutExtension(inpFilePath) + FILE_TYPE_TMP + path.extension(inpFilePath));
+        tmpFilePath = path.join(outDirName, tmpFileName);
+      }
+
+      var tmpFile = File(tmpFilePath);
+
+      if (tmpFile.existsSync()) {
+        tmpFile.deleteSync();
+      }
+
+      tmpFile = File(tmpFilePath);
+      tmpFile.writeAsStringSync(text);
+
+      return (isExpandInpOnly ? null : tmpFile);
     }
-
-    var tmpFile = File(tmpFilePath);
-
-    if (tmpFile.existsSync()) {
-      tmpFile.deleteSync();
-    }
-
-    tmpFile = File(tmpFilePath);
-    tmpFile.writeAsStringSync(text);
-
-    return (isExpandInpOnly ? null : tmpFile);
   }
 
   //////////////////////////////////////////////////////////////////////////////

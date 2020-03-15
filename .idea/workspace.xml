@@ -2,18 +2,68 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/bin/doul.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/linux/doul" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/appsettings-Dev.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/appsettings-Prod.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/appsettings-Test.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/hostsettings-Dev.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/hostsettings-Prod.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/hostsettings-Test.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/template/appsettings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/template/hostsettings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-hdpi/ic_launcher_background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-mdpi/ic_launcher_background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xhdpi/ic_launcher_background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xxhdpi/ic_launcher_background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xxxhdpi/ic_launcher_background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/assets/images/app.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/assets/images/app_bg.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/assets/images/app_fg.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/assets/images/my_flutter_app.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/web/icons/Icon-192.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/examples/my_flutter_app/web/icons/Icon-512.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/ext/stdin.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.bat" beforeDir="false" afterPath="$PROJECT_DIR$/build.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/back_your_school.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/back_your_school.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/back_your_school.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/my_flutter_app.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/multi_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/multi_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/convert.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/convert.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/ext/directory.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ext/directory.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/ext/string.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ext/string.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/log.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/log.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/options.dart" afterDir="false" />
@@ -43,6 +93,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="project.structure.last.edited" value="Libraries" />
@@ -53,7 +104,7 @@
   </component>
   <component name="RunManager">
     <configuration name="doul.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-      <option name="arguments" value="-c data/back_your_school.json -d ../../AndroidStudioProjects" />
+      <option name="arguments" value="-c data/multi_config.json -d data/examples" />
       <option name="filePath" value="$PROJECT_DIR$/bin/doul.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$" />
       <method v="2" />
@@ -77,22 +128,31 @@
       <option name="project" value="LOCAL" />
       <updated>1584100182256</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Finalised issues. All good except aliases (env)">
+      <created>1584167582213</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1584167582213</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
     <MESSAGE value="Bug fix: uninitialised map, added placeholders for input file dir, name and ext." />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug fix: uninitialised map, added placeholders for input file dir, name and ext." />
+    <MESSAGE value="Finalised issues. All good except aliases (env)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Finalised issues. All good except aliases (env)" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="185" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584167009296">
+    <state x="176" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584280506596">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="137" y="22" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1584111664080" />
-    <state x="185" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584167009296" />
+    <state x="176" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584280506596" />
     <state x="676" y="331" width="567" height="391" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1584161199686">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -106,64 +166,66 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="350" y="0" key="CommitChangelistDialog2" timestamp="1584100181172">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state x="492" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584167582015">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584166658830">
+    <state x="492" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584167582015" />
+    <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584282386770">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="544" height="438" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1584111238769" />
-    <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1584166658830" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1584167464503">
+    <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1584282386770" />
+    <state width="1874" height="342" key="GridCell.Tab.0.bottom" timestamp="1584282581183">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584167464503" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1584167464503">
+    <state width="1874" height="342" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584282581183" />
+    <state width="1874" height="342" key="GridCell.Tab.0.center" timestamp="1584282581181">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584167464503" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1584167464502">
+    <state width="1874" height="342" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584282581181" />
+    <state width="1874" height="342" key="GridCell.Tab.0.left" timestamp="1584282581180">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584167464502" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1584167464503">
+    <state width="1874" height="342" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584282581180" />
+    <state width="1874" height="342" key="GridCell.Tab.0.right" timestamp="1584282581182">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584167464503" />
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1584167426903">
+    <state width="1874" height="342" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584282581182" />
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1584282581187">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584167426903" />
-    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1584167426903">
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584282581187" />
+    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1584282581185">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584167426903" />
-    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1584167426903">
+    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584282581185" />
+    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1584282581184">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584167426903" />
-    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1584167426903">
+    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584282581184" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1584282581186">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584167426903" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584282581186" />
     <state x="260" y="0" key="SettingsEditor" timestamp="1584161500185">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
     <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
-    <state x="275" y="100" key="Vcs.Push.Dialog.v2" timestamp="1584100191881">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state x="386" y="114" key="Vcs.Push.Dialog.v2" timestamp="1584167589091">
+      <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="275" y="100" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1584100191881" />
+    <state x="386" y="114" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584167589091" />
     <state width="691" height="372" key="XDebugger.FullValuePopup" timestamp="1584112508667">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -172,22 +234,17 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="335" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1366.728@0.0.1366.728" timestamp="1584107237888" />
-    <state x="482" y="-30" width="890" height="1051" key="find.popup" timestamp="1584166741140">
+    <state x="464" y="-30" width="908" height="1051" key="find.popup" timestamp="1584279197406">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="390" y="120" width="586" height="488" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1584113373736" />
-    <state x="482" y="-30" width="890" height="1051" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1584166741140" />
+    <state x="464" y="-30" width="908" height="1051" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1584279197406" />
+    <state x="674" y="288" width="570" height="416" key="git4idea.merge.GitPullDialog" timestamp="1584267355896">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="674" y="288" width="570" height="416" key="git4idea.merge.GitPullDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584267355896" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/log.dart</url>
-          <line>84</line>
-          <option name="timeStamp" value="130" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <watches-manager>
       <configuration name="DartCommandLineRunConfigurationType">
         <watch expression="_level" language="Dart" />

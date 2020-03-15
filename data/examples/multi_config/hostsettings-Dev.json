@@ -1,0 +1,4 @@
+{
+  "DefaultConnection": "Server=Dev-host; Database=Dev",
+  "Directory": "/home/ra/IdeaProjects/doul/data/examples/multi_config/alexi"
+}

@@ -24,21 +24,27 @@ class Options {
   static final Map<String, Object> STARTDIR = {
     'name': 'dir',
     'abbr': 'd',
-    'help': 'top directory to resolve paths from (default: the current directory)',
+    'help': 'startup directory',
     'valueHelp': 'DIR',
     'defaultsTo': '.',
   };
   static final Map<String, Object> CONFIG = {
     'name': 'config',
     'abbr': 'c',
-    'help': 'configuration file in json format (default: <DIR>${Platform.pathSeparator}${DEF_FILE_NAME})',
+    'help': 'configuration file in json format',
     'valueHelp': 'FILE',
-    'defaultsTo': DEF_FILE_NAME,
+    'defaultsTo': './' + DEF_FILE_NAME,
   };
   static final Map<String, Object> LIST_ONLY = {
     'name': 'list-only',
     'abbr': 'l',
     'help': 'display all commands, but do not execute those',
+    'negatable': false,
+  };
+  static final Map<String, Object> QUIET = {
+    'name': 'quiet',
+    'abbr': 'q',
+    'help': 'quiet mode (no output except when \"${StringExt.STDOUT_PATH}\" is specified as output)',
     'negatable': false,
   };
   static final Map<String, Object> VERBOSITY = {
@@ -55,7 +61,6 @@ class Options {
   static final String OPT_PREFIX = '-';
   static final String FILE_TYPE_CFG = '.json';
   static final String DEF_FILE_NAME = '${APP_NAME}${FILE_TYPE_CFG}';
-  static final String PATH_STDIN = '-';
 
   static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-]${CONFIG['name']}|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
   static final RegExp RE_OPT_STARTDIR = RegExp('^[\\-]([\\-]${STARTDIR['name']}|${STARTDIR['abbr']})([\\=]|\$)', caseSensitive: true);
@@ -84,7 +89,7 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   static void parseArgs(List<String> args) {
-    Log.setLevel(Log.LEVEL_DEFAULT);
+    Log.level = Log.LEVEL_DEFAULT;
 
     var errMsg = StringExt.EMPTY;
     var isHelp = false;
@@ -94,9 +99,19 @@ class Options {
     startDirName = null;
     isListOnly = false;
 
+    var isLogLevelSet = false;
+
     final parser = ArgParser()
+      ..addFlag(Options.QUIET['name'], abbr: Options.QUIET['abbr'], help: Options.QUIET['help'], negatable: Options.QUIET['negatable'], callback: (value) {
+        if (value) {
+          Log.level = Log.LEVEL_SILENT;
+          isLogLevelSet = true;
+        }
+      })
       ..addOption(Options.VERBOSITY['name'], abbr: Options.VERBOSITY['abbr'], help: Options.VERBOSITY['help'], valueHelp: Options.VERBOSITY['valueHelp'], defaultsTo: Options.VERBOSITY['defaultsTo'], callback: (value) {
-        Log.setUserLevel(int.parse(value));
+        if (!isLogLevelSet) {
+          Log.userLevel = int.parse(value);
+        }
       })
       ..addFlag(Options.HELP['name'], abbr: Options.HELP['abbr'], help: Options.HELP['help'], negatable: Options.HELP['negatable'], callback: (value) {
         isHelp = value;
@@ -141,7 +156,7 @@ class Options {
       configFilePath = DEF_FILE_NAME;
     }
 
-    if (configFilePath != PATH_STDIN) {
+    if (configFilePath != StringExt.STDIN_PATH) {
       if (StringExt.isNullOrBlank(path.extension(configFilePath))) {
         configFilePath = path.setExtension(configFilePath, FILE_TYPE_CFG);
       }
@@ -171,14 +186,14 @@ ${parser.usage}
 
     if (isAll) {
       stderr.writeln('''
-DETAILS:
+##### DETAILS:
 
-Copyright (C) Alexander Iurovetski, 2020
+**Copyright (C) Alexander Iurovetski, 2020**
 
 Command-line utility to run multiple commands against the same input with
 various parameters, and optionally, to expand placeholders inside the input
 
-### More about command-line options
+##### More about command-line options
 
 1.1. Ability to specify top directory as an option comes very handy if you (or
      your team) use(s) different OSes with a single version control repository.
@@ -196,13 +211,26 @@ various parameters, and optionally, to expand placeholders inside the input
      order of appearance, but in this case it becomes very handy. Anyway, you
      can avoid the ambiguity by specifying config file using absolute path.
 
-1.3. The program also allows you to pass configration by piping some other
+1.3. The program allows you to pass configration by piping some other
      program\'s output. In this case, instead of supplying a filename (or path),
      just put a dash:
 
      grep -Pi "..." confdir/my.json | doul -c- -d projdir
 
-### Configuration file format (see full sample file below)
+1.4. Similarly, the program allows you to pass input by piping some other
+     program\'s output. In this case, put a dash instead of a filename for
+     input:
+
+     { ... "{input}": "-" ...  } 
+
+1.5. The program also allows you to print the result of expansion to stdout
+     rather than to file. In this case, put a dash instead of a filename for
+     input (and you won't be able to configure any external command, but rather
+     will be confined to the use of a mere pipe):
+
+     { ... "{output}": "-" ... }
+
+##### Configuration file format (see full sample file below)
 
 Originally, this tool was written to produce multiple icon files in PNG format
 from a single SVG source. The idea was that knowing width, height, input file
@@ -267,7 +295,7 @@ Configuration file is expected in JSON format with the following guidelines:
      possible new types of project, and a typical example of that would be the
      addition of the last two data lines for web app generation.
 
-### Full sample configuration file
+##### Configuration file format (see full sample file below)
 
 {
   "x": {
