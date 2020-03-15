@@ -19,12 +19,12 @@
 
       { "#{CD}": "multi_config" },
 
-      { "#{i}": "template/*settings.json" },
-      { "{i}": "-" },
+      { "{i}": "template/*settings.json" },
+      { "#{i}": "-" },
 
-      { "{env}": "Dev",  "{dir}": "{CD}/alexi", "{o}": "-", "{#o}": "{ifn}-{env}{ifx}" },
-      { "{env}": "Test", "{dir}": "{CD}/alexj", "{o}": "-", "{#o}": "{ifn}-{env}{ifx}" },
-      { "{env}": "Prod", "{dir}": "{CD}/alexk", "{o}": "-", "{#o}": "{ifn}-{env}{ifx}" },
+      { "{env}": "Dev",  "{dir}": "{CD}/alexi", "#{o}": "-", "{o}": "{ifn}-{env}{ifx}" },
+      { "{env}": "Test", "{dir}": "{CD}/alexj", "#{o}": "-", "{o}": "{ifn}-{env}{ifx}" },
+      { "{env}": "Prod", "{dir}": "{CD}/alexk", "#{o}": "-", "{o}": "{ifn}-{env}{ifx}" },
 
       { "": null }
     ]
