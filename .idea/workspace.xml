@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/wine-build" afterDir="false" />
+    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="Added Wine build.">
+      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.bat" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/build.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wine-build" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/wine-build" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +42,11 @@
     <property name="project.structure.side.proportion" value="0.41034484" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/scripts" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="doul.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
@@ -93,7 +102,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584285587719</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Added Wine build.">
+      <created>1584286387974</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1584286387974</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -106,7 +122,8 @@
     <MESSAGE value="Support for the use of stdin for input files and stdout instead of the outpou files." />
     <MESSAGE value="Built Windows app under Linux" />
     <MESSAGE value="Updatred readme and fixed an issue with empty exception." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updatred readme and fixed an issue with empty exception." />
+    <MESSAGE value="Added Wine build." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Wine build." />
   </component>
   <component name="WindowStateProjectService">
     <state x="170" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584285201240">
@@ -127,11 +144,11 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="488" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584285587682">
+    <state x="486" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584286527342">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state x="488" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584285587682" />
+    <state x="486" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584286527342" />
     <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584282386770">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -182,11 +199,11 @@
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
     <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
-    <state x="384" y="54" key="Vcs.Push.Dialog.v2" timestamp="1584285592361">
+    <state x="383" y="24" key="Vcs.Push.Dialog.v2" timestamp="1584286395520">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="275" y="100" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1584100191881" />
-    <state x="384" y="54" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584285592361" />
+    <state x="383" y="24" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584286395520" />
     <state width="691" height="372" key="XDebugger.FullValuePopup" timestamp="1584112508667">
       <screen x="0" y="0" width="1366" height="728" />
     </state>

@@ -16,7 +16,7 @@ function exitApp() {
 ################################################################################
 
 TOP=$(dirname "${0}") || exitApp 1 "Failed to determine top directory"
-TOP=$(realpath "${TOP}") || exitApp 1 "Failed to get the full path of the top directory \"${TOP}\""
+TOP=$(realpath "${TOP}/../") || exitApp 1 "Failed to get the full path of the top directory \"${TOP}\""
 
 PRJ=$(basename "${TOP}") || exitApp 1 "Failed to retrieve project name from parent directory \"${TOP}\""
 

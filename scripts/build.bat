@@ -3,7 +3,7 @@
 %~d0
 if errorlevel 1 exit /B 1
 
-cd %~dp0
+cd %~dp0..
 if errorlevel 1 exit /B 1
 
 call pub get
