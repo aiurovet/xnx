@@ -142,7 +142,14 @@ class Config {
 
     var inputFilePath = params[PARAM_NAME_INPUT];
 
-    if (inputFilePath != StringExt.STDIN_PATH) {
+    if (inputFilePath == StringExt.STDIN_PATH) {
+      if (paramValue.contains(PARAM_NAME_INPUT_FILE_DIR) ||
+          paramValue.contains(PARAM_NAME_INPUT_FILE_EXT) ||
+          paramValue.contains(PARAM_NAME_INPUT_FILE_NAME)) {
+        throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
+      }
+    }
+    else {
       var inputFilePart = path.dirname(inputFilePath);
       paramValue = paramValue.replaceAll(PARAM_NAME_INPUT_FILE_DIR, inputFilePart);
 

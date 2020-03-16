@@ -91,9 +91,17 @@ class Convert {
         continue;
       }
 
-      var inpFilePathEx = (canExpandInp && (tmpFile != null) ? tmpFilePath : inpFilePath);
+      var inpFilePathEx = (canExpandInp ? tmpFilePath : inpFilePath);
 
-      command = command.replaceAll(Config.PARAM_NAME_INPUT, (isStdOut ? StringExt.EMPTY : inpFilePathEx));
+      if (canExpandInp) {
+        Log.outInfo('\nTemporary file: "${inpFilePathEx}"');
+      }
+
+      if (isStdIn) {
+        inpFilePathEx = StringExt.EMPTY;
+      }
+
+      command = command.replaceAll(inpFilePath, inpFilePathEx);
       var exitCodes = (await Shell(verbose: isVerbose).run(command));
 
       if (exitCodes.first.exitCode != 0) {
@@ -145,7 +153,7 @@ class Convert {
         tmpFilePath = outFilePath;
       }
       else {
-        var tmpFileName = (path.basenameWithoutExtension(inpFilePath) + FILE_TYPE_TMP + path.extension(inpFilePath));
+        var tmpFileName = (path.basenameWithoutExtension(outFilePath) + FILE_TYPE_TMP + path.extension(inpFilePath));
         tmpFilePath = path.join(outDirName, tmpFileName);
       }
 

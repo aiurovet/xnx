@@ -19,12 +19,10 @@ void main(List<String> args) {
         isOK = true; // help
       }
       else {
-        if (Log.isDetailed()) {
-          errMsg += '\n\n';
-          errMsg += stackTrace;
-        }
+        var errDtl = (Log.isDetailed() ? '\n\n' + stackTrace?.toString() : StringExt.EMPTY);
+        errMsg = '\n*** ERROR: ' + errMsg + errDtl + '\n';
 
-        Log.error('\n${errMsg}\n');
+        Log.error(errMsg);
       }
     })
     .whenComplete(() {
