@@ -1,20 +1,35 @@
 #!/bin/bash
 
-TOP=$(dirname $(dirname "${0}"))
-TOP=$(realpath "${TOP}")
+################################################################################
 
-PRJ=$(basename "${TOP}")
+function exitApp() {
+  local ret=${1:0}
+  local msg="${2}"
+
+  (( ${ret} != 0 )) && msg="*** ERROR: ${msg:-Build failed}"
+
+  [[ "${msg}" != "" ]] && printf "\n%s\n\n" "${msg}"
+
+  exit ${ret}
+}
+
+################################################################################
+
+TOP=$(dirname $(dirname "${0}")) || exitApp 1 "Failed to determine top directory"
+TOP=$(realpath "${TOP}") || exitApp 1 "Failed to get the full path of the top directory \"${TOP}\""
+
+PRJ=$(basename "${TOP}") || exitApp 1 "Failed to retrieve project name from parent directory \"${TOP}\""
 
 WIN_TOP="${HOME}/.wine/drive_c/users/${USER}/IdeaProjects/${PRJ}"
-WIN_ABV=$(dirname "${WIN_TOP}")
+WIN_ABV=$(dirname "${WIN_TOP}") || exitApp 1 "Failed to retrieve parent directory of \"${WIN_TOP}\""
 
-rm -rf "${WIN_TOP}" || exit 1
-cp -pr "${TOP}" "${WIN_ABV}" || exit 1
+rm -rf "${WIN_TOP}"
+cp -pr "${TOP}" "${WIN_ABV}" || exitApp 1 "Failed to copy project to Windows mirror"
 
 echo "Copied the latest version"
 
-wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\scripts\\build" || exit 1
-cp -p "${WIN_TOP}/bin/windows/${PRJ}.exe" "${TOP}/bin/windows/" || exit 1
+wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\scripts\\build" || exitApp 1 "Failed to run Windows build"
+cp -p "${WIN_TOP}/bin/windows/${PRJ}.exe" "${TOP}/bin/windows/" || exitApp 1 "Failed to copy Windows executable back to the project"
 
 echo "Successfully completed"
 exit 0

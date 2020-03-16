@@ -266,7 +266,13 @@ Configuration file is expected in JSON format with the following guidelines:
      input. However, in order to achieve that, the "{expand-input}" flag is
      still required to be set to true.
 
-2.4. To support \'expand-input\' feature, the program creates a temporary file
+2.4. For the sake of source code portability, the environment variables are
+     required to be specified strictly in UNIX/Linux/macOS format:
+     \$ABC_123_DEF4 or \${ABC_123_DEF4} (under Windows though, environment
+     variables will be considered case-insensitive). You can escape expansion
+     by doubling the dollar sign: \$\$ABC.
+
+2.5. To support \'expand-input\' feature, the program creates a temporary file
      where all placeholders get expanded. This file is located in the same
      directory where the current output file is supposed to be as well as
      with the same name, but the extension is replaced with .tmp.<input-ext>.
@@ -275,31 +281,31 @@ Configuration file is expected in JSON format with the following guidelines:
      the temporary file path will be 
      android/app/src/main/res/drawable-xhdpi/ic_launcher_background.tmp.svg
 
-2.5. For the sake of source code portability, the environment variables are
+2.6. For the sake of source code portability, the environment variables are
      required to be specified strictly in UNIX/Linux/macOS format:
      \$ABC_123_DEF4 or \${ABC_123_DEF4} (under Windows though, environment
      variables will be considered case-insensitive). You can escape expansion
      by doubling the dollar sign: \$\$ABC.
 
-2.6. Directory separator char in file paths is also required to be specified in
+2.7. Directory separator char in file paths is also required to be specified in
      UNIX/Linux/macOS style: "abc/def/xyz.svg". For the sake of code portability
      it is also recommended (but not enforced) to avoid specifying DOS/Windows
      drive explicitly even if you run the program solely under those OSes.
 
-2.7. The sub-node "action" should define an array of associative arrays with the
+2.8. The sub-node "action" should define an array of associative arrays with the
      rest of missing information (please note that the next array overwrites
      whatever was defined before, thus only the last command is the actual one;
      on the other hand, you could switch it to another one later like in a sort
      of a batch):
 
-2.8. The line with the empty key is totally unnecessary, as such keys will be
+2.9. The line with the empty key is totally unnecessary, as such keys will be
      ignored. However, it allows to end all previous lines with the comma, which
      is handy enough to utilise this approach.
 
-2.9. As you can see, any parameter can be changed at any time affecting sub-
+2.10.As you can see, any parameter can be changed at any time affecting sub-
      sequent data. 
 
-2.10.The given sample file is the one I used to produce multiple launcher icons
+2.11.The given sample file is the one I used to produce multiple launcher icons
      for a flutter app. Interestingly enough, it is forward-compatible with
      possible new types of project, and a typical example of that would be the
      addition of the last two data lines for web app generation.
