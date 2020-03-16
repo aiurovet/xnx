@@ -2,29 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_config/{ifn}-Dev{ifx}" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@1x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@4x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@1x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@4x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@1x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@4x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/resizer.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/svg/edit.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/svg/find.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/examples/multi_icon/svg/save.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/multi_icon.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/doul.dart" beforeDir="false" afterPath="$PROJECT_DIR$/bin/doul.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/linux/doul" beforeDir="false" afterPath="$PROJECT_DIR$/bin/linux/doul" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/multi_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/multi_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/convert.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/convert.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/windows/doul.exe" beforeDir="false" afterPath="$PROJECT_DIR$/bin/windows/doul.exe" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +119,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584286911014</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Bug fixes for location of a temporary file and stack trace in catch block.">
+      <created>1584351576908</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1584351576908</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -152,7 +141,8 @@
     <MESSAGE value="Updatred readme and fixed an issue with empty exception." />
     <MESSAGE value="Added Wine build." />
     <MESSAGE value="Moved build scripts to sub-directory 'scripts'." />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved build scripts to sub-directory 'scripts'." />
+    <MESSAGE value="Bug fixes for location of a temporary file and stack trace in catch block." />
+    <option name="LAST_COMMIT_MESSAGE" value="Bug fixes for location of a temporary file and stack trace in catch block." />
   </component>
   <component name="WindowStateProjectService">
     <state x="163" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584351200362">
@@ -173,66 +163,66 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="485" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584286910432">
+    <state x="484" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584351576290">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state x="485" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584286910432" />
+    <state x="484" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584351576290" />
     <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584350625716">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="544" height="438" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1584111238769" />
     <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1584350625716" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1584351292328">
+    <state width="1874" height="342" key="GridCell.Tab.0.bottom" timestamp="1584351607317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584351292328" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1584351292326">
+    <state width="1874" height="342" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584351607317" />
+    <state width="1874" height="342" key="GridCell.Tab.0.center" timestamp="1584351607317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584351292326" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1584351292324">
+    <state width="1874" height="342" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584351607317" />
+    <state width="1874" height="342" key="GridCell.Tab.0.left" timestamp="1584351607317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584351292324" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1584351292327">
+    <state width="1874" height="342" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584351607317" />
+    <state width="1874" height="342" key="GridCell.Tab.0.right" timestamp="1584351607317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584351292327" />
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1584351272064">
+    <state width="1874" height="342" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584351607317" />
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1584351607318">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584351272064" />
-    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1584351272064">
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584351607318" />
+    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1584351607317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584351272064" />
-    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1584351272064">
+    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584351607317" />
+    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1584351607317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584351272064" />
-    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1584351272064">
+    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584351607317" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1584351607317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584351272064" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584351607317" />
     <state x="260" y="0" key="SettingsEditor" timestamp="1584161500185">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
     <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
-    <state x="382" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584286920672">
+    <state x="381" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584351587981">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="275" y="100" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1584100191881" />
-    <state x="382" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584286920672" />
+    <state x="381" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584351587981" />
     <state width="972" height="538" key="XDebugger.FullValuePopup" timestamp="1584350091176">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
