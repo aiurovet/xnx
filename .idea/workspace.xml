@@ -2,65 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/linux/doul" beforeDir="false" afterPath="$PROJECT_DIR$/bin/linux/doul" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/appsettings-Dev.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_conf/appsettings-Dev.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/appsettings-Prod.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_conf/appsettings-Prod.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/appsettings-Test.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_conf/appsettings-Test.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/hostsettings-Dev.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_conf/hostsettings-Dev.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/hostsettings-Prod.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_conf/hostsettings-Prod.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/hostsettings-Test.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_conf/hostsettings-Test.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/template/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_conf/template/appsettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/template/hostsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_conf/template/hostsettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/multi_config/{ifn}-Dev{ifx}" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-hdpi/ic_launcher_background.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-hdpi/ic_launcher_background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-mdpi/ic_launcher_background.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-mdpi/ic_launcher_background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xhdpi/ic_launcher_background.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-xhdpi/ic_launcher_background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xxhdpi/ic_launcher_background.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-xxhdpi/ic_launcher_background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xxxhdpi/ic_launcher_background.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-xxxhdpi/ic_launcher_background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/assets/images/app.svg" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/assets/images/app.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/assets/images/app_bg.svg" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/assets/images/app_bg.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/assets/images/app_fg.svg" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/assets/images/app_fg.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/assets/images/my_flutter_app.svg" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/assets/images/custom.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/web/icons/Icon-192.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/web/icons/Icon-192.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples/my_flutter_app/web/icons/Icon-512.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/flutter_app/web/icons/Icon-512.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/multi_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/multi_conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/my_flutter_app.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/flutter_app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@4x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Edit-20x20@4x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@4x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Find-20x20@4x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@4x.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/png/Icon-Save-20x20@4x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/svg/edit.svg" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/svg/edit.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/svg/find.svg" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/svg/find.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/examples/multi_icon/svg/save.svg" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples/multi_icon/svg/save.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/multi_icon.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/multi_icon.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,7 +62,7 @@
   </component>
   <component name="RunManager">
     <configuration name="doul.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-      <option name="arguments" value="-c data/flutter_app.json -d data/examples" />
+      <option name="arguments" value="-c data/multi_icon.json -d data/examples" />
       <option name="filePath" value="$PROJECT_DIR$/bin/doul.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$" />
       <method v="2" />
@@ -187,7 +142,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584362316976</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Improved docos, renamed data files for better clarity">
+      <created>1584364755714</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1584364755714</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -204,14 +166,15 @@
     <MESSAGE value="Moved build scripts to sub-directory 'scripts'." />
     <MESSAGE value="Bug fixes for location of a temporary file and stack trace in catch block." />
     <MESSAGE value="Built latest executables (Linux &amp; Windows)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Built latest executables (Linux &amp; Windows)" />
+    <MESSAGE value="Improved docos, renamed data files for better clarity" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved docos, renamed data files for better clarity" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="158" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584362688023">
+    <state x="157" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584366683962">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="137" y="22" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1584111664080" />
-    <state x="158" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584362688023" />
+    <state x="157" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584366683962" />
     <state x="675" y="301" width="604" height="391" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1584285633731">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -225,36 +188,36 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="484" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584362316020">
+    <state x="483" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584364754766">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state x="484" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584362316020" />
+    <state x="483" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584364754766" />
     <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584350625716">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="544" height="438" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1584111238769" />
     <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1584350625716" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1584364688221">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1584366979628">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584364688221" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1584364688220">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584366979628" />
+    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1584366979627">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584364688220" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1584364688219">
+    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584366979627" />
+    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1584366979627">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584364688219" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1584364688221">
+    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584366979627" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1584366979628">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584364688221" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584366979628" />
     <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1584363047482">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>

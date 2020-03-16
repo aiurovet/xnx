@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="750" height="750">
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
 
 <defs>
     <style>
@@ -6,24 +6,14 @@
         g {
             stroke-linecap: round;
             stroke-linejoin: round;
-            stroke-width: 2;
-		}
-
-		text {
-			font-family: Sans Serif;
-			font-size: 200%;
-			vertical-align: middle;
 		}
 
 	</style>
 </defs>
 
-<g transform="translate(150, 30) scale(3.25, 6)" style="fill: white; stroke: black;">
-	<g transform="translate(0, 26.5) skewY(-10)">
-		<text x="85" y="45" style="fill: red; stroke: red;">A</text>
-		<text x="115" y="45" style="fill: green; stroke: green;">B</text>
-		<text x="100" y="80" style="fill: blue; stroke: blue;">C</text>
-	</g>
+<g>
+	<path d="M20,80 L20,20 L80,20 L80,70 L70,80 L20,80" fill="none" stroke="black" stroke-width="4" />
+	<path d="M30,80 L30,50 L65,50 L65,80" fill="none" stroke="black" stroke-width="4" />
 
 	Sorry, your browser does not support SVG!
 </g>
