@@ -94,7 +94,7 @@ class Convert {
       var inpFilePathEx = (canExpandInp ? tmpFilePath : inpFilePath);
 
       if (canExpandInp) {
-        Log.outInfo('\nTemporary file: "${inpFilePathEx}"');
+        Log.outInfo('...temporary file: "${inpFilePathEx}"');
       }
 
       if (isStdIn) {
@@ -137,6 +137,10 @@ class Convert {
     map.forEach((k, v) {
       text = text.replaceAll(k, v);
     });
+
+    if (Log.isUltimate()) {
+      Log.debug(text);
+    }
 
     if (isStdOut) {
       Log.out(text);
