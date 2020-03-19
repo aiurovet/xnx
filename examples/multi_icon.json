@@ -1,0 +1,24 @@
+{
+  "x": {
+    "rename": {
+      "{cmd}": "{c}",
+      "{cur-dir}": "{CD}",
+      "{exp-env}": "{EE}",
+      "{exp-inp}": "{EI}",
+      "{lst-sep}": "{LS}",
+      "{inp}": "{i}",
+      "{out}": "{o}"
+    },
+    "action": [
+      { "{EE}": false, "{EI}": true },
+
+      { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+
+      { "{CD}": "multi_icon", "{LS}": ";", "{icons}": "edit;find;save", "{img-src-dir}":  "{CD}/svg", "{i}": "resizer.svg" },
+
+      { "{d}": "20;40;80;160", "{a}": "{icons}", "{o}": "png/icon-{a}-{d}x{d}.png" },
+
+      { "": null }
+    ]
+  }
+}

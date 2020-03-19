@@ -1,14 +1,13 @@
 {
   "x": {
     "rename": {
-      "{command}": "{c}",
+      "{cmd}": "{c}",
       "{cur-dir}": "{CD}",
-      "{expand-environment}": "{EE}",
-      "{expand-input}": "{EI}",
-      "{height}": "{h}",
-      "{input}": "{i}",
-      "{output}": "{o}",
-      "{width}": "{w}"
+      "{exp-env}": "{EE}",
+      "{exp-inp}": "{EI}",
+      "{inp}": "{i}",
+      "{out}": "{o}",
+      "{lst-sep}": "{LS}"
     },
     "action": [
       { "{EE}": true, "{EI}": true },

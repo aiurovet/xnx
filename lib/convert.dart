@@ -32,6 +32,7 @@ class Convert {
   static String outDirName;
   static String outFilePath;
   static String tmpFilePath;
+  static List<String> commands;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -43,28 +44,76 @@ class Convert {
       return cmd + ': "${outFilePath}"';
     }
     else {
-      return cmd.replaceAll(Config.PARAM_NAME_INPUT, inpFilePath);
+      return cmd.replaceAll(Config.PARAM_NAME_INP, inpFilePath);
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   static Future exec(List<String> args) async {
-    var listOfMaps = Config.exec(args);
+    var maps = Config.exec(args);
+    commands = [];
 
-    for (var map in listOfMaps) {
-      canExpandEnv = StringExt.parseBool(Config.getParamValue(map, Config.PARAM_NAME_EXPAND_ENV));
-      canExpandInp = StringExt.parseBool(Config.getParamValue(map, Config.PARAM_NAME_EXPAND_INP));
-      command = Config.getParamValue(map, Config.PARAM_NAME_COMMAND);
+    for (var map in maps) {
+      expandMap(map);
+
+      canExpandEnv = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_ENV, canExpand: false));
+      canExpandInp = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_INP, canExpand: false));
+      command = Config.getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
+
+      var curDir = (Config.getValue(map, Config.PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
+      curDir = curDir.getFullPath();
+
+      if (StringExt.isNullOrBlank(command)) {
+        throw Exception('Undefined command for\n\n${map.toString()}');
+      }
+
+      inpFilePath = Config.getValue(map, Config.PARAM_NAME_INP, canExpand: false);
+
+      if (StringExt.isNullOrBlank(inpFilePath)) {
+        throw Exception('Undefined input for\n\n${map.toString()}');
+      }
+
+      outFilePath = Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: false);
+
+      if (StringExt.isNullOrBlank(outFilePath)) {
+        throw Exception('Undefined output for\n\n${map.toString()}');
+      }
+
+      inpFilePath = path.join(curDir, inpFilePath).getFullPath();
+      outFilePath = path.join(curDir, outFilePath).getFullPath();
+
       isExpandInpOnly = (command == Config.CMD_EXPAND);
-      inpFilePath = Config.getParamValue(map, Config.PARAM_NAME_INPUT);
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
-      outFilePath = Config.getParamValue(map, Config.PARAM_NAME_OUTPUT);
       isStdOut = (outFilePath == StringExt.STDOUT_PATH);
+
       outDirName = (isStdOut ? StringExt.EMPTY : path.dirname(outFilePath));
 
       if (isStdOut && !isExpandInpOnly) {
         throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
+      }
+
+      var actualInpFilePath = getActualInpFilePath();
+      tmpFilePath = (isExpandInpOnly || !canExpandInp ? null : actualInpFilePath);
+
+      command = command
+          .replaceAll(Config.PARAM_NAME_OUT, outFilePath)
+          .replaceAll(Config.PARAM_NAME_INP, actualInpFilePath);
+
+      if (commands.contains(command)) {
+        continue;
+      }
+
+      commands.add(command);
+
+      var outFile = File(outFilePath);
+
+      if (outFile.existsSync()) {
+        outFile.deleteSync();
+      }
+
+      if (canExpandInp) {
+        expandInpFile(map);
       }
 
       var isVerbose = Log.isDetailed();
@@ -77,38 +126,19 @@ class Convert {
         continue;
       }
 
-      Log.information(path.relative(outFilePath));
-
-      var outFile = File(outFilePath);
-
-      if (outFile.existsSync()) {
-        outFile.deleteSync();
-      }
-
-      var tmpFile = (canExpandInp ? expandInpFile(map) : null);
-
-      if (tmpFile == null) {
-        continue;
-      }
-
-      var inpFilePathEx = (canExpandInp ? tmpFilePath : inpFilePath);
-
-      if (canExpandInp) {
-        Log.outInfo('...temporary file: "${inpFilePathEx}"');
-      }
-
-      if (isStdIn) {
-        inpFilePathEx = StringExt.EMPTY;
-      }
-
-      command = command.replaceAll(inpFilePath, inpFilePathEx);
-      var exitCodes = (await Shell(verbose: isVerbose).run(command));
+      var exitCodes = await Shell(verbose: isVerbose).run(command);
 
       if (exitCodes.first.exitCode != 0) {
-        throw Exception('Command failed:\n\n${commandToDisplayString(command)}\n\n');
+        throw Exception('Command failed${isVerbose ? StringExt.EMPTY : '\n\n' + commandToDisplayString(command) + '\n\n'}');
       }
 
-      tmpFile.deleteSync();
+      if (tmpFilePath != null) {
+        var tmpFile = File(tmpFilePath);
+
+        if (tmpFile.existsSync()) {
+          tmpFile.deleteSync();
+        }
+      }
     }
   }
 
@@ -118,7 +148,7 @@ class Convert {
     var text = StringExt.EMPTY;
 
     if (isStdIn) {
-      text = stdin.readAllSync(endByte: StringExt.EOT_CODE);
+      text = stdin.readAsStringSync(endByte: StringExt.EOT_CODE);
     }
     else {
       var inpFile = File(inpFilePath);
@@ -134,9 +164,23 @@ class Convert {
       text = text.expandEnvironmentVariables();
     }
 
-    map.forEach((k, v) {
-      text = text.replaceAll(k, v);
-    });
+    for (; ;) {
+      map.forEach((k, v) {
+        text = text.replaceAll(k, v);
+      });
+
+      var isDone = true;
+
+      map.forEach((k, v) {
+        if (text.contains(k)) {
+          isDone = false;
+        }
+      });
+
+      if (isDone) {
+        break;
+      }
+    }
 
     if (Log.isUltimate()) {
       Log.debug(text);
@@ -153,14 +197,6 @@ class Convert {
         outDir.createSync(recursive: true);
       }
 
-      if (isExpandInpOnly) {
-        tmpFilePath = outFilePath;
-      }
-      else {
-        var tmpFileName = (path.basenameWithoutExtension(outFilePath) + FILE_TYPE_TMP + path.extension(inpFilePath));
-        tmpFilePath = path.join(outDirName, tmpFileName);
-      }
-
       var tmpFile = File(tmpFilePath);
 
       if (tmpFile.existsSync()) {
@@ -171,6 +207,27 @@ class Convert {
       tmpFile.writeAsStringSync(text);
 
       return (isExpandInpOnly ? null : tmpFile);
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void expandMap(Map<String, String> map) {
+    map.forEach((k, v) {
+      map[k] = Config.getValue(map, k, canExpand: true);
+    });
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String getActualInpFilePath() {
+    if (isStdIn || isExpandInpOnly || !canExpandInp) {
+      return inpFilePath;
+    }
+    else {
+      var tmpFileName = (path.basenameWithoutExtension(outFilePath) + FILE_TYPE_TMP + path.extension(inpFilePath));
+
+      return path.join(outDirName, tmpFileName);
     }
   }
 

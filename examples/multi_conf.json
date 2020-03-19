@@ -1,0 +1,31 @@
+{
+  "x": {
+    "rename": {
+      "{cmd}": "{c}",
+      "{cur-dir}": "{CD}",
+      "{exp-env}": "{EE}",
+      "{exp-inp}": "{EI}",
+      "{inp}": "{i}",
+      "{inp-dir}": "{id}",
+      "{inp-ext}": "{ix}",
+      "{inp-name}": "{in}",
+      "{lst-sep}": "{LS}",
+      "{out}": "{o}"
+    },
+    "action": [
+      { "{EE}": true, "{EI}": true },
+      { "{c}": "expand-only" },
+
+      { "{CD}": "multi_conf" },
+
+      { "{i}": "template/*settings.json" },
+      { "#{i}": "-" },
+
+      { "{env}": "Dev",  "{dir}": "{CD}/alexi", "#{o}": "-", "{o}": "{in}-{env}{ix}" },
+      { "{env}": "Test", "{dir}": "{CD}/alexj", "#{o}": "-", "{o}": "{in}-{env}{ix}" },
+      { "{env}": "Prod", "{dir}": "{CD}/alexk", "#{o}": "-", "{o}": "{in}-{env}{ix}" },
+
+      { "": null }
+    ]
+  }
+}

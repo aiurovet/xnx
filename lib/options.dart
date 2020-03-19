@@ -221,14 +221,14 @@ various parameters, and optionally, to expand placeholders inside the input
      program\'s output. In this case, put a dash instead of a filename for
      input:
 
-     { ... "{input}": "-" ...  } 
+     { ... "{inp}": "-" ...  } 
 
 1.5. The program also allows you to print the result of expansion to stdout
      rather than to file. In this case, put a dash instead of a filename for
      input (and you won't be able to configure any external command, but rather
      will be confined to the use of a mere pipe):
 
-     { ... "{output}": "-" ... }
+     { ... "{out}": "-" ... }
 
 ##### Configuration file format (see full sample file below)
 
@@ -254,16 +254,16 @@ Configuration file is expected in JSON format with the following guidelines:
      pre-defined placeholders (see above). The key is a pre-defined placeholder,
      and the value is the placeholder to use instead. As you can see, this can
      make config file less verbose and easier to read. These placeholders are
-     self-descriptive, except the ones containing \'expand\' in their name. The
-     "{expand-environment}" means that by setting its value to true or to false
+     self-descriptive, except the ones containing \'exp-\' in their name. The
+     "{exp-env}" means that by setting its value to true or to false
      you allow or disallow expansion of environment variables, and the
-     "{expand-input}" means that the content of the input file will also be
+     "{exp-inp}" means that the content of the input file will also be
      expanded using pre-defined as well as user-defined placeholders, and
      optionally, environment variables. Then it will be saved to a temporary
      file, which will be used as an input for the sub-sequent external command
      execution. All temporary files will be deleted on the go. If no external
      command defined, then this will be interpreted as a simple expansion of the
-     input. However, in order to achieve that, the "{expand-input}" flag is
+     input. However, in order to achieve that, the "{exp-inp}" flag is
      still required to be set to true.
 
 2.4. For the sake of source code portability, the environment variables are
@@ -315,14 +315,12 @@ Configuration file is expected in JSON format with the following guidelines:
 {
   "x": {
     "rename": {
-      "{command}": "{c}",
+      "{cmd}": "{c}",
       "{cur-dir}": "{CD}",
-      "{expand-environment}": "{EE}",
-      "{expand-input}": "{EI}",
-      "{height}": "{h}",
-      "{input}": "{i}",
-      "{output}": "{o}",
-      "{width}": "{w}"
+      "{exp-env}": "{EE}",
+      "{exp-inp}": "{EI}",
+      "{inp}": "{i}",
+      "{out}": "{o}"
     },
     "action": [
       { "{EE}": true, "{EI}": true },

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 extension StdinExt on Stdin {
-  String readAllSync({int endByte}) {
+  String readAsStringSync({int endByte}) {
     endByte ??= 0;
 
     final input = <int>[];
