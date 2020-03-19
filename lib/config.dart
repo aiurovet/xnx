@@ -210,12 +210,22 @@ class Config {
     var mapOfLists = <String, List<String>>{};
 
     map.forEach((k, v) {
-      if (!hasSep || (k == PARAM_NAME_LST_SEP)) {
-        mapOfLists[k] = [v];
+      var isNameInp = (k == PARAM_NAME_INP);
+      var canSplit = (hasSep && (k != PARAM_NAME_LST_SEP));
+      var vv = (canSplit ? v.split(sep) : [v]);
+      var lst = <String>[];
+
+      if (isNameInp) {
+        lst.addAll(getListOfInpFilePaths(vv));
       }
-      else if (v != null) {
-        mapOfLists[k] = v.split(sep);
+      else if (canSplit) {
+        lst.addAll(vv);
       }
+      else {
+        lst.add(v);
+      }
+
+      mapOfLists[k] = lst;
     });
 
     addMapsToList(lst, mapOfLists, null);
@@ -307,49 +317,68 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<String> getListOfInpFilePaths() {
-    var inpFilePath = params[PARAM_NAME_INP];
+  static String getCurDirName({Map<String, String> map}) {
+    var curDirName = (Config.getValue((map ?? params), PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
+    curDirName = curDirName.getFullPath();
 
-    if (inpFilePath == StringExt.STDIN_PATH) {
-      return [inpFilePath];
+    return curDirName;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static List<String> getListOfInpFilePaths(List<String> filePaths) {
+    if ((filePaths == null) || filePaths.isEmpty) {
+      return [];
     }
 
-    var filePaths = inpFilePath.split(params[PARAM_NAME_LST_SEP]);
     var lstAll = <String>[];
 
     for (var filePath in filePaths) {
-      var filePathTrm = filePath.trim();
-      var dir = Directory(filePathTrm);
+      var filePathTrim = filePath.trim();
+      var dir = Directory(filePathTrim);
       List<String> lstCur;
 
-      var pattern = path.basename(filePathTrm);
-
-      if (pattern.containsWildcards()) {
-        var parentDirName = path.dirname(filePathTrm);
-        var hasParentDir = !StringExt.isNullOrBlank(parentDirName);
-
-        if (hasParentDir) {
-          if (!path.isAbsolute(parentDirName)) {
-            parentDirName = path.join(filePathTrm, parentDirName);
-          }
-
-          dir = Directory(parentDirName);
-        }
-
-        lstCur = dir.pathListSync(pattern: pattern,
-            checkExists: false,
-            recursive: hasParentDir,
-            takeDirs: false,
-            takeFiles: true);
-      }
-      else if (dir.existsSync()) {
-        lstCur = dir.pathListSync(pattern: null, checkExists: false, recursive: true, takeDirs: false, takeFiles: true);
+      if (filePath == StringExt.STDIN_PATH) {
+        lstCur.add(filePath);
       }
       else {
-        var file = File(filePathTrm);
+        var pattern = path.basename(filePathTrim);
 
-        if (file.existsSync()) {
-          lstCur = [file.path];
+        if (pattern.containsWildcards()) {
+          var parentDirName = path.dirname(filePathTrim);
+          var hasParentDir = !StringExt.isNullOrBlank(parentDirName);
+
+          if (hasParentDir) {
+            if (!path.isAbsolute(parentDirName)) {
+              parentDirName = path.join(getCurDirName(), parentDirName);
+            }
+
+            dir = Directory(parentDirName);
+          }
+
+          lstCur = dir.pathListSync(
+              pattern: pattern,
+              checkExists: false,
+              recursive: hasParentDir,
+              takeDirs: false,
+              takeFiles: true
+          );
+        }
+        else if (dir.existsSync()) {
+          lstCur = dir.pathListSync(
+              pattern: null,
+              checkExists: false,
+              recursive: true,
+              takeDirs: false,
+              takeFiles: true
+          );
+        }
+        else {
+          var file = File(filePathTrim);
+
+          if (file.existsSync()) {
+            lstCur = [file.path];
+          }
         }
       }
 

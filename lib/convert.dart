@@ -61,8 +61,7 @@ class Convert {
       canExpandInp = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_INP, canExpand: false));
       command = Config.getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
 
-      var curDir = (Config.getValue(map, Config.PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
-      curDir = curDir.getFullPath();
+      var curDir = Config.getCurDirName(map: map);
 
       if (StringExt.isNullOrBlank(command)) {
         throw Exception('Undefined command for\n\n${map.toString()}');
@@ -83,6 +82,13 @@ class Convert {
       inpFilePath = path.join(curDir, inpFilePath).getFullPath();
       outFilePath = path.join(curDir, outFilePath).getFullPath();
 
+      var inpBaseName = path.basename(inpFilePath);
+
+      outFilePath = outFilePath
+          .replaceAll(Config.PARAM_NAME_INP_DIR, path.dirname(inpFilePath))
+          .replaceAll(Config.PARAM_NAME_INP_NAME, path.basenameWithoutExtension(inpBaseName))
+          .replaceAll(Config.PARAM_NAME_INP_EXT, path.extension(inpBaseName));
+
       isExpandInpOnly = (command == Config.CMD_EXPAND);
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
       isStdOut = (outFilePath == StringExt.STDOUT_PATH);
@@ -96,15 +102,17 @@ class Convert {
       var actualInpFilePath = getActualInpFilePath();
       tmpFilePath = (isExpandInpOnly || !canExpandInp ? null : actualInpFilePath);
 
-      command = command
-          .replaceAll(Config.PARAM_NAME_OUT, outFilePath)
-          .replaceAll(Config.PARAM_NAME_INP, actualInpFilePath);
+      if (!isExpandInpOnly) {
+        command = command
+            .replaceAll(Config.PARAM_NAME_OUT, outFilePath)
+            .replaceAll(Config.PARAM_NAME_INP, actualInpFilePath);
 
-      if (commands.contains(command)) {
-        continue;
+        if (commands.contains(command)) {
+          continue;
+        }
+
+        commands.add(command);
       }
-
-      commands.add(command);
 
       var outFile = File(outFilePath);
 
@@ -122,7 +130,7 @@ class Convert {
         Log.outInfo(commandToDisplayString(command));
       }
 
-      if (Options.isListOnly) {
+      if (Options.isListOnly || isExpandInpOnly) {
         continue;
       }
 
@@ -197,13 +205,12 @@ class Convert {
         outDir.createSync(recursive: true);
       }
 
-      var tmpFile = File(tmpFilePath);
+      var tmpFile = File(tmpFilePath ?? outFilePath);
 
       if (tmpFile.existsSync()) {
         tmpFile.deleteSync();
       }
 
-      tmpFile = File(tmpFilePath);
       tmpFile.writeAsStringSync(text);
 
       return (isExpandInpOnly ? null : tmpFile);
