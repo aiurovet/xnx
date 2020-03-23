@@ -36,12 +36,13 @@ OSL=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
 OSL=$(echo "${OSL}" | tr [:upper:] [:lower:]) || exitApp 1 "Failed to lowercase OS kernel name"
 [[ "${OSL}" == "darwin" ]] && OSL="macos"
 
-BIN=${TOP}/bin
+SRC="${TOP}/lib"
+BIN="${TOP}/bin"
 EXE="${BIN}/${OSL}/${PRJ}"
 
 pub get || exitApp 1 "Failed to retrieve packages"
 echo "Compiling..."
-dart2native "${BIN}/${PRJ}.dart" -o "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
+dart2native "${SRC}/${PRJ}.dart" -o "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
 chmod 755 "${EXE}" || exitApp 1 "Failed to grant execution permission to the executable file \"${EXE}\""
 
 exitApp 0
