@@ -2,19 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/linux/doul" beforeDir="false" afterPath="$PROJECT_DIR$/bin/linux/doul" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/windows/doul.exe" beforeDir="false" afterPath="$PROJECT_DIR$/bin/windows/doul.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/multi_conf/appsettings-Dev.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_conf/appsettings-Dev.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/multi_conf/appsettings-Prod.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_conf/appsettings-Prod.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/multi_conf/appsettings-Test.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_conf/appsettings-Test.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/multi_conf/hostsettings-Dev.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_conf/hostsettings-Dev.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/multi_conf/hostsettings-Prod.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_conf/hostsettings-Prod.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/multi_conf/hostsettings-Test.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_conf/hostsettings-Test.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/convert.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/convert.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +17,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1Z49kkX7r49DOzhtXP84wouMgBb" />
@@ -302,15 +295,19 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="335" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1366.728@0.0.1366.728" timestamp="1584107237888" />
+    <state x="731" y="415" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1584951278631">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="731" y="415" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584951278631" />
     <state x="360" y="-30" width="1012" height="1051" key="find.popup" timestamp="1584539294454">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="390" y="120" width="586" height="488" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1584113373736" />
     <state x="360" y="-30" width="1012" height="1051" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1584539294454" />
-    <state x="674" y="288" width="570" height="416" key="git4idea.merge.GitPullDialog" timestamp="1584267355896">
+    <state x="672" y="228" width="596" height="416" key="git4idea.merge.GitPullDialog" timestamp="1584951243333">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="674" y="288" width="570" height="416" key="git4idea.merge.GitPullDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584267355896" />
+    <state x="672" y="228" width="596" height="416" key="git4idea.merge.GitPullDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584951243333" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
