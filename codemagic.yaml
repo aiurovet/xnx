@@ -1,0 +1,18 @@
+workflows:
+  doul:
+    name: doul
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    cache:
+      cache_paths: []
+    scripts:
+      - scripts/build
+    artifacts:
+      - bin/linux/doul
+      - bin/macos/doul
+    publishing:
+      email:
+        recipients:
+          - aiurovet@gmail.com
