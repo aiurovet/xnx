@@ -1,5 +1,7 @@
 @echo off
 
+set PRJ=doul
+
 %~d0
 if errorlevel 1 exit /B 1
 
@@ -9,7 +11,7 @@ if errorlevel 1 exit /B 1
 call pub get
 if errorlevel 1 exit /B 1
 
-call dart2native "bin\doul.dart" -o "bin\windows\doul.exe"
+call dart2native "lib\%PRJ%.dart" -o "bin\windows\%PRJ%.exe"
 if errorlevel 1 exit /B 1
 
 exit /B 0
