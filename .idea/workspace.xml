@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
+    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="Added MacOS and Windows builds">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/build" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/build" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +20,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/first-ci" />
+        <entry key="$PROJECT_DIR$" value="feature/add-mac-win-ci" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -185,7 +186,21 @@
       <option name="project" value="LOCAL" />
       <updated>1584951491349</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Added MacOS and Windows builds">
+      <created>1584952409553</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1584952409553</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Added MacOS and Windows builds">
+      <created>1584952497270</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1584952497270</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -209,7 +224,8 @@
     <MESSAGE value="Debug output content of input file in case of ultimate user level of logging." />
     <MESSAGE value="Bug fix: if no separator defined then make all maps of lists to have a single-element list." />
     <MESSAGE value="Improved example/multi_conf" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved example/multi_conf" />
+    <MESSAGE value="Added MacOS and Windows builds" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added MacOS and Windows builds" />
   </component>
   <component name="WindowStateProjectService">
     <state x="585" y="88" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584626179602">
@@ -234,36 +250,36 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="476" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584952409511">
+    <state x="471" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584952743648">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state x="476" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584952409511" />
+    <state x="471" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584952743648" />
     <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584626719328">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="544" height="438" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1584111238769" />
     <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1584626719328" />
-    <state width="1874" height="342" key="GridCell.Tab.0.bottom" timestamp="1584627492935">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1584953188317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="342" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584627492935" />
-    <state width="1874" height="342" key="GridCell.Tab.0.center" timestamp="1584627492934">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584953188317" />
+    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1584953188317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="342" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584627492934" />
-    <state width="1874" height="342" key="GridCell.Tab.0.left" timestamp="1584627492933">
+    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584953188317" />
+    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1584953188316">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="342" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584627492933" />
-    <state width="1874" height="342" key="GridCell.Tab.0.right" timestamp="1584627492935">
+    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584953188316" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1584953188317">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="342" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584627492935" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584953188317" />
     <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1584627492937">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -289,11 +305,11 @@
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
     <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
-    <state x="373" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584952420956">
+    <state x="372" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584952517361">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="275" y="100" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1584100191881" />
-    <state x="373" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584952420956" />
+    <state x="372" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584952517361" />
     <state width="972" height="538" key="XDebugger.FullValuePopup" timestamp="1584454394137">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
