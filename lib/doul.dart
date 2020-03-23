@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:doul/convert.dart';
-import 'package:doul/ext/string.dart';
-import 'package:doul/log.dart';
+import 'convert.dart';
+import 'ext/string.dart';
+import 'log.dart';
 
 void main(List<String> args) {
   var isOK = false;
@@ -12,7 +12,7 @@ void main(List<String> args) {
       isOK = true;
     })
     .catchError((e, stackTrace) {
-      var cleanMsg = RegExp('^Exception\\:\\s*', caseSensitive: false);
+      var cleanMsg = RegExp('^Exception[\\:\\s]*', caseSensitive: false);
       var errMsg = e?.toString()?.replaceFirst(cleanMsg, StringExt.EMPTY);
 
       if (StringExt.isNullOrBlank(errMsg)) {
