@@ -25,7 +25,7 @@ function realpath() {
 
 ################################################################################
 
-TOP=$(dirname "${0}/.../") || exitApp 1 "Failed to determine top directory"
+TOP=$(dirname "${0}") || exitApp 1 "Failed to determine top directory"
 TOP=$(realpath "${TOP}/../") || exitApp 1
 PRJ=$(basename "${TOP}") || exitApp 1 "Failed to retrieve project name from parent directory \"${TOP}\""
 
