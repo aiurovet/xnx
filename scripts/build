@@ -2,6 +2,10 @@
 
 ################################################################################
 
+PRJ="doul"
+
+################################################################################
+
 function exitApp() {
   local ret=${1:0}
   local msg="${2}"
@@ -27,7 +31,6 @@ function realpath() {
 
 TOP=$(dirname "${0}") || exitApp 1 "Failed to determine top directory"
 TOP=$(realpath "${TOP}/../") || exitApp 1
-PRJ=$(basename "${TOP}") || exitApp 1 "Failed to retrieve project name from parent directory \"${TOP}\""
 
 OSL=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
 OSL=$(echo "${OSL}" | tr [:upper:] [:lower:]) || exitApp 1 "Failed to lowercase OS kernel name"
