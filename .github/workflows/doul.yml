@@ -1,4 +1,4 @@
-name: Dart CI
+name: CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  linux:
 
     runs-on: ubuntu-latest
 
@@ -15,8 +15,30 @@ jobs:
       image:  google/dart:latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: pub get
-    - name: Build
-      run: scripts/build
+      - uses: actions/checkout@v2
+      - name: Build
+        run: scripts/build
+
+  macos:
+
+    runs-on: macos-latest
+
+    container:
+      image:  google/dart:latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: scripts/build
+
+  windows:
+
+    runs-on: windows-latest
+
+    container:
+      image:  google/dart:latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: scripts\build
