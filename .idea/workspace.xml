@@ -19,7 +19,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="feature/first-ci" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -178,7 +178,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584624410011</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Improved example/multi_conf">
+      <created>1584951491349</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1584951491349</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -201,7 +208,8 @@
     <MESSAGE value="Another build" />
     <MESSAGE value="Debug output content of input file in case of ultimate user level of logging." />
     <MESSAGE value="Bug fix: if no separator defined then make all maps of lists to have a single-element list." />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug fix: if no separator defined then make all maps of lists to have a single-element list." />
+    <MESSAGE value="Improved example/multi_conf" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved example/multi_conf" />
   </component>
   <component name="WindowStateProjectService">
     <state x="585" y="88" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584626179602">
@@ -226,11 +234,11 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="478" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584624409861">
+    <state x="477" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584951490922">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state x="478" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584624409861" />
+    <state x="477" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584951490922" />
     <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584626719328">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -281,11 +289,11 @@
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
     <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
-    <state x="375" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584624419632">
+    <state x="374" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584951500250">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="275" y="100" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1584100191881" />
-    <state x="375" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584624419632" />
+    <state x="374" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584951500250" />
     <state width="972" height="538" key="XDebugger.FullValuePopup" timestamp="1584454394137">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
