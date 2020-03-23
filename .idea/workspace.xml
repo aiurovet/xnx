@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="Added MacOS and Windows builds">
+    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/ra.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/build" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/build" afterDir="false" />
     </list>
@@ -37,6 +39,7 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/data" />
     <property name="project.structure.last.edited" value="Libraries" />
@@ -200,7 +203,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584952497270</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Fixed realpath for MacOS build">
+      <created>1584963448339</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1584963448339</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -225,7 +235,8 @@
     <MESSAGE value="Bug fix: if no separator defined then make all maps of lists to have a single-element list." />
     <MESSAGE value="Improved example/multi_conf" />
     <MESSAGE value="Added MacOS and Windows builds" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added MacOS and Windows builds" />
+    <MESSAGE value="Fixed realpath for MacOS build" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed realpath for MacOS build" />
   </component>
   <component name="WindowStateProjectService">
     <state x="585" y="88" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584626179602">
@@ -250,11 +261,11 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="471" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584952743648">
+    <state x="470" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584963448271">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state x="471" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584952743648" />
+    <state x="470" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584963448271" />
     <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584626719328">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -305,11 +316,11 @@
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
     <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
-    <state x="372" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584952517361">
+    <state x="371" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584963463035">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="275" y="100" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1584100191881" />
-    <state x="372" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584952517361" />
+    <state x="371" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584963463035" />
     <state width="972" height="538" key="XDebugger.FullValuePopup" timestamp="1584454394137">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
