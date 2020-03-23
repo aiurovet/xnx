@@ -15,9 +15,18 @@ function exitApp() {
 
 ################################################################################
 
-TOP=$(dirname "${0}") || exitApp 1 "Failed to determine top directory"
-TOP=$(realpath "${TOP}/../") || exitApp 1 "Failed to get the full path of the top directory parent \"${TOP}/../\""
+function realpath() {
+    local old="${PWD}"
 
+    cd "${1}" &&\
+    echo "${PWD}" &&\
+    cd "${old}"
+}
+
+################################################################################
+
+TOP=$(dirname "${0}/.../") || exitApp 1 "Failed to determine top directory"
+TOP=$(realpath "${TOP}/../") || exitApp 1
 PRJ=$(basename "${TOP}") || exitApp 1 "Failed to retrieve project name from parent directory \"${TOP}\""
 
 OSL=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
