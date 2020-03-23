@@ -134,6 +134,10 @@ class Options {
       })
     ;
 
+    if ((args == null) || args.isEmpty) {
+      Options.printUsage(parser);
+    }
+
     try {
       parser.parse(args);
     }
