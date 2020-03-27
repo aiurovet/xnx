@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
+    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="If no argument supplied, print usage.">
+      <change afterPath="$PROJECT_DIR$/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.tmp.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/multi_conf/appsettings-Dev;Test;Prod.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/multi_conf/hostsettings-Dev;Test;Prod.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/doul.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/doul.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/linux/doul" beforeDir="false" afterPath="$PROJECT_DIR$/bin/linux/doul" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/windows/doul.exe" beforeDir="false" afterPath="$PROJECT_DIR$/bin/windows/doul.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/flutter_app.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/flutter_app.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/multi_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/multi_icon.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_icon.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ext/string.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ext/string.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,7 +256,21 @@
       <option name="project" value="LOCAL" />
       <updated>1584966501736</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="If no argument supplied, print usage.">
+      <created>1584967276159</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1584967276159</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Mac exe rebuilt">
+      <created>1584967528441</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1584967528441</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -275,22 +300,24 @@
     <MESSAGE value="Moved doul.dart to lib" />
     <MESSAGE value="Ensure exe path" />
     <MESSAGE value="Added macos executable (from codemagic.io) and fixed windows build" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added macos executable (from codemagic.io) and fixed windows build" />
+    <MESSAGE value="If no argument supplied, print usage." />
+    <MESSAGE value="Mac exe rebuilt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Mac exe rebuilt" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="580" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1584967231116">
+    <state x="570" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585328045710">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="137" y="22" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1584111664080" />
-    <state x="580" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584967231116" />
+    <state x="570" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1585328045710" />
     <state x="675" y="301" width="604" height="391" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1584285633731">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="675" y="301" width="604" height="391" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1051@0.0.1920.1051" timestamp="1584285633731" />
-    <state x="647" y="254" width="626" height="545" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1584624086091">
+    <state x="647" y="254" width="626" height="545" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1585315957258">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="647" y="254" width="626" height="545" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1584624086091" />
+    <state x="647" y="254" width="626" height="545" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1585315957258" />
     <state x="574" y="101" key="#doul.dart" timestamp="1584160967828">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -300,71 +327,79 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="465" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584966500834">
+    <state x="462" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1584967528094">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state x="465" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584966500834" />
-    <state width="765" height="633" key="DebuggerActiveHint" timestamp="1584626719328">
+    <state x="462" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1584967528094" />
+    <state width="765" height="633" key="DebuggerActiveHint" timestamp="1585326651492">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="544" height="438" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1584111238769" />
-    <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1584626719328" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1584967204219">
+    <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1585326651492" />
+    <state x="100" y="100" width="1720" height="851" key="DiffContextDialog" timestamp="1585320230366">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="100" y="100" width="1720" height="851" key="DiffContextDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1585320230366" />
+    <state x="746" y="253" key="FileChooserDialogImpl" timestamp="1585328276898">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="746" y="253" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1585328276898" />
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom" timestamp="1585328125432">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584967204219" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1584967204217">
+    <state width="1874" height="277" key="GridCell.Tab.0.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1585328125432" />
+    <state width="1874" height="277" key="GridCell.Tab.0.center" timestamp="1585328125431">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584967204217" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1584967204216">
+    <state width="1874" height="277" key="GridCell.Tab.0.center/0.0.1920.1051@0.0.1920.1051" timestamp="1585328125431" />
+    <state width="1874" height="277" key="GridCell.Tab.0.left" timestamp="1585328125431">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584967204216" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1584967204218">
+    <state width="1874" height="277" key="GridCell.Tab.0.left/0.0.1920.1051@0.0.1920.1051" timestamp="1585328125431" />
+    <state width="1874" height="277" key="GridCell.Tab.0.right" timestamp="1585328125432">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413136" />
-    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584967204218" />
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1584966822811">
+    <state width="1874" height="277" key="GridCell.Tab.0.right/0.0.1920.1051@0.0.1920.1051" timestamp="1585328125432" />
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom" timestamp="1585328116338">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1584966822811" />
-    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1584966822811">
+    <state width="1874" height="342" key="GridCell.Tab.1.bottom/0.0.1920.1051@0.0.1920.1051" timestamp="1585328116338" />
+    <state width="1874" height="342" key="GridCell.Tab.1.center" timestamp="1585328116337">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1584966822811" />
-    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1584966822811">
+    <state width="1874" height="342" key="GridCell.Tab.1.center/0.0.1920.1051@0.0.1920.1051" timestamp="1585328116337" />
+    <state width="1874" height="342" key="GridCell.Tab.1.left" timestamp="1585328116337">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1584966822811" />
-    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1584966822811">
+    <state width="1874" height="342" key="GridCell.Tab.1.left/0.0.1920.1051@0.0.1920.1051" timestamp="1585328116337" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right" timestamp="1585328116338">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
-    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1584966822811" />
+    <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1585328116338" />
     <state x="260" y="0" key="SettingsEditor" timestamp="1584161500185">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
     <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
-    <state x="366" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584966508944">
+    <state x="364" y="0" key="Vcs.Push.Dialog.v2" timestamp="1584967535994">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="275" y="100" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1584100191881" />
-    <state x="366" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584966508944" />
-    <state width="972" height="538" key="XDebugger.FullValuePopup" timestamp="1584454394137">
+    <state x="364" y="0" key="Vcs.Push.Dialog.v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584967535994" />
+    <state width="972" height="538" key="XDebugger.FullValuePopup" timestamp="1585327858202">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="691" height="372" key="XDebugger.FullValuePopup/0.0.1366.728@0.0.1366.728" timestamp="1584112508667" />
-    <state width="972" height="538" key="XDebugger.FullValuePopup/0.0.1920.1051@0.0.1920.1051" timestamp="1584454394137" />
+    <state width="972" height="538" key="XDebugger.FullValuePopup/0.0.1920.1051@0.0.1920.1051" timestamp="1585327858202" />
     <state x="335" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1584107237888">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -373,11 +408,11 @@
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="731" y="415" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1051@0.0.1920.1051" timestamp="1584951278631" />
-    <state x="358" y="-30" width="1014" height="1051" key="find.popup" timestamp="1584966696442">
+    <state x="344" y="-30" width="1028" height="1051" key="find.popup" timestamp="1585318900804">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="390" y="120" width="586" height="488" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1584113373736" />
-    <state x="358" y="-30" width="1014" height="1051" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1584966696442" />
+    <state x="344" y="-30" width="1028" height="1051" key="find.popup/0.0.1920.1051@0.0.1920.1051" timestamp="1585318900804" />
     <state x="672" y="228" width="596" height="416" key="git4idea.merge.GitPullDialog" timestamp="1584951243333">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -385,9 +420,21 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/config.dart</url>
+          <line>357</line>
+          <option name="timeStamp" value="66" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="dart-exception" />
       </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="DartCommandLineRunConfigurationType">
+        <watch expression="allChars.join('').substring(commentPos[0], commentPos[1])" language="Dart" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

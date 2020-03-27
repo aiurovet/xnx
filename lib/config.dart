@@ -25,7 +25,7 @@ class Config {
   static String PARAM_NAME_INP_DIR = '{inp-dir}';
   static String PARAM_NAME_INP_EXT = '{inp-ext}';
   static String PARAM_NAME_INP_NAME = '{inp-name}';
-  static String PARAM_NAME_LST_SEP = '{lst-sep}';
+  static String PARAM_NAME_MUL_SEP = '{mul-sep}';
   static String PARAM_NAME_OUT = '{out}';
   static String PARAM_NAME_EXP_ENV = '{exp-env}';
   static String PARAM_NAME_EXP_INP = '{exp-inp}';
@@ -127,58 +127,70 @@ class Config {
   static String expandParamValue(String paramName, {bool isForAny = false}) {
     var paramValue = (params[paramName] ?? StringExt.EMPTY);
 
+    paramValue = expandValue(paramValue, paramName: paramName, isForAny: isForAny);
+
+    return paramValue;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String expandValue(String value, {String paramName, bool isForAny = false}) {
     var canExpandEnv = (params.containsKey(PARAM_NAME_EXP_ENV) ? StringExt.parseBool(params[PARAM_NAME_EXP_ENV]) : false);
+    var hasParamName = StringExt.isNullOrBlank(paramName);
+    var isCurDirParam = (hasParamName && (paramName == PARAM_NAME_CUR_DIR));
+    var hasCurDir = isCurDirParam;
 
     if (canExpandEnv) {
-      paramValue = paramValue.expandEnvironmentVariables();
+      value = value.expandEnvironmentVariables();
     }
 
-    if (!isForAny) {
+    if (!isForAny && hasParamName) {
       if ((paramName == PARAM_NAME_CMD) || (paramName == PARAM_NAME_OUT)) {
-        return paramValue;
+        return value;
       }
     }
 
     var inputFilePath = params[PARAM_NAME_INP];
 
     if (inputFilePath == StringExt.STDIN_PATH) {
-      if (paramValue.contains(PARAM_NAME_INP_DIR) ||
-          paramValue.contains(PARAM_NAME_INP_EXT) ||
-          paramValue.contains(PARAM_NAME_INP_NAME)) {
+      if (value.contains(PARAM_NAME_INP_DIR) ||
+          value.contains(PARAM_NAME_INP_EXT) ||
+          value.contains(PARAM_NAME_INP_NAME)) {
         throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
       }
     }
     else {
       var inputFilePart = path.dirname(inputFilePath);
-      paramValue = paramValue.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
+      value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
 
       inputFilePart = path.basenameWithoutExtension(inputFilePath);
-      paramValue = paramValue.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
+      value = value.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
 
       inputFilePart = path.extension(inputFilePath);
-      paramValue = paramValue.replaceAll(PARAM_NAME_INP_EXT, inputFilePart);
+      value = value.replaceAll(PARAM_NAME_INP_EXT, inputFilePart);
     }
 
-    for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(paramValue)); i++) {
+    for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(value)); i++) {
       params.forEach((k, v) {
-        if (k != paramName) {
-          paramValue = paramValue.replaceAll(k, v);
+        if (!isCurDirParam && (k == PARAM_NAME_CUR_DIR)) {
+          hasCurDir = true;
+        }
+
+        if (!hasParamName || (k != paramName)) {
+          value = value.replaceAll(k, v);
         }
       });
     }
 
-    if (paramName == PARAM_NAME_CUR_DIR) {
-      if (!path.isAbsolute(paramValue)) {
-        paramValue = path.join(Options.startDirName, paramValue).getFullPath();
-        Directory.current = paramValue;
-      }
+    if (hasCurDir && !path.isAbsolute(value)) {
+      value = path.join(Options.startDirName, value).getFullPath();
     }
 
     if (isParamWithPath(paramName)) {
-      paramValue = paramValue.getFullPath();
+      value = value.getFullPath();
     }
 
-    return paramValue;
+    return value;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -203,7 +215,7 @@ class Config {
     var hasSep = !StringExt.isNullOrEmpty(sep);
 
     if (!hasSep) {
-      sep = getValue(map, PARAM_NAME_LST_SEP, canExpand: true);
+      sep = getValue(map, PARAM_NAME_MUL_SEP, canExpand: true);
       hasSep = !StringExt.isNullOrEmpty(sep);
     }
 
@@ -211,7 +223,7 @@ class Config {
 
     map.forEach((k, v) {
       var isNameInp = (k == PARAM_NAME_INP);
-      var canSplit = (hasSep && (k != PARAM_NAME_LST_SEP));
+      var canSplit = (hasSep && (k != PARAM_NAME_MUL_SEP));
       var vv = (canSplit ? v.split(sep) : [v]);
       var lst = <String>[];
 
@@ -267,7 +279,7 @@ class Config {
     var hasSep = !StringExt.isNullOrEmpty(sep);
 
     if (!hasSep) {
-      sep = getValue(map, PARAM_NAME_LST_SEP, canExpand: true);
+      sep = getValue(map, PARAM_NAME_MUL_SEP, canExpand: true);
       hasSep = !StringExt.isNullOrEmpty(sep);
     }
 
@@ -287,7 +299,7 @@ class Config {
           if (currKeyNo < nextKeyNo) {
             return;
           }
-          else if ((v != null) && (k != PARAM_NAME_LST_SEP)) {
+          else if ((v != null) && (k != PARAM_NAME_MUL_SEP)) {
             var newMap = <String, String>{};
             newMap.addAll(map);
 
@@ -334,25 +346,27 @@ class Config {
     var lstAll = <String>[];
 
     for (var filePath in filePaths) {
-      var filePathTrim = filePath.trim();
-      var dir = Directory(filePathTrim);
+      var filePathTrim = expandValue(filePath.trim(), paramName: null, isForAny: true);
+
       List<String> lstCur;
 
       if (filePath == StringExt.STDIN_PATH) {
         lstCur.add(filePath);
       }
       else {
+        var parentDirName = path.dirname(filePathTrim);
+        var hasParentDir = !StringExt.isNullOrBlank(parentDirName);
+
+        if (!path.isAbsolute(filePathTrim)) {
+          filePathTrim = path.join(getCurDirName(), filePathTrim);
+          parentDirName = path.dirname(filePathTrim);
+        }
+
+        var dir = Directory(filePathTrim);
         var pattern = path.basename(filePathTrim);
 
         if (pattern.containsWildcards()) {
-          var parentDirName = path.dirname(filePathTrim);
-          var hasParentDir = !StringExt.isNullOrBlank(parentDirName);
-
           if (hasParentDir) {
-            if (!path.isAbsolute(parentDirName)) {
-              parentDirName = path.join(getCurDirName(), parentDirName);
-            }
-
             dir = Directory(parentDirName);
           }
 
@@ -462,6 +476,8 @@ class Config {
       text = file.readAsStringSync();
     }
 
+    text = text.removeCppComments();
+
     return text;
   }
 
@@ -493,8 +509,8 @@ class Config {
       else if (k == PARAM_NAME_INP_NAME) {
         PARAM_NAME_INP_NAME = v;
       }
-      else if (k == PARAM_NAME_LST_SEP) {
-        PARAM_NAME_LST_SEP = v;
+      else if (k == PARAM_NAME_MUL_SEP) {
+        PARAM_NAME_MUL_SEP = v;
       }
       else if (k == PARAM_NAME_OUT) {
         PARAM_NAME_OUT = v;

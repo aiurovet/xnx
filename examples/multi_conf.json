@@ -9,14 +9,14 @@
       "{inp-dir}": "{id}",
       "{inp-ext}": "{ix}",
       "{inp-name}": "{in}",
-      "{lst-sep}": "{LS}",
+      "{mul-sep}": "{MS}",
       "{out}": "{o}"
     },
     "action": [
       { "{EE}": true, "{EI}": true },
       { "{c}": "expand-only" },
 
-      { "{CD}": "multi_conf", "{LS}": ";" },
+      { "{CD}": "multi_conf", "{MS}": ";" },
 
       { "{i}": "template/*settings.json" },
 
