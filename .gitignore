@@ -19,3 +19,8 @@ doc/api/
 
 # Mac
 .DS_Store
+
+# Application-related
+examples/flutter_app/
+examples/multi_conf/out/
+examples/multi_icon/png/

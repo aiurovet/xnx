@@ -7,6 +7,7 @@ import 'package:process_run/shell_run.dart';
 import 'config.dart';
 import 'log.dart';
 import 'options.dart';
+import 'ext/file.dart';
 import 'ext/stdin.dart';
 import 'ext/string.dart';
 
@@ -116,13 +117,10 @@ class Convert {
 
       var outFile = File(outFilePath);
 
-      if (!Options.isForced && !isStdOut) {
-        var minDateTime = DateTime.fromMicrosecondsSinceEpoch(0);
+      if (!Options.isForced && !isStdIn && !isStdOut) {
         var inpFile = File(inpFilePath);
-        var inpTimeStamp = (await inpFile.exists() ? await inpFile.lastModified() : minDateTime);
-        var outTimeStamp = (await outFile.exists() ? await outFile.lastModified() : minDateTime);
 
-        if (inpTimeStamp.difference(outTimeStamp).inMicroseconds <= 0) {
+        if (inpFile.compareLastModifiedTo(outFile, isCoarse: true) <= 0) {
           Log.information('Unchanged: "${outFilePath}"');
           continue;
         }
