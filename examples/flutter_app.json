@@ -15,19 +15,19 @@
     "action": [
       { "{EE}": true, "{EI}": true },
 
-      // Terribly slow,
+      // Terribly slow converter
       //{ "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      // Sometimes fails to display svg properly,
+      // This converter sometimes fails to display svg properly
       //{ "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
 
-      // Not the best quality
+      // Not the best quality converter
       //{ "{c}": "convert \"{i}\" \"{o}\"" },
 
-      // Not the best quality
+      // Not the best quality converter
       //{ "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
-      // The most accurate
+      // The most accurate converter
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
       { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images", "{PS}": "|"},
