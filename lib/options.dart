@@ -35,6 +35,12 @@ class Options {
     'valueHelp': 'FILE',
     'defaultsTo': './' + DEF_FILE_NAME,
   };
+  static final Map<String, Object> FORCE_CONVERT = {
+    'name': 'force',
+    'abbr': 'f',
+    'help': 'ignore timestamps and force conversion',
+    'negatable': false,
+  };
   static final Map<String, Object> LIST_ONLY = {
     'name': 'list-only',
     'abbr': 'l',
@@ -68,6 +74,7 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   static String configFilePath;
+  static bool isForced;
   static bool isListOnly;
   static String startDirName;
 
@@ -125,6 +132,9 @@ class Options {
       })
       ..addFlag(Options.LIST_ONLY['name'], abbr: Options.LIST_ONLY['abbr'], help: Options.LIST_ONLY['help'], negatable: Options.LIST_ONLY['negatable'], callback: (value) {
         isListOnly = value;
+      })
+      ..addFlag(Options.FORCE_CONVERT['name'], abbr: Options.FORCE_CONVERT['abbr'], help: Options.FORCE_CONVERT['help'], negatable: Options.FORCE_CONVERT['negatable'], callback: (value) {
+        isForced = value;
       })
       ..addOption(Options.STARTDIR['name'], abbr: Options.STARTDIR['abbr'], help: Options.STARTDIR['help'], valueHelp: Options.STARTDIR['valueHelp'], defaultsTo: Options.STARTDIR['defaultsTo'], callback: (value) {
         startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());

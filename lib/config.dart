@@ -90,7 +90,7 @@ class Config {
       var action = all[CFG_ACTION];
       assert(action is List);
 
-      var result = List<Map<String, String>>();
+      var result = <Map<String, String>>[];
 
       action.forEach((map) {
         assert(map is Map);
@@ -104,7 +104,7 @@ class Config {
           }
         });
 
-        if (params.length > 0) {
+        if (params.isNotEmpty) {
           Log.debug('...adding to the list of actions');
           addParamsToList(result);
         }

@@ -30,12 +30,12 @@ class Log {
 
   static String _format = FORMAT_DEFAULT;
   static String get format => _format;
-  static void set format(String value) => _format = (StringExt.isNullOrEmpty(value) ? null : value);
+  static set format(String value) => _format = (StringExt.isNullOrEmpty(value) ? null : value);
 
   static int _level = LEVEL_DEFAULT;
   static int get level => _level;
 
-  static void set level(int value) =>
+  static set level(int value) =>
     _level = value < 0 ? LEVEL_WARNING :
              value >= LEVEL_DEBUG ? LEVEL_DEBUG : value;
 
@@ -44,7 +44,7 @@ class Log {
     _level >= LEVEL_DEBUG ? USER_LEVEL_ULTIMATE :
     _level >= LEVEL_INFORMATION ? USER_LEVEL_DETAILED : USER_LEVEL_DEFAULT;
 
-  static void set userLevel(int value) =>
+  static set userLevel(int value) =>
     _level = value <= USER_LEVEL_SILENT ? LEVEL_SILENT :
              value >= USER_LEVEL_ULTIMATE ? LEVEL_DEBUG :
              value == USER_LEVEL_DETAILED ? LEVEL_INFORMATION : LEVEL_WARNING;

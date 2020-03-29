@@ -116,6 +116,18 @@ class Convert {
 
       var outFile = File(outFilePath);
 
+      if (!Options.isForced && !isStdOut) {
+        var minDateTime = DateTime.fromMicrosecondsSinceEpoch(0);
+        var inpFile = File(inpFilePath);
+        var inpTimeStamp = (await inpFile.exists() ? await inpFile.lastModified() : minDateTime);
+        var outTimeStamp = (await outFile.exists() ? await outFile.lastModified() : minDateTime);
+
+        if (inpTimeStamp.difference(outTimeStamp).inMicroseconds <= 0) {
+          Log.information('Unchanged: "${outFilePath}"');
+          continue;
+        }
+      }
+
       if (outFile.existsSync()) {
         outFile.deleteSync();
       }
