@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 extension StdinExt on Stdin {
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String readAsStringSync({int endByte}) {
     endByte ??= 0;
 
@@ -23,4 +26,7 @@ extension StdinExt on Stdin {
 
     return utf8.decode(input, allowMalformed: true);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+
 }
