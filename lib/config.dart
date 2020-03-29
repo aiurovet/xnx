@@ -24,13 +24,13 @@ class Config {
   static String PARAM_NAME_CUR_DIR = '{cur-dir}';
   static String PARAM_NAME_EXP_ENV = '{exp-env}';
   static String PARAM_NAME_EXP_INP = '{exp-inp}';
+  static String PARAM_NAME_FLD_SEP = '{fld-sep}';
   static String PARAM_NAME_INP = '{inp}';
   static String PARAM_NAME_INP_DIR = '{inp-dir}';
   static String PARAM_NAME_INP_EXT = '{inp-ext}';
   static String PARAM_NAME_INP_NAME = '{inp-name}';
   static String PARAM_NAME_LST_SEP = '{lst-sep}';
   static String PARAM_NAME_OUT = '{out}';
-  static String PARAM_NAME_PER_SEP = '{per-sep}';
 
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
   static final RegExp RE_PATH_LIST_SEP = RegExp('\\s*,\\s*');
@@ -216,7 +216,7 @@ class Config {
     var hasSep = !StringExt.isNullOrEmpty(sep);
 
     if (!hasSep) {
-      sep = getValue(map, PARAM_NAME_PER_SEP, canExpand: true);
+      sep = getValue(map, PARAM_NAME_LST_SEP, canExpand: true);
       hasSep = !StringExt.isNullOrEmpty(sep);
     }
 
@@ -224,7 +224,7 @@ class Config {
 
     map.forEach((k, v) {
       var isNameInp = (k == PARAM_NAME_INP);
-      var canSplit = (hasSep && (k != PARAM_NAME_PER_SEP));
+      var canSplit = (hasSep && (k != PARAM_NAME_LST_SEP));
       var vv = (canSplit ? v.split(sep) : [v]);
       var lst = <String>[];
 
@@ -280,7 +280,7 @@ class Config {
     var hasSep = !StringExt.isNullOrEmpty(sep);
 
     if (!hasSep) {
-      sep = getValue(map, PARAM_NAME_PER_SEP, canExpand: true);
+      sep = getValue(map, PARAM_NAME_LST_SEP, canExpand: true);
       hasSep = !StringExt.isNullOrEmpty(sep);
     }
 
@@ -300,7 +300,7 @@ class Config {
           if (currKeyNo < nextKeyNo) {
             return;
           }
-          else if ((v != null) && (k != PARAM_NAME_PER_SEP)) {
+          else if ((v != null) && (k != PARAM_NAME_LST_SEP)) {
             var newMap = <String, String>{};
             newMap.addAll(map);
 
@@ -510,8 +510,8 @@ class Config {
       else if (k == PARAM_NAME_INP_NAME) {
         PARAM_NAME_INP_NAME = v;
       }
-      else if (k == PARAM_NAME_PER_SEP) {
-        PARAM_NAME_PER_SEP = v;
+      else if (k == PARAM_NAME_LST_SEP) {
+        PARAM_NAME_LST_SEP = v;
       }
       else if (k == PARAM_NAME_OUT) {
         PARAM_NAME_OUT = v;

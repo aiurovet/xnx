@@ -9,8 +9,8 @@
       "{exp-inp}": "{EI}",
       "{inp}": "{i}",
       "{out}": "{o}",
-      "{lst-sep}": "{LS}", // field separator: "{w},{h},{m}": "20,20,mdpi;40,40,hdpi;80,80,xhdpi"
-      "{per-sep}": "{PS}" // list separator for all permutations
+      "{fld-sep}": "{FS}", // field separator: "{w},{h},{m}": "20,20,mdpi;40,40,hdpi;80,80,xhdpi"
+      "{lst-sep}": "{LS}"  // list separator for all permutations
     },
     "action": [
       { "{EE}": true, "{EI}": true },
@@ -30,7 +30,7 @@
       // The most accurate
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images", "{PS}": "|"},
+      { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images", "{LS}": "|"},
 
       { "{i}": "{img-src-dir}/app_bg.svg" },
 
