@@ -3,6 +3,9 @@ import 'package:path/path.dart' as path;
 import 'string.dart';
 
 extension DirectoryExt on Directory {
+
+  //////////////////////////////////////////////////////////////////////////////
+
   List<String> pathListSync({String pattern, bool checkExists, bool recursive, bool takeDirs, bool takeFiles}) {
     var lst = <String>[];
 
@@ -25,4 +28,7 @@ extension DirectoryExt on Directory {
 
     return lst;
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+
 }

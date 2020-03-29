@@ -3,6 +3,11 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 extension StringExt on String {
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Constants
+  //////////////////////////////////////////////////////////////////////////////
+
   static Map<String, String> ENVIRONMENT;
 
   static final bool IS_WINDOWS = Platform.isWindows;
@@ -30,15 +35,21 @@ extension StringExt on String {
   static final RegExp RE_PATH_SEP = RegExp('[\\/]', caseSensitive: false);
   static final RegExp RE_PROTOCOL = RegExp('^[a-z]+[\:][\\/][\\/]+', caseSensitive: false);
 
+  //////////////////////////////////////////////////////////////////////////////
+
   String adjustPath() {
     var adjustedPath = trim().replaceAll(RE_PATH_SEP, Platform.pathSeparator);
 
     return adjustedPath;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+
   bool containsWildcards() {
     return RE_IS_WILDCARD.hasMatch(this);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
 
   String expandEnvironmentVariables() {
     if (ENVIRONMENT == null) {
@@ -66,11 +77,15 @@ extension StringExt on String {
     return result;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+
   String getFullPath() {
     var fullPath = (this == STDIN_PATH ? this : path.canonicalize(adjustPath()));
 
     return fullPath;
   }
+
+  //////////////////////////////////////////////////////////////////////////////
 
   static void _initEnvironmentVariables() {
     ENVIRONMENT = {};
@@ -85,19 +100,27 @@ extension StringExt on String {
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+
   static bool isNullOrBlank(String input) {
     return ((input == null) || BLANK.hasMatch(input));
   }
+
+  //////////////////////////////////////////////////////////////////////////////
 
   static bool isNullOrEmpty(String input) {
     return ((input == null) || input.isEmpty);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+
   static bool parseBool(String input) {
     return ((input != null) && (input.toLowerCase() == TRUE));
   }
 
-  String removeCppComments() {
+  //////////////////////////////////////////////////////////////////////////////
+
+  String removeJsComments() {
     var result = this;
     var commentFrom = -1;
 
@@ -228,9 +251,13 @@ extension StringExt on String {
     return result;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+
   RegExp wildcardToRegExp() {
     var pattern = '^${RegExp.escape(this).replaceAll('\\*', '.*').replaceAll('\\?', '.')}\$';
 
     return RegExp(pattern, caseSensitive: !IS_WINDOWS);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
 }

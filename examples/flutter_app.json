@@ -1,4 +1,6 @@
 {
+  // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
+
   "x": {
     "rename": {
       "{cmd}": "{c}",
@@ -7,19 +9,28 @@
       "{exp-inp}": "{EI}",
       "{inp}": "{i}",
       "{out}": "{o}",
-      "{lst-sep}": "{LS}",
-      "{mul-sep}": "{MS}"
+      "{lst-sep}": "{LS}", // field separator: "{w},{h},{m}": "20,20,mdpi;40,40,hdpi;80,80,xhdpi"
+      "{per-sep}": "{PS}" // list separator for all permutations
     },
     "action": [
       { "{EE}": true, "{EI}": true },
 
-      { "#{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
-      { "#{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
-      { "#{c}": "convert \"{i}\" \"{o}\"" },
-      { "#{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+      // Terribly slow,
+      //{ "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+
+      // Sometimes fails to display svg properly,
+      //{ "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
+
+      // Not the best quality
+      //{ "{c}": "convert \"{i}\" \"{o}\"" },
+
+      // Not the best quality
+      //{ "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+
+      // The most accurate
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images", "{MS}": "|"},
+      { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images", "{PS}": "|"},
 
       { "{i}": "{img-src-dir}/app_bg.svg" },
 

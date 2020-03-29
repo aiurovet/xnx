@@ -327,13 +327,23 @@ Configuration file is expected in JSON format with the following guidelines:
       "{out}": "{o}"
     },
     "action": [
+      // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
       { "{EE}": true, "{EI}": true },
 
-      { "#{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # terribly slow" },
-      { "#{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\" # fails to display svg properly" },
-      { "#{c}": "convert \"{i}\" \"{o}\" # not the best quality" },
-      { "#{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\" # not the best quality" },
-      { "{c}": "chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\" # the most accurate" },
+      // Terribly slow,
+      //{ "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+
+      // Sometimes fails to display svg properly,
+      //{ "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
+
+      // Not the best quality
+      //{ "{c}": "convert \"{i}\" \"{o}\"" },
+
+      // Not the best quality
+      //{ "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+
+      // The most accurate
+      { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
       { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images" },
 
