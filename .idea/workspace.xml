@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    <list default="true" id="8e7a78b4-7833-4c55-870c-99ac5b65b589" name="Default Changelist" comment="Comments updated">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/flutter_app.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/flutter_app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/multi_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/multi_icon.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/multi_icon.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/ext/directory.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ext/directory.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/ext/stdin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ext/stdin.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/ext/string.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ext/string.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/options.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +43,7 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.41034484" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -280,7 +271,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585328820739</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Comments updated">
+      <created>1585457138338</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1585457138338</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -288,7 +286,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="Finalised issues. All good except aliases (env)" />
     <MESSAGE value="Support for the use of stdin for input files and stdout instead of the outpou files." />
     <MESSAGE value="Built Windows app under Linux" />
     <MESSAGE value="Updatred readme and fixed an issue with empty exception." />
@@ -313,7 +310,8 @@
     <MESSAGE value="Mac exe rebuilt" />
     <MESSAGE value="Bug fix in calculating cur dir, split lst-sep and mul-sep (not finished yet)." />
     <MESSAGE value="MacOS build" />
-    <option name="LAST_COMMIT_MESSAGE" value="MacOS build" />
+    <MESSAGE value="Comments updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="Comments updated" />
   </component>
   <component name="WindowStateProjectService">
     <state x="569" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585449481975">
@@ -338,24 +336,24 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="409" y="91" key="#main.dart/0.0.1366.728@0.0.1366.728" timestamp="1584087914295" />
-    <state x="460" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1585328820248">
+    <state x="458" y="0" width="912" height="913" key="CommitChangelistDialog2" timestamp="1585457138039">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="350" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1584100181172" />
-    <state x="460" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1585328820248" />
+    <state x="458" y="0" width="912" height="913" key="CommitChangelistDialog2/0.0.1920.1051@0.0.1920.1051" timestamp="1585457138039" />
     <state width="765" height="633" key="DebuggerActiveHint" timestamp="1585326651492">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state width="544" height="438" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1584111238769" />
     <state width="765" height="633" key="DebuggerActiveHint/0.0.1920.1051@0.0.1920.1051" timestamp="1585326651492" />
-    <state x="100" y="100" width="1720" height="851" key="DiffContextDialog" timestamp="1585320230366">
+    <state x="100" y="100" width="1720" height="851" key="DiffContextDialog" timestamp="1585457375347">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="100" y="100" width="1720" height="851" key="DiffContextDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1585320230366" />
-    <state x="746" y="253" key="FileChooserDialogImpl" timestamp="1585328276898">
+    <state x="100" y="100" width="1720" height="851" key="DiffContextDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1585457375347" />
+    <state x="745" y="223" key="FileChooserDialogImpl" timestamp="1585457354224">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
-    <state x="746" y="253" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1585328276898" />
+    <state x="745" y="223" key="FileChooserDialogImpl/0.0.1920.1051@0.0.1920.1051" timestamp="1585457354224" />
     <state width="1874" height="342" key="GridCell.Tab.0.bottom" timestamp="1585449514303">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
@@ -396,11 +394,15 @@
     </state>
     <state width="1323" height="223" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1584113413950" />
     <state width="1874" height="342" key="GridCell.Tab.1.right/0.0.1920.1051@0.0.1920.1051" timestamp="1585449515089" />
-    <state x="260" y="0" key="SettingsEditor" timestamp="1584161500185">
+    <state x="798" y="187" key="RollbackChangesDialog" timestamp="1585457349227">
+      <screen x="0" y="0" width="1920" height="1051" />
+    </state>
+    <state x="798" y="187" key="RollbackChangesDialog/0.0.1920.1051@0.0.1920.1051" timestamp="1585457349227" />
+    <state x="259" y="0" key="SettingsEditor" timestamp="1585457028279">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
     <state x="186" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1584088006277" />
-    <state x="260" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1584161500185" />
+    <state x="259" y="0" key="SettingsEditor/0.0.1920.1051@0.0.1920.1051" timestamp="1585457028279" />
     <state x="362" y="0" key="Vcs.Push.Dialog.v2" timestamp="1585328828756">
       <screen x="0" y="0" width="1920" height="1051" />
     </state>
