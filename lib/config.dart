@@ -224,7 +224,7 @@ class Config {
 
     map.forEach((k, v) {
       var isNameInp = (k == PARAM_NAME_INP);
-      var canSplit = (hasSep && (k != PARAM_NAME_LST_SEP));
+      var canSplit = (hasSep && (k != PARAM_NAME_CMD) && (k != PARAM_NAME_LST_SEP));
       var vv = (canSplit ? v.split(sep) : [v]);
       var lst = <String>[];
 
@@ -300,7 +300,7 @@ class Config {
           if (currKeyNo < nextKeyNo) {
             return;
           }
-          else if ((v != null) && (k != PARAM_NAME_LST_SEP)) {
+          else if ((v != null) && (k != PARAM_NAME_CMD) && (k != PARAM_NAME_LST_SEP)) {
             var newMap = <String, String>{};
             newMap.addAll(map);
 
