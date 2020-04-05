@@ -196,21 +196,6 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addParamsToList(List<Map<String, String>> lst) {
-    if (!params.containsKey(PARAM_NAME_INP) || !params.containsKey(PARAM_NAME_OUT)) {
-      return;
-    }
-
-    var newParams = <String, String>{};
-    newParams.addAll(params);
-
-    addFlatMapsToList(lst, newParams, listSeparator: null, nextKeyNo: 0);
-
-    params.remove(PARAM_NAME_OUT);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   static void addFlatMapsToList(List<Map<String, String>> lst, Map<String, String> map, {String listSeparator, int nextKeyNo}) {
     var sep = listSeparator;
     var hasSep = !StringExt.isNullOrEmpty(sep);
@@ -222,24 +207,35 @@ class Config {
 
     var mapOfLists = <String, List<String>>{};
 
-    map.forEach((k, v) {
-      var isNameInp = (k == PARAM_NAME_INP);
-      var canSplit = (hasSep && (k != PARAM_NAME_LST_SEP));
-      var vv = (canSplit ? v.split(sep) : [v]);
-      var lst = <String>[];
+    for (var i = 0; i < 2; i++) {
+      map.forEach((k, v) {
+        if (v.contains(sep)) {
+          if (i > 0) {
+            return;
+          }
+        }
+        else if (i <= 0) {
+          return;
+        }
 
-      if (isNameInp) {
-        lst.addAll(getListOfInpFilePaths(vv));
-      }
-      else if (canSplit) {
-        lst.addAll(vv);
-      }
-      else {
-        lst.add(v);
-      }
+        var isNameInp = (k == PARAM_NAME_INP);
+        var canSplit = (hasSep && (k != PARAM_NAME_LST_SEP));
+        var vv = (canSplit ? v.split(sep) : [v]);
+        var lst = <String>[];
 
-      mapOfLists[k] = lst;
-    });
+        if (isNameInp) {
+          lst.addAll(getListOfInpFilePaths(vv));
+        }
+        else if (canSplit) {
+          lst.addAll(vv);
+        }
+        else {
+          lst.add(v);
+        }
+
+        mapOfLists[k] = lst;
+      });
+    }
 
     addMapsToList(lst, mapOfLists, null);
   }
@@ -275,57 +271,17 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addFlatMapsToListOld(List<Map<String, String>> lst, Map<String, String> map, {String listSeparator, int nextKeyNo}) {
-    var sep = listSeparator;
-    var hasSep = !StringExt.isNullOrEmpty(sep);
-
-    if (!hasSep) {
-      sep = getValue(map, PARAM_NAME_LST_SEP, canExpand: true);
-      hasSep = !StringExt.isNullOrEmpty(sep);
+  static void addParamsToList(List<Map<String, String>> lst) {
+    if (!params.containsKey(PARAM_NAME_INP) || !params.containsKey(PARAM_NAME_OUT)) {
+      return;
     }
 
-    var stopKeyNo = map.length;
+    var newParams = <String, String>{};
+    newParams.addAll(params);
 
-    if (hasSep) {
-      var currKeyNo = 0;
+    addFlatMapsToList(lst, newParams, listSeparator: null, nextKeyNo: 0);
 
-      if ((nextKeyNo == null) || (nextKeyNo < 1)) {
-        nextKeyNo = 1;
-      }
-
-      if (nextKeyNo < stopKeyNo) {
-        map.forEach((k, v) {
-          ++currKeyNo;
-
-          if (currKeyNo < nextKeyNo) {
-            return;
-          }
-          else if ((v != null) && (k != PARAM_NAME_LST_SEP)) {
-            var newMap = <String, String>{};
-            newMap.addAll(map);
-
-            var values = v.split(sep);
-
-            for (var value in values) {
-              newMap[k] = value;
-              addFlatMapsToList(lst, newMap, listSeparator: sep, nextKeyNo: (currKeyNo + 1));
-            }
-          }
-        });
-
-        return;
-      }
-    }
-
-    var mapStr = map.toString();
-
-    for (var x in lst) {
-      if (x.toString() == mapStr) {
-        return;
-      }
-    }
-
-    lst.add(map);
+    params.remove(PARAM_NAME_OUT);
   }
 
   //////////////////////////////////////////////////////////////////////////////

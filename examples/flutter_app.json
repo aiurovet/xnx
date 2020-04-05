@@ -32,7 +32,7 @@
 
       { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images", "{LS}": "|"},
 
-      { "{i}": "{img-src-dir}/app_{m}ground.svg", "{m}": "back|fore" },
+      { "{m}": "back|fore", "{i}": "{img-src-dir}/app_{m}ground.svg" },
       { "{ox}": "android/app/src/main/res/drawable-{r}dpi/ic_launcher_{m}ground.png" },
 
       { "{d}":  48, "{r}": "m",    "{o}": "{ox}" },
