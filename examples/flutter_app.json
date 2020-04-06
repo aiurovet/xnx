@@ -30,19 +30,12 @@
       // The most accurate
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images", "{LS}": "|"},
+      { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images" },
 
-      { "{m}": "back|fore", "{i}": "{img-src-dir}/app_{m}ground.svg" },
-      { "{ox}": "android/app/src/main/res/drawable-{r}dpi/ic_launcher_{m}ground.png" },
+      { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
 
-      { "{d}":  48, "{r}": "m",    "{o}": "{ox}" },
-      { "{d}":  72, "{r}": "h",    "{o}": "{ox}" },
-      { "{d}":  96, "{r}": "xh",   "{o}": "{ox}" },
-      { "{d}": 144, "{r}": "xxh",  "{o}": "{ox}" },
-      { "{d}": 192, "{r}": "xxxh", "{o}": "{ox}" },
-
-      { "{i}": "{img-src-dir}/app.svg" },
-      { "{ox}": "android/app/src/main/res/mipmap-{r}dpi/ic_launcher.png" },
+      { "{i}": "{img-src-dir}/app{m}.svg" },
+      { "{ox}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png" },
 
       { "{d}":  48, "{r}": "m",    "{o}": "{ox}" },
       { "{d}":  72, "{r}": "h",    "{o}": "{ox}" },
