@@ -9,18 +9,17 @@
       "{inp-dir}": "{id}",
       "{inp-ext}": "{ix}",
       "{inp-name}": "{in}",
-      "{lst-sep}": "{LS}",
       "{out}": "{o}"
     },
     "action": [
       { "{EE}": true, "{EI}": true },
       { "{c}": "expand-only" },
 
-      { "{CD}": "multi_conf", "{LS}": ";" },
+      { "{CD}": "multi_conf" },
 
-      { "{i}": "template/*settings.json" },
+      { "{i}": "template/*settings.json", "{env}": [ "Dev", "Test", "Prod" ] },
 
-      { "{env}": "Dev;Test;Prod",  "{dir}": "{CD}/{env}", "{o}": "{in}-{env}{ix}" },
+      { "{dir}": "{CD}/{env}", "{o}": "{in}-{env}{ix}" },
 
       { "": null }
     ]

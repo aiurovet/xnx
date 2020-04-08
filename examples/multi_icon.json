@@ -5,7 +5,6 @@
       "{cur-dir}": "{CD}",
       "{exp-env}": "{EE}",
       "{exp-inp}": "{EI}",
-      "{lst-sep}": "{LS}",
       "{inp}": "{i}",
       "{out}": "{o}"
     },
@@ -14,11 +13,11 @@
 
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{CD}": "multi_icon", "{LS}": ";", "{icons}": "edit;find;save", "{img-src-dir}":  "{CD}/svg" },
+      { "{CD}": "multi_icon", "{icons}": [ "edit", "find", "save" ], "{img-src-dir}":  "{CD}/svg" },
 
       { "{i}": "resizer.svg" },
 
-      { "{d}": "20;40;80;160", "{a}": "{icons}", "{o}": "png/icon-{a}-{d}x{d}.png" },
+      { "{d}": [ 20, 40, 80, 160 ], "{a}": "{icons}", "{o}": "png/icon-{a}-{d}x{d}.png" },
 
       { "": null }
     ]

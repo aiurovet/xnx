@@ -19,3 +19,10 @@ doc/api/
 
 # Mac
 .DS_Store
+
+# Application-related
+examples/flutter_app/android/
+examples/flutter_app/ios/
+examples/flutter_app/web/
+examples/multi_conf/out/
+examples/multi_icon/png/

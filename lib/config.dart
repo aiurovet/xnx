@@ -39,7 +39,60 @@ class Config {
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  static Map<String, String> params;
+  static Map<String, Object> params;
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void addFlatMapsToList(List<Map<String, Object>> lst, Map<String, Object> map) {
+    var mapOfLists = <String, List<String>>{};
+
+    map.forEach((k, v) {
+      var isNameInp = (k == PARAM_NAME_INP);
+
+      if (isNameInp) {
+        lst.addAll(getListOfInpFilePaths(vv));
+      }
+      else if (canSplit) {
+        lst.addAll(vv);
+      }
+      else {
+        lst.add(v);
+      }
+
+      mapOfLists[k] = lst;
+    });
+
+    addMapsToList(lst, mapOfLists, null);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void addMapsToList(List<Map<String, String>> toList, Map<String, List<String>> mapOfLists, Map<String, String> map) {
+    var skip = (map?.length ?? 0);
+
+    if (skip < mapOfLists.length) {
+      var key = mapOfLists.keys.skip(skip).first;
+
+      if (key != null) {
+        var lst = mapOfLists[key];
+        var len = lst.length;
+
+        var newMap = <String, String>{};
+
+        if (map != null) {
+          newMap.addAll(map);
+        }
+
+        for (var i = 0; i < len; i++) {
+          newMap[key] = lst[i];
+          addMapsToList(toList, mapOfLists, newMap);
+        }
+      }
+    }
+    else {
+      toList.add(map);
+    }
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -48,16 +101,19 @@ class Config {
       return;
     }
 
-    var strValue = StringExt.EMPTY;
+    params[key] = (value ?? StringExt.EMPTY);
+  }
 
-    if (value != null) {
-      assert(!(value is List));
-      assert(!(value is Map));
+  //////////////////////////////////////////////////////////////////////////////
 
-      strValue = value.toString().trim();
+  static void addParamsToList(List<Map<String, Object>> lst) {
+    if (!params.containsKey(PARAM_NAME_INP) || !params.containsKey(PARAM_NAME_OUT)) {
+      return;
     }
 
-    params[key] = strValue;
+    addFlatMapsToList(lst, params);
+
+    params.remove(PARAM_NAME_OUT);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -90,7 +146,7 @@ class Config {
       var action = all[CFG_ACTION];
       assert(action is List);
 
-      var result = <Map<String, String>>[];
+      var result = <Map<String, Object>>[];
 
       action.forEach((map) {
         assert(map is Map);
@@ -192,140 +248,6 @@ class Config {
     }
 
     return value;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static void addParamsToList(List<Map<String, String>> lst) {
-    if (!params.containsKey(PARAM_NAME_INP) || !params.containsKey(PARAM_NAME_OUT)) {
-      return;
-    }
-
-    var newParams = <String, String>{};
-    newParams.addAll(params);
-
-    addFlatMapsToList(lst, newParams, listSeparator: null, nextKeyNo: 0);
-
-    params.remove(PARAM_NAME_OUT);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static void addFlatMapsToList(List<Map<String, String>> lst, Map<String, String> map, {String listSeparator, int nextKeyNo}) {
-    var sep = listSeparator;
-    var hasSep = !StringExt.isNullOrEmpty(sep);
-
-    if (!hasSep) {
-      sep = getValue(map, PARAM_NAME_LST_SEP, canExpand: true);
-      hasSep = !StringExt.isNullOrEmpty(sep);
-    }
-
-    var mapOfLists = <String, List<String>>{};
-
-    map.forEach((k, v) {
-      var isNameInp = (k == PARAM_NAME_INP);
-      var canSplit = (hasSep && (k != PARAM_NAME_CMD) && (k != PARAM_NAME_LST_SEP));
-      var vv = (canSplit ? v.split(sep) : [v]);
-      var lst = <String>[];
-
-      if (isNameInp) {
-        lst.addAll(getListOfInpFilePaths(vv));
-      }
-      else if (canSplit) {
-        lst.addAll(vv);
-      }
-      else {
-        lst.add(v);
-      }
-
-      mapOfLists[k] = lst;
-    });
-
-    addMapsToList(lst, mapOfLists, null);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static void addMapsToList(List<Map<String, String>> toList, Map<String, List<String>> mapOfLists, Map<String, String> map) {
-    var skip = (map?.length ?? 0);
-
-    if (skip < mapOfLists.length) {
-      var key = mapOfLists.keys.skip(skip).first;
-
-      if (key != null) {
-        var lst = mapOfLists[key];
-        var len = lst.length;
-
-        var newMap = <String, String>{};
-
-        if (map != null) {
-          newMap.addAll(map);
-        }
-
-        for (var i = 0; i < len; i++) {
-          newMap[key] = lst[i];
-          addMapsToList(toList, mapOfLists, newMap);
-        }
-      }
-    }
-    else {
-      toList.add(map);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static void addFlatMapsToListOld(List<Map<String, String>> lst, Map<String, String> map, {String listSeparator, int nextKeyNo}) {
-    var sep = listSeparator;
-    var hasSep = !StringExt.isNullOrEmpty(sep);
-
-    if (!hasSep) {
-      sep = getValue(map, PARAM_NAME_LST_SEP, canExpand: true);
-      hasSep = !StringExt.isNullOrEmpty(sep);
-    }
-
-    var stopKeyNo = map.length;
-
-    if (hasSep) {
-      var currKeyNo = 0;
-
-      if ((nextKeyNo == null) || (nextKeyNo < 1)) {
-        nextKeyNo = 1;
-      }
-
-      if (nextKeyNo < stopKeyNo) {
-        map.forEach((k, v) {
-          ++currKeyNo;
-
-          if (currKeyNo < nextKeyNo) {
-            return;
-          }
-          else if ((v != null) && (k != PARAM_NAME_CMD) && (k != PARAM_NAME_LST_SEP)) {
-            var newMap = <String, String>{};
-            newMap.addAll(map);
-
-            var values = v.split(sep);
-
-            for (var value in values) {
-              newMap[k] = value;
-              addFlatMapsToList(lst, newMap, listSeparator: sep, nextKeyNo: (currKeyNo + 1));
-            }
-          }
-        });
-
-        return;
-      }
-    }
-
-    var mapStr = map.toString();
-
-    for (var x in lst) {
-      if (x.toString() == mapStr) {
-        return;
-      }
-    }
-
-    lst.add(map);
   }
 
   //////////////////////////////////////////////////////////////////////////////
