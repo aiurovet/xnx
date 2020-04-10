@@ -26,7 +26,6 @@ class Convert {
 
   static bool canExpandEnv;
   static bool canExpandInp;
-  static String command;
   static bool isExpandInpOnly;
   static bool isStdIn;
   static bool isStdOut;
@@ -58,7 +57,7 @@ class Convert {
 
       canExpandEnv = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_ENV, canExpand: false));
       canExpandInp = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_INP, canExpand: false));
-      command = Config.getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
+      var command = Config.getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
 
       var curDir = Config.getCurDirName(map);
 
@@ -82,8 +81,9 @@ class Convert {
 
       isExpandInpOnly = (command == Config.CMD_EXPAND);
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
+      isStdOut = (outFilePath == StringExt.STDOUT_PATH);
 
-      inpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
+      //inpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
       var curDirName = Config.getCurDirName(map);
 
       var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
@@ -98,29 +98,27 @@ class Convert {
 
         outFilePath = path.join(curDir, outFilePath).getFullPath();
 
-        isStdOut = (outFilePath == StringExt.STDOUT_PATH);
-
         outDirName = (isStdOut ? StringExt.EMPTY : path.dirname(outFilePath));
 
         if (isStdOut && !isExpandInpOnly) {
           throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
         }
 
-        await execFile(inpFilePath, outFilePath, map);
+        await execFile(command, inpFilePath, outFilePath, map);
       }
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Future execFile(String inpFilePath, String outFilePath, Map<String, String> map) async {
+  static Future execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) async {
     var inpFile = (isStdIn ? null : File(inpFilePath));
 
     if ((inpFile != null) && !inpFile.existsSync()) {
       throw Exception('Input file is not found: "${inpFilePath}"');
     }
 
-    var tmpFilePath = (isExpandInpOnly || !canExpandInp ? null : inpFilePath);
+    var tmpFilePath = (isExpandInpOnly || !canExpandInp ? null : getActualInpFilePath(inpFilePath, outFilePath));
 
     if (!isExpandInpOnly) {
       command = command
