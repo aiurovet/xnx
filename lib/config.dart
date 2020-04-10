@@ -32,6 +32,12 @@ class Config {
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
+  // Properties
+  //////////////////////////////////////////////////////////////////////////////
+
+  static int lastModifiedInMicrosecondsSinceEpoch;
+
+  //////////////////////////////////////////////////////////////////////////////
 
   static void addFlatMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
     var cloneMap = <String, Object>{};
@@ -177,18 +183,23 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static String getFullCurDirName(String curDirName) {
+    return path.join(Options.startDirName, curDirName).getFullPath();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static String expandValue(String value, Map<String, Object> map, {String paramName, bool isForAny = false}) {
     var canExpandEnv = (map.containsKey(PARAM_NAME_EXP_ENV) ? StringExt.parseBool(map[PARAM_NAME_EXP_ENV]) : false);
-    var hasParamName = StringExt.isNullOrBlank(paramName);
+    var hasParamName = !StringExt.isNullOrBlank(paramName);
     var isCurDirParam = (hasParamName && (paramName == PARAM_NAME_CUR_DIR));
-    var hasCurDir = isCurDirParam;
 
     if (canExpandEnv) {
       value = value.expandEnvironmentVariables();
     }
 
     if (!isForAny && hasParamName) {
-      if ((paramName == PARAM_NAME_CMD) || (paramName == PARAM_NAME_OUT)) {
+      if ((paramName == PARAM_NAME_CMD) || (paramName == PARAM_NAME_INP) || (paramName == PARAM_NAME_OUT)) {
         return value;
       }
     }
@@ -215,18 +226,14 @@ class Config {
 
     for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(value)); i++) {
       map.forEach((k, v) {
-        if (!isCurDirParam && (k == PARAM_NAME_CUR_DIR)) {
-          hasCurDir = true;
-        }
-
         if (!hasParamName || (k != paramName)) {
           value = value.replaceAll(k, v);
         }
       });
     }
 
-    if (hasCurDir && !path.isAbsolute(value)) {
-      value = path.join(Options.startDirName, value).getFullPath();
+    if (isCurDirParam) {
+      value = getFullCurDirName(value);
     }
 
     if (isParamWithPath(paramName)) {
@@ -234,15 +241,6 @@ class Config {
     }
 
     return value;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String getCurDirName(Map<String, String> map) {
-    var curDirName = (Config.getValue(map, PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
-    curDirName = curDirName.getFullPath();
-
-    return curDirName;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -311,6 +309,7 @@ class Config {
         throw Exception('Failed to find expected configuration file: ${inpName}');
       }
 
+      lastModifiedInMicrosecondsSinceEpoch = file.lastModifiedSync().microsecondsSinceEpoch;
       text = file.readAsStringSync();
     }
 

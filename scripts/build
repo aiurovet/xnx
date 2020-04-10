@@ -36,8 +36,8 @@ OSL=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
 OSL=$(echo "${OSL}" | tr [:upper:] [:lower:]) || exitApp 1 "Failed to lowercase OS kernel name"
 [[ "${OSL}" == "darwin" ]] && OSL="macos"
 
-SRC="${TOP}/lib/${PRJ}.dart"
 BIN="${TOP}/bin/${OSL}"
+SRC="${BIN}/../main.dart"
 
 mkdir -p "${BIN}" || exitApp 1 "Failed to create directory \"${BIN}\""
 

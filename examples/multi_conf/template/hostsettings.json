@@ -1,4 +1,4 @@
 {
-  "DefaultConnection": "Server={env}-host; Database={env}",
+  "DefaultConnection": "Server={envLC}-host; Database={envTC}",
   "Directory": "{dir}"
 }

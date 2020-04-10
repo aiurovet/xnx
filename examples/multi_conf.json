@@ -17,9 +17,15 @@
 
       { "{CD}": "multi_conf" },
 
-      { "{i}": "{CD}/template/*settings.json", "{env}": [ "Dev", "Test", "Prod" ] },
+      { "{i}": "{CD}/template/*settings.json" },
 
-      { "{o}": "{id}/../out/{in}-{env}{ix}" },
+      { "{env}": [
+          { "{envTC}": "Dev",  "{envLC}": "dev"  },
+          { "{envTC}": "Test", "{envLC}": "test" },
+          { "{envTC}": "Prod", "{envLC}": "prod" }
+      ] },
+
+       { "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envLC}{ix}" },
 
       { "": null }
     ]

@@ -56,7 +56,7 @@ class Options {
   static final Map<String, Object> VERBOSITY = {
     'name': 'verbosity',
     'abbr': 'v',
-    'help': 'how much information to show: 0-3 (default: 1)',
+    'help': 'how much information to show: 0-3',
     'valueHelp': 'LEVEL',
     'defaultsTo': '1',
   };
