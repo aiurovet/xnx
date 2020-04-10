@@ -8,24 +8,22 @@
       "{exp-env}": "{EE}",
       "{exp-inp}": "{EI}",
       "{inp}": "{i}",
-      "{out}": "{o}",
-      "{fld-sep}": "{FS}", // field separator: "{w},{h},{m}": "20,20,mdpi;40,40,hdpi;80,80,xhdpi"
-      "{lst-sep}": "{LS}"  // list separator for all permutations
+      "{out}": "{o}"
     },
     "action": [
       { "{EE}": true, "{EI}": true },
 
       // Terribly slow,
-      //{ "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+      // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
       // Sometimes fails to display svg properly,
-      //{ "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
+      // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
 
       // Not the best quality
-      //{ "{c}": "convert \"{i}\" \"{o}\"" },
+      // { "{c}": "convert \"{i}\" \"{o}\"" },
 
       // Not the best quality
-      //{ "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+      // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
       // The most accurate
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
@@ -37,11 +35,13 @@
       { "{i}": "{img-src-dir}/app{m}.svg" },
       { "{ox}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png" },
 
-      { "{d}":  48, "{r}": "m",    "{o}": "{ox}" },
-      { "{d}":  72, "{r}": "h",    "{o}": "{ox}" },
-      { "{d}":  96, "{r}": "xh",   "{o}": "{ox}" },
-      { "{d}": 144, "{r}": "xxh",  "{o}": "{ox}" },
-      { "{d}": 192, "{r}": "xxxh", "{o}": "{ox}" },
+      { "{d}":   48, "{r}": "m",    "{o}": "{ox}" },
+      { "{d}":   72, "{r}": "h",    "{o}": "{ox}" },
+      { "{d}":   96, "{r}": "xh",   "{o}": "{ox}" },
+      { "{d}":  144, "{r}": "xxh",  "{o}": "{ox}" },
+      { "{d}":  192, "{r}": "xxxh", "{o}": "{ox}" },
+
+      { "{mm}": null, "{m}": null, "{D}": null }, // discard arrays to avoid repetitions onwards
 
       { "{ox}":  "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png" },
 

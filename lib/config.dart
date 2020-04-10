@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'log.dart';
 import 'options.dart';
-import 'ext/directory.dart';
 import 'ext/stdin.dart';
 import 'ext/string.dart';
 
@@ -24,22 +23,13 @@ class Config {
   static String PARAM_NAME_CUR_DIR = '{cur-dir}';
   static String PARAM_NAME_EXP_ENV = '{exp-env}';
   static String PARAM_NAME_EXP_INP = '{exp-inp}';
-  static String PARAM_NAME_FLD_SEP = '{fld-sep}';
   static String PARAM_NAME_INP = '{inp}';
   static String PARAM_NAME_INP_DIR = '{inp-dir}';
   static String PARAM_NAME_INP_EXT = '{inp-ext}';
   static String PARAM_NAME_INP_NAME = '{inp-name}';
-  static String PARAM_NAME_LST_SEP = '{lst-sep}';
   static String PARAM_NAME_OUT = '{out}';
 
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
-  static final RegExp RE_PATH_LIST_SEP = RegExp('\\s*,\\s*');
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Properties
-  //////////////////////////////////////////////////////////////////////////////
-
-  static Map<String, Object> params;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -47,81 +37,78 @@ class Config {
     var cloneMap = <String, Object>{};
     cloneMap.addAll(map);
 
-    var isCloneFlat = true;
+    var isMapFlat = true;
 
     map.forEach((k, v) {
-      if ((v == null) || !isCloneFlat /* only one List or Map per call */) {
+      if ((v == null) || !isMapFlat /* only one List or Map per call */) {
         return;
       }
 
       if (v is List) {
-        isCloneFlat = false;
-
-        var valueList = v;
-
-        var flatMap = <String, Object>{};
-        flatMap.addAll(cloneMap);
-
-        for (var i = 0, n = valueList.length; i < n; i++) {
-          flatMap[k] = valueList[i];
-          addFlatMapsToList(listOfMaps, flatMap);
-          flatMap.remove(k);
-        }
+        isMapFlat = false;
+        addFlatMapsToList_addList(listOfMaps, cloneMap, k, v);
       }
       else if (v is Map) {
-        isCloneFlat = false;
-
-        var flatMap = <String, Object>{};
-
-        flatMap.addAll(cloneMap);
-        flatMap.remove(k);
-        flatMap.addAll(v);
-
-        addFlatMapsToList(listOfMaps, flatMap);
+        isMapFlat = false;
+        addFlatMapsToList_addMap(listOfMaps, cloneMap, k, v);
       }
       else {
         cloneMap[k] = v;
       }
     });
 
-    if (isCloneFlat) {
-      var flatMap = <String, String>{};
+    if (isMapFlat) {
+      var strStrMap = <String, String>{};
 
       cloneMap.forEach((k, v) {
         if (v != null) {
-          flatMap[k] = v.toString();
+          strStrMap[k] = v.toString();
         }
       });
 
-      flatMap.forEach((k, v) {
+      strStrMap.forEach((k, v) {
         if (v != null) {
-          flatMap[k] = expandValue(flatMap[k], flatMap, paramName: k);
+          strStrMap[k] = expandValue(strStrMap[k], strStrMap, paramName: k);
         }
       });
 
-      listOfMaps.add(flatMap);
+      listOfMaps.add(strStrMap);
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addParamValue(String key, Object value) {
-    if (StringExt.isNullOrEmpty(key)) {
-      return;
-    }
+  static void addFlatMapsToList_addList(List<Map<String, String>> listOfMaps, Map<String, Object> map, String key, List<Object> argList) {
+    var cloneMap = <String, Object>{};
+    cloneMap.addAll(map);
 
-    params[key] = (value ?? StringExt.EMPTY);
+    for (var i = 0, n = argList.length; i < n; i++) {
+      cloneMap[key] = argList[i];
+      addFlatMapsToList(listOfMaps, cloneMap);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addParamsToList(List<Map<String, String>> lst) {
-    if (!params.containsKey(PARAM_NAME_INP) || !params.containsKey(PARAM_NAME_OUT)) {
-      return;
-    }
+  static void addFlatMapsToList_addMap(List<Map<String, String>> listOfMaps, Map<String, Object> map, String key, Map<String, Object> argMap) {
+    var cloneMap = <String, Object>{};
 
-    addFlatMapsToList(lst, params);
-    params.remove(PARAM_NAME_OUT);
+    cloneMap.addAll(map);
+    cloneMap.remove(key);
+    cloneMap.addAll(argMap);
+
+    addFlatMapsToList(listOfMaps, cloneMap);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
+    var isReady = ((map != null) && map.containsKey(PARAM_NAME_INP) && map.containsKey(PARAM_NAME_OUT));
+
+    if (isReady) {
+      addFlatMapsToList(listOfMaps, map);
+      map.remove(PARAM_NAME_OUT);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -148,7 +135,7 @@ class Config {
 
       Log.information('Processing actions');
 
-      params = {};
+      var params = <String, Object>{};
       params[PARAM_NAME_CUR_DIR] = '';
 
       var action = all[CFG_ACTION];
@@ -164,13 +151,14 @@ class Config {
         map.forEach((key, value) {
           if (!StringExt.isNullOrBlank(key)) {
             Log.debug('...${key}: ${value}');
-            addParamValue(key, value);
+
+            params[key] = (value ?? StringExt.EMPTY);
           }
         });
 
         if (params.isNotEmpty) {
           Log.debug('...adding to the list of actions');
-          addParamsToList(result);
+          addMapsToList(result, params);
         }
 
         Log.debug('...completed row processing');
@@ -185,16 +173,6 @@ class Config {
 
       return null;
     }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String expandParamValue(String paramName, {bool isForAny = false}) {
-    var paramValue = (params[paramName] ?? StringExt.EMPTY);
-
-    paramValue = expandValue(paramValue, params, paramName: paramName, isForAny: isForAny);
-
-    return paramValue;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -215,7 +193,7 @@ class Config {
       }
     }
 
-    var inputFilePath = map[PARAM_NAME_INP];
+    var inputFilePath = map[PARAM_NAME_INP].toString();
 
     if (inputFilePath == StringExt.STDIN_PATH) {
       if (value.contains(PARAM_NAME_INP_DIR) ||
@@ -224,7 +202,7 @@ class Config {
         throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
       }
     }
-    else {
+    else if (!inputFilePath.containsWildcards()) {
       var inputFilePart = path.dirname(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
 
@@ -260,76 +238,11 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getCurDirName({Map<String, String> map}) {
-    var curDirName = (Config.getValue((map ?? params), PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
+  static String getCurDirName(Map<String, String> map) {
+    var curDirName = (Config.getValue(map, PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
     curDirName = curDirName.getFullPath();
 
     return curDirName;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static List<String> getInpFilePaths(String filePath) {
-    if (StringExt.isNullOrBlank(filePath)) {
-      return [];
-    }
-
-    //var filePathTrim = expandValue(filePath.trim(), paramName: null, isForAny: true);
-    var filePathTrim = filePath.trim();
-
-    var lst = <String>[];
-
-    if (filePath == StringExt.STDIN_PATH) {
-      lst.add(filePath);
-    }
-    else {
-      var parentDirName = path.dirname(filePathTrim);
-      var hasParentDir = !StringExt.isNullOrBlank(parentDirName);
-
-      if (!path.isAbsolute(filePathTrim)) {
-        filePathTrim = path.join(getCurDirName(), filePathTrim);
-        parentDirName = path.dirname(filePathTrim);
-      }
-
-      var dir = Directory(filePathTrim);
-      var pattern = path.basename(filePathTrim);
-
-      if (pattern.containsWildcards()) {
-        if (hasParentDir) {
-          dir = Directory(parentDirName);
-        }
-
-        lst = dir.pathListSync(
-            pattern: pattern,
-            checkExists: false,
-            recursive: hasParentDir,
-            takeDirs: false,
-            takeFiles: true
-        );
-      }
-      else if (dir.existsSync()) {
-        lst = dir.pathListSync(
-            pattern: null,
-            checkExists: false,
-            recursive: true,
-            takeDirs: false,
-            takeFiles: true
-        );
-      }
-      else {
-        var file = File(filePathTrim);
-
-        if (file.existsSync()) {
-          lst = [file.path];
-        }
-      }
-    }
-
-    if (lst.length <= 0) {
-      throw Exception('No input found for: ${filePath}');
-    }
-
-    return lst;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -433,9 +346,6 @@ class Config {
       }
       else if (k == PARAM_NAME_INP_NAME) {
         PARAM_NAME_INP_NAME = v;
-      }
-      else if (k == PARAM_NAME_LST_SEP) {
-        PARAM_NAME_LST_SEP = v;
       }
       else if (k == PARAM_NAME_OUT) {
         PARAM_NAME_OUT = v;

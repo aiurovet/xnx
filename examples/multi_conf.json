@@ -17,9 +17,9 @@
 
       { "{CD}": "multi_conf" },
 
-      { "{i}": "template/*settings.json", "{env}": [ "Dev", "Test", "Prod" ] },
+      { "{i}": "{CD}/template/*settings.json", "{env}": [ "Dev", "Test", "Prod" ] },
 
-      { "{dir}": "{CD}/{env}", "{o}": "{in}-{env}{ix}" },
+      { "{o}": "{id}/../out/{in}-{env}{ix}" },
 
       { "": null }
     ]
