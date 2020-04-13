@@ -1,0 +1,74 @@
+#!/bin/bash
+
+################################################################################
+
+ACT="${1}"
+INP="${2}"
+OUT="${3}"
+CFG="${4}"
+
+################################################################################
+
+DIR="${INP}.dir"
+
+################################################################################
+
+function exitApp() {
+  local ret=${1:0}
+  local msg="${2}"
+
+  (( ${ret} != 0 )) && msg="*** ERROR: ${msg:-Conversion failed}"
+
+  [[ "${msg}" != "" ]] && printf "\n%s\n\n" "${msg}"
+
+  exit ${ret}
+}
+
+################################################################################
+# Check input file and delete output file
+################################################################################
+
+[[ "${INP}" == "" ]] && exitApp 1 "Input file is not specified"
+[ ! -f "${INP}" ] && exitApp 1 "Input file is not found: \"${INP}\""
+
+rm -rf "${OUT}"
+
+################################################################################
+# Create or Delete: delete directory for files extracted from input file
+################################################################################
+
+if [[ "${ACT}" == "c" ]] || [[ "${ACT}" == "d" ]]; then
+  if [[ "${PWD}" == "${DIR}" ]]; then
+    cd .. || exitApp 1 "Failed to leave directory \"${DIR}\""
+  fi
+
+  rm -rf "${DIR}"
+fi
+
+################################################################################
+# Delete: finish
+################################################################################
+
+if [[ "${ACT}" == "d" )); then
+  exitApp 0
+fi
+
+################################################################################
+# Create or Update: create directory and extract all files from input file
+################################################################################
+
+if [ ! -d "${DIR}" ]; then
+  mkdir -p "${DIR}" || exitApp 1 "Failed to create directory \"${DIR}\""
+fi
+
+################################################################################
+# Extracted files: convert those and compress to the output file
+################################################################################
+
+unzip -o -d "${DIR}" "${INP}" || exitApp 1 "Failed to extract files from \"${INP}\""
+doul -d "${DIR}" -C "${CFG}" || exitApp 1 "Failed to convert \"${INP}\" to \"${OUT}\""
+zip -r "${OUT}" || exitApp 1 "Failed to compress files to \"${OUT}\""
+
+exitApp 0
+
+################################################################################

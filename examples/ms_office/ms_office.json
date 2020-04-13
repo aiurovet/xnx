@@ -1,0 +1,29 @@
+{
+  "x": {
+    "rename": {
+      "{cmd}": "{c}",
+      "{cur-dir}": "{CD}",
+      "{exp-env}": "{EE}",
+      "{exp-inp}": "{EI}",
+      "{inp}": "{i}",
+      "{inp-dir}": "{id}",
+      "{inp-ext}": "{ix}",
+      "{inp-name}": "{in}",
+      "{out}": "{o}"
+    },
+    "action": [
+      { "{EE}": true, "{EI}": true },
+
+      { "{CD}": "." },
+
+      { "{c}": [ "doul -C '{data}' -d '{CD}/{i}.dir' && zip -r *" ] },
+
+      { "{i}": "sample.docx", "data":  { "{inp}": "{i}", "{out}": "{o}", "{name}": "Regina Yurovetsky", "{dob}": "7 Nov 1934",
+        "{spouse-name}": "Mark Yurovetsky", "{spouse-dob}": "29 Nov 1935", "{pronoun}": "he", "{pronoun-att}": "his",
+        "{disease}": "Alzheimer's", "{dr-name}": "Edward Petrov" }
+      },
+
+      { "": null }
+    ]
+  }
+}

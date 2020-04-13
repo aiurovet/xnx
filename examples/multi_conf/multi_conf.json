@@ -25,7 +25,7 @@
           { "{envTC}": "Prod", "{envLC}": "prod" }
       ] },
 
-       { "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envLC}{ix}" },
+      { "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envLC}{ix}" },
 
       { "": null }
     ]
