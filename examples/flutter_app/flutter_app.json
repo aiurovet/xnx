@@ -28,7 +28,7 @@
       // The most accurate
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images" },
+      { "{CD}": ".", "{img-src-dir}": "{CD}/assets/images" },
 
       { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
 

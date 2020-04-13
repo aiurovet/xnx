@@ -13,7 +13,7 @@
 
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{CD}": "multi_icon", "{icons}": [ "edit", "find", "save" ], "{img-src-dir}":  "{CD}/svg" },
+      { "{CD}": ".", "{icons}": [ "edit", "find", "save" ], "{img-src-dir}":  "{CD}/svg" },
 
       { "{i}": "resizer.svg" },
 

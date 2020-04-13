@@ -15,7 +15,7 @@
       { "{EE}": true, "{EI}": true },
       { "{c}": "expand-only" },
 
-      { "{CD}": "multi_conf" },
+      { "{CD}": "." },
 
       { "{i}": "{CD}/template/*settings.json" },
 

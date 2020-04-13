@@ -177,6 +177,15 @@ class Options {
       if (!Path.isAbsolute(configFilePath)) {
         configFilePath = getConfigFullPath(args);
       }
+
+      var configFile = File(configFilePath);
+
+      if (!configFile.existsSync()) {
+        var dirName = Path.dirname(configFilePath);
+        var fileName = Path.basename(dirName) + FILE_TYPE_CFG;
+
+        configFilePath = Path.join(dirName, fileName);
+      }
     }
 
     if (!StringExt.isNullOrBlank(startDirName)) {
