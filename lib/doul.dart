@@ -4,7 +4,7 @@ import 'convert.dart';
 import 'ext/string.dart';
 import 'log.dart';
 
-class App {
+class Doul {
   static void main(List<String> args) {
     var isOK = false;
 

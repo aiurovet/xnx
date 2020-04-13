@@ -1,6 +1,6 @@
 import 'dart:core';
 import 'dart:io';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as Path;
 
 extension StringExt on String {
 
@@ -80,7 +80,7 @@ extension StringExt on String {
   //////////////////////////////////////////////////////////////////////////////
 
   String getFullPath() {
-    var fullPath = (this == STDIN_PATH ? this : path.canonicalize(adjustPath()));
+    var fullPath = (this == STDIN_PATH ? this : Path.canonicalize(adjustPath()));
 
     return fullPath;
   }

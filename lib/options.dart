@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as Path;
 
 import 'package:doul/ext/string.dart';
 import 'log.dart';
@@ -21,7 +21,7 @@ class Options {
     'help': 'display detailed help, including config file format',
     'negatable': false,
   };
-  static final Map<String, Object> STARTDIR = {
+  static final Map<String, Object> START_DIR = {
     'name': 'dir',
     'abbr': 'd',
     'help': 'startup directory',
@@ -64,12 +64,11 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   static final String APP_NAME = 'doul';
-  static final String OPT_PREFIX = '-';
   static final String FILE_TYPE_CFG = '.json';
   static final String DEF_FILE_NAME = '${APP_NAME}${FILE_TYPE_CFG}';
 
   static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-]${CONFIG['name']}|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
-  static final RegExp RE_OPT_STARTDIR = RegExp('^[\\-]([\\-]${STARTDIR['name']}|${STARTDIR['abbr']})([\\=]|\$)', caseSensitive: true);
+  static final RegExp RE_OPT_STARTDIR = RegExp('^[\\-]([\\-]${START_DIR['name']}|${START_DIR['abbr']})([\\=]|\$)', caseSensitive: true);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -90,7 +89,7 @@ class Options {
       }
     }
 
-    return path.join(startDirName, configFilePath).getFullPath();
+    return Path.join(startDirName, configFilePath).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -136,7 +135,7 @@ class Options {
       ..addFlag(Options.FORCE_CONVERT['name'], abbr: Options.FORCE_CONVERT['abbr'], help: Options.FORCE_CONVERT['help'], negatable: Options.FORCE_CONVERT['negatable'], callback: (value) {
         isForced = value;
       })
-      ..addOption(Options.STARTDIR['name'], abbr: Options.STARTDIR['abbr'], help: Options.STARTDIR['help'], valueHelp: Options.STARTDIR['valueHelp'], defaultsTo: Options.STARTDIR['defaultsTo'], callback: (value) {
+      ..addOption(Options.START_DIR['name'], abbr: Options.START_DIR['abbr'], help: Options.START_DIR['help'], valueHelp: Options.START_DIR['valueHelp'], defaultsTo: Options.START_DIR['defaultsTo'], callback: (value) {
         startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
       })
       ..addOption(Options.CONFIG['name'], abbr: Options.CONFIG['abbr'], help: Options.CONFIG['help'], valueHelp: Options.CONFIG['valueHelp'], defaultsTo: Options.CONFIG['defaultsTo'], callback: (value) {
@@ -164,18 +163,18 @@ class Options {
       startDirName = null;
     }
 
-    startDirName = path.canonicalize(startDirName ?? '');
+    startDirName = Path.canonicalize(startDirName ?? '');
 
     if (StringExt.isNullOrBlank(configFilePath)) {
       configFilePath = DEF_FILE_NAME;
     }
 
     if (configFilePath != StringExt.STDIN_PATH) {
-      if (StringExt.isNullOrBlank(path.extension(configFilePath))) {
-        configFilePath = path.setExtension(configFilePath, FILE_TYPE_CFG);
+      if (StringExt.isNullOrBlank(Path.extension(configFilePath))) {
+        configFilePath = Path.setExtension(configFilePath, FILE_TYPE_CFG);
       }
 
-      if (!path.isAbsolute(configFilePath)) {
+      if (!Path.isAbsolute(configFilePath)) {
         configFilePath = getConfigFullPath(args);
       }
     }

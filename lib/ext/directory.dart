@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as Path;
 import 'string.dart';
 
 extension DirectoryExt on Directory {
@@ -20,7 +20,7 @@ extension DirectoryExt on Directory {
       if ((takeDirs && (entity is Directory)) || (takeFiles && (entity is File))) {
         var entityPath = entity.path;
 
-        if ((filter == null) || filter.hasMatch(path.basename(entityPath))) {
+        if ((filter == null) || filter.hasMatch(Path.basename(entityPath))) {
           lst.add(entityPath);
         }
       }

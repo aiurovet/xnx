@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as Path;
 import 'log.dart';
 import 'options.dart';
 import 'ext/stdin.dart';
@@ -184,7 +184,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static String getFullCurDirName(String curDirName) {
-    return path.join(Options.startDirName, curDirName).getFullPath();
+    return Path.join(Options.startDirName, curDirName).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -214,13 +214,13 @@ class Config {
       }
     }
     else if (!inputFilePath.containsWildcards()) {
-      var inputFilePart = path.dirname(inputFilePath);
+      var inputFilePart = Path.dirname(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
 
-      inputFilePart = path.basenameWithoutExtension(inputFilePath);
+      inputFilePart = Path.basenameWithoutExtension(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
 
-      inputFilePart = path.extension(inputFilePath);
+      inputFilePart = Path.extension(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_EXT, inputFilePart);
     }
 

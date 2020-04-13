@@ -1,3 +1,3 @@
-import 'package:doul/app.dart';
+import 'package:doul/doul.dart';
 
-void main(List<String> args) => App.main(args);
+void main(List<String> args) => Doul.main(args);

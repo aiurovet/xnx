@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
 import 'config.dart';
@@ -70,7 +70,7 @@ class Convert {
         throw Exception('Undefined output for\n\n${map.toString()}');
       }
 
-      inpFilePath = path.join(curDirName, inpFilePath).getFullPath();
+      inpFilePath = Path.join(curDirName, inpFilePath).getFullPath();
 
       isExpandInpOnly = (command == Config.CMD_EXPAND);
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
@@ -79,16 +79,16 @@ class Convert {
       var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
       for (inpFilePath in inpFilePaths) {
-        var inpBaseName = path.basename(inpFilePath);
+        var inpBaseName = Path.basename(inpFilePath);
 
         outFilePath = outFilePath
-            .replaceAll(Config.PARAM_NAME_INP_DIR, path.dirname(inpFilePath))
-            .replaceAll(Config.PARAM_NAME_INP_NAME, path.basenameWithoutExtension(inpBaseName))
-            .replaceAll(Config.PARAM_NAME_INP_EXT, path.extension(inpBaseName));
+            .replaceAll(Config.PARAM_NAME_INP_DIR, Path.dirname(inpFilePath))
+            .replaceAll(Config.PARAM_NAME_INP_NAME, Path.basenameWithoutExtension(inpBaseName))
+            .replaceAll(Config.PARAM_NAME_INP_EXT, Path.extension(inpBaseName));
 
-        outFilePath = path.join(curDirName, outFilePath).getFullPath();
+        outFilePath = Path.join(curDirName, outFilePath).getFullPath();
 
-        outDirName = (isStdOut ? StringExt.EMPTY : path.dirname(outFilePath));
+        outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePath));
 
         if (isStdOut && !isExpandInpOnly) {
           throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
@@ -264,10 +264,10 @@ class Convert {
       return inpFilePath;
     }
     else if (!isStdOut) {
-      var tmpFileName = (path.basenameWithoutExtension(outFilePath) + FILE_TYPE_TMP + path.extension(inpFilePath));
-      var tmpDirName = path.dirname(outFilePath);
+      var tmpFileName = (Path.basenameWithoutExtension(outFilePath) + FILE_TYPE_TMP + Path.extension(inpFilePath));
+      var tmpDirName = Path.dirname(outFilePath);
 
-      return path.join(tmpDirName, tmpFileName);
+      return Path.join(tmpDirName, tmpFileName);
     }
   }
 
@@ -295,16 +295,16 @@ class Convert {
       lst.add(filePath);
     }
     else {
-      var parentDirName = path.dirname(filePathTrim);
+      var parentDirName = Path.dirname(filePathTrim);
       var hasParentDir = !StringExt.isNullOrBlank(parentDirName);
 
-      if (!path.isAbsolute(filePathTrim)) {
-        filePathTrim = path.join(curDirName, filePathTrim);
-        parentDirName = path.dirname(filePathTrim);
+      if (!Path.isAbsolute(filePathTrim)) {
+        filePathTrim = Path.join(curDirName, filePathTrim);
+        parentDirName = Path.dirname(filePathTrim);
       }
 
       var dir = Directory(filePathTrim);
-      var pattern = path.basename(filePathTrim);
+      var pattern = Path.basename(filePathTrim);
 
       if (pattern.containsWildcards()) {
         if (hasParentDir) {

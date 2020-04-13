@@ -26,11 +26,11 @@ mkdir -p "${WIN_TOP}" || exitApp 1 "Failed to create directory \"${WIN_TOP}\""
 WIN_ABV=$(dirname "${WIN_TOP}") || exitApp 1 "Failed to retrieve parent directory of \"${WIN_TOP}\""
 
 rm -rf "${WIN_TOP}"
-cp -pr "${TOP}" "${WIN_ABV}" || exitApp 1 "Failed to copy project to Windows mirror"
+cp -pr "${TOP}" "${WIN_ABV}" || exitApp 1 "Failed to copy project to Windows directory"
 
-echo "Copied the latest version"
+echo "Copied the latest version to Windows directory"
 
-wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\scripts\\build" || exitApp 1 "Failed to executem Windows build"
+wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\scripts\\build" || exitApp 1 "Failed to execute Windows build"
 cp -p "${WIN_TOP}/bin/windows/${PRJ}.exe" "${TOP}/bin/windows/" || exitApp 1 "Failed to copy Windows executable back to the project"
 
 echo "Successfully completed"
