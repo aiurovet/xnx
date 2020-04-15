@@ -27,6 +27,7 @@ class Config {
   static String PARAM_NAME_INP_DIR = '{inp-dir}';
   static String PARAM_NAME_INP_EXT = '{inp-ext}';
   static String PARAM_NAME_INP_NAME = '{inp-name}';
+  static String PARAM_NAME_INP_NAME_EXT = '{inp-name-ext}';
   static String PARAM_NAME_OUT = '{out}';
 
   static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
@@ -209,13 +210,17 @@ class Config {
     if (inputFilePath == StringExt.STDIN_PATH) {
       if (value.contains(PARAM_NAME_INP_DIR) ||
           value.contains(PARAM_NAME_INP_EXT) ||
-          value.contains(PARAM_NAME_INP_NAME)) {
+          value.contains(PARAM_NAME_INP_NAME) ||
+          value.contains(PARAM_NAME_INP_NAME_EXT)) {
         throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
       }
     }
     else if (!inputFilePath.containsWildcards()) {
       var inputFilePart = Path.dirname(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
+
+      inputFilePart = Path.basename(inputFilePath);
+      value = value.replaceAll(PARAM_NAME_INP_NAME_EXT, inputFilePart);
 
       inputFilePart = Path.basenameWithoutExtension(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
@@ -345,6 +350,9 @@ class Config {
       }
       else if (k == PARAM_NAME_INP_NAME) {
         PARAM_NAME_INP_NAME = v;
+      }
+      else if (k == PARAM_NAME_INP_NAME_EXT) {
+        PARAM_NAME_INP_NAME_EXT = v;
       }
       else if (k == PARAM_NAME_OUT) {
         PARAM_NAME_OUT = v;

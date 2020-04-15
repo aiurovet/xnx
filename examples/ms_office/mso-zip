@@ -1,0 +1,17 @@
+#!/bin/bash
+
+################################################################################
+
+if (( ${#} != 2 )); then
+  cat <<EOT >&2
+Usage: ${0} <dir> <file>
+
+Where: <dir> is directory containing unzipped source
+       <out> is target MS Office file (docx, xlsx, pptx, etc.)
+EOT
+  exit 1
+fi
+
+cd "${1}" && zip -m -r "${2}" . && cd .. && rmdir "${1}"
+
+################################################################################

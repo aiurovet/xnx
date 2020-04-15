@@ -9,19 +9,32 @@
       "{inp-dir}": "{id}",
       "{inp-ext}": "{ix}",
       "{inp-name}": "{in}",
+      "{inp-name-ext}": "{inx}",
       "{out}": "{o}"
     },
     "action": [
       { "{EE}": true, "{EI}": true },
 
-      { "{CD}": "." },
+      { "{CD}": ".", "{od}": "{CD}/out" },
+      { "{cleanup}": { "{o}": "{od}", "{c}": "cd '{ozd}' && zip -m -r '{izd}' . && cd .. && rmdir '{ozd}'" } },
 
-      { "{c}": [ "doul -C '{data}' -d '{CD}/{i}.dir' && zip -r *" ] },
+      { "{i}": "sample.docx", "{izd}": "{CD}/{i}.dir", "{c}": "unzip -d '{izd}'", "{o}": "" },
 
-      { "{i}": "sample.docx", "data":  { "{inp}": "{i}", "{out}": "{o}", "{name}": "Regina Yurovetsky", "{dob}": "7 Nov 1934",
-        "{spouse-name}": "Mark Yurovetsky", "{spouse-dob}": "29 Nov 1935", "{pronoun}": "he", "{pronoun-att}": "his",
-        "{disease}": "Alzheimer's", "{dr-name}": "Edward Petrov" }
+      { "{i}": "{izd}/*.xml", "{ozd}": "{od}/{id}.dir", "{c}": "expand-only" },
+      {
+        "{name}": "Ann Ashwood", "{dob}": "1 Jan 1961",
+        "{spouse-name}": "Alfred Ashwood", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "his",
+        "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson",
+        "{o}": "{ozd}/{inx}"
       },
+      { "{o}": "{cleanup}" },
+      {
+        "{name}": "Brian Bourie", "{dob}": "1 Feb 1952",
+        "{spouse-name}": "Blanche Bourie", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "her",
+        "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
+        "{o}": "{ozd}/{inx}"
+      },
+      { "{o}": "{cleanup}" },
 
       { "": null }
     ]
