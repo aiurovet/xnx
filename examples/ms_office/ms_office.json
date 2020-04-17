@@ -13,28 +13,31 @@
       "{out}": "{o}"
     },
     "action": [
-      { "{EE}": true, "{EI}": true },
+      { "{EE}": true, "{EI}": false },
 
       { "{CD}": ".", "{od}": "{CD}/out" },
-      { "{cleanup}": { "{o}": "{od}", "{c}": "cd '{ozd}' && zip -m -r '{izd}' . && cd .. && rmdir '{ozd}'" } },
 
-      { "{i}": "sample.docx", "{izd}": "{CD}/{i}.dir", "{c}": "unzip -d '{izd}'", "{o}": "" },
+      { "{i}": "sample.docx", "{izd}": "{CD}/{i}.dir", "{c}": "unzip -d '{izd}' '{i}'", "{o}": "" },
 
-      { "{i}": "{izd}/*.xml", "{ozd}": "{od}/{id}.dir", "{c}": "expand-only" },
+      { "{i}": "{izd}/*.xml", "{ozd}": "{od}/{in}-{fnm}", "{c}": "expand-only" },
+
+      { "{EI}": true },
+
       {
+        "{fnm}": "ashwood",
         "{name}": "Ann Ashwood", "{dob}": "1 Jan 1961",
         "{spouse-name}": "Alfred Ashwood", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "his",
-        "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson",
-        "{o}": "{ozd}/{inx}"
+        "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson"
       },
-      { "{o}": "{cleanup}" },
+      { "{o}": "{ozd}{ix}", "{c}": "mso-zip '{ozd}' '{o}'" },
       {
+        "{fnm}": "bourie",
         "{name}": "Brian Bourie", "{dob}": "1 Feb 1952",
         "{spouse-name}": "Blanche Bourie", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "her",
         "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
         "{o}": "{ozd}/{inx}"
       },
-      { "{o}": "{cleanup}" },
+      { "{o}": "{ozd}{ix}", "{c}": "mso-zip '{ozd}' '{o}'" },
 
       { "": null }
     ]

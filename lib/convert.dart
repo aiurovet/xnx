@@ -66,10 +66,6 @@ class Convert {
 
       var outFilePath = Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: true);
 
-      if (StringExt.isNullOrBlank(outFilePath)) {
-        throw Exception('Undefined output for\n\n${map.toString()}');
-      }
-
       inpFilePath = Path.join(curDirName, inpFilePath).getFullPath();
 
       isExpandInpOnly = (command == Config.CMD_EXPAND);
@@ -81,14 +77,21 @@ class Convert {
       for (inpFilePath in inpFilePaths) {
         var inpBaseName = Path.basename(inpFilePath);
 
-        outFilePath = outFilePath
-            .replaceAll(Config.PARAM_NAME_INP_DIR, Path.dirname(inpFilePath))
-            .replaceAll(Config.PARAM_NAME_INP_NAME, Path.basenameWithoutExtension(inpBaseName))
-            .replaceAll(Config.PARAM_NAME_INP_EXT, Path.extension(inpBaseName));
+        if (!StringExt.isNullOrBlank(outFilePath)) {
+          outFilePath = outFilePath
+              .replaceAll(Config.PARAM_NAME_INP_DIR, Path.dirname(inpFilePath))
+              .replaceAll(Config.PARAM_NAME_INP_NAME,
+              Path.basenameWithoutExtension(inpBaseName))
+              .replaceAll(
+              Config.PARAM_NAME_INP_EXT, Path.extension(inpBaseName));
 
-        outFilePath = Path.join(curDirName, outFilePath).getFullPath();
+          outFilePath = Path.join(curDirName, outFilePath).getFullPath();
 
-        outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePath));
+          outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePath));
+        }
+        else {
+          outDirName = null;
+        }
 
         if (isStdOut && !isExpandInpOnly) {
           throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
@@ -264,10 +267,16 @@ class Convert {
       return inpFilePath;
     }
     else if (!isStdOut) {
-      var tmpFileName = (Path.basenameWithoutExtension(outFilePath) + FILE_TYPE_TMP + Path.extension(inpFilePath));
-      var tmpDirName = Path.dirname(outFilePath);
+      if (StringExt.isNullOrBlank(outFilePath)) {
+        return StringExt.EMPTY;
+      }
+      else {
+        var tmpFileName = (Path.basenameWithoutExtension(outFilePath) +
+            FILE_TYPE_TMP + Path.extension(inpFilePath));
+        var tmpDirName = Path.dirname(outFilePath);
 
-      return Path.join(tmpDirName, tmpFileName);
+        return Path.join(tmpDirName, tmpFileName);
+      }
     }
   }
 
