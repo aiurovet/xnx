@@ -77,6 +77,7 @@ class Config {
         if (v != null) {
           strStrMap[k] = expandValue(strStrMap[k], strStrMap, paramName: k);
         }
+        map[k] = strStrMap[k];
       });
 
       listOfMaps.add(strStrMap);
@@ -243,6 +244,10 @@ class Config {
 
     if (isParamWithPath(paramName)) {
       value = value.getFullPath();
+    }
+
+    if (hasParamName && value.contains(paramName)) {
+      throw Exception('Circular reference: "${paramName}" => "${value}"');
     }
 
     return value;

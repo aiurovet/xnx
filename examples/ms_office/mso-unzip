@@ -1,7 +1,5 @@
 #!/bin/bash
 
-################################################################################
-
 function realpath() { # MacOS does not have such utility out of the box
   local old="${PWD}"
 
@@ -15,10 +13,10 @@ function realpath() { # MacOS does not have such utility out of the box
 if (( ${#} != 1 )); then
   cat <<EOT >&2
 
-USAGE: $(basename "${0}") <out>
+USAGE: $(basename "${0}") <inp>
 
-<out> is target MS Office file (docx, xlsx, pptx, etc.)
-source files are taken from directory <out>.dir
+<inp> is source MS Office file (docx, xlsx, pptx, etc.)
+target directory for unzipped files is <inp>.dir
 
 EOT
   exit 1
@@ -26,13 +24,13 @@ fi
 
 ################################################################################
 
-OUT=$(realpath "${1}")
-DIR="${OUT}.dir"
+set -x
 
-cd "${DIR}" &&\
-zip -m -r "${OUT}" . &&\
-cd .. &&\
-rmdir "${DIR}" &&\
+INP=$(realpath "${1}")
+DIR="${INP}.dir"
+
+rm -rf "${DIR}"
+unzip -d "${DIR}" "${INP}" &&\
 exit 0
 
 exit 1

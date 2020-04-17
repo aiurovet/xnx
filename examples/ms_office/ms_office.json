@@ -13,23 +13,21 @@
       "{out}": "{o}"
     },
     "action": [
-      { "{EE}": true, "{EI}": false },
-
+      { "{EE}": true },
       { "{CD}": ".", "{od}": "{CD}/out" },
+      { "{EI}": false, "{i}": "sample.docx", "{izd}": "{CD}/{i}.dir", "{c}": "mso-unzip -d '{i}'", "{o}": "" },
 
-      { "{i}": "sample.docx", "{izd}": "{CD}/{i}.dir", "{c}": "unzip -d '{izd}' '{i}'", "{o}": "" },
-
-      { "{i}": "{izd}/*.xml", "{ozd}": "{od}/{in}-{fnm}", "{c}": "expand-only" },
-
-      { "{EI}": true },
-
+      { "{EI}": true, "{i}": "{izd}/*.xml", "{ozd}": "{od}/{in}-{fnm}", "{c}": "expand-only" },
       {
         "{fnm}": "ashwood",
         "{name}": "Ann Ashwood", "{dob}": "1 Jan 1961",
         "{spouse-name}": "Alfred Ashwood", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "his",
-        "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson"
+        "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson",
+        "{o}": "{ozd}/{inx}"
       },
-      { "{o}": "{ozd}{ix}", "{c}": "mso-zip '{ozd}' '{o}'" },
+      { "{EI}": false, "{o}": "{ozd}{ix}", "{c}": "mso-zip '{o}'" },
+
+      { "{EI}": true, "{i}": "{izd}/*.xml", "{ozd}": "{od}/{in}-{fnm}", "{c}": "expand-only" },
       {
         "{fnm}": "bourie",
         "{name}": "Brian Bourie", "{dob}": "1 Feb 1952",
@@ -37,7 +35,7 @@
         "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
         "{o}": "{ozd}/{inx}"
       },
-      { "{o}": "{ozd}{ix}", "{c}": "mso-zip '{ozd}' '{o}'" },
+      { "{o}": "{ozd}{ix}", "{c}": "mso-zip '{o}'" },
 
       { "": null }
     ]
