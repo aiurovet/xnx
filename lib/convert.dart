@@ -5,7 +5,6 @@ import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
 import 'config.dart';
-import 'ext/wildcard.dart';
 import 'log.dart';
 import 'options.dart';
 import 'ext/directory.dart';
@@ -60,39 +59,37 @@ class Convert {
       }
 
       var inpFilePath = Config.getValue(map, Config.PARAM_NAME_INP, canExpand: true);
-
-      if (StringExt.isNullOrBlank(inpFilePath)) {
-        throw Exception('Undefined input for\n\n${map.toString()}');
-      }
+      var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
 
       var outFilePath = Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: true);
       var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
-
-      inpFilePath = Path.join(curDirName, inpFilePath).getFullPath();
 
       isExpandInpOnly = (command == Config.CMD_EXPAND);
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
       isStdOut = (outFilePath == StringExt.STDOUT_PATH);
 
+      if (hasInpFile) {
+        inpFilePath = Path.join(curDirName, inpFilePath).getFullPath();
+      }
+
       var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
       for (inpFilePath in inpFilePaths) {
         var inpBaseName = Path.basename(inpFilePath);
-        var outFilePathEx = outFilePath;
+        var outFilePathEx = (hasOutFile ? outFilePath : inpFilePath);
 
-        if (hasOutFile) {
+        if (hasOutFile && hasInpFile) {
           outFilePathEx = outFilePathEx
-              .replaceAll(Config.PARAM_NAME_INP_DIR, Path.dirname(inpFilePath))
-              .replaceAll(Config.PARAM_NAME_INP_NAME, Path.basenameWithoutExtension(inpBaseName))
-              .replaceAll(Config.PARAM_NAME_INP_EXT, Path.extension(inpBaseName));
+            .replaceAll(Config.PARAM_NAME_INP_DIR, Path.dirname(inpFilePath)).replaceAll(Config.PARAM_NAME_INP_NAME, Path.basenameWithoutExtension(inpBaseName))
+            .replaceAll(Config.PARAM_NAME_INP_EXT, Path.extension(inpBaseName))
+            .replaceAll(Config.PARAM_NAME_INP_FULL, inpFilePath)
+            .replaceAll(Config.PARAM_NAME_INP_NAME_EXT, inpBaseName)
+          ;
 
           outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
+        }
 
-          outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
-        }
-        else {
-          outDirName = null;
-        }
+        outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
 
         if (isStdOut && !isExpandInpOnly) {
           throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
@@ -112,17 +109,28 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static Future<bool> execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) async {
-    var inpFile = (isStdIn ? null : File(inpFilePath));
+    var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath));
+    var hasOutFile = (!isStdOut && !StringExt.isNullOrBlank(outFilePath));
+
+    var inpFile = (hasInpFile ? File(inpFilePath) : null);
 
     if ((inpFile != null) && !inpFile.existsSync()) {
       throw Exception('Input file is not found: "${inpFilePath}"');
     }
 
-    var tmpFilePath = (isExpandInpOnly || !canExpandInp ? null : getActualInpFilePath(inpFilePath, outFilePath));
+    String tmpFilePath;
+
+    if (canExpandInp && (!isExpandInpOnly || (hasInpFile && hasOutFile && (inpFilePath == outFilePath)))) {
+      tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
+    }
 
     var cmdTemplateEx = cmdTemplate;
 
     if (isExpandInpOnly) {
+      if (!hasInpFile) {
+        throw Exception('Input file to expand is not defined');
+      }
+
       cmdTemplateEx += ' "${Config.PARAM_NAME_INP}" "${Config.PARAM_NAME_OUT}"';
     }
 
@@ -136,9 +144,9 @@ class Convert {
 
     commands.add(command);
 
-    var outFile = File(outFilePath);
+    var outFile = (hasOutFile ? File(outFilePath) : null);
 
-    if (!Options.isForced && !isStdIn && !isStdOut) {
+    if (!Options.isForced && (inpFilePath != outFilePath)) {
       var isChanged = (outFile.compareLastModifiedTo(inpFile, isCoarse: true) < 0);
 
       if (!isChanged) {
@@ -151,7 +159,7 @@ class Convert {
       }
     }
 
-    if (!isStdOut && outFile.existsSync()) {
+    if (!isStdOut && (inpFilePath != outFilePath) && (outFile != null) && outFile.existsSync()) {
       outFile.deleteSync();
     }
 
@@ -171,8 +179,8 @@ class Convert {
 
     if (tmpFilePath != null) {
       command = cmdTemplateEx
-          .replaceAll(Config.PARAM_NAME_OUT, outFilePath)
-          .replaceAll(Config.PARAM_NAME_INP, tmpFilePath);
+        .replaceAll(Config.PARAM_NAME_OUT, outFilePath)
+        .replaceAll(Config.PARAM_NAME_INP, tmpFilePath);
     }
 
     var exitCodes = await Shell(verbose: isVerbose).run(command);
@@ -249,6 +257,10 @@ class Convert {
 
       tmpFile.writeAsStringSync(text);
 
+      if (inpFile.path == outFilePath) {
+        tmpFile.renameSync(outFilePath);
+      }
+
       return (isExpandInpOnly ? null : tmpFile);
     }
   }
@@ -264,7 +276,7 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static String getActualInpFilePath(String inpFilePath, String outFilePath) {
-    if (isStdIn || isExpandInpOnly || !canExpandInp) {
+    if (isStdIn || (isExpandInpOnly && (inpFilePath != outFilePath)) || !canExpandInp) {
       return inpFilePath;
     }
     else if (!isStdOut) {
@@ -294,7 +306,7 @@ class Convert {
 
   static List<String> getInpFilePaths(String filePath, String curDirName) {
     if (StringExt.isNullOrBlank(filePath)) {
-      return [];
+      return [ filePath ]; // ensure at least one pass in a loop
     }
 
     var filePathTrim = filePath.trim();

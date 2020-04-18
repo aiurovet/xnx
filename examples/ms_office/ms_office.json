@@ -1,44 +1,77 @@
 {
   "x": {
     "rename": {
-      "{cmd}": "{c}",
-      "{cur-dir}": "{CD}",
-      "{exp-env}": "{EE}",
-      "{exp-inp}": "{EI}",
-      "{inp}": "{i}",
-      "{inp-dir}": "{id}",
-      "{inp-ext}": "{ix}",
-      "{inp-name}": "{in}",
-      "{inp-name-ext}": "{inx}",
-      "{out}": "{o}"
+      //"{cmd}": "{c}",
+      //"{cur-dir}": "{CD}",
+      //"{exp-env}": "{EE}",
+      //"{exp-inp}": "{EI}",
+      //"{inp}": "{i}",
+      //"{inp-dir}": "{id}",
+      //"{inp-ext}": "{ix}",
+      //"{inp-full}": "{ip}",
+      //"{inp-name}": "{in}",
+      //"{inp-name-ext}": "{inx}",
+      //"{out}": "{o}"
     },
     "action": [
-      { "{EE}": true },
-      { "{CD}": ".", "{od}": "{CD}/out" },
-      { "{EI}": false, "{src}": "sample", "{i}": "{src}.docx", "{izd}": "{CD}/{i}.dir", "{c}": "unzip -o -d '{izd}' '{i}'", "{o}": "" },
+      { "{exp-env}": true, "{cur-dir}": "." },
 
-      //{ "{EI}": true, "{i}": "{izd}/*", "{ozd}": "{od}/{in}-{fnm}", "{c}": "expand-only" },
-      { "{EI}": true, "{i}": "{izd}/**", "{ozd}": "{od}/{src}-{srnm}.docx.dir", "{c}": "expand-only" },
       {
-        "{srnm}": "ashwood",
-        "{name}": "Ann Ashwood", "{dob}": "1 Jan 1961",
-        "{spouse-name}": "Alfred Ashwood", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "his",
+        "{top-dir}":     "{cur-dir}",
+        "{cmd-dir}":     "{top-dir}/cmd",
+        "{inp-dir}":     "{top-dir}/inp",
+        "{out-dir}":     "{top-dir}/out",
+        "{ext}":         ".docx",
+        "{inp-file}":    "{inp-dir}/{doc-name}{ext}",
+        "{out-file}":    "{out-dir}/{doc-name}-{last-name}{ext}",
+        "{tmp-file}":    "{out-zip-dir}/{inp-name-ext}",
+        "{inp-zip-dir}": "{inp-file}.dir",
+        "{out-zip-dir}": "{out-file}.dir"
+      },
+
+      // Define list of source filenames
+
+      { "{doc-name}": [
+        "sample1"/*,
+        "sample2"*/
+      ] },
+
+      // Decompress source files
+
+      {
+        "{exp-inp}": false, "{inp}": "", "{out}": "",
+        "{cmd}": "{cmd-dir}/my_unzip \"{inp-zip-dir}\" \"{inp-file}\""
+      },
+
+      // Copy source files to destination one by one, expand placeholders and compress to the new file
+
+      {
+        "{inp}": "{inp-zip-dir}/**", // all files in all sub-folders
+        "{xxx}": [
+          { "{exp-inp}": false, "{cmd}": "{cmd-dir}/my_copy \"{inp-zip-dir}\" \"{out-zip-dir}\"" },
+          { "{exp-inp}": true,  "{cmd}": "expand-only" },
+          { "{exp-inp}": false, "{cmd}": "{cmd-dir}/my_zip \"{out-zip-dir}\" \"{out-file}\"" }
+        ]
+      },
+
+      // Actual data for placeholders
+
+      {
+        "{last-name}": "Ashwood",
+        "{name}": "Ann {last-name}", "{dob}": "1 Jan 1961",
+        "{spouse-name}": "Alfred {last-name}", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "his",
         "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson",
-        "{o}": "{ozd}/{in}{ix}"
-      }//,
-//      { "{EI}": false, "{o}": "{ozd}{ix}", "{c}": "(cd '${ozd}' && zip -m -r '{o}' *); rm -rf '{ozd}'" },
-//
-//      { "{EI}": true, "{i}": "{izd}/*.xml", "{ozd}": "{od}/{in}-{srnm}", "{c}": "expand-only" },
-//      {
-//        "{srnm}": "bourie",
-//        "{name}": "Brian Bourie", "{dob}": "1 Feb 1952",
-//        "{spouse-name}": "Blanche Bourie", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "her",
-//        "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
-//        "{o}": "{ozd}/{inx}"
-//      },
-//      { "{o}": "{ozd}{ix}", "{c}": "mso-zip '{o}'" },
-//
-//      { "": null }
+        "{out}": "{tmp-file}"
+      },
+      {
+        "{last-name}": "Bourie",
+        "{name}": "Brian {last-name}", "{dob}": "1 Feb 1952",
+        "{spouse-name}": "Blanche {last-name}", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "her",
+        "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
+        "{out}": "{tmp-file}"
+      },
+
+      { "": null }
     ]
   }
 }

@@ -27,6 +27,7 @@ class Config {
   static String PARAM_NAME_INP = '{inp}';
   static String PARAM_NAME_INP_DIR = '{inp-dir}';
   static String PARAM_NAME_INP_EXT = '{inp-ext}';
+  static String PARAM_NAME_INP_FULL = '{inp-full}';
   static String PARAM_NAME_INP_NAME = '{inp-name}';
   static String PARAM_NAME_INP_NAME_EXT = '{inp-name-ext}';
   static String PARAM_NAME_OUT = '{out}';
@@ -212,17 +213,21 @@ class Config {
     if (inputFilePath == StringExt.STDIN_PATH) {
       if (value.contains(PARAM_NAME_INP_DIR) ||
           value.contains(PARAM_NAME_INP_EXT) ||
+          value.contains(PARAM_NAME_INP_FULL) ||
           value.contains(PARAM_NAME_INP_NAME) ||
           value.contains(PARAM_NAME_INP_NAME_EXT)) {
         throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
       }
     }
-    else if (!Wildcard.isA(inputFilePath)) {
+    else if (!StringExt.isNullOrBlank(inputFilePath) && !Wildcard.isA(inputFilePath)) {
       var inputFilePart = Path.dirname(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
 
       inputFilePart = Path.basename(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_NAME_EXT, inputFilePart);
+
+      inputFilePart = Path.basename(inputFilePath);
+      value = value.replaceAll(PARAM_NAME_INP_FULL, inputFilePath);
 
       inputFilePart = Path.basenameWithoutExtension(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
@@ -353,6 +358,9 @@ class Config {
       }
       else if (k == PARAM_NAME_INP_EXT) {
         PARAM_NAME_INP_EXT = v;
+      }
+      else if (k == PARAM_NAME_INP_FULL) {
+        PARAM_NAME_INP_FULL = v;
       }
       else if (k == PARAM_NAME_INP_NAME) {
         PARAM_NAME_INP_NAME = v;
