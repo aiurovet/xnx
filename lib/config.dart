@@ -79,7 +79,7 @@ class Config {
         if (v != null) {
           strStrMap[k] = expandValue(strStrMap[k], strStrMap, paramName: k);
         }
-        map[k] = strStrMap[k];
+        //map[k] = strStrMap[k];
       });
 
       listOfMaps.add(strStrMap);

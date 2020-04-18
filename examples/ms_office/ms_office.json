@@ -46,7 +46,7 @@
       // Copy source files to destination one by one, expand placeholders and compress to the new file
 
       {
-        "{inp}": "{inp-zip-dir}/**", // all files in all sub-folders
+        "{inp}": "{inp-zip-dir}/**", // all files in all subdirectories
         "{xxx}": [
           { "{exp-inp}": false, "{cmd}": "{cmd-dir}/my_copy \"{inp-zip-dir}\" \"{out-zip-dir}\"" },
           { "{exp-inp}": true,  "{cmd}": "expand-only" },
