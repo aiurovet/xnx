@@ -66,6 +66,7 @@ class Convert {
       }
 
       var outFilePath = Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: true);
+      var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
 
       inpFilePath = Path.join(curDirName, inpFilePath).getFullPath();
 
@@ -77,18 +78,17 @@ class Convert {
 
       for (inpFilePath in inpFilePaths) {
         var inpBaseName = Path.basename(inpFilePath);
+        var outFilePathEx = outFilePath;
 
-        if (!StringExt.isNullOrBlank(outFilePath)) {
-          outFilePath = outFilePath
+        if (hasOutFile) {
+          outFilePathEx = outFilePathEx
               .replaceAll(Config.PARAM_NAME_INP_DIR, Path.dirname(inpFilePath))
-              .replaceAll(Config.PARAM_NAME_INP_NAME,
-              Path.basenameWithoutExtension(inpBaseName))
-              .replaceAll(
-              Config.PARAM_NAME_INP_EXT, Path.extension(inpBaseName));
+              .replaceAll(Config.PARAM_NAME_INP_NAME, Path.basenameWithoutExtension(inpBaseName))
+              .replaceAll(Config.PARAM_NAME_INP_EXT, Path.extension(inpBaseName));
 
-          outFilePath = Path.join(curDirName, outFilePath).getFullPath();
+          outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
 
-          outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePath));
+          outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
         }
         else {
           outDirName = null;
@@ -98,7 +98,7 @@ class Convert {
           throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
         }
 
-        if (await execFile(command, inpFilePath, outFilePath, map)) {
+        if (await execFile(command, inpFilePath, outFilePathEx, map)) {
           isProcessed = true;
         }
       }
@@ -315,10 +315,9 @@ class Convert {
         lst = dir.pathListSync(null, checkExists: false);
       }
       else {
-        var parentDirName = Wildcard.getStartDirName(filePathTrim, isFilePattern: true);
-        var pattern = filePathTrim.substring(parentDirName.length);
+        var pattern = Path.basename(filePathTrim);
 
-        dir = Directory(parentDirName);
+        dir = Directory(Path.dirname(filePathTrim));
         lst = dir.pathListSync(pattern, checkExists: false);
       }
     }

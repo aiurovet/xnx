@@ -7,18 +7,18 @@ extension DirectoryExt on Directory {
   //////////////////////////////////////////////////////////////////////////////
 
   List<String> pathListSync(String pattern, {bool checkExists = true, bool isRecursive, bool takeDirs = false, bool takeFiles = true}) {
-    return _pathListSync(
-      pattern,
-      (checkExists ?? false),
-      (isRecursive ?? Wildcard.isRecursive(pattern)),
-      (takeDirs ?? false),
-      (takeFiles ?? false)
+    return pathListByRegExpSync(
+      Wildcard.toRegExp(pattern),
+      checkExists: (checkExists ?? false),
+      isRecursive: (isRecursive ?? Wildcard.isRecursive(pattern)),
+      takeDirs: (takeDirs ?? false),
+      takeFiles: (takeFiles ?? false)
     );
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<String> _pathListSync(String pattern, bool checkExists, bool isRecursive, bool takeDirs, bool takeFiles) {
+  List<String> pathListByRegExpSync(RegExp filter, {bool checkExists = true, bool isRecursive, bool takeDirs = false, bool takeFiles = true}) {
     var lst = <String>[];
 
     if (checkExists && !existsSync()) {
@@ -26,27 +26,21 @@ extension DirectoryExt on Directory {
     }
 
     var entities = listSync().toList();
-    var filter = (pattern == null ? null : Wildcard.toRegExp(pattern));
 
     for (var entity in entities) {
+      var entityPath = entity.path;
+      var hasMatch = (filter?.hasMatch(Path.basename(entityPath)) ?? true);
+
       if (entity is Directory) {
-        var entityPath = entity.path;
-
-        if (takeDirs) {
-          if ((filter == null) || filter.hasMatch(isRecursive ? entityPath : Path.basename(entityPath))) {
-            lst.add(entityPath);
-          }
-        }
-      }
-    }
-
-    for (var entity in entities) {
-      if ((takeDirs && (entity is Directory)) || (takeFiles && (entity is File))) {
-        var entityPath = entity.path;
-
-        if ((filter == null) || filter.hasMatch(Path.basename(entityPath))) {
+        if (takeDirs && hasMatch) {
           lst.add(entityPath);
         }
+        if (isRecursive) {
+          lst.addAll(entity.pathListByRegExpSync(filter, checkExists: false, isRecursive: true, takeDirs: takeDirs, takeFiles: takeFiles));
+        }
+      }
+      else if (takeFiles && hasMatch) {
+        lst.add(entityPath);
       }
     }
 
