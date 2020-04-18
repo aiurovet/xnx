@@ -12,7 +12,7 @@ extension StringExt on String {
 
   static final bool IS_WINDOWS = Platform.isWindows;
 
-  static final RegExp BLANK = RegExp('^[\\s]*\$');
+  static final RegExp BLANK = RegExp(r'^[\s]*$');
 
   static const String EMPTY = '';
   static const int EOT_CODE = 4;
@@ -30,10 +30,9 @@ extension StringExt on String {
   static const String STDOUT_DISP = '<stdout>';
   static const String STDOUT_PATH = StringExt.STDIN_PATH;
 
-  static final RegExp RE_ENV_NAME = RegExp('\\\$[\\{]?([A-Z_][A-Z _0-9]*)[\\}]?', caseSensitive: false);
-  static final RegExp RE_IS_WILDCARD = RegExp('[\\*\\?]', caseSensitive: false);
-  static final RegExp RE_PATH_SEP = RegExp('[\\/]', caseSensitive: false);
-  static final RegExp RE_PROTOCOL = RegExp('^[a-z]+[\:][\\/][\\/]+', caseSensitive: false);
+  static final RegExp RE_ENV_NAME = RegExp(r'\$[\{]?([A-Z_][A-Z _0-9]*)[\}]?', caseSensitive: false);
+  static final RegExp RE_PATH_SEP = RegExp(r'[\/\\]', caseSensitive: false);
+  static final RegExp RE_PROTOCOL = RegExp(r'^[a-z]+[\:][\/][\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -41,12 +40,6 @@ extension StringExt on String {
     var adjustedPath = trim().replaceAll(RE_PATH_SEP, Platform.pathSeparator);
 
     return adjustedPath;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  bool containsWildcards() {
-    return RE_IS_WILDCARD.hasMatch(this);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -249,14 +242,6 @@ extension StringExt on String {
     result = minChars.join(nullChar);
 
     return result;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  RegExp wildcardToRegExp() {
-    var pattern = '^${RegExp.escape(this).replaceAll('\\*', '.*').replaceAll('\\?', '.')}\$';
-
-    return RegExp(pattern, caseSensitive: !IS_WINDOWS);
   }
 
   //////////////////////////////////////////////////////////////////////////////

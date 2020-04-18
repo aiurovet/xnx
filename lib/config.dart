@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
+import 'ext/wildcard.dart';
 import 'log.dart';
 import 'options.dart';
 import 'ext/stdin.dart';
@@ -30,7 +31,7 @@ class Config {
   static String PARAM_NAME_INP_NAME_EXT = '{inp-name-ext}';
   static String PARAM_NAME_OUT = '{out}';
 
-  static final RegExp RE_PARAM_NAME = RegExp('[\\{][^\\{\\}]+[\\}]', caseSensitive: false);
+  static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -216,7 +217,7 @@ class Config {
         throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
       }
     }
-    else if (!inputFilePath.containsWildcards()) {
+    else if (!Wildcard.isA(inputFilePath)) {
       var inputFilePart = Path.dirname(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
 

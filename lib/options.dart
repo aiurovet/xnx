@@ -68,7 +68,7 @@ class Options {
   static final String DEF_FILE_NAME = '${APP_NAME}${FILE_TYPE_CFG}';
 
   static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-]${CONFIG['name']}|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
-  static final RegExp RE_OPT_STARTDIR = RegExp('^[\\-]([\\-]${START_DIR['name']}|${START_DIR['abbr']})([\\=]|\$)', caseSensitive: true);
+  static final RegExp RE_OPT_START_DIR = RegExp('^[\\-]([\\-]${START_DIR['name']}|${START_DIR['abbr']})([\\=]|\$)', caseSensitive: true);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +84,7 @@ class Options {
       if (RE_OPT_CONFIG.hasMatch(arg)) {
         return configFilePath.getFullPath();
       }
-      if (RE_OPT_STARTDIR.hasMatch(arg)) {
+      if (RE_OPT_START_DIR.hasMatch(arg)) {
         break;
       }
     }

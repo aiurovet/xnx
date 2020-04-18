@@ -26,7 +26,7 @@ class Log {
   static const int USER_LEVEL_DETAILED = 2;
   static const int USER_LEVEL_ULTIMATE = 3;
 
-  static final RegExp RE_PREFIX = RegExp('^', multiLine: true);
+  static final RegExp RE_PREFIX = RegExp(r'^', multiLine: true);
 
   static String _format = FORMAT_DEFAULT;
   static String get format => _format;

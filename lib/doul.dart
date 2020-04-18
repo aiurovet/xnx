@@ -13,7 +13,7 @@ class Doul {
         isOK = true;
       })
       .catchError((e, stackTrace) {
-        var cleanMsg = RegExp('^Exception[\\:\\s]*', caseSensitive: false);
+        var cleanMsg = RegExp(r'^Exception[\:\s]*', caseSensitive: false);
         var errMsg = e?.toString()?.replaceFirst(cleanMsg, StringExt.EMPTY);
 
         if (StringExt.isNullOrBlank(errMsg)) {

@@ -24,6 +24,10 @@ doc/api/
 examples/flutter_app/android/
 examples/flutter_app/ios/
 examples/flutter_app/web/
-examples/ms_office/result.docx
+
 examples/multi_conf/out/
+
 examples/multi_icon/png/
+
+examples/ms_office/*.dir/
+examples/ms_office/out/

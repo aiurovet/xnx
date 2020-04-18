@@ -15,29 +15,30 @@
     "action": [
       { "{EE}": true },
       { "{CD}": ".", "{od}": "{CD}/out" },
-      { "{EI}": false, "{i}": "sample.docx", "{izd}": "{CD}/{i}.dir", "{c}": "mso-unzip -d '{i}'", "{o}": "" },
+      { "{EI}": false, "{src}": "sample", "{i}": "{src}.docx", "{izd}": "{CD}/{i}.dir", "{c}": "unzip -o -d '{izd}' '{i}'", "{o}": "" },
 
-      { "{EI}": true, "{i}": "{izd}/*.xml", "{ozd}": "{od}/{in}-{fnm}", "{c}": "expand-only" },
+      //{ "{EI}": true, "{i}": "{izd}/*", "{ozd}": "{od}/{in}-{fnm}", "{c}": "expand-only" },
+      { "{EI}": true, "{i}": "{izd}/*", "{ozd}": "{od}/{src}-{srnm}.docx.dir", "{c}": "expand-only" },
       {
-        "{fnm}": "ashwood",
+        "{srnm}": "ashwood",
         "{name}": "Ann Ashwood", "{dob}": "1 Jan 1961",
         "{spouse-name}": "Alfred Ashwood", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "his",
         "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson",
-        "{o}": "{ozd}/{inx}"
-      },
-      { "{EI}": false, "{o}": "{ozd}{ix}", "{c}": "mso-zip '{o}'" },
-
-      { "{EI}": true, "{i}": "{izd}/*.xml", "{ozd}": "{od}/{in}-{fnm}", "{c}": "expand-only" },
-      {
-        "{fnm}": "bourie",
-        "{name}": "Brian Bourie", "{dob}": "1 Feb 1952",
-        "{spouse-name}": "Blanche Bourie", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "her",
-        "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
-        "{o}": "{ozd}/{inx}"
-      },
-      { "{o}": "{ozd}{ix}", "{c}": "mso-zip '{o}'" },
-
-      { "": null }
+        "{o}": "{ozd}/{in}{ix}"
+      }//,
+//      { "{EI}": false, "{o}": "{ozd}{ix}", "{c}": "mso-zip '{o}'" },
+//
+//      { "{EI}": true, "{i}": "{izd}/*.xml", "{ozd}": "{od}/{in}-{srnm}", "{c}": "expand-only" },
+//      {
+//        "{srnm}": "bourie",
+//        "{name}": "Brian Bourie", "{dob}": "1 Feb 1952",
+//        "{spouse-name}": "Blanche Bourie", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "her",
+//        "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
+//        "{o}": "{ozd}/{inx}"
+//      },
+//      { "{o}": "{ozd}{ix}", "{c}": "mso-zip '{o}'" },
+//
+//      { "": null }
     ]
   }
 }

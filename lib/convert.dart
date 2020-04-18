@@ -5,6 +5,7 @@ import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
 import 'config.dart';
+import 'ext/wildcard.dart';
 import 'log.dart';
 import 'options.dart';
 import 'ext/directory.dart';
@@ -304,45 +305,21 @@ class Convert {
       lst.add(filePath);
     }
     else {
-      var parentDirName = Path.dirname(filePathTrim);
-      var hasParentDir = !StringExt.isNullOrBlank(parentDirName);
-
       if (!Path.isAbsolute(filePathTrim)) {
         filePathTrim = Path.join(curDirName, filePathTrim);
-        parentDirName = Path.dirname(filePathTrim);
       }
 
       var dir = Directory(filePathTrim);
-      var pattern = Path.basename(filePathTrim);
 
-      if (pattern.containsWildcards()) {
-        if (hasParentDir) {
-          dir = Directory(parentDirName);
-        }
-
-        lst = dir.pathListSync(
-            pattern: pattern,
-            checkExists: false,
-            recursive: hasParentDir,
-            takeDirs: false,
-            takeFiles: true
-        );
-      }
-      else if (dir.existsSync()) {
-        lst = dir.pathListSync(
-            pattern: null,
-            checkExists: false,
-            recursive: true,
-            takeDirs: false,
-            takeFiles: true
-        );
+      if (dir.existsSync()) {
+        lst = dir.pathListSync(null, checkExists: false);
       }
       else {
-        var file = File(filePathTrim);
+        var parentDirName = Wildcard.getStartDirName(filePathTrim, isFilePattern: true);
+        var pattern = filePathTrim.substring(parentDirName.length);
 
-        if (file.existsSync()) {
-          lst = [file.path];
-        }
+        dir = Directory(parentDirName);
+        lst = dir.pathListSync(pattern, checkExists: false);
       }
     }
 

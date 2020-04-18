@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function realpath() { # MacOS does not have such utility out of the box
+function realpath() { # macOS does not have such utility out of the box
   local old="${PWD}"
 
   cd $(dirname "${1}") &&\
