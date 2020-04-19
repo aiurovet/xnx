@@ -9,17 +9,17 @@ function exitApp() {
 
 ################################################################################
 
-(( ${#} != 2 )) && exitApp 1 "Invalid number of parameters: ${#} (expected: 2)"
+(( ${#} != 1 )) && exitApp 1 "Invalid number of parameters: ${#} (expected: 1)"
 
 ################################################################################
 
 DIR="${1}"
-INP="${2}"
 
 ################################################################################
 
-mkdir -p "${DIR}" || exitApp 1 "Failed to create directory: \"${DIR}\""
-unzip -o -d "${DIR}" "${INP}" || exitApp 1 "Failed to unzip \"${INP}\" to directory: \"${DIR}\""
+if [ -d "${DIR}" ]; then
+  rm -rf "${DIR}" || exitApp 1 "Failed to remove directory \"${DIR}\""
+fi
 
 exitApp 0
 

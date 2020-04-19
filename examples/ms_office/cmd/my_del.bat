@@ -2,21 +2,19 @@
 
 rem ############################################################################
 
-if "%2" == "" goto FAIL
-if not "%3" == "" goto FAIL
+if "%1" == "" goto FAIL
+if not "%2" == "" goto FAIL
 
 rem ############################################################################
 
-INP=%1
-OUT=%2
+DIR=%1
 
 rem ############################################################################
 
-mkdir "%OUT%"
-if errorlevel 1 goto FAIL
-
-xcopy "%INP%"\* "%OUT%"
-if errorlevel 1 goto FAIL
+if exist "%DIR%" (
+  del /F/Q/S "%DIR%"
+  if errorlevel 1 goto FAIL
+)
 
 :SUCCESS
 exit /B 0

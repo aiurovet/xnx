@@ -160,7 +160,7 @@ class Convert {
       var isChanged = (outFile.compareLastModifiedTo(inpFile, isCoarse: true) < 0);
 
       if (!isChanged) {
-        isChanged = (outFile.compareLastModifiedToInMicrosecondsSinceEpoch(Config.lastModifiedInMicrosecondsSinceEpoch) < 0);
+        isChanged = (outFile.compareLastModifiedMcsecTo(Config.lastModifiedMcsec) < 0);
       }
 
       if (!isChanged) {

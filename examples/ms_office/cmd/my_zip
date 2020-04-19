@@ -2,7 +2,14 @@
 
 ################################################################################
 
-(( ${#} != 2 )) && exit 1
+function exitApp() {
+  (( ${#} >= 2 )) && echo "${2}"
+  exit ${1}
+}
+
+################################################################################
+
+(( ${#} != 2 )) && exitApp 1 "Invalid number of parameters: ${#} (expected: 2)"
 
 ################################################################################
 
@@ -11,12 +18,14 @@ OUT="${2}"
 
 ################################################################################
 
-cd "${DIR}" &&\
-zip -m -r "${OUT}" * &&\
-cd .. &&\
-rm -rf "${DIR}" &&\
-exit 0
+cd "${DIR}" || exitApp 1 "Failed to switch to directory \"${DIR}\""
+zip -m -r "${OUT}" * || exitApp 1 "Failed to zip directory \"${PWD}\" to \"${OUT}\""
+cd .. || exitApp 1 "Failed to go to one level above directory \"${DIR}\""
 
-exit 1
+if [ -d "${DIR}" ]; then
+  rm -rf "${DIR}" || exitApp 1 "Failed to remove directory \"${DIR}\""
+fi
+
+exitApp 0
 
 ################################################################################

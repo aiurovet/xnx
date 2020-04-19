@@ -24,9 +24,8 @@
         "{cmd-dir}":     "{top-dir}/cmd",
         "{inp-dir}":     "{top-dir}/inp",
         "{out-dir}":     "{top-dir}/out",
-        "{ext}":         ".docx",
-        "{inp-file}":    "{inp-dir}/{doc-name}{ext}",
-        "{out-file}":    "{out-dir}/{doc-name}-{last-name}{ext}",
+        "{inp-file}":    "{inp-dir}/{mso-name}{ext}",
+        "{out-file}":    "{out-dir}/{mso-name}-{last-name}{ext}",
         "{tmp-file}":    "{out-zip-dir}/{inp-sub-path}",
         "{inp-zip-dir}": "{inp-file}.dir",
         "{out-zip-dir}": "{out-file}.dir"
@@ -34,10 +33,7 @@
 
       // Define list of source filenames
 
-      { "{doc-name}": [
-        "sample1"/*,
-        "sample2"*/
-      ] },
+      { "{mso-name}": "sample1", "{ext}": [ ".docx", ".xlsx", ".pptx" ] },
 
       // Decompress source file
 
@@ -51,7 +47,7 @@
       {
         "{inp}": "{inp-zip-dir}/**", // all files in all subdirectories
         "{exp-inp}": true,  "{cmd}": "expand-only",
-        "{import}": "ms_office_data.json"
+        "{import}": "ms_office_data.json" // should not contain any placeholders
       },
 
       // Compress output directories file
@@ -59,10 +55,15 @@
       {
         "{exp-inp}": false, "{inp}": "", "{out}": "",
         "{cmd}": "{cmd-dir}/my_zip \"{out-zip-dir}\" \"{out-file}\"",
-        "{import}": 'ms_office_data.json'
+        "{import}": "ms_office_data.json" // should not contain any placeholders
       },
 
-      { "": null }
+      // Delete input directories file
+
+      {
+        "{exp-inp}": false, "{inp}": "", "{out}": "",
+        "{cmd}": "{cmd-dir}/my_del \"{inp-zip-dir}\""
+      }
     ]
   }
 }

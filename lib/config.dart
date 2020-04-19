@@ -1,12 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:path/path.dart' as Path;
-import 'ext/wildcard.dart';
 import 'loaded_file.dart';
 import 'log.dart';
 import 'options.dart';
-import 'ext/stdin.dart';
 import 'ext/string.dart';
+import 'ext/wildcard.dart';
 
 class Config {
 
@@ -42,7 +39,7 @@ class Config {
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  static int lastModifiedInMicrosecondsSinceEpoch;
+  static int lastModifiedMcsec;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -83,7 +80,6 @@ class Config {
         if (v != null) {
           strStrMap[k] = expandValue(strStrMap[k], strStrMap, paramName: k);
         }
-        //map[k] = strStrMap[k];
       });
 
       listOfMaps.add(strStrMap);
@@ -117,7 +113,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static void addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
-    var isReady = ((map != null) && map.containsKey(PARAM_NAME_INP) && map.containsKey(PARAM_NAME_OUT));
+    var isReady = ((map != null) && deepContainsKeys(map, [PARAM_NAME_INP, PARAM_NAME_OUT]));
 
     if (isReady) {
       addFlatMapsToList(listOfMaps, map);
@@ -127,16 +123,56 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static bool deepContainsKeys(Map<String, Object> map, List<String> keys, {Map<String, bool> isFound}) {
+    if ((map == null) || (keys == null)) {
+      return false;
+    }
+
+    var isFoundAll = false;
+
+    if (isFound == null) {
+      isFound = {};
+
+      for (var i = 0, n = keys.length; i < n; i++) {
+        isFound[keys[i]] = false;
+      }
+    }
+
+    map.forEach((k, v) {
+      if (!isFoundAll) {
+        if (keys.contains(k)) {
+          isFound[k] = true;
+        }
+        else if (v is List) {
+          for (var i = 0, n = v.length; i < n; i++) {
+            var vv = v[i];
+
+            if (vv is Map) {
+              isFoundAll = deepContainsKeys(vv, keys, isFound: isFound);
+            }
+          }
+        }
+        else if (v is Map) {
+          isFoundAll = deepContainsKeys(v, keys, isFound: isFound);
+        }
+      }
+    });
+
+    isFoundAll = !isFound.containsValue(false);
+
+    return isFoundAll;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static List<Map<String, String>> exec(List<String> args) {
     Options.parseArgs(args);
 
-    var text = loadConfigSync();
-    var decoded = jsonDecode(text);
-    assert(decoded is Map);
+    Log.information('Loading configuration data');
+
+    var all = loadConfigSync();
 
     Log.information('Processing configuration data');
-
-    var all = decoded.values.toList()[0];
 
     if (all is Map) {
       var rename = all[CFG_RENAME];
@@ -157,7 +193,7 @@ class Config {
 
       var result = <Map<String, String>>[];
 
-      action.forEach((map) {
+      (action as List).forEach((map) {
         assert(map is Map);
 
         Log.debug('');
@@ -172,6 +208,7 @@ class Config {
 
         if (params.isNotEmpty) {
           Log.debug('...adding to the list of actions');
+
           addMapsToList(result, params);
         }
 
@@ -310,34 +347,17 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String readImportsSync(String data) {
-    var pattern = '[\\"\\\']' + PARAM_NAME_IMPORT + '[\\"\\\']\\s*\\:\\s*(\\"([^\\"]+)\\")|(\\\'([^\\\']+)\\\')';
-    var regExp = RegExp(pattern);
+  static Map<String, Object> loadConfigSync() {
+    var lf = LoadedFile().loadJsonSync(Options.configFilePath, paramNameImport: PARAM_NAME_IMPORT);
 
-    data = data
-      .replaceAll(r'\\', '\x01')
-      .replaceAll(r'\"', '\x02')
-      .replaceAllMapped(regExp, (match) {
-        var lf = LoadedFile.loadSync(match.group(2) ?? match.group(4));
-        return '"${PARAM_NAME_IMPORT}": ${lf.data}';
-      })
-      .replaceAll('\x02', r'\"')
-      .replaceAll('\x01', r'\\')
-    ;
-  }
+    lastModifiedMcsec = lf.lastModifiedMcsec;
 
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String loadConfigSync() {
-    var lf = LoadedFile.loadSync(Options.configFilePath);
-
-    if (!lf.isStdIn) {
-      lastModifiedInMicrosecondsSinceEpoch = lf.file.lastModifiedSync().microsecondsSinceEpoch;
+    if (lf.data is Map) {
+      return (lf.data as Map).values.toList()[0];
     }
-
-    var data = readImportsSync(lf.data.removeJsComments());
-
-    return data;
+    else {
+      return lf.data;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

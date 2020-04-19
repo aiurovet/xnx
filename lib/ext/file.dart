@@ -9,7 +9,7 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int lastModifiedInMicrosecondsSinceEpoch({bool isCoarse}) {
+  int lastModifiedMcsec({bool isCoarse}) {
     if (!existsSync()) {
       return null;
     }
@@ -24,14 +24,14 @@ extension FileExt on File {
   }
 
   int compareLastModifiedTo(File to, {bool isCoarse}) {
-    var toLastMod = to?.lastModifiedInMicrosecondsSinceEpoch(isCoarse: isCoarse);
-    var result = compareLastModifiedToInMicrosecondsSinceEpoch(toLastMod, isCoarse: isCoarse);
+    var toLastMod = to?.lastModifiedMcsec(isCoarse: isCoarse);
+    var result = compareLastModifiedMcsecTo(toLastMod, isCoarse: isCoarse);
 
     return result;
   }
 
-  int compareLastModifiedToInMicrosecondsSinceEpoch(int toLastMod, {bool isCoarse}) {
-    var lastMod = lastModifiedInMicrosecondsSinceEpoch(isCoarse: isCoarse);
+  int compareLastModifiedMcsecTo(int toLastMod, {bool isCoarse}) {
+    var lastMod = lastModifiedMcsec(isCoarse: isCoarse);
 
     if (lastMod == null) {
       return -1;

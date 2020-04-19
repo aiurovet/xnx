@@ -50,22 +50,22 @@ extension StringExt on String {
     }
 
     var result =
-        replaceAll('\$\$', '\x01').
-        replaceAllMapped(RE_ENV_NAME, (match) {
-          var envName = match.group(1);
+      replaceAll('\$\$', '\x01').
+      replaceAllMapped(RE_ENV_NAME, (match) {
+        var envName = match.group(1);
 
-          if (IS_WINDOWS) {
-            envName = envName.toUpperCase();
-          }
+        if (IS_WINDOWS) {
+          envName = envName.toUpperCase();
+        }
 
-          if (ENVIRONMENT.containsKey(envName)) {
-            return ENVIRONMENT[envName];
-          }
-          else {
-            return EMPTY;
-          }
-        }).
-        replaceAll('\x01', '\$');
+        if (ENVIRONMENT.containsKey(envName)) {
+          return ENVIRONMENT[envName];
+        }
+        else {
+          return EMPTY;
+        }
+      }).
+      replaceAll('\x01', '\$');
 
     return result;
   }
