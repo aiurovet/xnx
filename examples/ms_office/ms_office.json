@@ -33,7 +33,10 @@
 
       // Define list of source filenames
 
-      { "{mso-name}": "sample1", "{ext}": [ ".docx", ".xlsx", ".pptx" ] },
+      { "mso": [
+        { "{mso-name}": "sample1", "{ext}": [ ".docx", ".xlsx", ".pptx" ] },
+        { "{mso-name}": "sample2", "{ext}": [ ".docx", ".xlsx", ".pptx" ] }
+      ] },
 
       // Decompress source file
 
