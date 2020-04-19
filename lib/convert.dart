@@ -58,10 +58,10 @@ class Convert {
         throw Exception('Undefined command for\n\n${map.toString()}');
       }
 
-      var inpFilePath = Config.getValue(map, Config.PARAM_NAME_INP, canExpand: true);
+      var inpFilePath = (Config.getValue(map, Config.PARAM_NAME_INP, canExpand: true) ?? StringExt.EMPTY);
       var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
 
-      var outFilePath = Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: true);
+      var outFilePath = (Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: true) ?? StringExt.EMPTY);
       var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
 
       isExpandInpOnly = (command == Config.CMD_EXPAND);
@@ -72,18 +72,28 @@ class Convert {
         inpFilePath = Path.join(curDirName, inpFilePath).getFullPath();
       }
 
+      var subStart = (hasInpFile ? (inpFilePath.length - Path.basename(inpFilePath).length) : 0);
       var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
-      for (inpFilePath in inpFilePaths) {
-        var inpBaseName = Path.basename(inpFilePath);
-        var outFilePathEx = (hasOutFile ? outFilePath : inpFilePath);
+      for (var inpFilePathEx in inpFilePaths) {
+        var outFilePathEx = (hasOutFile ? outFilePath : inpFilePathEx);
 
         if (hasOutFile && hasInpFile) {
+          var dirName = Path.dirname(inpFilePathEx);
+          var inpSubDirName = (dirName.length <= subStart ? StringExt.EMPTY : dirName.substring(subStart));
+          var inpFullName = Path.basename(inpFilePathEx);
+          var inpName = Path.basenameWithoutExtension(inpFullName);
+          var inpExt = Path.extension(inpFullName);
+          var inpSubPath = inpFilePathEx.substring(subStart);
+
           outFilePathEx = outFilePathEx
-            .replaceAll(Config.PARAM_NAME_INP_DIR, Path.dirname(inpFilePath)).replaceAll(Config.PARAM_NAME_INP_NAME, Path.basenameWithoutExtension(inpBaseName))
-            .replaceAll(Config.PARAM_NAME_INP_EXT, Path.extension(inpBaseName))
-            .replaceAll(Config.PARAM_NAME_INP_FULL, inpFilePath)
-            .replaceAll(Config.PARAM_NAME_INP_NAME_EXT, inpBaseName)
+            .replaceAll(Config.PARAM_NAME_INP_DIR, dirName)
+            .replaceAll(Config.PARAM_NAME_INP_NAME, inpName)
+            .replaceAll(Config.PARAM_NAME_INP_EXT, inpExt)
+            .replaceAll(Config.PARAM_NAME_INP_PATH, inpFilePathEx)
+            .replaceAll(Config.PARAM_NAME_INP_SUB_DIR, inpSubDirName)
+            .replaceAll(Config.PARAM_NAME_INP_SUB_PATH, inpSubPath)
+            .replaceAll(Config.PARAM_NAME_INP_NAME_EXT, inpFullName)
           ;
 
           outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
@@ -95,7 +105,7 @@ class Convert {
           throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
         }
 
-        if (await execFile(command, inpFilePath, outFilePathEx, map)) {
+        if (await execFile(command, inpFilePathEx, outFilePathEx, map)) {
           isProcessed = true;
         }
       }

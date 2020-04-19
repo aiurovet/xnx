@@ -8,9 +8,12 @@
       //"{inp}": "{i}",
       //"{inp-dir}": "{id}",
       //"{inp-ext}": "{ix}",
-      //"{inp-full}": "{ip}",
       //"{inp-name}": "{in}",
       //"{inp-name-ext}": "{inx}",
+      //"{inp-path}": "{ip}",
+      //"{inp-sub-dir}": "{isd}",
+      //"{inp-sub-path}": "{isp}",
+      //"{import}": "{I}",
       //"{out}": "{o}"
     },
     "action": [
@@ -24,7 +27,7 @@
         "{ext}":         ".docx",
         "{inp-file}":    "{inp-dir}/{doc-name}{ext}",
         "{out-file}":    "{out-dir}/{doc-name}-{last-name}{ext}",
-        "{tmp-file}":    "{out-zip-dir}/{inp-name-ext}",
+        "{tmp-file}":    "{out-zip-dir}/{inp-sub-path}",
         "{inp-zip-dir}": "{inp-file}.dir",
         "{out-zip-dir}": "{out-file}.dir"
       },
@@ -36,7 +39,7 @@
         "sample2"*/
       ] },
 
-      // Decompress source files
+      // Decompress source file
 
       {
         "{exp-inp}": false, "{inp}": "", "{out}": "",
@@ -47,28 +50,16 @@
 
       {
         "{inp}": "{inp-zip-dir}/**", // all files in all subdirectories
-        "{xxx}": [
-          { "{exp-inp}": false, "{cmd}": "{cmd-dir}/my_copy \"{inp-zip-dir}\" \"{out-zip-dir}\"" },
-          { "{exp-inp}": true,  "{cmd}": "expand-only" },
-          { "{exp-inp}": false, "{cmd}": "{cmd-dir}/my_zip \"{out-zip-dir}\" \"{out-file}\"" }
-        ]
+        "{exp-inp}": true,  "{cmd}": "expand-only",
+        "{import}": "ms_office_data.json"
       },
 
-      // Actual data for placeholders
+      // Compress output directories file
 
       {
-        "{last-name}": "Ashwood",
-        "{name}": "Ann {last-name}", "{dob}": "1 Jan 1961",
-        "{spouse-name}": "Alfred {last-name}", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "his",
-        "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson",
-        "{out}": "{tmp-file}"
-      },
-      {
-        "{last-name}": "Bourie",
-        "{name}": "Brian {last-name}", "{dob}": "1 Feb 1952",
-        "{spouse-name}": "Blanche {last-name}", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "her",
-        "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
-        "{out}": "{tmp-file}"
+        "{exp-inp}": false, "{inp}": "", "{out}": "",
+        "{cmd}": "{cmd-dir}/my_zip \"{out-zip-dir}\" \"{out-file}\"",
+        "{import}": 'ms_office_data.json'
       },
 
       { "": null }

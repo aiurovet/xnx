@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'ext/wildcard.dart';
+import 'loaded_file.dart';
 import 'log.dart';
 import 'options.dart';
 import 'ext/stdin.dart';
@@ -27,9 +28,12 @@ class Config {
   static String PARAM_NAME_INP = '{inp}';
   static String PARAM_NAME_INP_DIR = '{inp-dir}';
   static String PARAM_NAME_INP_EXT = '{inp-ext}';
-  static String PARAM_NAME_INP_FULL = '{inp-full}';
   static String PARAM_NAME_INP_NAME = '{inp-name}';
   static String PARAM_NAME_INP_NAME_EXT = '{inp-name-ext}';
+  static String PARAM_NAME_INP_PATH = '{inp-path}';
+  static String PARAM_NAME_INP_SUB_DIR = '{inp-sub-dir}';
+  static String PARAM_NAME_INP_SUB_PATH = '{inp-sub-path}';
+  static String PARAM_NAME_IMPORT = '{import}';
   static String PARAM_NAME_OUT = '{out}';
 
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
@@ -126,7 +130,7 @@ class Config {
   static List<Map<String, String>> exec(List<String> args) {
     Options.parseArgs(args);
 
-    var text = readSync();
+    var text = loadConfigSync();
     var decoded = jsonDecode(text);
     assert(decoded is Map);
 
@@ -213,7 +217,7 @@ class Config {
     if (inputFilePath == StringExt.STDIN_PATH) {
       if (value.contains(PARAM_NAME_INP_DIR) ||
           value.contains(PARAM_NAME_INP_EXT) ||
-          value.contains(PARAM_NAME_INP_FULL) ||
+          value.contains(PARAM_NAME_INP_PATH) ||
           value.contains(PARAM_NAME_INP_NAME) ||
           value.contains(PARAM_NAME_INP_NAME_EXT)) {
         throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
@@ -227,7 +231,7 @@ class Config {
       value = value.replaceAll(PARAM_NAME_INP_NAME_EXT, inputFilePart);
 
       inputFilePart = Path.basename(inputFilePath);
-      value = value.replaceAll(PARAM_NAME_INP_FULL, inputFilePath);
+      value = value.replaceAll(PARAM_NAME_INP_PATH, inputFilePath);
 
       inputFilePart = Path.basenameWithoutExtension(inputFilePath);
       value = value.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
@@ -306,32 +310,34 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String readSync() {
-    var inpPath = Options.configFilePath;
-    var isStdIn = (inpPath == StringExt.STDIN_PATH);
-    var inpName = (isStdIn ? StringExt.STDIN_DISP : '"' + inpPath + '"');
+  static String readImportsSync(String data) {
+    var pattern = '[\\"\\\']' + PARAM_NAME_IMPORT + '[\\"\\\']\\s*\\:\\s*(\\"([^\\"]+)\\")|(\\\'([^\\\']+)\\\')';
+    var regExp = RegExp(pattern);
 
-    Log.information('Reading configuration from ${inpName}');
+    data = data
+      .replaceAll(r'\\', '\x01')
+      .replaceAll(r'\"', '\x02')
+      .replaceAllMapped(regExp, (match) {
+        var lf = LoadedFile.loadSync(match.group(2) ?? match.group(4));
+        return '"${PARAM_NAME_IMPORT}": ${lf.data}';
+      })
+      .replaceAll('\x02', r'\"')
+      .replaceAll('\x01', r'\\')
+    ;
+  }
 
-    String text;
+  //////////////////////////////////////////////////////////////////////////////
 
-    if (isStdIn) {
-      text = stdin.readAsStringSync(endByte: StringExt.EOT_CODE);
+  static String loadConfigSync() {
+    var lf = LoadedFile.loadSync(Options.configFilePath);
+
+    if (!lf.isStdIn) {
+      lastModifiedInMicrosecondsSinceEpoch = lf.file.lastModifiedSync().microsecondsSinceEpoch;
     }
-    else {
-      var file = File(inpPath);
 
-      if (!file.existsSync()) {
-        throw Exception('Failed to find expected configuration file: ${inpName}');
-      }
+    var data = readImportsSync(lf.data.removeJsComments());
 
-      lastModifiedInMicrosecondsSinceEpoch = file.lastModifiedSync().microsecondsSinceEpoch;
-      text = file.readAsStringSync();
-    }
-
-    text = text.removeJsComments();
-
-    return text;
+    return data;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -359,14 +365,23 @@ class Config {
       else if (k == PARAM_NAME_INP_EXT) {
         PARAM_NAME_INP_EXT = v;
       }
-      else if (k == PARAM_NAME_INP_FULL) {
-        PARAM_NAME_INP_FULL = v;
-      }
       else if (k == PARAM_NAME_INP_NAME) {
         PARAM_NAME_INP_NAME = v;
       }
       else if (k == PARAM_NAME_INP_NAME_EXT) {
         PARAM_NAME_INP_NAME_EXT = v;
+      }
+      else if (k == PARAM_NAME_INP_PATH) {
+        PARAM_NAME_INP_PATH = v;
+      }
+      else if (k == PARAM_NAME_INP_SUB_DIR) {
+        PARAM_NAME_INP_SUB_DIR = v;
+      }
+      else if (k == PARAM_NAME_INP_SUB_PATH) {
+        PARAM_NAME_INP_SUB_PATH = v;
+      }
+      else if (k == PARAM_NAME_IMPORT) {
+        PARAM_NAME_IMPORT = v;
       }
       else if (k == PARAM_NAME_OUT) {
         PARAM_NAME_OUT = v;
