@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
@@ -40,33 +41,11 @@ class Convert {
 
     var isProcessed = false;
 
-    for (var map in maps) {
-      expandMap(map);
+    for (var mapOrig in maps) {
+      var curDirName = getCurDirName(mapOrig);
 
-      canExpandEnv = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_ENV, canExpand: false));
-      canExpandInp = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_INP, canExpand: false));
-      var command = Config.getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
-
-      var curDirName = getCurDirName(map);
-
-      if (!StringExt.isNullOrBlank(curDirName)) {
-        Log.debug('Setting current directory to: "${curDirName}"');
-        Directory.current = curDirName;
-      }
-
-      if (StringExt.isNullOrBlank(command)) {
-        throw Exception('Undefined command for\n\n${map.toString()}');
-      }
-
-      var inpFilePath = (Config.getValue(map, Config.PARAM_NAME_INP, canExpand: true) ?? StringExt.EMPTY);
+      var inpFilePath = (Config.getValue(mapOrig, Config.PARAM_NAME_INP, canExpand: true) ?? StringExt.EMPTY);
       var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
-
-      var outFilePath = (Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: true) ?? StringExt.EMPTY);
-      var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
-
-      isExpandInpOnly = (command == Config.CMD_EXPAND);
-      isStdIn = (inpFilePath == StringExt.STDIN_PATH);
-      isStdOut = (outFilePath == StringExt.STDOUT_PATH);
 
       if (hasInpFile) {
         inpFilePath = Path.join(curDirName, inpFilePath).getFullPath();
@@ -76,6 +55,28 @@ class Convert {
       var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
       for (var inpFilePathEx in inpFilePaths) {
+        var map = expandMap(mapOrig, inpFilePathEx);
+
+        canExpandEnv = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_ENV, canExpand: false));
+        canExpandInp = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_INP, canExpand: false));
+        var command = Config.getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
+
+        if (!StringExt.isNullOrBlank(curDirName)) {
+          Log.debug('Setting current directory to: "${curDirName}"');
+          Directory.current = curDirName;
+        }
+
+        if (StringExt.isNullOrBlank(command)) {
+          throw Exception('Undefined command for\n\n${map.toString()}');
+        }
+
+        var outFilePath = (Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: true) ?? StringExt.EMPTY);
+        var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
+
+        isExpandInpOnly = (command == Config.CMD_EXPAND);
+        isStdIn = (inpFilePath == StringExt.STDIN_PATH);
+        isStdOut = (outFilePath == StringExt.STDOUT_PATH);
+
         var outFilePathEx = (hasOutFile ? outFilePath : inpFilePathEx);
 
         if (hasOutFile && hasInpFile) {
@@ -277,10 +278,24 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void expandMap(Map<String, String> map) {
-    map.forEach((k, v) {
-      map[k] = Config.getValue(map, k, canExpand: true);
+  static Map<String, String> expandMap(Map<String, String> map, String inpFilePath) {
+    var newMap = <String, String>{};
+    newMap.addAll(map);
+
+    newMap.forEach((k, v) {
+      if (k == Config.PARAM_NAME_INP) {
+        newMap[k] = inpFilePath;
+      }
+      else {
+        newMap[k] = Config.getValue(map, k, canExpand: true);
+
+        if (Config.isParamWithPath(k)) {
+          newMap[k] = newMap[k].getFullPath();
+        }
+      }
     });
+
+    return newMap;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -328,7 +343,7 @@ class Convert {
     }
     else {
       if (!Path.isAbsolute(filePathTrim)) {
-        filePathTrim = Path.join(curDirName, filePathTrim);
+        filePathTrim = Path.join(curDirName, filePathTrim).getFullPath();
       }
 
       var dir = Directory(filePathTrim);
@@ -337,10 +352,8 @@ class Convert {
         lst = dir.pathListSync(null, checkExists: false);
       }
       else {
-        var pattern = Path.basename(filePathTrim);
-
-        dir = Directory(Path.dirname(filePathTrim));
-        lst = dir.pathListSync(pattern, checkExists: false);
+        dir = Directory(GlobExt.getDirectoryName(filePathTrim));
+        lst = dir.pathListSync(filePathTrim, checkExists: false);
       }
     }
 

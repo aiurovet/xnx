@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   args: ^1.5.3
+  glob: ^1.2.0
   path: ^1.6.4
   process_run: ^0.10.7
 

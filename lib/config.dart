@@ -1,9 +1,10 @@
+import 'dart:io';
+
 import 'package:path/path.dart' as Path;
 import 'loaded_file.dart';
 import 'log.dart';
 import 'options.dart';
 import 'ext/string.dart';
-import 'ext/wildcard.dart';
 
 class Config {
 
@@ -71,9 +72,7 @@ class Config {
       var strStrMap = <String, String>{};
 
       cloneMap.forEach((k, v) {
-        if (v != null) {
-          strStrMap[k] = v.toString();
-        }
+        strStrMap[k] = v.toString();
       });
 
       strStrMap.forEach((k, v) {
@@ -237,60 +236,62 @@ class Config {
   static String expandValue(String value, Map<String, Object> map, {String paramName, bool isForAny = false}) {
     var canExpandEnv = (map.containsKey(PARAM_NAME_EXP_ENV) ? StringExt.parseBool(map[PARAM_NAME_EXP_ENV]) : false);
     var hasParamName = !StringExt.isNullOrBlank(paramName);
-    var isCurDirParam = (hasParamName && (paramName == PARAM_NAME_CUR_DIR));
+    //var isCurDirParam = (hasParamName && (paramName == PARAM_NAME_CUR_DIR));
 
     if (canExpandEnv) {
       value = value.expandEnvironmentVariables();
     }
 
-    if (!isForAny && hasParamName) {
-      if ((paramName == PARAM_NAME_CMD) || (paramName == PARAM_NAME_INP) || (paramName == PARAM_NAME_OUT)) {
-        return value;
+//    if (!isForAny && hasParamName) {
+//      if ((paramName == PARAM_NAME_CMD) || (paramName == PARAM_NAME_INP) || (paramName == PARAM_NAME_OUT)) {
+//        return value;
+//      }
+//    }
+//
+//    var inputFilePath = map[PARAM_NAME_INP].toString();
+//
+//    if (inputFilePath == StringExt.STDIN_PATH) {
+//      if (value.contains(PARAM_NAME_INP_DIR) ||
+//          value.contains(PARAM_NAME_INP_EXT) ||
+//          value.contains(PARAM_NAME_INP_PATH) ||
+//          value.contains(PARAM_NAME_INP_NAME) ||
+//          value.contains(PARAM_NAME_INP_NAME_EXT)) {
+//        throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
+//      }
+//    }
+//    else if (!StringExt.isNullOrBlank(inputFilePath) && !Wildcard.isA(inputFilePath)) {
+//      var inputFilePart = Path.dirname(inputFilePath);
+//      value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
+//
+//      inputFilePart = Path.basename(inputFilePath);
+//      value = value.replaceAll(PARAM_NAME_INP_NAME_EXT, inputFilePart);
+//
+//      inputFilePart = Path.basename(inputFilePath);
+//      value = value.replaceAll(PARAM_NAME_INP_PATH, inputFilePath);
+//
+//      inputFilePart = Path.basenameWithoutExtension(inputFilePath);
+//      value = value.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
+//
+//      inputFilePart = Path.extension(inputFilePath);
+//      value = value.replaceAll(PARAM_NAME_INP_EXT, inputFilePart);
+//    }
+//
+//    for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(value)); i++) {
+//      map.forEach((k, v) {
+//        if (!hasParamName || (k != paramName)) {
+//          value = value.replaceAll(k, v);
+//        }
+//      });
+//    }
+//
+//    if (isCurDirParam) {
+//      value = getFullCurDirName(value);
+//    }
+//
+    if (paramName == PARAM_NAME_CUR_DIR) {
+      if (Directory(value).existsSync()) {
+        value = value.getFullPath();
       }
-    }
-
-    var inputFilePath = map[PARAM_NAME_INP].toString();
-
-    if (inputFilePath == StringExt.STDIN_PATH) {
-      if (value.contains(PARAM_NAME_INP_DIR) ||
-          value.contains(PARAM_NAME_INP_EXT) ||
-          value.contains(PARAM_NAME_INP_PATH) ||
-          value.contains(PARAM_NAME_INP_NAME) ||
-          value.contains(PARAM_NAME_INP_NAME_EXT)) {
-        throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
-      }
-    }
-    else if (!StringExt.isNullOrBlank(inputFilePath) && !Wildcard.isA(inputFilePath)) {
-      var inputFilePart = Path.dirname(inputFilePath);
-      value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
-
-      inputFilePart = Path.basename(inputFilePath);
-      value = value.replaceAll(PARAM_NAME_INP_NAME_EXT, inputFilePart);
-
-      inputFilePart = Path.basename(inputFilePath);
-      value = value.replaceAll(PARAM_NAME_INP_PATH, inputFilePath);
-
-      inputFilePart = Path.basenameWithoutExtension(inputFilePath);
-      value = value.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
-
-      inputFilePart = Path.extension(inputFilePath);
-      value = value.replaceAll(PARAM_NAME_INP_EXT, inputFilePart);
-    }
-
-    for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(value)); i++) {
-      map.forEach((k, v) {
-        if (!hasParamName || (k != paramName)) {
-          value = value.replaceAll(k, v);
-        }
-      });
-    }
-
-    if (isCurDirParam) {
-      value = getFullCurDirName(value);
-    }
-
-    if (isParamWithPath(paramName)) {
-      value = value.getFullPath();
     }
 
     if (hasParamName && value.contains(paramName)) {
@@ -313,20 +314,18 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static String getValue(Map<String, String> map, String key, {canExpand}) {
+    //var isCmd = (key == PARAM_NAME_CMD);
+
     if (map.containsKey(key)) {
-      var isCmd = (key == PARAM_NAME_CMD);
       var value = map[key];
 
       if ((canExpand ?? false) && (value != null)) {
         for (var oldValue = value; ;) {
           map.forEach((k, v) {
             if (k != key) {
-              if (!isCmd || ((k != PARAM_NAME_INP) && (k != PARAM_NAME_OUT))) {
+              if ((k != PARAM_NAME_INP) && (k != PARAM_NAME_OUT)) {
                 value = value.replaceAll(k, v);
               }
-            }
-            else if (k == PARAM_NAME_CUR_DIR) {
-              value = v.getFullPath();
             }
           });
 
