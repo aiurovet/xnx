@@ -22,25 +22,24 @@
       {
         "{out-file}":    "out/{inp-name}-{last-name}{inp-ext}",
         "{tmp-file}":    "{out-zip-dir}/{inp-sub-path}",
-        "{inp-zip-dir}": "{inp}.dir",
         "{out-zip-dir}": "{out-file}.dir"
       },
 
       // Define list of input filenames
 
-      { "{inp}": "i*p/sample*.*" },
+      { "{inp}": "i*p/sample*.*x" },
 
       // Decompress source file
 
       {
         "{exp-inp}": false, "{out}": "",
-        "{cmd}": "cmd/my_unzip \"{inp-zip-dir}\" \"{inp}\""
+        "{cmd}": "cmd/my_unzip \"{inp}.dir\" \"{inp}\""
       },
 
       // Copy source files to destination one by one, expand placeholders and compress to the new file
 
       {
-        "{inp}": "{inp-zip-dir}/**", // all files in all subdirectories
+        "{inp}": "**", // all files in all subdirectories
         "{exp-inp}": true,  "{cmd}": "expand-only",
         "{import}": "ms_office_data.json" // value should not contain any placeholders
       },
@@ -57,7 +56,7 @@
 
       {
         "{exp-inp}": false, "{inp}": "", "{out}": "",
-        "{cmd}": "cmd/my_del \"{inp-zip-dir}\""
+        "{cmd}": "cmd/my_del \"{inp}.dir\""
       }
     ]
   }

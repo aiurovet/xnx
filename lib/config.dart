@@ -17,22 +17,22 @@ class Config {
 
   static final String CMD_EXPAND = 'expand-only';
 
-  static final int MAX_EXPANSION_ITERATIONS = 10;
+  //static final int MAX_EXPANSION_ITERATIONS = 10;
 
-  static String PARAM_NAME_CMD = '{cmd}';
-  static String PARAM_NAME_CUR_DIR = '{cur-dir}';
-  static String PARAM_NAME_EXP_ENV = '{exp-env}';
-  static String PARAM_NAME_EXP_INP = '{exp-inp}';
-  static String PARAM_NAME_INP = '{inp}';
-  static String PARAM_NAME_INP_DIR = '{inp-dir}';
-  static String PARAM_NAME_INP_EXT = '{inp-ext}';
-  static String PARAM_NAME_INP_NAME = '{inp-name}';
-  static String PARAM_NAME_INP_NAME_EXT = '{inp-name-ext}';
-  static String PARAM_NAME_INP_PATH = '{inp-path}';
-  static String PARAM_NAME_INP_SUB_DIR = '{inp-sub-dir}';
-  static String PARAM_NAME_INP_SUB_PATH = '{inp-sub-path}';
-  static String PARAM_NAME_IMPORT = '{import}';
-  static String PARAM_NAME_OUT = '{out}';
+  String PARAM_NAME_CMD = '{cmd}';
+  String PARAM_NAME_CUR_DIR = '{cur-dir}';
+  String PARAM_NAME_EXP_ENV = '{exp-env}';
+  String PARAM_NAME_EXP_INP = '{exp-inp}';
+  String PARAM_NAME_INP = '{inp}';
+  String PARAM_NAME_INP_DIR = '{inp-dir}';
+  String PARAM_NAME_INP_EXT = '{inp-ext}';
+  String PARAM_NAME_INP_NAME = '{inp-name}';
+  String PARAM_NAME_INP_NAME_EXT = '{inp-name-ext}';
+  String PARAM_NAME_INP_PATH = '{inp-path}';
+  String PARAM_NAME_INP_SUB_DIR = '{inp-sub-dir}';
+  String PARAM_NAME_INP_SUB_PATH = '{inp-sub-path}';
+  String PARAM_NAME_IMPORT = '{import}';
+  String PARAM_NAME_OUT = '{out}';
 
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
@@ -40,11 +40,11 @@ class Config {
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  static int lastModifiedMcsec;
+  int lastModifiedMcsec;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addFlatMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
+  void addFlatMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
     var cloneMap = <String, Object>{};
     cloneMap.addAll(map);
 
@@ -87,7 +87,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addFlatMapsToList_addList(List<Map<String, String>> listOfMaps, Map<String, Object> map, String key, List<Object> argList) {
+  void addFlatMapsToList_addList(List<Map<String, String>> listOfMaps, Map<String, Object> map, String key, List<Object> argList) {
     var cloneMap = <String, Object>{};
     cloneMap.addAll(map);
 
@@ -99,7 +99,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addFlatMapsToList_addMap(List<Map<String, String>> listOfMaps, Map<String, Object> map, String key, Map<String, Object> argMap) {
+  void addFlatMapsToList_addMap(List<Map<String, String>> listOfMaps, Map<String, Object> map, String key, Map<String, Object> argMap) {
     var cloneMap = <String, Object>{};
 
     cloneMap.addAll(map);
@@ -111,7 +111,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
+  void addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
     var isReady = ((map != null) && deepContainsKeys(map, [PARAM_NAME_INP, PARAM_NAME_OUT]));
 
     if (isReady) {
@@ -122,7 +122,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool deepContainsKeys(Map<String, Object> map, List<String> keys, {Map<String, bool> isFound}) {
+  bool deepContainsKeys(Map<String, Object> map, List<String> keys, {Map<String, bool> isFound}) {
     if ((map == null) || (keys == null)) {
       return false;
     }
@@ -164,7 +164,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<Map<String, String>> exec(List<String> args) {
+  List<Map<String, String>> exec(List<String> args) {
     Options.parseArgs(args);
 
     Log.information('Loading configuration data');
@@ -227,13 +227,13 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getFullCurDirName(String curDirName) {
+  String getFullCurDirName(String curDirName) {
     return Path.join(Options.startDirName, curDirName).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String expandValue(String value, Map<String, Object> map, {String paramName, bool isForAny = false}) {
+  String expandValue(String value, Map<String, Object> map, {String paramName, bool isForAny = false}) {
     var canExpandEnv = (map.containsKey(PARAM_NAME_EXP_ENV) ? StringExt.parseBool(map[PARAM_NAME_EXP_ENV]) : false);
     var hasParamName = !StringExt.isNullOrBlank(paramName);
     //var isCurDirParam = (hasParamName && (paramName == PARAM_NAME_CUR_DIR));
@@ -294,16 +294,16 @@ class Config {
       }
     }
 
-    if (hasParamName && value.contains(paramName)) {
-      throw Exception('Circular reference: "${paramName}" => "${value}"');
-    }
+//    if (hasParamName && value.contains(paramName)) {
+//      throw Exception('Circular reference: "${paramName}" => "${value}"');
+//    }
 
     return value;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool isParamWithPath(String paramName) {
+  bool isParamWithPath(String paramName) {
     return (
         (paramName == PARAM_NAME_CUR_DIR) ||
         (paramName == PARAM_NAME_INP) ||
@@ -313,40 +313,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getValue(Map<String, String> map, String key, {canExpand}) {
-    //var isCmd = (key == PARAM_NAME_CMD);
-
-    if (map.containsKey(key)) {
-      var value = map[key];
-
-      if ((canExpand ?? false) && (value != null)) {
-        for (var oldValue = value; ;) {
-          map.forEach((k, v) {
-            if (k != key) {
-              if ((k != PARAM_NAME_INP) && (k != PARAM_NAME_OUT)) {
-                value = value.replaceAll(k, v);
-              }
-            }
-          });
-
-          if (oldValue == value) {
-            break;
-          }
-
-          oldValue = value;
-        }
-      }
-
-      return value;
-    }
-    else {
-      return null;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static Map<String, Object> loadConfigSync() {
+  Map<String, Object> loadConfigSync() {
     var lf = LoadedFile().loadJsonSync(Options.configFilePath, paramNameImport: PARAM_NAME_IMPORT);
 
     lastModifiedMcsec = lf.lastModifiedMcsec;
@@ -361,7 +328,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void setActualParamNames(Map<String, Object> renames) {
+  void setActualParamNames(Map<String, Object> renames) {
     renames.forEach((k, v) {
       if (k == PARAM_NAME_CMD) {
         PARAM_NAME_CMD = v;

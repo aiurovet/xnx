@@ -40,11 +40,12 @@ class Convert {
     commands = [];
 
     var isProcessed = false;
+    var mapPrev = <String, String>{};
 
     for (var mapOrig in maps) {
       var curDirName = getCurDirName(mapOrig);
 
-      var inpFilePath = (Config.getValue(mapOrig, Config.PARAM_NAME_INP, canExpand: true) ?? StringExt.EMPTY);
+      var inpFilePath = (getValue(mapOrig, Config.PARAM_NAME_INP, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
       var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
 
       if (hasInpFile) {
@@ -57,9 +58,9 @@ class Convert {
       for (var inpFilePathEx in inpFilePaths) {
         var map = expandMap(mapOrig, inpFilePathEx);
 
-        canExpandEnv = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_ENV, canExpand: false));
-        canExpandInp = StringExt.parseBool(Config.getValue(map, Config.PARAM_NAME_EXP_INP, canExpand: false));
-        var command = Config.getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
+        canExpandEnv = StringExt.parseBool(getValue(map, Config.PARAM_NAME_EXP_ENV, canExpand: false));
+        canExpandInp = StringExt.parseBool(getValue(map, Config.PARAM_NAME_EXP_INP, canExpand: false));
+        var command = getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
 
         if (!StringExt.isNullOrBlank(curDirName)) {
           Log.debug('Setting current directory to: "${curDirName}"');
@@ -70,7 +71,7 @@ class Convert {
           throw Exception('Undefined command for\n\n${map.toString()}');
         }
 
-        var outFilePath = (Config.getValue(map, Config.PARAM_NAME_OUT, canExpand: true) ?? StringExt.EMPTY);
+        var outFilePath = (getValue(map, Config.PARAM_NAME_OUT, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
         var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
 
         isExpandInpOnly = (command == Config.CMD_EXPAND);
@@ -110,6 +111,10 @@ class Convert {
           isProcessed = true;
         }
       }
+
+      mapOrig.forEach((k, v) {
+        mapPrev[k] = v;
+      });
     }
 
     if (!isStdOut && !isProcessed) {
@@ -287,7 +292,7 @@ class Convert {
         newMap[k] = inpFilePath;
       }
       else {
-        newMap[k] = Config.getValue(map, k, canExpand: true);
+        newMap[k] = getValue(map, k, canExpand: true);
 
         if (Config.isParamWithPath(k)) {
           newMap[k] = newMap[k].getFullPath();
@@ -321,7 +326,7 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static String getCurDirName(Map<String, String> map) {
-    var curDirName = (Config.getValue(map, Config.PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
+    var curDirName = (getValue(map, Config.PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
     curDirName = curDirName.getFullPath();
 
     return curDirName;
@@ -362,6 +367,39 @@ class Convert {
     }
 
     return lst;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String getValue(Map<String, String> map, String key, {Map<String, String> mapPrev, bool canExpand}) {
+    //var isCmd = (key == PARAM_NAME_CMD);
+
+    if (map.containsKey(key)) {
+      var value = map[key];
+
+      if ((canExpand ?? false) && (value != null)) {
+        for (var oldValue = null; (oldValue != value); ) {
+          oldValue = value;
+
+          map.forEach((k, v) {
+            if (k != key) {
+              if ((k != Config.PARAM_NAME_INP) && (k != Config.PARAM_NAME_OUT)) {
+                value = value.replaceAll(k, v);
+              }
+            }
+          });
+        }
+      }
+
+      if (value.contains(key) && (mapPrev != null) && mapPrev.containsKey(key)) {
+        value = value.replaceAll(key, mapPrev[key]);
+      }
+
+      return value;
+    }
+    else {
+      return null;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
