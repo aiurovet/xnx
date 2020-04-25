@@ -25,18 +25,20 @@ class Convert {
   // Parameters
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool canExpandEnv;
-  static bool canExpandInp;
-  static bool isExpandInpOnly;
-  static bool isStdIn;
-  static bool isStdOut;
-  static String outDirName;
-  static List<String> commands;
+  Config _config;
+  bool canExpandEnv;
+  bool canExpandInp;
+  bool isExpandInpOnly;
+  bool isStdIn;
+  bool isStdOut;
+  String outDirName;
+  List<String> commands;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Future exec(List<String> args) async {
-    var maps = Config.exec(args);
+  Future exec(List<String> args) async {
+    _config = Config();
+    var maps = _config.exec(args);
     commands = [];
 
     var isProcessed = false;
@@ -45,7 +47,7 @@ class Convert {
     for (var mapOrig in maps) {
       var curDirName = getCurDirName(mapOrig);
 
-      var inpFilePath = (getValue(mapOrig, Config.PARAM_NAME_INP, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
+      var inpFilePath = (getValue(mapOrig, _config.paramNameInp, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
       var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
 
       if (hasInpFile) {
@@ -58,9 +60,9 @@ class Convert {
       for (var inpFilePathEx in inpFilePaths) {
         var map = expandMap(mapOrig, inpFilePathEx);
 
-        canExpandEnv = StringExt.parseBool(getValue(map, Config.PARAM_NAME_EXP_ENV, canExpand: false));
-        canExpandInp = StringExt.parseBool(getValue(map, Config.PARAM_NAME_EXP_INP, canExpand: false));
-        var command = getValue(map, Config.PARAM_NAME_CMD, canExpand: false);
+        canExpandEnv = StringExt.parseBool(getValue(map, _config.paramNameExpEnv, canExpand: false));
+        canExpandInp = StringExt.parseBool(getValue(map, _config.paramNameExpInp, canExpand: false));
+        var command = getValue(map, _config.paramNameCmd, canExpand: false);
 
         if (!StringExt.isNullOrBlank(curDirName)) {
           Log.debug('Setting current directory to: "${curDirName}"');
@@ -71,7 +73,7 @@ class Convert {
           throw Exception('Undefined command for\n\n${map.toString()}');
         }
 
-        var outFilePath = (getValue(map, Config.PARAM_NAME_OUT, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
+        var outFilePath = (getValue(map, _config.paramNameOut, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
         var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
 
         isExpandInpOnly = (command == Config.CMD_EXPAND);
@@ -89,13 +91,13 @@ class Convert {
           var inpSubPath = inpFilePathEx.substring(subStart);
 
           outFilePathEx = outFilePathEx
-            .replaceAll(Config.PARAM_NAME_INP_DIR, dirName)
-            .replaceAll(Config.PARAM_NAME_INP_NAME, inpName)
-            .replaceAll(Config.PARAM_NAME_INP_EXT, inpExt)
-            .replaceAll(Config.PARAM_NAME_INP_PATH, inpFilePathEx)
-            .replaceAll(Config.PARAM_NAME_INP_SUB_DIR, inpSubDirName)
-            .replaceAll(Config.PARAM_NAME_INP_SUB_PATH, inpSubPath)
-            .replaceAll(Config.PARAM_NAME_INP_NAME_EXT, inpFullName)
+            .replaceAll(_config.paramNameInpDir, dirName)
+            .replaceAll(_config.paramNameInpName, inpName)
+            .replaceAll(_config.paramNameInpExt, inpExt)
+            .replaceAll(_config.paramNameInpPath, inpFilePathEx)
+            .replaceAll(_config.paramNameInpSubDir, inpSubDirName)
+            .replaceAll(_config.paramNameInpSubPath, inpSubPath)
+            .replaceAll(_config.paramNameInpNameExt, inpFullName)
           ;
 
           outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
@@ -124,7 +126,7 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Future<bool> execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) async {
+  Future<bool> execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) async {
     var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath));
     var hasOutFile = (!isStdOut && !StringExt.isNullOrBlank(outFilePath));
 
@@ -147,12 +149,12 @@ class Convert {
         throw Exception('Input file to expand is not defined');
       }
 
-      cmdTemplateEx += ' "${Config.PARAM_NAME_INP}" "${Config.PARAM_NAME_OUT}"';
+      cmdTemplateEx += ' "${_config.paramNameInp}" "${_config.paramNameOut}"';
     }
 
     var command = cmdTemplateEx
-        .replaceAll(Config.PARAM_NAME_OUT, outFilePath)
-        .replaceAll(Config.PARAM_NAME_INP, inpFilePath);
+        .replaceAll(_config.paramNameOut, outFilePath)
+        .replaceAll(_config.paramNameInp, inpFilePath);
 
     if (commands.contains(command)) {
       return false;
@@ -166,7 +168,7 @@ class Convert {
       var isChanged = (outFile.compareLastModifiedTo(inpFile, isCoarse: true) < 0);
 
       if (!isChanged) {
-        isChanged = (outFile.compareLastModifiedMcsecTo(Config.lastModifiedMcsec) < 0);
+        isChanged = (outFile.compareLastModifiedMcsecTo(_config.lastModifiedMcsec) < 0);
       }
 
       if (!isChanged) {
@@ -195,8 +197,8 @@ class Convert {
 
     if (tmpFilePath != null) {
       command = cmdTemplateEx
-        .replaceAll(Config.PARAM_NAME_OUT, outFilePath)
-        .replaceAll(Config.PARAM_NAME_INP, tmpFilePath);
+        .replaceAll(_config.paramNameOut, outFilePath)
+        .replaceAll(_config.paramNameInp, tmpFilePath);
     }
 
     var exitCodes = await Shell(verbose: isVerbose).run(command);
@@ -218,7 +220,7 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static File expandInpFile(File inpFile, String outFilePath, String tmpFilePath, Map<String, String> map) {
+  File expandInpFile(File inpFile, String outFilePath, String tmpFilePath, Map<String, String> map) {
     var text = StringExt.EMPTY;
 
     if (inpFile == null) {
@@ -283,18 +285,18 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Map<String, String> expandMap(Map<String, String> map, String inpFilePath) {
+  Map<String, String> expandMap(Map<String, String> map, String inpFilePath) {
     var newMap = <String, String>{};
     newMap.addAll(map);
 
     newMap.forEach((k, v) {
-      if (k == Config.PARAM_NAME_INP) {
+      if (k == _config.paramNameInp) {
         newMap[k] = inpFilePath;
       }
       else {
         newMap[k] = getValue(map, k, canExpand: true);
 
-        if (Config.isParamWithPath(k)) {
+        if (_config.isParamWithPath(k)) {
           newMap[k] = newMap[k].getFullPath();
         }
       }
@@ -305,7 +307,7 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getActualInpFilePath(String inpFilePath, String outFilePath) {
+  String getActualInpFilePath(String inpFilePath, String outFilePath) {
     if (isStdIn || (isExpandInpOnly && (inpFilePath != outFilePath)) || !canExpandInp) {
       return inpFilePath;
     }
@@ -325,8 +327,8 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getCurDirName(Map<String, String> map) {
-    var curDirName = (getValue(map, Config.PARAM_NAME_CUR_DIR, canExpand: false) ?? StringExt.EMPTY);
+  String getCurDirName(Map<String, String> map) {
+    var curDirName = (getValue(map, _config.paramNameCurDir, canExpand: false) ?? StringExt.EMPTY);
     curDirName = curDirName.getFullPath();
 
     return curDirName;
@@ -334,7 +336,7 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<String> getInpFilePaths(String filePath, String curDirName) {
+  List<String> getInpFilePaths(String filePath, String curDirName) {
     if (StringExt.isNullOrBlank(filePath)) {
       return [ filePath ]; // ensure at least one pass in a loop
     }
@@ -371,7 +373,7 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getValue(Map<String, String> map, String key, {Map<String, String> mapPrev, bool canExpand}) {
+  String getValue(Map<String, String> map, String key, {Map<String, String> mapPrev, bool canExpand}) {
     //var isCmd = (key == PARAM_NAME_CMD);
 
     if (map.containsKey(key)) {
@@ -383,7 +385,7 @@ class Convert {
 
           map.forEach((k, v) {
             if (k != key) {
-              if ((k != Config.PARAM_NAME_INP) && (k != Config.PARAM_NAME_OUT)) {
+              if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
                 value = value.replaceAll(k, v);
               }
             }

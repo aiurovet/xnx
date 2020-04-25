@@ -19,21 +19,6 @@ class Config {
 
   //static final int MAX_EXPANSION_ITERATIONS = 10;
 
-  String PARAM_NAME_CMD = '{cmd}';
-  String PARAM_NAME_CUR_DIR = '{cur-dir}';
-  String PARAM_NAME_EXP_ENV = '{exp-env}';
-  String PARAM_NAME_EXP_INP = '{exp-inp}';
-  String PARAM_NAME_INP = '{inp}';
-  String PARAM_NAME_INP_DIR = '{inp-dir}';
-  String PARAM_NAME_INP_EXT = '{inp-ext}';
-  String PARAM_NAME_INP_NAME = '{inp-name}';
-  String PARAM_NAME_INP_NAME_EXT = '{inp-name-ext}';
-  String PARAM_NAME_INP_PATH = '{inp-path}';
-  String PARAM_NAME_INP_SUB_DIR = '{inp-sub-dir}';
-  String PARAM_NAME_INP_SUB_PATH = '{inp-sub-path}';
-  String PARAM_NAME_IMPORT = '{import}';
-  String PARAM_NAME_OUT = '{out}';
-
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -41,6 +26,21 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   int lastModifiedMcsec;
+
+  String paramNameCmd = '{cmd}';
+  String paramNameCurDir = '{cur-dir}';
+  String paramNameExpEnv = '{exp-env}';
+  String paramNameExpInp = '{exp-inp}';
+  String paramNameInp = '{inp}';
+  String paramNameInpDir = '{inp-dir}';
+  String paramNameInpExt = '{inp-ext}';
+  String paramNameInpName = '{inp-name}';
+  String paramNameInpNameExt = '{inp-name-ext}';
+  String paramNameInpPath = '{inp-path}';
+  String paramNameInpSubDir = '{inp-sub-dir}';
+  String paramNameInpSubPath = '{inp-sub-path}';
+  String paramNameImport = '{import}';
+  String paramNameOut = '{out}';
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -112,11 +112,11 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   void addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
-    var isReady = ((map != null) && deepContainsKeys(map, [PARAM_NAME_INP, PARAM_NAME_OUT]));
+    var isReady = ((map != null) && deepContainsKeys(map, [paramNameInp, paramNameOut]));
 
     if (isReady) {
       addFlatMapsToList(listOfMaps, map);
-      map.remove(PARAM_NAME_OUT);
+      map.remove(paramNameOut);
     }
   }
 
@@ -185,7 +185,7 @@ class Config {
       Log.information('Processing actions');
 
       var params = <String, Object>{};
-      params[PARAM_NAME_CUR_DIR] = '';
+      params[paramNameCurDir] = '';
 
       var action = all[CFG_ACTION];
       assert(action is List);
@@ -234,8 +234,8 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String expandValue(String value, Map<String, Object> map, {String paramName, bool isForAny = false}) {
-    var canExpandEnv = (map.containsKey(PARAM_NAME_EXP_ENV) ? StringExt.parseBool(map[PARAM_NAME_EXP_ENV]) : false);
-    var hasParamName = !StringExt.isNullOrBlank(paramName);
+    var canExpandEnv = (map.containsKey(paramNameExpEnv) ? StringExt.parseBool(map[paramNameExpEnv]) : false);
+    //var hasParamName = !StringExt.isNullOrBlank(paramName);
     //var isCurDirParam = (hasParamName && (paramName == PARAM_NAME_CUR_DIR));
 
     if (canExpandEnv) {
@@ -288,7 +288,7 @@ class Config {
 //      value = getFullCurDirName(value);
 //    }
 //
-    if (paramName == PARAM_NAME_CUR_DIR) {
+    if (paramName == paramNameCurDir) {
       if (Directory(value).existsSync()) {
         value = value.getFullPath();
       }
@@ -305,16 +305,16 @@ class Config {
 
   bool isParamWithPath(String paramName) {
     return (
-        (paramName == PARAM_NAME_CUR_DIR) ||
-        (paramName == PARAM_NAME_INP) ||
-        (paramName == PARAM_NAME_OUT)
+        (paramName == paramNameCurDir) ||
+        (paramName == paramNameInp) ||
+        (paramName == paramNameOut)
     );
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   Map<String, Object> loadConfigSync() {
-    var lf = LoadedFile().loadJsonSync(Options.configFilePath, paramNameImport: PARAM_NAME_IMPORT);
+    var lf = LoadedFile().loadJsonSync(Options.configFilePath, paramNameImport: paramNameImport);
 
     lastModifiedMcsec = lf.lastModifiedMcsec;
 
@@ -330,47 +330,47 @@ class Config {
 
   void setActualParamNames(Map<String, Object> renames) {
     renames.forEach((k, v) {
-      if (k == PARAM_NAME_CMD) {
-        PARAM_NAME_CMD = v;
+      if (k == paramNameCmd) {
+        paramNameCmd = v;
       }
-      else if (k == PARAM_NAME_CUR_DIR) {
-        PARAM_NAME_CUR_DIR = v;
+      else if (k == paramNameCurDir) {
+        paramNameCurDir = v;
       }
-      else if (k == PARAM_NAME_EXP_ENV) {
-        PARAM_NAME_EXP_ENV = v;
+      else if (k == paramNameExpEnv) {
+        paramNameExpEnv = v;
       }
-      else if (k == PARAM_NAME_EXP_INP) {
-        PARAM_NAME_EXP_INP = v;
+      else if (k == paramNameExpInp) {
+        paramNameExpInp = v;
       }
-      else if (k == PARAM_NAME_INP) {
-        PARAM_NAME_INP = v;
+      else if (k == paramNameInp) {
+        paramNameInp = v;
       }
-      else if (k == PARAM_NAME_INP_DIR) {
-        PARAM_NAME_INP_DIR = v;
+      else if (k == paramNameInpDir) {
+        paramNameInpDir = v;
       }
-      else if (k == PARAM_NAME_INP_EXT) {
-        PARAM_NAME_INP_EXT = v;
+      else if (k == paramNameInpExt) {
+        paramNameInpExt = v;
       }
-      else if (k == PARAM_NAME_INP_NAME) {
-        PARAM_NAME_INP_NAME = v;
+      else if (k == paramNameInpName) {
+        paramNameInpName = v;
       }
-      else if (k == PARAM_NAME_INP_NAME_EXT) {
-        PARAM_NAME_INP_NAME_EXT = v;
+      else if (k == paramNameInpNameExt) {
+        paramNameInpNameExt = v;
       }
-      else if (k == PARAM_NAME_INP_PATH) {
-        PARAM_NAME_INP_PATH = v;
+      else if (k == paramNameInpPath) {
+        paramNameInpPath = v;
       }
-      else if (k == PARAM_NAME_INP_SUB_DIR) {
-        PARAM_NAME_INP_SUB_DIR = v;
+      else if (k == paramNameInpSubDir) {
+        paramNameInpSubDir = v;
       }
-      else if (k == PARAM_NAME_INP_SUB_PATH) {
-        PARAM_NAME_INP_SUB_PATH = v;
+      else if (k == paramNameInpSubPath) {
+        paramNameInpSubPath = v;
       }
-      else if (k == PARAM_NAME_IMPORT) {
-        PARAM_NAME_IMPORT = v;
+      else if (k == paramNameImport) {
+        paramNameImport = v;
       }
-      else if (k == PARAM_NAME_OUT) {
-        PARAM_NAME_OUT = v;
+      else if (k == paramNameOut) {
+        paramNameOut = v;
       }
     });
   }

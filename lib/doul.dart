@@ -7,8 +7,9 @@ import 'log.dart';
 class Doul {
   static void main(List<String> args) {
     var isOK = false;
+    var app = Convert();
 
-    Convert.exec(args)
+    app.exec(args)
       .then((result) {
         isOK = true;
       })
