@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as Path;
-import 'loaded_file.dart';
+import 'app_file_loader.dart';
 import 'log.dart';
 import 'options.dart';
 import 'ext/string.dart';
@@ -314,7 +314,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   Map<String, Object> loadConfigSync() {
-    var lf = LoadedFile().loadJsonSync(Options.configFilePath, paramNameImport: paramNameImport);
+    var lf = AppFileLoader().loadJsonSync(Options.configFilePath, paramNameImport: paramNameImport);
 
     lastModifiedMcsec = lf.lastModifiedMcsec;
 

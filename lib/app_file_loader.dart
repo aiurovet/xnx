@@ -5,7 +5,7 @@ import 'ext/stdin.dart';
 import 'ext/string.dart';
 import 'log.dart';
 
-class LoadedFile {
+class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -30,7 +30,7 @@ class LoadedFile {
   // Construction
   //////////////////////////////////////////////////////////////////////////////
 
-  LoadedFile({bool isStdIn, File file, String text}) {
+  AppFileLoader({bool isStdIn, File file, String text}) {
     _file = file;
     _isStdIn = (isStdIn ?? false);
     _lastModifiedMcsec = (file?.lastModifiedSync()?.microsecondsSinceEpoch ?? 0);
@@ -49,7 +49,7 @@ class LoadedFile {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  LoadedFile loadImportsSync(String paramNameImport) {
+  AppFileLoader loadImportsSync(String paramNameImport) {
     if (StringExt.isNullOrBlank(paramNameImport)) {
       return this;
     }
@@ -61,7 +61,7 @@ class LoadedFile {
       return this;
     }
 
-    var lf = LoadedFile();
+    var lf = AppFileLoader();
 
     _text = _text
       .replaceAll(r'\\', '\x01')
@@ -88,7 +88,7 @@ class LoadedFile {
   // Methods
   //////////////////////////////////////////////////////////////////////////////
 
-  LoadedFile loadJsonSync(String path, {String paramNameImport}) {
+  AppFileLoader loadJsonSync(String path, {String paramNameImport}) {
     loadSync(path);
 
     _text = _text.removeJsComments();
@@ -105,7 +105,7 @@ class LoadedFile {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  LoadedFile loadSync(String path) {
+  AppFileLoader loadSync(String path) {
     _isStdIn = (StringExt.isNullOrBlank(path) || (path == StringExt.STDIN_PATH));
     var dispName = (_isStdIn ? path : '"' + path + '"');
 
