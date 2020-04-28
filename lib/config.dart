@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:path/path.dart' as Path;
 import 'app_file_loader.dart';
 import 'log.dart';
@@ -75,9 +73,11 @@ class Config {
         strStrMap[k] = v.toString();
       });
 
+      var canExpandEnv = (strStrMap.containsKey(paramNameExpEnv) ? StringExt.parseBool(strStrMap[paramNameExpEnv]) : false);
+
       strStrMap.forEach((k, v) {
         if (v != null) {
-          strStrMap[k] = expandValue(strStrMap[k], strStrMap, paramName: k);
+          strStrMap[k] = (canExpandEnv ? v.expandEnvironmentVariables() : v);
         }
       });
 
@@ -229,76 +229,6 @@ class Config {
 
   String getFullCurDirName(String curDirName) {
     return Path.join(Options.startDirName, curDirName).getFullPath();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  String expandValue(String value, Map<String, Object> map, {String paramName, bool isForAny = false}) {
-    var canExpandEnv = (map.containsKey(paramNameExpEnv) ? StringExt.parseBool(map[paramNameExpEnv]) : false);
-    //var hasParamName = !StringExt.isNullOrBlank(paramName);
-    //var isCurDirParam = (hasParamName && (paramName == PARAM_NAME_CUR_DIR));
-
-    if (canExpandEnv) {
-      value = value.expandEnvironmentVariables();
-    }
-
-//    if (!isForAny && hasParamName) {
-//      if ((paramName == PARAM_NAME_CMD) || (paramName == PARAM_NAME_INP) || (paramName == PARAM_NAME_OUT)) {
-//        return value;
-//      }
-//    }
-//
-//    var inputFilePath = map[PARAM_NAME_INP].toString();
-//
-//    if (inputFilePath == StringExt.STDIN_PATH) {
-//      if (value.contains(PARAM_NAME_INP_DIR) ||
-//          value.contains(PARAM_NAME_INP_EXT) ||
-//          value.contains(PARAM_NAME_INP_PATH) ||
-//          value.contains(PARAM_NAME_INP_NAME) ||
-//          value.contains(PARAM_NAME_INP_NAME_EXT)) {
-//        throw Exception('You can\'t use input file path elements with ${StringExt.STDIN_DISP}');
-//      }
-//    }
-//    else if (!StringExt.isNullOrBlank(inputFilePath) && !Wildcard.isA(inputFilePath)) {
-//      var inputFilePart = Path.dirname(inputFilePath);
-//      value = value.replaceAll(PARAM_NAME_INP_DIR, inputFilePart);
-//
-//      inputFilePart = Path.basename(inputFilePath);
-//      value = value.replaceAll(PARAM_NAME_INP_NAME_EXT, inputFilePart);
-//
-//      inputFilePart = Path.basename(inputFilePath);
-//      value = value.replaceAll(PARAM_NAME_INP_PATH, inputFilePath);
-//
-//      inputFilePart = Path.basenameWithoutExtension(inputFilePath);
-//      value = value.replaceAll(PARAM_NAME_INP_NAME, inputFilePart);
-//
-//      inputFilePart = Path.extension(inputFilePath);
-//      value = value.replaceAll(PARAM_NAME_INP_EXT, inputFilePart);
-//    }
-//
-//    for (var i = 0; ((i < MAX_EXPANSION_ITERATIONS) && RE_PARAM_NAME.hasMatch(value)); i++) {
-//      map.forEach((k, v) {
-//        if (!hasParamName || (k != paramName)) {
-//          value = value.replaceAll(k, v);
-//        }
-//      });
-//    }
-//
-//    if (isCurDirParam) {
-//      value = getFullCurDirName(value);
-//    }
-//
-    if (paramName == paramNameCurDir) {
-      if (Directory(value).existsSync()) {
-        value = value.getFullPath();
-      }
-    }
-
-//    if (hasParamName && value.contains(paramName)) {
-//      throw Exception('Circular reference: "${paramName}" => "${value}"');
-//    }
-
-    return value;
   }
 
   //////////////////////////////////////////////////////////////////////////////
