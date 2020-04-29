@@ -57,7 +57,17 @@ class Convert {
           inpFilePath = Path.join(curDirName, inpFilePath);
         }
 
-        inpFilePath = expandInpDetails(inpFilePath, inpFilePath);
+        if (inpFilePath.contains(_config.paramNameInp) ||
+            inpFilePath.contains(_config.paramNameInpDir) ||
+            inpFilePath.contains(_config.paramNameInpExt) ||
+            inpFilePath.contains(_config.paramNameInpName) ||
+            inpFilePath.contains(_config.paramNameInpNameExt) ||
+            inpFilePath.contains(_config.paramNameInpPath) ||
+            inpFilePath.contains(_config.paramNameInpSubDir) ||
+            inpFilePath.contains(_config.paramNameInpSubPath)) {
+          throw Exception('Circular reference is not allowed: input file path is "${inpFilePath}"');
+        }
+
         inpFilePath = inpFilePath.getFullPath();
       }
 
@@ -99,16 +109,16 @@ class Convert {
 
           mapCurr.forEach((k, v) {
             if ((v != null) && (k != _config.paramNameCmd)) {
-              mapCurr[k] = expandInpDetailsEx(v, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
+              mapCurr[k] = expandInpDetails(v, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
             }
           });
 
           if (hasOutFile) {
-            outFilePathEx = expandInpDetailsEx(outFilePathEx, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
+            outFilePathEx = expandInpDetails(outFilePathEx, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
             outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
           }
 
-          command = expandInpDetailsEx(command, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
+          command = expandInpDetails(command, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
         }
 
         outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
@@ -230,33 +240,7 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String expandInpDetails(String value, String inpFilePath) {
-    var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
-    var inpNameExt = (hasInpFile ? Path.basename(inpFilePath) : StringExt.EMPTY);
-    var subStart = (hasInpFile ? (inpFilePath.length - inpNameExt.length) : 0);
-
-    var dirName = Path.dirname(inpFilePath);
-    var inpSubDirName = (dirName.length <= subStart ? StringExt.EMPTY : dirName.substring(subStart));
-    var inpName = Path.basenameWithoutExtension(inpNameExt);
-    var inpExt = Path.extension(inpNameExt);
-    var inpSubPath = inpFilePath.substring(subStart);
-
-    var result = value
-        .replaceAll(_config.paramNameInpDir, dirName)
-        .replaceAll(_config.paramNameInpName, inpName)
-        .replaceAll(_config.paramNameInpExt, inpExt)
-        .replaceAll(_config.paramNameInpPath, inpFilePath)
-        .replaceAll(_config.paramNameInpSubDir, inpSubDirName)
-        .replaceAll(_config.paramNameInpSubPath, inpSubPath)
-        .replaceAll(_config.paramNameInpNameExt, inpNameExt)
-    ;
-
-    return result;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  String expandInpDetailsEx(String value, String inpFilePath, String dirName, String inpName, String inpExt, String inpNameExt, String inpFilePathEx, int subStart, String inpSubDirName, String inpSubPath) {
+  String expandInpDetails(String value, String inpFilePath, String dirName, String inpName, String inpExt, String inpNameExt, String inpFilePathEx, int subStart, String inpSubDirName, String inpSubPath) {
     var result = value
       .replaceAll(_config.paramNameInpDir, dirName)
       .replaceAll(_config.paramNameInpName, inpName)

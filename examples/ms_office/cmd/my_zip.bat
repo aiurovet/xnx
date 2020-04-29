@@ -4,17 +4,15 @@ rem ############################################################################
 rem Depends on zip.exe (can be downloaded as part of GnuWin32)
 rem ############################################################################
 
-if "%2" == "" goto FAIL
-if not "%3" == "" goto FAIL
+set DIR=%1
+set OUT=%2
 
 rem ############################################################################
 
-DIR=%1
-OUT=%2
+if "%DIR%" == "" goto FAIL
+if "%OUT%" == "" goto FAIL
 
-rem ############################################################################
-
-cd "%OUT%"
+cd "%DIR%"
 if errorlevel 1 goto FAIL
 
 zip -m -r "%OUT%" *
@@ -24,11 +22,15 @@ cd ..
 if errorlevel 1 goto FAIL
 
 del /F/Q/S "%DIR%" > nul
+if errorlevel 1 goto FAIL
 
-:SUCCESS
+rem ############################################################################
+
+:GOOD
 exit /B 0
 
 :FAIL
+echo Failed to zip "%DIR%" to "%OUT%"
 exit /B 1
 
 rem ############################################################################

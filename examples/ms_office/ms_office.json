@@ -20,44 +20,56 @@
       { "{exp-env}": true, "{cur-dir}": "." },
 
       {
-        "{inp-zip-dir}": "{cur-dir}/tmp/{inp-name-ext}.dir",
-        "{out-file}":    "out/{inp-name}-{last-name}{inp-ext}",
-        "{out-zip-dir}": "{out-file}.dir",
-        "{tmp-file}":    "{out-zip-dir}/{inp-sub-path}"
+        "{src}":         "i*p/sample*.*x",
+        "{inp-unz-top}": "{cur-dir}/inp_unz",
+        "{inp-unz-dir}": "{inp-unz-top}/{inp-name-ext}.dir",
+        "{out-top}":     "{cur-dir}/out",
+        "{tmp-file}":    "{out-top}/{inp-sub-path}"
       },
 
       // Define list of input filenames
 
-      { "{inp}": "i*p/sample*.*x" },
+      { "{inp}": "{src}" },
 
       // Decompress source file
 
       {
         "{exp-inp}": false, "{out}": "",
-        "{cmd}": "cmd/my_unzip \"{inp-zip-dir}\" \"{inp}\""
+        "{cmd}": "cmd/my_unzip \"{inp-unz-dir}\" \"{inp}\""
+      },
+
+      // Multiply decompressed source to destinations
+
+      {
+        "{exp-inp}": false, "{inp}": "{src}",
+        "{cmd}": "cmd/my_copy \"{inp-unz-top}/{inp-name-ext}.dir\" \"{out-top}/{inp-name}-{last-name}{inp-ext}.dir\"",
+        "{out}": "{tmp-file}",
+        "{import}": "ms_office_data.json" // value should not contain any placeholders
       },
 
       // Copy source files to destination one by one, expand placeholders and compress to the new file
 
       {
-        "{inp}": "{inp-zip-dir}/**", // all files in all subdirectories
+        "{inp}": "{out-top}/**", // all files in all subdirectories
         "{exp-inp}": true,  "{cmd}": "expand-only",
+        "{out}": "{tmp-file}",
         "{import}": "ms_office_data.json" // value should not contain any placeholders
       },
 
       // Compress output directories file
 
       {
-        "{exp-inp}": false, "{out}": "{out-file}",
-        "{cmd}": "cmd/my_zip \"{out-zip-dir}\" \"{out-file}\"",
-        "{import}": "ms_office_data.json" // should not contain any placeholders
+        "{exp-inp}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
+        "{cmd}": "cmd/my_zip \"{out-file}.dir\" \"{out-file}\"",
+        "{out}": "{tmp-file}",
+        "{import}": "ms_office_data.json" // value should not contain any placeholders
       },
 
       // Delete input directories file
 
       {
         "{exp-inp}": false, "{inp}": "", "{out}": "",
-        "{cmd}": "cmd/my_del \"{inp-zip-dir}\""
+        "{cmd}": "cmd/my_del \"{inp-unz-top}\""
       }
     ]
   }
