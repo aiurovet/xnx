@@ -27,18 +27,14 @@
         "{tmp-file}":    "{out-top}/{inp-sub-path}"
       },
 
-      // Define list of input filenames
-
-      { "{inp}": "{src}" },
-
-      // Decompress source file
+      // Decompress source files into directories
 
       {
-        "{exp-inp}": false, "{out}": "",
+        "{exp-inp}": false, "{inp}": "{src}", "{out}": "",
         "{cmd}": "cmd/my_unzip \"{inp-unz-dir}\" \"{inp}\""
       },
 
-      // Multiply decompressed source to destinations
+      // Multi-copy decompressed source directories to destinations
 
       {
         "{exp-inp}": false, "{inp}": "{src}",
@@ -47,30 +43,30 @@
         "{import}": "ms_office_data.json" // value should not contain any placeholders
       },
 
-      // Copy source files to destination one by one, expand placeholders and compress to the new file
+      // Expand placeholders and compress to the new file
 
       {
         "{inp}": "{out-top}/**", // all files in all subdirectories
         "{exp-inp}": true,  "{cmd}": "expand-only",
         "{out}": "{tmp-file}",
         "{import}": "ms_office_data.json" // value should not contain any placeholders
-      },
-
-      // Compress output directories file
-
-      {
-        "{exp-inp}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
-        "{cmd}": "cmd/my_zip \"{out-file}.dir\" \"{out-file}\"",
-        "{out}": "{tmp-file}",
-        "{import}": "ms_office_data.json" // value should not contain any placeholders
-      },
-
-      // Delete input directories file
-
-      {
-        "{exp-inp}": false, "{inp}": "", "{out}": "",
-        "{cmd}": "cmd/my_del \"{inp-unz-top}\""
-      }
+      }/*,
+//
+//      // Compress output directories file
+//
+//      {
+//        "{exp-inp}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
+//        "{cmd}": "cmd/my_zip \"{out-file}.dir\" \"{out-file}\"",
+//        "{out}": "{tmp-file}",
+//        "{import}": "ms_office_data.json" // value should not contain any placeholders
+//      },
+//
+//      // Delete input directories file
+//
+//      {
+//        "{exp-inp}": false, "{inp}": "", "{out}": "",
+//        "{cmd}": "cmd/my_del \"{inp-unz-top}\""
+//      }*/
     ]
   }
 }

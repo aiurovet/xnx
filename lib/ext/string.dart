@@ -113,6 +113,24 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  String removeJsCommentsNew() {
+    var rex = RegExp(r'(\/\*)|(\*\/)|(\/\/[^\n]*\n)|(\".*\")', multiLine: true);
+
+    var result = this
+      .trim()
+      .replaceAll(r'\\', '\x01')
+      .replaceAll(r'\"', '\x02')
+      .replaceAllMapped(rex, (Match match) {
+        var g = match.group(1);
+      })
+      .replaceAll('\x02', r'\"')
+      .replaceAll('\x01', r'\\');
+
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String removeJsComments() {
     var result = this;
     var commentFrom = -1;
