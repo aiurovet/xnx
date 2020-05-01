@@ -60,6 +60,12 @@ class Options {
     'valueHelp': 'LEVEL',
     'defaultsTo': '1',
   };
+  static final Map<String, Object> XARGS = {
+    'name': 'xargs',
+    'abbr': 'x',
+    'help': 'treat each plain argument independently (e.g. can pass multiple filenames as arguments)',
+    'negatable': false,
+  };
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -72,9 +78,11 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static bool asXargs;
   static String configFilePath;
   static bool isForced;
   static bool isListOnly;
+  static List<String> plainArgs;
   static String startDirName;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -119,6 +127,9 @@ class Options {
           Log.userLevel = int.parse(value);
         }
       })
+      ..addFlag(Options.XARGS['name'], abbr: Options.XARGS['abbr'], help: Options.XARGS['help'], negatable: Options.XARGS['negatable'], callback: (value) {
+        asXargs = value;
+      })
       ..addFlag(Options.HELP['name'], abbr: Options.HELP['abbr'], help: Options.HELP['help'], negatable: Options.HELP['negatable'], callback: (value) {
         isHelp = value;
       })
@@ -148,7 +159,9 @@ class Options {
     }
 
     try {
-      parser.parse(args);
+      var result = parser.parse(args);
+
+      plainArgs = result.rest;
     }
     catch (e) {
       isHelp = true;
@@ -339,14 +352,13 @@ Configuration file is expected in JSON format with the following guidelines:
     "rename": {
       "{cmd}": "{c}",
       "{cur-dir}": "{CD}",
-      "{exp-env}": "{EE}",
       "{exp-inp}": "{EI}",
       "{inp}": "{i}",
       "{out}": "{o}"
     },
     "action": [
       // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
-      { "{EE}": true, "{EI}": true },
+      { "{EI}": true },
 
       // Terribly slow,
       //{ "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },

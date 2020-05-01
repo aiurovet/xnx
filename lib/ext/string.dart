@@ -30,9 +30,9 @@ extension StringExt on String {
   static const String STDOUT_DISP = '<stdout>';
   static const String STDOUT_PATH = StringExt.STDIN_PATH;
 
-  static final RegExp RE_ENV_NAME = RegExp(r'\$[\{]?([A-Z_][A-Z _0-9]*)[\}]?', caseSensitive: false);
-  static final RegExp RE_PATH_SEP = RegExp(r'[\/\\]', caseSensitive: false);
-  static final RegExp RE_PROTOCOL = RegExp(r'^[a-z]+[\:][\/][\/]+', caseSensitive: false);
+  static final RegExp RE_ENV_VAR_NAME = RegExp(r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9]*)[\}]', caseSensitive: false);
+  static final RegExp RE_PATH_SEP = RegExp(r'[\/\\]');
+  static final RegExp RE_PROTOCOL = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -44,28 +44,43 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String expandEnvironmentVariables() {
+  String expandEnvironmentVariables({List<String> args}) {
     if (ENVIRONMENT == null) {
       _initEnvironmentVariables();
     }
 
-    var result =
-      replaceAll('\$\$', '\x01').
-      replaceAllMapped(RE_ENV_NAME, (match) {
-        var envName = match.group(1);
+    var argCount = (args?.length ?? 0);
 
-        if (IS_WINDOWS) {
-          envName = envName.toUpperCase();
+    var result =
+       replaceAll(r'\\', '\x01')
+      .replaceAll(r'\$', '\x02')
+      .replaceAll(r'$$', '\x03')
+      .replaceAllMapped(RE_ENV_VAR_NAME, (match) {
+        var envVarName = (match.group(1) ?? match.group(2));
+
+        if (argCount > 0) {
+          var argNo = int.tryParse(envVarName, radix: 10);
+
+          if (argNo != null) {
+            return args[argNo - 1];
+          }
         }
 
-        if (ENVIRONMENT.containsKey(envName)) {
-          return ENVIRONMENT[envName];
+        if (IS_WINDOWS) {
+          envVarName = envVarName.toUpperCase();
+        }
+
+        if (ENVIRONMENT.containsKey(envVarName)) {
+          return ENVIRONMENT[envVarName];
         }
         else {
           return EMPTY;
         }
-      }).
-      replaceAll('\x01', '\$');
+      })
+      .replaceAll('\x03', r'$')
+      .replaceAll('\x02', r'\$')
+      .replaceAll('\x01', r'\\')
+    ;
 
     return result;
   }
@@ -119,20 +134,20 @@ extension StringExt on String {
     var jsCommentsRE = RegExp(r'(\"[^\"]*\")|\/\/[^\x01]*\x01|\/\*((?!\*\/).)*\*\/', multiLine: false);
 
     var result =
-       replaceAll('\r\n', '\x01').
-       replaceAll('\r',   '\x01').
-       replaceAll('\n',   '\x01').
-       replaceAll('\\\\', '\x02').
-       replaceAll('\\\"', '\x03').
-       replaceAllMapped(jsCommentsRE, (Match match) {
-         var literalString = match.group(1);
-         var isCommented = isNullOrBlank(literalString);
+      replaceAll('\r\n', '\x01')
+     .replaceAll('\r',   '\x01')
+     .replaceAll('\n',   '\x01')
+     .replaceAll('\\\\', '\x02')
+     .replaceAll('\\\"', '\x03')
+     .replaceAllMapped(jsCommentsRE, (Match match) {
+       var literalString = match.group(1);
+       var isCommented = isNullOrBlank(literalString);
 
-         return (isCommented ? EMPTY : literalString);
-       }).
-       replaceAll('\x03', '\\\"').
-       replaceAll('\x02', '\\\\').
-       replaceAll('\x01', '\n')
+       return (isCommented ? EMPTY : literalString);
+     })
+     .replaceAll('\x03', '\\\"')
+     .replaceAll('\x02', '\\\\')
+     .replaceAll('\x01', '\n')
     ;
 
     return result;

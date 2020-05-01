@@ -25,20 +25,19 @@ class Config {
 
   int lastModifiedMcsec;
 
-  String paramNameCmd = '{cmd}';
-  String paramNameCurDir = '{cur-dir}';
-  String paramNameExpEnv = '{exp-env}';
-  String paramNameExpInp = '{exp-inp}';
-  String paramNameInp = '{inp}';
-  String paramNameInpDir = '{inp-dir}';
-  String paramNameInpExt = '{inp-ext}';
-  String paramNameInpName = '{inp-name}';
-  String paramNameInpNameExt = '{inp-name-ext}';
-  String paramNameInpPath = '{inp-path}';
-  String paramNameInpSubDir = '{inp-sub-dir}';
-  String paramNameInpSubPath = '{inp-sub-path}';
-  String paramNameImport = '{import}';
-  String paramNameOut = '{out}';
+  String paramNameCmd = '{{-cmd-}}';
+  String paramNameCurDir = '{{-cur-dir-}}';
+  String paramNameExpInp = '{{-exp-inp-}}';
+  String paramNameInp = '{{-inp-}}';
+  String paramNameInpDir = '{{-inp-dir-}}';
+  String paramNameInpExt = '{{-inp-ext-}}';
+  String paramNameInpName = '{{-inp-name-}}';
+  String paramNameInpNameExt = '{{-inp-name-ext-}}';
+  String paramNameInpPath = '{{-inp-path-}}';
+  String paramNameInpSubDir = '{{-inp-sub-dir-}}';
+  String paramNameInpSubPath = '{{-inp-sub-path-}}';
+  String paramNameImport = '{{-import-}}';
+  String paramNameOut = '{{-out-}}';
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -71,14 +70,6 @@ class Config {
 
       cloneMap.forEach((k, v) {
         strStrMap[k] = v.toString();
-      });
-
-      var canExpandEnv = (strStrMap.containsKey(paramNameExpEnv) ? StringExt.parseBool(strStrMap[paramNameExpEnv]) : false);
-
-      strStrMap.forEach((k, v) {
-        if (v != null) {
-          strStrMap[k] = (canExpandEnv ? v.expandEnvironmentVariables() : v);
-        }
       });
 
       listOfMaps.add(strStrMap);
@@ -164,6 +155,21 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  List<Object> injectPlainArgs(List<Object> actions) {
+    var args = Options.plainArgs;
+    var argCount = (args?.length ?? 0);
+
+    if (argCount > 0) {
+      var obj = (argCount == 1 ? args[0] : args);
+
+      actions.insert(0, <String, Object>{AppFileLoader.ALL_ARGS: obj});
+    }
+
+    return actions;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   List<Map<String, String>> exec(List<String> args) {
     Options.parseArgs(args);
 
@@ -190,9 +196,12 @@ class Config {
       var action = all[CFG_ACTION];
       assert(action is List);
 
+      var actions = (action as List);
+      injectPlainArgs(actions);
+
       var result = <Map<String, String>>[];
 
-      (action as List).forEach((map) {
+      actions.forEach((map) {
         assert(map is Map);
 
         Log.debug('');
@@ -265,9 +274,6 @@ class Config {
       }
       else if (k == paramNameCurDir) {
         paramNameCurDir = v;
-      }
-      else if (k == paramNameExpEnv) {
-        paramNameExpEnv = v;
       }
       else if (k == paramNameExpInp) {
         paramNameExpInp = v;

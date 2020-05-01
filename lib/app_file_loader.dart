@@ -1,11 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:doul/options.dart';
+
 import 'ext/stdin.dart';
 import 'ext/string.dart';
 import 'log.dart';
 
 class AppFileLoader {
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Constants
+  //////////////////////////////////////////////////////////////////////////////
+
+  static final String ALL_ARGS = r'${@}';
+  static final RegExp RE_CMD_LINE_ARG = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([1-9][0-9]*))|(\$\{([1-9][0-9]*)\})');
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -49,12 +58,40 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  void expandCmdLineArgs() {
+    var args = Options.plainArgs;
+    var argCount = (args?.length ?? 0);
+
+    _text = _text
+      .replaceAll('\$\$', '\x01')
+      .replaceAllMapped(RE_CMD_LINE_ARG, (match) {
+        if (match.group(1) != null) {
+          return ALL_ARGS; // will be expanded later
+        }
+
+        var envArgNo = (match.group(3) ?? match.group(5));
+
+        if (envArgNo != null) {
+          var argNo = (int.tryParse(envArgNo) ?? -1);
+
+          if ((argNo > 0) && (argNo <= argCount)) {
+            return args[argNo - 1];
+          }
+        }
+
+        return StringExt.EMPTY;
+      })
+      .replaceAll('\x01', '\$');
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   AppFileLoader loadImportsSync(String paramNameImport) {
     if (StringExt.isNullOrBlank(paramNameImport)) {
       return this;
     }
 
-    var pattern = '[\\"\\\']' + paramNameImport + '[\\"\\\']\\s*\\:\\s*(\\"([^\\"]+)\\")|(\\\'([^\\\']+)\\\')';
+    var pattern = r'\"' + RegExp.escape(paramNameImport) + r'\"\s*\:\s*(\"(.*?)\")';
     var regExp = RegExp(pattern);
 
     if (!regExp.hasMatch(_text)) {
@@ -68,7 +105,7 @@ class AppFileLoader {
       .replaceAll('\'', '\x02')
       .replaceAll(r'\"', '\x03')
       .replaceAllMapped(regExp, (match) {
-        var inpPath = (match.group(2) ?? match.group(4));
+        var inpPath = match.group(2);
         lf.loadSync(inpPath);
 
         var result = '"${paramNameImport}": ${lf.text}';
@@ -97,6 +134,8 @@ class AppFileLoader {
       loadImportsSync(paramNameImport);
     }
 
+    expandCmdLineArgs();
+    _text = _text.expandEnvironmentVariables();
     _data = jsonDecode(_text);
     _text = null;
 

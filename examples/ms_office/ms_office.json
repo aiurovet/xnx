@@ -1,26 +1,25 @@
 {
   "x": {
     "rename": {
-      //"{cmd}": "{c}",
-      //"{cur-dir}": "{CD}",
-      //"{exp-env}": "{EE}",
-      //"{exp-inp}": "{EI}",
-      //"{inp}": "{i}",
-      //"{inp-dir}": "{id}",
-      //"{inp-ext}": "{ix}",
-      //"{inp-name}": "{in}",
-      //"{inp-name-ext}": "{inx}",
-      //"{inp-path}": "{ip}",
-      //"{inp-sub-dir}": "{isd}",
-      //"{inp-sub-path}": "{isp}",
-      //"{import}": "{I}",
-      //"{out}": "{o}"
+      // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
+      "{{-cmd-}}": "{cmd}",
+      "{{-cur-dir-}}": "{cur-dir}",
+      "{{-exp-inp-}}": "{exp-inp}",
+      "{{-inp-}}": "{inp}",
+      "{{-inp-dir-}}": "{inp-dir}",
+      "{{-inp-ext-}}": "{inp-ext}",
+      "{{-inp-name-}}": "{inp-name}",
+      "{{-inp-name-ext-}}": "{inp-name-ext}",
+      "{{-inp-path-}}": "{inp-path}",
+      "{{-inp-sub-dir-}}": "{inp-sub-dir}",
+      "{{-inp-sub-path-}}": "{inp-sub-path}",
+      "{{-out-}}": "{out}"
     },
     "action": [
-      { "{exp-env}": true, "{cur-dir}": "." },
+      { "{cur-dir}": "." },
 
       {
-        "{src}":         "i*p/sample*.*x",
+        "{src}":         "$*", //,"i*p/sample*.*x",
         "{inp-unz-top}": "{cur-dir}/inp_unz",
         "{inp-unz-dir}": "{inp-unz-top}/{inp-name-ext}.dir",
         "{out-top}":     "{cur-dir}/out",
@@ -40,7 +39,7 @@
         "{exp-inp}": false, "{inp}": "{src}",
         "{cmd}": "cmd/my_copy \"{inp-unz-top}/{inp-name-ext}.dir\" \"{out-top}/{inp-name}-{last-name}{inp-ext}.dir\"",
         "{out}": "{tmp-file}",
-        "{import}": "ms_office_data.json" // value should not contain any placeholders
+        "{{-import-}}": "ms_office_data.json" // key can't be renamed, value should not contain any placeholders
       },
 
       // Expand placeholders and compress to the new file
@@ -49,7 +48,7 @@
         "{inp}": "{out-top}/**", /* all files // in all subdirectories */
         "{exp-inp}": true,  "{cmd}": "expand-only",
         "{out}": "{tmp-file}",
-        "{import}": "ms_office_data.json" // value should not contain any placeholders
+        "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
       },
 
       // Compress output directories file
@@ -58,7 +57,7 @@
         "{exp-inp}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
         "{cmd}": "cmd/my_zip \"{out-file}.dir\" \"{out-file}\"",
         "{out}": "{tmp-file}",
-        "{import}": "ms_office_data.json" // value should not contain any placeholders
+        "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
       },
 
       // Delete input directories file

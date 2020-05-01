@@ -26,7 +26,6 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   Config _config;
-  bool canExpandEnv;
   bool canExpandInp;
   bool isExpandInpOnly;
   bool isStdIn;
@@ -76,7 +75,6 @@ class Convert {
       for (var inpFilePathEx in inpFilePaths) {
         mapCurr.addAll(expandMap(mapOrig, curDirName, inpFilePathEx));
 
-        canExpandEnv = StringExt.parseBool(getValue(mapCurr, _config.paramNameExpEnv, canExpand: false));
         canExpandInp = StringExt.parseBool(getValue(mapCurr, _config.paramNameExpInp, canExpand: false));
         var command = getValue(mapCurr, _config.paramNameCmd, canExpand: false);
 
@@ -172,8 +170,8 @@ class Convert {
     }
 
     var command = cmdTemplateEx
-        .replaceAll(_config.paramNameOut, outFilePath)
-        .replaceAll(_config.paramNameInp, inpFilePath);
+      .replaceAll(_config.paramNameOut, outFilePath)
+      .replaceAll(_config.paramNameInp, inpFilePath);
 
     if (commands.contains(command)) {
       return false;
@@ -263,10 +261,6 @@ class Convert {
     }
     else {
       text = (inpFile.readAsStringSync() ?? StringExt.EMPTY);
-    }
-
-    if (canExpandEnv) {
-      text = text.expandEnvironmentVariables();
     }
 
     for (; ;) {

@@ -1,15 +1,14 @@
 {
   "x": {
     "rename": {
-      "{cmd}": "{c}",
-      "{cur-dir}": "{CD}",
-      "{exp-env}": "{EE}",
-      "{exp-inp}": "{EI}",
-      "{inp}": "{i}",
-      "{out}": "{o}"
+      "{{-cmd-}}": "{c}",
+      "{{-cur-dir-}}": "{CD}",
+      "{{-exp-inp-}}": "{EI}",
+      "{{-inp-}}": "{i}",
+      "{{-out-}}": "{o}"
     },
     "action": [
-      { "{EE}": false, "{EI}": true },
+      { "{EI}": true },
 
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 

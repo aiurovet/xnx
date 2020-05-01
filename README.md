@@ -87,17 +87,14 @@ Configuration file is expected in JSON format with the following guidelines:
      pre-defined placeholders (see above). The key is a pre-defined placeholder,
      and the value is the placeholder to use instead. As you can see, this can
      make config file less verbose and easier to read. These placeholders are
-     self-descriptive, except the ones containing \'expand\' in their name. The
-     "{exp-env}" means that by setting its value to true or to false
-     you allow or disallow expansion of environment variables, and the
-     "{exp-inp}" means that the content of the input file will also be
-     expanded using pre-defined as well as user-defined placeholders, and
-     optionally, environment variables. Then it will be saved to a temporary
-     file, which will be used as an input for the sub-sequent external command
-     execution. All temporary files will be deleted on the go. If no external
-     command defined, then this will be interpreted as a simple expansion of the
-     input. However, in order to achieve that, the "{exp-inp}" flag is
-     still required to be set to true.
+     self-descriptive, except "{expand-input}", which means that the content of
+     the input file will also be expanded using pre-defined as well as user-
+     defined placeholders, and optionally, environment variables. Then it will
+     be saved to a temporary file, which will be used as an input for the sub-
+     sequent external command execution. All temporary files will be deleted on
+     the go. If no external command defined, then this will be interpreted as a
+     simple expansion of the input. However, in order to achieve that, the
+     "{expand-input}" flag is still required to be set to true.
 
 2.4. For the sake of source code portability, the environment variables are
      required to be specified strictly in UNIX/Linux/macOS format:
@@ -105,7 +102,7 @@ Configuration file is expected in JSON format with the following guidelines:
      variables will be considered case-insensitive). You can escape expansion
      by doubling the dollar sign: \$\$ABC.
 
-2.5. To support \'expand-input\' feature, the program creates a temporary file
+2.5. To support "expand-input" feature, the program creates a temporary file
      where all placeholders get expanded. This file is located in the same
      directory where the current output file is supposed to be as well as
      with the same name, but the extension is replaced with .tmp.<input-ext>.
@@ -114,14 +111,22 @@ Configuration file is expected in JSON format with the following guidelines:
      the temporary file path will be 
      android/app/src/main/res/drawable-xhdpi/ic_launcher_background.tmp.svg
 
-2.6. For the sake of source code portability, the environment variables are
-     required to be specified strictly in UNIX/Linux/macOS format:
-     \$ABC_123_DEF4 or \${ABC_123_DEF4} (under Windows though, environment
-     variables will be considered case-insensitive). You can escape expansion
-     by doubling the dollar sign: \$\$ABC.
+2.6. Environment variables as well as optionless arguments passed to doul, are
+     expanded, but in configuration file only. If you\'d like to expand those
+     in input file(s), simply assign that to some placeholder, then use that
+     placehloder. For the sake of source code portability, the environment
+     variables are required strictly in UNIX/Linux/macOS form: $\*, $@, $1,
+     $2, ..., $ABC_123_DEF4 or ${\*}, ${@}, ${1}, ${2}, ..., ${ABC_123_DEF4}
+     (under Windows though, environment variables will be considered case-
+     insensitive). You can escape expansion by escaping with \ or doubling
+     the dollar sign: \$ABC or $$ABC. In the former case nothing will change,
+     but in the latter case, it will be replaced with a single dollar sign.
+     Special placeholder $\* or $@ or ${\*} or ${@} is used to indicate an
+     array of all optionless arguments, so the whole process will be repeated
+     for each such argument. 
 
 2.7. Directory separator char in file paths is also required to be specified in
-     UNIX/Linux/macOS style: "abc/def/xyz.svg". For the sake of code portability
+     UNIX/Linux/macOS style: "abc/def/xyz.svg". For the sake of code portability,
      it is also recommended (but not enforced) to avoid specifying DOS/Windows
      drive explicitly even if you run the program solely under those OSes.
 
@@ -151,13 +156,12 @@ Configuration file is expected in JSON format with the following guidelines:
     "rename": {
       "{cmd}": "{c}",
       "{cur-dir}": "{CD}",
-      "{exp-env}": "{EE}",
       "{exp-inp}": "{EI}",
       "{inp}": "{i}",
       "{out}": "{o}"
     },
     "action": [
-      { "{EE}": true, "{EI}": true },
+      { "{EI}": true },
 
       { "#{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\"" },
       { "#{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
