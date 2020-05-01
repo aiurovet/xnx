@@ -257,7 +257,7 @@ class Convert {
     var text = StringExt.EMPTY;
 
     if (inpFile == null) {
-      text = stdin.readAsStringSync(endByte: StringExt.EOT_CODE);
+      text = stdin.readAsStringSync();
     }
     else {
       text = (inpFile.readAsStringSync() ?? StringExt.EMPTY);

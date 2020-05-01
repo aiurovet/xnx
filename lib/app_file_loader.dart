@@ -153,14 +153,14 @@ class AppFileLoader {
     _file = (_isStdIn ? null : File(path));
 
     if (_file == null) {
-      _text = stdin.readAsStringSync(endByte: StringExt.EOT_CODE);
+      _text = stdin.readAsStringSync();
     }
     else {
       if (!_file.existsSync()) {
         throw Exception('File not found: ${dispName}');
       }
 
-      _text = _file.readAsStringSync();
+      _text = (_file.readAsStringSync() ?? StringExt.EMPTY);
     }
 
     return this;

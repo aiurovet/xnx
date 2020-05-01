@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:doul/ext/string.dart';
+
 extension StdinExt on Stdin {
 
   //////////////////////////////////////////////////////////////////////////////
 
   String readAsStringSync({int endByte}) {
-    endByte ??= 0;
+    endByte ??= StringExt.EOT_CODE;
 
     final input = <int>[];
 
@@ -24,7 +26,7 @@ extension StdinExt on Stdin {
       input.add(byte);
     }
 
-    return utf8.decode(input, allowMalformed: true);
+    return (utf8.decode(input, allowMalformed: true) ?? StringExt.EMPTY);
   }
 
   //////////////////////////////////////////////////////////////////////////////

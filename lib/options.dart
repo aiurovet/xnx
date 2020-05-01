@@ -4,6 +4,7 @@ import 'package:path/path.dart' as Path;
 
 import 'package:doul/ext/string.dart';
 import 'log.dart';
+import 'ext/stdin.dart';
 
 class Options {
 
@@ -161,7 +162,18 @@ class Options {
     try {
       var result = parser.parse(args);
 
-      plainArgs = result.rest;
+      plainArgs = <String>[];
+      plainArgs.addAll(result.rest);
+
+      if (asXargs) {
+        var inpArgs = stdin.readAsStringSync().split('\n');
+
+        for (var i = 0, n = inpArgs.length; i < n; i++) {
+          if (!inpArgs[i].trim().isEmpty) {
+            plainArgs.add(inpArgs[i]);
+          }
+        }
+      }
     }
     catch (e) {
       isHelp = true;
