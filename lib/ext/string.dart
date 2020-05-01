@@ -112,152 +112,28 @@ extension StringExt on String {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
-  String removeJsCommentsNew() {
-    var rex = RegExp(r'(\/\*)|(\*\/)|(\/\/[^\n]*\n)|(\".*\")', multiLine: true);
-
-    var result = this
-      .trim()
-      .replaceAll(r'\\', '\x01')
-      .replaceAll(r'\"', '\x02')
-      .replaceAllMapped(rex, (Match match) {
-        var g = match.group(1);
-      })
-      .replaceAll('\x02', r'\"')
-      .replaceAll('\x01', r'\\');
-
-    return result;
-  }
-
+  // N.B. Single quotes are not supported by JSON standard, only double quotes
   //////////////////////////////////////////////////////////////////////////////
 
   String removeJsComments() {
-    var result = this;
-    var commentFrom = -1;
+    var jsCommentsRE = RegExp(r'(\"[^\"]*\")|\/\/[^\x01]*\x01|\/\*((?!\*\/).)*\*\/', multiLine: false);
 
-    var nullChar = '';
-    var allChars = result.split(nullChar);
-    var currChar = nullChar;
-    var literalStartChar = nullChar;
-    var nextChar = nullChar;
-    var lastIndex = (allChars.length - 1);
+    var result =
+       replaceAll('\r\n', '\x01').
+       replaceAll('\r',   '\x01').
+       replaceAll('\n',   '\x01').
+       replaceAll('\\\\', '\x02').
+       replaceAll('\\\"', '\x03').
+       replaceAllMapped(jsCommentsRE, (Match match) {
+         var literalString = match.group(1);
+         var isCommented = isNullOrBlank(literalString);
 
-    var isLastChar = false;
-    var isEscaped = false;
-    var isCommentB = false;
-    var isCommentL = false;
-
-    var commentPosList = [<int>[]];
-
-    for (var i = 0; i <= lastIndex; i++) {
-      isLastChar = (i == lastIndex);
-      currChar = allChars[i];
-
-      if (isEscaped) {
-        isEscaped = false;
-        continue;
-      }
-
-      if (currChar == '\\') {
-        isEscaped = true;
-        continue;
-      }
-
-      switch (currChar) {
-        case '\'':
-        case '\"':
-          if (literalStartChar == currChar) {
-            literalStartChar = nullChar;
-          }
-          else if (literalStartChar == nullChar) {
-            literalStartChar = currChar;
-          }
-          continue;
-        case '\n':
-        case '\r':
-          if (literalStartChar == nullChar) {
-            if (isCommentL) {
-              isCommentL = false;
-
-              if (commentFrom >= 0) {
-                commentPosList.add([commentFrom, i - 1]);
-                commentFrom = -1;
-              }
-            }
-
-            isEscaped = false;
-          }
-          continue;
-        default:
-          if (literalStartChar != nullChar) {
-            continue;
-          }
-
-          switch (currChar) {
-            case '/':
-              nextChar = (isLastChar ? nullChar : allChars[++i]);
-
-              if (nextChar == currChar) {
-                if (!isCommentB && !isCommentL) {
-                  isCommentL = true;
-                  commentFrom = i - 1;
-                }
-              }
-              else if (nextChar == '*') {
-                if (!isCommentB && !isCommentL) {
-                  isCommentB = true;
-                  commentFrom = i - 1;
-                }
-              }
-
-              if (!isLastChar) {
-                if (nextChar == currChar) {
-                  isCommentL = true;
-                  commentFrom = i - 1;
-                }
-              }
-
-              continue;
-            case '*':
-              nextChar = (isLastChar ? nullChar : allChars[++i]);
-
-              if (nextChar == '/') {
-                if (!isCommentL) {
-                  isCommentB = false;
-
-                  if (commentFrom >= 0) {
-                    commentPosList.add([commentFrom, i]);
-                    commentFrom = -1;
-                  }
-                }
-              }
-
-              break;
-          }
-          break;
-      }
-    }
-
-    var minChars = [];
-
-    lastIndex = (allChars.length - 1);
-    var lastCommentIndex = (commentPosList.length - 1);
-
-    for (var i = 0, j = 1; i <= lastIndex; i++) {
-      if (j <= lastCommentIndex) {
-        if (i < commentPosList[j][0]) {
-          minChars.add(allChars[i]);
-        }
-        else if (i > commentPosList[j][1]) {
-          ++j;
-        }
-      }
-      else {
-        minChars.add(allChars[i]);
-      }
-    }
-
-    result = minChars.join(nullChar);
+         return (isCommented ? EMPTY : literalString);
+       }).
+       replaceAll('\x03', '\\\"').
+       replaceAll('\x02', '\\\\').
+       replaceAll('\x01', '\n')
+    ;
 
     return result;
   }

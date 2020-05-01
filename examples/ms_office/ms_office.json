@@ -46,27 +46,27 @@
       // Expand placeholders and compress to the new file
 
       {
-        "{inp}": "{out-top}/**", // all files in all subdirectories
+        "{inp}": "{out-top}/**", /* all files // in all subdirectories */
         "{exp-inp}": true,  "{cmd}": "expand-only",
         "{out}": "{tmp-file}",
         "{import}": "ms_office_data.json" // value should not contain any placeholders
-      }/*,
-//
-//      // Compress output directories file
-//
-//      {
-//        "{exp-inp}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
-//        "{cmd}": "cmd/my_zip \"{out-file}.dir\" \"{out-file}\"",
-//        "{out}": "{tmp-file}",
-//        "{import}": "ms_office_data.json" // value should not contain any placeholders
-//      },
-//
-//      // Delete input directories file
-//
-//      {
-//        "{exp-inp}": false, "{inp}": "", "{out}": "",
-//        "{cmd}": "cmd/my_del \"{inp-unz-top}\""
-//      }*/
+      },
+
+      // Compress output directories file
+
+      {
+        "{exp-inp}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
+        "{cmd}": "cmd/my_zip \"{out-file}.dir\" \"{out-file}\"",
+        "{out}": "{tmp-file}",
+        "{import}": "ms_office_data.json" // value should not contain any placeholders
+      },
+
+      // Delete input directories file
+
+      {
+        "{exp-inp}": false, "{inp}": "", "{out}": "",
+        "{cmd}": "cmd/my_del \"{inp-unz-top}\""
+      }
     ]
   }
 }

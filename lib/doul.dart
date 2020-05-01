@@ -9,15 +9,7 @@ class Doul {
     var isOK = false;
 
     try {
-      Convert().exec(args)
-        .then((result) {
-          isOK = true;
-        })
-        .catchError((Exception e, StackTrace stackTrace) {
-          isOK = onError(e, stackTrace);
-        })
-        .whenComplete(() {
-        });
+      Convert().exec(args);
     }
     catch (e, stackTrace) {
       isOK = onError(e, stackTrace);

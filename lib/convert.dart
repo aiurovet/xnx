@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:cli';
 import 'dart:io';
 
@@ -37,7 +36,7 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Future exec(List<String> args) async {
+  void exec(List<String> args) {
     _config = Config();
     var maps = _config.exec(args);
     commands = [];
