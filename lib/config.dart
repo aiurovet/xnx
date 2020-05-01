@@ -27,7 +27,7 @@ class Config {
 
   String paramNameCmd = '{{-cmd-}}';
   String paramNameCurDir = '{{-cur-dir-}}';
-  String paramNameExpInp = '{{-exp-inp-}}';
+  String paramNameXpdInp = '{{-xpd-inp-}}';
   String paramNameInp = '{{-inp-}}';
   String paramNameInpDir = '{{-inp-dir-}}';
   String paramNameInpExt = '{{-inp-ext-}}';
@@ -155,21 +155,6 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<Object> injectPlainArgs(List<Object> actions) {
-    var args = Options.plainArgs;
-    var argCount = (args?.length ?? 0);
-
-    if (argCount > 0) {
-      var obj = (argCount == 1 ? args[0] : args);
-
-      actions.insert(0, <String, Object>{AppFileLoader.ALL_ARGS: obj});
-    }
-
-    return actions;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   List<Map<String, String>> exec(List<String> args) {
     Options.parseArgs(args);
 
@@ -197,8 +182,6 @@ class Config {
       assert(action is List);
 
       var actions = (action as List);
-      injectPlainArgs(actions);
-
       var result = <Map<String, String>>[];
 
       actions.forEach((map) {
@@ -275,9 +258,6 @@ class Config {
       else if (k == paramNameCurDir) {
         paramNameCurDir = v;
       }
-      else if (k == paramNameExpInp) {
-        paramNameExpInp = v;
-      }
       else if (k == paramNameInp) {
         paramNameInp = v;
       }
@@ -307,6 +287,9 @@ class Config {
       }
       else if (k == paramNameOut) {
         paramNameOut = v;
+      }
+      else if (k == paramNameXpdInp) {
+        paramNameXpdInp = v;
       }
     });
   }

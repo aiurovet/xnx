@@ -3,7 +3,7 @@
     "rename": {
       "{{-cmd-}}": "{c}",
       "{{-cur-dir-}}": "{CD}",
-      "{{-exp-inp-}}": "{EI}",
+      "{{-xpd-inp-}}": "{XI}",
       "{{-inp-}}": "{i}",
       "{{-inp-dir-}}": "{id}",
       "{{-inp-ext-}}": "{ix}",
@@ -11,7 +11,7 @@
       "{{-out-}}": "{o}"
     },
     "action": [
-      { "{EI}": true },
+      { "{XI}": true },
       { "{c}": "expand-only" },
 
       { "{CD}": "." },

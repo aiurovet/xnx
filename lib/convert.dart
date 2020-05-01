@@ -1,6 +1,7 @@
 import 'dart:cli';
 import 'dart:io';
 
+import 'package:doul/app_file_loader.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
@@ -41,104 +42,142 @@ class Convert {
     commands = [];
 
     var isProcessed = false;
-    var mapPrev = <String, String>{};
-    var mapCurr = <String, String>{};
+    var plainArgs = Options.plainArgs;
 
-    for (var mapOrig in maps) {
-      var curDirName = getCurDirName(mapOrig);
+    if ((plainArgs?.length ?? 0) <= 0) {
+      plainArgs = [ null ];
+    }
 
-      var inpFilePath = (getValue(mapOrig, _config.paramNameInp, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
-      var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
+    for (var i = 0, n = plainArgs.length; i < n; i++) {
+      var mapPrev = <String, String>{};
+      var plainArg = plainArgs[i];
 
-      if (hasInpFile) {
-        if (!Path.isAbsolute(inpFilePath)) {
-          inpFilePath = Path.join(curDirName, inpFilePath);
-        }
-
-        if (inpFilePath.contains(_config.paramNameInp) ||
-            inpFilePath.contains(_config.paramNameInpDir) ||
-            inpFilePath.contains(_config.paramNameInpExt) ||
-            inpFilePath.contains(_config.paramNameInpName) ||
-            inpFilePath.contains(_config.paramNameInpNameExt) ||
-            inpFilePath.contains(_config.paramNameInpPath) ||
-            inpFilePath.contains(_config.paramNameInpSubDir) ||
-            inpFilePath.contains(_config.paramNameInpSubPath)) {
-          throw Exception('Circular reference is not allowed: input file path is "${inpFilePath}"');
-        }
-
-        inpFilePath = inpFilePath.getFullPath();
-      }
-
-      var subStart = (hasInpFile ? (inpFilePath.length - Path.basename(inpFilePath).length) : 0);
-      var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
-
-      for (var inpFilePathEx in inpFilePaths) {
-        mapCurr.addAll(expandMap(mapOrig, curDirName, inpFilePathEx));
-
-        canExpandInp = StringExt.parseBool(getValue(mapCurr, _config.paramNameExpInp, canExpand: false));
-        var command = getValue(mapCurr, _config.paramNameCmd, canExpand: false);
-
-        if (!StringExt.isNullOrBlank(curDirName)) {
-          Log.debug('Setting current directory to: "${curDirName}"');
-          Directory.current = curDirName;
-        }
-
-        if (StringExt.isNullOrBlank(command)) {
-          throw Exception('Undefined command for\n\n${mapCurr.toString()}');
-        }
-
-        var outFilePath = (getValue(mapCurr, _config.paramNameOut, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
-        var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
-
-        isExpandInpOnly = (command == Config.CMD_EXPAND);
-        isStdIn = (inpFilePath == StringExt.STDIN_PATH);
-        isStdOut = (outFilePath == StringExt.STDOUT_PATH);
-
-        var outFilePathEx = (hasOutFile ? outFilePath : inpFilePathEx);
-
-        if (hasInpFile) {
-          var dirName = Path.dirname(inpFilePathEx);
-          var inpSubDirName = (dirName.length <= subStart ? StringExt.EMPTY : dirName.substring(subStart));
-          var inpNameExt = Path.basename(inpFilePathEx);
-          var inpName = Path.basenameWithoutExtension(inpNameExt);
-          var inpExt = Path.extension(inpNameExt);
-          var inpSubPath = inpFilePathEx.substring(subStart);
-
-          mapCurr.forEach((k, v) {
-            if ((v != null) && (k != _config.paramNameCmd)) {
-              mapCurr[k] = expandInpDetails(v, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
-            }
-          });
-
-          if (hasOutFile) {
-            outFilePathEx = expandInpDetails(outFilePathEx, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
-            outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
-          }
-
-          command = expandInpDetails(command, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
-        }
-
-        outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
-
-        if (isStdOut && !isExpandInpOnly) {
-          throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
-        }
-
-        var isOK = execFile(command, inpFilePathEx, outFilePathEx, mapCurr);
-
-        if (isOK) {
+      for (var mapOrig in maps) {
+        if (execMap(plainArg, mapOrig, mapPrev)) {
           isProcessed = true;
         }
       }
-
-      mapOrig.forEach((k, v) {
-        mapPrev[k] = v;
-      });
     }
 
-    if (!isStdOut && !isProcessed) {
+    if ((isStdOut != null) && !isStdOut && !isProcessed) {
       Log.outInfo('All output files are up to date.');
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  bool execMap(String plainArg, Map<String, String> mapOrig, Map<String, String> mapPrev) {
+    var isProcessed = false;
+    var isKeyArgsFound = false;
+    var mapCurr = <String, String>{};
+    var keyArgs = AppFileLoader.ALL_ARGS;
+
+    mapOrig.forEach((k, v) {
+      if ((v != null) && v.contains(keyArgs)) {
+        isKeyArgsFound = true;
+      }
+    });
+
+    if (StringExt.isNullOrBlank(plainArg)) {
+      if (isKeyArgsFound) {
+        return false;
+      }
+    }
+    else {
+      mapOrig[keyArgs] = plainArg;
+    }
+
+    var curDirName = getCurDirName(mapOrig);
+
+    var inpFilePath = (getValue(mapOrig, _config.paramNameInp, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
+    var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
+
+    if (hasInpFile) {
+      if (!Path.isAbsolute(inpFilePath)) {
+        inpFilePath = Path.join(curDirName, inpFilePath);
+      }
+
+      if (inpFilePath.contains(_config.paramNameInp) ||
+          inpFilePath.contains(_config.paramNameInpDir) ||
+          inpFilePath.contains(_config.paramNameInpExt) ||
+          inpFilePath.contains(_config.paramNameInpName) ||
+          inpFilePath.contains(_config.paramNameInpNameExt) ||
+          inpFilePath.contains(_config.paramNameInpPath) ||
+          inpFilePath.contains(_config.paramNameInpSubDir) ||
+          inpFilePath.contains(_config.paramNameInpSubPath)) {
+        throw Exception('Circular reference is not allowed: input file path is "${inpFilePath}"');
+      }
+
+      inpFilePath = inpFilePath.getFullPath();
+    }
+
+    var subStart = (hasInpFile ? (inpFilePath.length - Path.basename(inpFilePath).length) : 0);
+    var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
+
+    for (var inpFilePathEx in inpFilePaths) {
+      mapCurr.addAll(expandMap(mapOrig, curDirName, inpFilePathEx));
+
+      canExpandInp = StringExt.parseBool(getValue(mapCurr, _config.paramNameXpdInp, canExpand: false));
+      var command = getValue(mapCurr, _config.paramNameCmd, canExpand: false);
+
+      if (!StringExt.isNullOrBlank(curDirName)) {
+        Log.debug('Setting current directory to: "${curDirName}"');
+        Directory.current = curDirName;
+      }
+
+      if (StringExt.isNullOrBlank(command)) {
+        throw Exception('Undefined command for\n\n${mapCurr.toString()}');
+      }
+
+      var outFilePath = (getValue(mapCurr, _config.paramNameOut, mapPrev: mapPrev, canExpand: true) ?? StringExt.EMPTY);
+      var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
+
+      isExpandInpOnly = (command == Config.CMD_EXPAND);
+      isStdIn = (inpFilePath == StringExt.STDIN_PATH);
+      isStdOut = (outFilePath == StringExt.STDOUT_PATH);
+
+      var outFilePathEx = (hasOutFile ? outFilePath : inpFilePathEx);
+
+      if (hasInpFile) {
+        var dirName = Path.dirname(inpFilePathEx);
+        var inpSubDirName = (dirName.length <= subStart ? StringExt.EMPTY : dirName.substring(subStart));
+        var inpNameExt = Path.basename(inpFilePathEx);
+        var inpName = Path.basenameWithoutExtension(inpNameExt);
+        var inpExt = Path.extension(inpNameExt);
+        var inpSubPath = inpFilePathEx.substring(subStart);
+
+        mapCurr.forEach((k, v) {
+          if ((v != null) && (k != _config.paramNameCmd)) {
+            mapCurr[k] = expandInpDetails(v, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
+          }
+        });
+
+        if (hasOutFile) {
+          outFilePathEx = expandInpDetails(outFilePathEx, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
+          outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
+        }
+
+        command = expandInpDetails(command, inpFilePath, dirName, inpName, inpExt, inpNameExt, inpFilePathEx, subStart, inpSubDirName, inpSubPath);
+      }
+
+      outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
+
+      if (isStdOut && !isExpandInpOnly) {
+        throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
+      }
+
+      var isOK = execFile(command, inpFilePathEx, outFilePathEx, mapCurr);
+
+      if (isOK) {
+        isProcessed = true;
+      }
+    }
+
+    mapOrig.forEach((k, v) {
+      mapPrev[k] = v;
+    });
+
+    return isProcessed;
   }
 
   //////////////////////////////////////////////////////////////////////////////

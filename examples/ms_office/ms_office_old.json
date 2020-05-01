@@ -19,7 +19,7 @@
       { "{cur-dir}": "." },
 
       {
-        "{src}":         "$*",
+        "{src}":         "i*p/sample*.*x",
         "{inp-unz-top}": "{cur-dir}/inp_unz",
         "{inp-unz-dir}": "{inp-unz-top}/{inp-name-ext}.dir",
         "{out-top}":     "{cur-dir}/out",

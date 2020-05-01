@@ -3,12 +3,12 @@
     "rename": {
       "{{-cmd-}}": "{c}",
       "{{-cur-dir-}}": "{CD}",
-      "{{-exp-inp-}}": "{EI}",
+      "{{-xpd-inp-}}": "{XI}",
       "{{-inp-}}": "{i}",
       "{{-out-}}": "{o}"
     },
     "action": [
-      { "{EI}": true },
+      { "{XI}": true },
 
       { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 

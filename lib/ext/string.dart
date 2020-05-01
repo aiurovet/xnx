@@ -11,6 +11,8 @@ extension StringExt on String {
   static Map<String, String> ENVIRONMENT;
 
   static final bool IS_WINDOWS = Platform.isWindows;
+  static final String ESC_CHAR = (IS_WINDOWS ? r'^' : r'\');
+  static final String ESC_CHAR_ESC = (IS_WINDOWS ? r'\^' : r'\\');
 
   static final RegExp BLANK = RegExp(r'^[\s]*$');
 

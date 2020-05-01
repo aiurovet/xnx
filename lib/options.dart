@@ -4,6 +4,7 @@ import 'package:path/path.dart' as Path;
 
 import 'package:doul/ext/string.dart';
 import 'log.dart';
+import 'ext/directory.dart';
 import 'ext/stdin.dart';
 
 class Options {
@@ -103,6 +104,51 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static void expandPlainArgs() {
+    var argCount = plainArgs.length;
+
+    if (argCount <= 0) {
+      return;
+    }
+
+    var newArgs = <String>[];
+    var reApos = RegExp(r"^\'|\'$");
+    var reWild = RegExp(r'[\*\?]');
+    var reEscW = RegExp(StringExt.ESC_CHAR_ESC + r'([\*\?' + StringExt.ESC_CHAR_ESC + '])');
+
+    for (var i = 0; i < argCount; i++) {
+      var arg = plainArgs[i];
+
+      if (reApos.hasMatch(arg)) {
+        arg = arg.replaceAll(reApos, StringExt.EMPTY);
+      }
+      else {
+        var checkWild = arg.replaceAll(reEscW, '');
+
+        arg = arg.replaceAllMapped(reEscW, (match) {
+          return match.group(1);
+        });
+
+        if (reWild.hasMatch(checkWild)) {
+          var fileList = Directory.current.pathListSync(arg);
+
+          if ((fileList?.length ?? 0) > 0) {
+            newArgs.addAll(fileList);
+          }
+          continue;
+        }
+      }
+
+      if (arg.isNotEmpty) {
+        newArgs.add(arg);
+      }
+    }
+
+    plainArgs = newArgs;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static void parseArgs(List<String> args) {
     Log.level = Log.LEVEL_DEFAULT;
 
@@ -169,7 +215,7 @@ class Options {
         var inpArgs = stdin.readAsStringSync().split('\n');
 
         for (var i = 0, n = inpArgs.length; i < n; i++) {
-          if (!inpArgs[i].trim().isEmpty) {
+          if (inpArgs[i].trim().isNotEmpty) {
             plainArgs.add(inpArgs[i]);
           }
         }
@@ -217,6 +263,8 @@ class Options {
         Log.information('Setting current directory to: "${startDirName}"');
         Directory.current = startDirName;
     }
+
+    expandPlainArgs();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -304,13 +352,13 @@ Configuration file is expected in JSON format with the following guidelines:
      self-descriptive, except the ones containing \'exp-\' in their name. The
      "{exp-env}" means that by setting its value to true or to false
      you allow or disallow expansion of environment variables, and the
-     "{exp-inp}" means that the content of the input file will also be
+     "{xpd-inp}" means that the content of the input file will also be
      expanded using pre-defined as well as user-defined placeholders, and
      optionally, environment variables. Then it will be saved to a temporary
      file, which will be used as an input for the sub-sequent external command
      execution. All temporary files will be deleted on the go. If no external
      command defined, then this will be interpreted as a simple expansion of the
-     input. However, in order to achieve that, the "{exp-inp}" flag is
+     input. However, in order to achieve that, the "{xpd-inp}" flag is
      still required to be set to true.
 
 2.4. For the sake of source code portability, the environment variables are
@@ -364,13 +412,13 @@ Configuration file is expected in JSON format with the following guidelines:
     "rename": {
       "{cmd}": "{c}",
       "{cur-dir}": "{CD}",
-      "{exp-inp}": "{EI}",
+      "{xpd-inp}": "{XI}",
       "{inp}": "{i}",
       "{out}": "{o}"
     },
     "action": [
       // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
-      { "{EI}": true },
+      { "{XI}": true },
 
       // Terribly slow,
       //{ "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },

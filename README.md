@@ -156,12 +156,12 @@ Configuration file is expected in JSON format with the following guidelines:
     "rename": {
       "{cmd}": "{c}",
       "{cur-dir}": "{CD}",
-      "{exp-inp}": "{EI}",
+      "{xpd-inp}": "{XI}",
       "{inp}": "{i}",
       "{out}": "{o}"
     },
     "action": [
-      { "{EI}": true },
+      { "{XI}": true },
 
       { "#{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\"" },
       { "#{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
