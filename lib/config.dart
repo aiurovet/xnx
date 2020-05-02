@@ -40,6 +40,33 @@ class Config {
   String paramNameOut = '{{-out-}}';
 
   //////////////////////////////////////////////////////////////////////////////
+  // Native commands: general-purpose - NOT IOMPLEMENTED YET
+  //////////////////////////////////////////////////////////////////////////////
+
+  String cmdNameCopy = '{{-cmd-copy-}}';
+  String cmdNameDelete = '{{-cmd-delete-}}';
+  String cmdNameMove = '{{-cmd-move-}}';
+  String cmdNameRemove = '{{-cmd-remove-}}'; // same as delete
+  String cmdNameRename = '{{-cmd-rename-}}'; // same as move
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Native commands: archiving - NOT IMPLEMENTED YET
+  //////////////////////////////////////////////////////////////////////////////
+
+  String cmdNameBz2 = '{{-cmd-bz2-}}';
+  String cmdNameUnBz2 = '{{-cmd-unbz2-}}';
+  String cmdNameGz = '{{-cmd-gz-}}';
+  String cmdNameUnGz = '{{-cmd-ungz-}}';
+  String cmdNamePack = '{{-cmd-pack-}}'; // based on input file extension
+  String cmdNameUnPack = '{{-cmd-unpack-}}'; // based on input file extension
+  String cmdNameTar = '{{-cmd-tar-}}';
+  String cmdNameUnTar = '{{-cmd-untar-}}';
+  String cmdNameTarGz = '{{-cmd-tar-gz-}}';
+  String cmdNameUnTarGz = '{{-cmd-untar-gz-}}';
+  String cmdNameZip = '{{-cmd-zip-}}';
+  String cmdNameUnZip = '{{-cmd-unzip-}}';
+
+  //////////////////////////////////////////////////////////////////////////////
 
   void addFlatMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
     var cloneMap = <String, Object>{};
@@ -290,6 +317,63 @@ class Config {
       }
       else if (k == paramNameXpdInp) {
         paramNameXpdInp = v;
+      }
+
+      // Native commands: general-purpose - NOT IOMPLEMENTED YET
+
+      if (k == cmdNameCopy) {
+        cmdNameCopy = v;
+      }
+      else if (k == cmdNameDelete) {
+        cmdNameDelete = v;
+      }
+      else if (k == cmdNameMove) {
+        cmdNameMove = v;
+      }
+      else if (k == cmdNameRemove) {
+        cmdNameRemove = v;
+      }
+      else if (k == cmdNameRename) {
+        cmdNameRename = v;
+      }
+
+      // Native commands: archiving - NOT IOMPLEMENTED YET
+
+      else if (k == cmdNameBz2) {
+        cmdNameBz2 = v;
+      }
+      else if (k == cmdNameUnBz2) {
+        cmdNameUnBz2 = v;
+      }
+      else if (k == cmdNameGz) {
+        cmdNameGz = v;
+      }
+      else if (k == cmdNameUnGz) {
+        cmdNameUnGz= v;
+      }
+      else if (k == cmdNamePack) {
+        cmdNamePack = v;
+      }
+      else if (k == cmdNameUnPack) {
+        cmdNameUnPack = v;
+      }
+      else if (k == cmdNameTar) {
+        cmdNameTar = v;
+      }
+      else if (k == cmdNameUnTar) {
+        cmdNameUnTar= v;
+      }
+      else if (k == cmdNameTarGz) {
+        cmdNameTarGz = v;
+      }
+      else if (k == cmdNameUnTarGz) {
+        cmdNameUnTarGz= v;
+      }
+      else if (k == cmdNameZip) {
+        cmdNameZip = v;
+      }
+      else if (k == cmdNameUnZip) {
+        cmdNameUnZip = v;
       }
     });
   }
