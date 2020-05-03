@@ -13,7 +13,7 @@ class Config {
   static final String CFG_ACTION = 'action';
   static final String CFG_RENAME = 'rename';
 
-  static final String CMD_EXPAND = 'expand-only';
+  static final String CMD_REPLACE = 'replace-only';
 
   //static final int MAX_EXPANSION_ITERATIONS = 10;
 
@@ -40,7 +40,7 @@ class Config {
   String paramNameOut = '{{-out-}}';
 
   //////////////////////////////////////////////////////////////////////////////
-  // Native conditional operators - NOT IOMPLEMENTED YET
+  // Native conditional operators
   //////////////////////////////////////////////////////////////////////////////
 
   String condNameIf = '{{-if-}}';
@@ -48,7 +48,7 @@ class Config {
   String condNameElse = '{{-else-}}';
 
   //////////////////////////////////////////////////////////////////////////////
-  // Native comparators - NOT IOMPLEMENTED YET
+  // Native comparison operators
   //////////////////////////////////////////////////////////////////////////////
 
   String operNameEq = '{{-eq-}}';
@@ -61,7 +61,7 @@ class Config {
   String operNameRxi = '{{-rxi-}}';
 
   //////////////////////////////////////////////////////////////////////////////
-  // Native commands: general-purpose - NOT IOMPLEMENTED YET
+  // Native commands: general-purpose - NOT IMPLEMENTED YET
   //////////////////////////////////////////////////////////////////////////////
 
   String cmdNameCopy = '{{-cmd-copy-}}';

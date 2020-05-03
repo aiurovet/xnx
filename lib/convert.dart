@@ -89,7 +89,7 @@ class Convert {
 
     var curDirName = getCurDirName(mapOrig);
 
-    var inpFilePath = (getValue(mapOrig, _config.paramNameInp, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY);
+    var inpFilePath = (getValue(mapOrig, key: _config.paramNameInp, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY);
     var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
 
     if (hasInpFile) {
@@ -117,8 +117,15 @@ class Convert {
     for (var inpFilePathEx in inpFilePaths) {
       mapCurr.addAll(expandMap(mapOrig, curDirName, inpFilePathEx));
 
-      canReplaceContent = StringExt.parseBool(getValue(mapCurr, _config.paramNameCanReplaceContent, canReplace: false));
-      var command = getValue(mapCurr, _config.paramNameCmd, canReplace: false);
+      mapPrev.forEach((k, v) {
+        if (!mapCurr.containsKey(k)) {
+          mapCurr[k] = v;
+        }
+      });
+
+      var command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
+      isReplaceContentOnly = (command == Config.CMD_REPLACE);
+      canReplaceContent = (isReplaceContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanReplaceContent, canReplace: false)));
 
       if (!StringExt.isNullOrBlank(curDirName)) {
         Log.debug('Setting current directory to: "${curDirName}"');
@@ -129,10 +136,9 @@ class Convert {
         throw Exception('Undefined command for\n\n${mapCurr.toString()}');
       }
 
-      var outFilePath = (getValue(mapCurr, _config.paramNameOut, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY);
+      var outFilePath = (getValue(mapCurr, key: _config.paramNameOut, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY);
       var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
 
-      isReplaceContentOnly = (command == Config.CMD_EXPAND);
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
       isStdOut = (outFilePath == StringExt.STDOUT_PATH);
 
@@ -184,13 +190,18 @@ class Convert {
 
   bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) {
     var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath));
-    var hasOutFile = (!isStdOut && !StringExt.isNullOrBlank(outFilePath));
+
+    if (isReplaceContentOnly && !hasInpFile) {
+      throw Exception('Input file is undefined for ${Config.CMD_REPLACE} operation');
+    }
 
     var inpFile = (hasInpFile ? File(inpFilePath) : null);
 
     if ((inpFile != null) && !inpFile.existsSync()) {
       throw Exception('Input file is not found: "${inpFilePath}"');
     }
+
+    var hasOutFile = (!isStdOut && !StringExt.isNullOrBlank(outFilePath));
 
     String tmpFilePath;
 
@@ -201,22 +212,12 @@ class Convert {
     var cmdTemplateEx = cmdTemplate;
 
     if (isReplaceContentOnly) {
-      if (!hasInpFile) {
-        throw Exception('Input file to expand is not defined');
-      }
-
       cmdTemplateEx += ' "${_config.paramNameInp}" "${_config.paramNameOut}"';
     }
 
     var command = cmdTemplateEx
       .replaceAll(_config.paramNameOut, outFilePath)
       .replaceAll(_config.paramNameInp, inpFilePath);
-
-    if (commands.contains(command)) {
-      return false;
-    }
-
-    commands.add(command);
 
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
@@ -241,6 +242,14 @@ class Convert {
       replaceInpContent(inpFile, outFilePath, tmpFilePath, map);
     }
 
+    if (tmpFilePath != null) {
+      command = cmdTemplateEx
+          .replaceAll(_config.paramNameOut, outFilePath)
+          .replaceAll(_config.paramNameInp, tmpFilePath);
+    }
+
+    command = (getValue(map, value: command, canReplace: true) ?? StringExt.EMPTY);
+
     var isVerbose = Log.isDetailed();
 
     if (Options.isListOnly || isReplaceContentOnly || !isVerbose) {
@@ -249,12 +258,6 @@ class Convert {
 
     if (Options.isListOnly || isReplaceContentOnly) {
       return true;
-    }
-
-    if (tmpFilePath != null) {
-      command = cmdTemplateEx
-        .replaceAll(_config.paramNameOut, outFilePath)
-        .replaceAll(_config.paramNameInp, tmpFilePath);
     }
 
     try {
@@ -379,7 +382,7 @@ class Convert {
           newMap[k] = v.replaceAll(paramNameCurDir, curDirName);
         }
 
-        newMap[k] = getValue(newMap, k, canReplace: true);
+        newMap[k] = getValue(newMap, key: k, canReplace: true);
 
         if (_config.isParamWithPath(k)) {
           newMap[k] = newMap[k].getFullPath();
@@ -413,7 +416,7 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   String getCurDirName(Map<String, String> map) {
-    var curDirName = (getValue(map, _config.paramNameCurDir, canReplace: false) ?? StringExt.EMPTY);
+    var curDirName = (getValue(map, key: _config.paramNameCurDir, canReplace: false) ?? StringExt.EMPTY);
     curDirName = curDirName.getFullPath();
 
     return curDirName;
@@ -458,12 +461,12 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String getValue(Map<String, String> map, String key, {Map<String, String> mapPrev, bool canReplace}) {
-    //var isCmd = (key == PARAM_NAME_CMD);
+  String getValue(Map<String, String> map, {String key, String value, Map<String, String> mapPrev, bool canReplace}) {
+    if ((value == null) && (key != null) && map.containsKey(key)) {
+      value = map[key];
+    }
 
-    if (map.containsKey(key)) {
-      var value = map[key];
-
+    if (!StringExt.isNullOrBlank(value)) {
       if ((canReplace ?? false) && (value != null)) {
         for (var oldValue = null; (oldValue != value); ) {
           oldValue = value;
@@ -478,15 +481,12 @@ class Convert {
         }
       }
 
-      if (value.contains(key) && (mapPrev != null) && mapPrev.containsKey(key)) {
+      if ((key != null) && value.contains(key) && (mapPrev != null) && mapPrev.containsKey(key)) {
         value = value.replaceAll(key, mapPrev[key]);
       }
+    }
 
-      return value;
-    }
-    else {
-      return null;
-    }
+    return (value ?? StringExt.EMPTY);
   }
 
   //////////////////////////////////////////////////////////////////////////////

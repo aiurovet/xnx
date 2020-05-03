@@ -16,7 +16,7 @@
       "{{-out-}}": "{out}"
     },
     "action": [
-      { "{cur-dir}": "." },
+      { "{can-replace-content}": false, "{cur-dir}": ".", "{start-dir}": "{cur-dir}" },
 
       { "{{-import-}}": "cmd.json" }, // key can't be renamed, value should not contain any placeholders
 
@@ -31,19 +31,19 @@
       // Decompress source files into directories
 
       {
-        "{can-replace-content}": false, "{inp}": "{src}", "{out}": "",
+        "{inp}": "{src}", "{out}": "",
         //"{cmd}": "cmd/my_unzip \"{inp-unz-dir}\" \"{inp}\"",
         "{zip_dir}": "{inp-unz-dir}",
         "{zip_inp}": "{inp}",
-        "{cmd}": [ "{mkdir} \"{inp-unz-dir}\"", "{unzip}" ]
+        "{cmd}": [ "{mkdir} \"{inp-unz-dir}\"", "{unzip}", "{mkdir} \"{out-top}\"" ]
       },
 
       // Multi-copy decompressed source directories to destinations
 
       {
-        "{can-replace-content}": false, "{inp}": "{src}",
+        "{inp}": "{src}",
         "{cmd}": "{copy} \"{inp-unz-top}/{inp-name-ext}.dir\" \"{out-top}/{inp-name}-{last-name}{inp-ext}.dir\"",
-        "{out}": "{tmp-file}",
+        "{out}": "",
         "{{-import-}}": "ms_office_data.json" // key can't be renamed, value should not contain any placeholders
       },
 
@@ -51,7 +51,7 @@
 
       {
         "{inp}": "{out-top}/**", /* all files // in all subdirectories */
-        "{can-replace-content}": true,  "{cmd}": "expand-only",
+        "{cmd}": "replace-only",
         "{out}": "{tmp-file}",
         "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
       },
@@ -59,7 +59,7 @@
       // Compress output directories file
 
       {
-        "{can-replace-content}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
+        "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
         "{zip_dir}": "{out-file}.dir",
         "{zip_out}": "{out-file}",
         "{cmd}": [ "cd \"{zip_dir}\"", "{zip}", "cd ..", "{remove} \"{zip_dir}\"" ],
@@ -70,7 +70,7 @@
       // Delete input directories file
 
       {
-        "{can-replace-content}": false, "{inp}": "", "{out}": "",
+        "{inp}": "", "{out}": "",
         "{cmd}": "{remove} \"{inp-unz-top}\""
       }
     ]

@@ -12,7 +12,7 @@
     },
     "action": [
       { "{CRC}": true },
-      { "{c}": "expand-only" },
+      { "{c}": "replace-only" },
 
       { "{CD}": "." },
 

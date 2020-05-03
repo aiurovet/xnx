@@ -46,7 +46,7 @@
 
       {
         "{inp}": "{out-top}/**", /* all files // in all subdirectories */
-        "{can-replace-content}": true,  "{cmd}": "expand-only",
+        "{can-replace-content}": true,  "{cmd}": "replace-only",
         "{out}": "{tmp-file}",
         "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
       },
