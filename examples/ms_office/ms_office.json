@@ -32,7 +32,10 @@
 
       {
         "{can-replace-content}": false, "{inp}": "{src}", "{out}": "",
-        "{cmd}": "cmd/my_unzip \"{inp-unz-dir}\" \"{inp}\""
+        //"{cmd}": "cmd/my_unzip \"{inp-unz-dir}\" \"{inp}\"",
+        "{zip_dir}": "{inp-unz-dir}",
+        "{zip_inp}": "{inp}",
+        "{cmd}": [ "{mkdir} \"{inp-unz-dir}\"", "{unzip}" ]
       },
 
       // Multi-copy decompressed source directories to destinations
@@ -59,7 +62,7 @@
         "{can-replace-content}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
         "{zip_dir}": "{out-file}.dir",
         "{zip_out}": "{out-file}",
-        "{cmd}": "{zip}",
+        "{cmd}": [ "cd \"{zip_dir}\"", "{zip}", "cd ..", "{remove} \"{zip_dir}\"" ],
         "{out}": "",
         "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
       },

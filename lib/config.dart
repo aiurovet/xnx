@@ -109,81 +109,7 @@ class Config {
       }
       else if (v is Map) {
         if (k == condNameIf) {
-          var mapIf = (v as Map<String, Object>);
-
-          var isOperFound = false;
-          var operName = operNameEq;
-          var isEq = (!isOperFound && mapIf.containsKey(operName));
-
-          operName = (!isOperFound ? operNameEqi : operName);
-          var isEqi = (!isOperFound && mapIf.containsKey(operName));
-          isOperFound = (isOperFound || isEqi);
-
-          operName = (!isOperFound ? operNameNe : operName);
-          var isNe = (!isOperFound && mapIf.containsKey(operName));
-          isOperFound = (isOperFound || isNe);
-
-          operName = (!isOperFound ? operNameNei : operName);
-          var isNei = (!isOperFound && mapIf.containsKey(operName));
-          isOperFound = (isOperFound || isNei);
-
-          operName = (!isOperFound ? operNameRx : operName);
-          var isRx = (!isOperFound && mapIf.containsKey(operName));
-          isOperFound = (isOperFound || isRx);
-
-          operName = (!isOperFound ? operNameRxi : operName);
-          var isRxi = (!isOperFound && mapIf.containsKey(operName));
-          isOperFound = (isOperFound || isRxi);
-
-          operName = (!isOperFound ? operNameNr : operName);
-          var isNr = (!isOperFound && mapIf.containsKey(operName));
-          isOperFound = (isOperFound || isNe);
-
-          operName = (!isOperFound ? operNameNri : operName);
-          var isNri = (!isOperFound && mapIf.containsKey(operName));
-          isOperFound = (isOperFound || isNei);
-
-          if (!isOperFound) {
-            throw Exception('Unknown conditional operation in "${k}" => "${v}"');
-          }
-
-          var operands = (mapIf[operName] as List);
-
-          if (isEqi || isNei || isRxi || isNri) {
-            operands[0] = operands[0].toUpperCase();
-            operands[1] = operands[1].toUpperCase();
-          }
-
-          if (!mapIf.containsKey(condNameThen)) {
-            throw Exception('Then-block not found in "${k}" => "${v}"');
-          }
-
-          var blockThen = mapIf[condNameThen];
-          var blockElse = (mapIf.containsKey(condNameElse) ? mapIf[condNameElse] : null);
-          var blockResult;
-
-          if (isEq || isEqi) {
-            blockResult = (operands[0] == operands[1] ? blockThen : blockElse);
-          }
-          else if (isNe || isNei) {
-            blockResult = (operands[0] != operands[1] ? blockThen : blockElse);
-          }
-          else {
-            var hasMatch = RegExp(operands[1]).hasMatch(operands[0]);
-
-            if (isRx || isRxi) {
-              blockResult = (hasMatch ? blockThen : blockElse);
-            }
-            else if (isNr || isNri) {
-              blockResult = (!hasMatch ? blockThen : blockElse);
-            }
-          }
-
-          if (blockResult == null) {
-            throw Exception('Incomplete IF operation: "${k}" => "${v}"');
-          }
-
-          v = blockResult;
+          v = resolveMapForIf(v);
         }
 
         isMapFlat = false;
@@ -375,6 +301,85 @@ class Config {
     else {
       return lf.data;
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  Map<String, Object> resolveMapForIf(Map<String, Object> mapIf) {
+    var result = <String, Object>{};
+
+    var isOperFound = false;
+    var operName = operNameEq;
+    var isEq = (!isOperFound && mapIf.containsKey(operName));
+
+    operName = (!isOperFound ? operNameEqi : operName);
+    var isEqi = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isEqi);
+
+    operName = (!isOperFound ? operNameNe : operName);
+    var isNe = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isNe);
+
+    operName = (!isOperFound ? operNameNei : operName);
+    var isNei = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isNei);
+
+    operName = (!isOperFound ? operNameRx : operName);
+    var isRx = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isRx);
+
+    operName = (!isOperFound ? operNameRxi : operName);
+    var isRxi = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isRxi);
+
+    operName = (!isOperFound ? operNameNr : operName);
+    var isNr = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isNe);
+
+    operName = (!isOperFound ? operNameNri : operName);
+    var isNri = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isNei);
+
+    if (!isOperFound) {
+      throw Exception('Unknown conditional operation in "${condNameIf}" => "${mapIf}"');
+    }
+
+    var operands = (mapIf[operName] as List);
+
+    if (isEqi || isNei || isRxi || isNri) {
+      operands[0] = operands[0].toUpperCase();
+      operands[1] = operands[1].toUpperCase();
+    }
+
+    if (!mapIf.containsKey(condNameThen)) {
+      throw Exception('Then-block not found in "${condNameIf}" => "${mapIf}"');
+    }
+
+    var blockThen = mapIf[condNameThen];
+    var blockElse = (mapIf.containsKey(condNameElse) ? mapIf[condNameElse] : null);
+
+    if (isEq || isEqi) {
+      result = (operands[0] == operands[1] ? blockThen : blockElse);
+    }
+    else if (isNe || isNei) {
+      result = (operands[0] != operands[1] ? blockThen : blockElse);
+    }
+    else {
+      var hasMatch = RegExp(operands[1]).hasMatch(operands[0]);
+
+      if (isRx || isRxi) {
+        result = (hasMatch ? blockThen : blockElse);
+      }
+      else if (isNr || isNri) {
+        result = (!hasMatch ? blockThen : blockElse);
+      }
+    }
+
+    if (result == null) {
+      throw Exception('Incomplete IF operation: "${condNameIf}" => "${mapIf}"');
+    }
+
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
