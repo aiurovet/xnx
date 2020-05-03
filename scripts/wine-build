@@ -31,7 +31,9 @@ cp -pr "${TOP}" "${WIN_ABV}" || exitApp 1 "Failed to copy project to Windows dir
 echo "Copied the latest version to Windows directory"
 
 wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\scripts\\build" || exitApp 1 "Failed to execute Windows build"
-cp -p "${WIN_TOP}/bin/windows/${PRJ}.exe" "${TOP}/bin/windows/" || exitApp 1 "Failed to copy Windows executable back to the project"
+
+rm -rf "${TOP}/bin/windows"
+cp -pr "${WIN_TOP}/bin/windows" "${TOP}/bin" || exitApp 1 "Failed to copy Windows build output back to the project"
 
 echo "Successfully completed"
 exit 0

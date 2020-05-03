@@ -1,12 +1,12 @@
 ## doul
 
-**Copyright (C) Alexander Iurovetski, 2020**
+**Copyright © Alexander Iurovetski, 2020**
 
 Command-line utility to run multiple commands against the same input with various parameters, and optionally, to expand placeholders inside the input
 
 ##### USAGE:
 
-<pre>
+```
 doul [OPTIONS]
 
 -q, --quiet                quiet mode (no output except when "-" is specified as output)
@@ -21,7 +21,7 @@ doul [OPTIONS]
 
 -c, --config=(FILE)        configuration file in json format
                            (defaults to "./doul.json")
-</pre>
+```
 
 ##### DETAILS:
 
@@ -72,7 +72,7 @@ some config file, read all that information and run external command with all
 required arguments. And in order to resize properly, the input file\'s width and
 height had to be adjusted accordingly. However, the application is not really
 bound to that particular task and can be used for different purposes. Generally,
-it doesn\'t care about specific placeholders and is capable of expanding
+it doesn\'t care about specific placeholders and is capable of replacing
 anything. Thus, another use case could be to produce multiple configuration
 files from a single source template. 
 
@@ -150,18 +150,18 @@ Configuration file is expected in JSON format with the following guidelines:
 
 ##### Full sample configuration file to generate mobile (Flutter) app icons
 
-<pre>
+```
 {
   "x": {
     "rename": {
       "{cmd}": "{c}",
       "{cur-dir}": "{CD}",
-      "{xpd-inp}": "{XI}",
+      "{{-can-replace-content-}}": "{CRC}",
       "{inp}": "{i}",
       "{out}": "{o}"
     },
     "action": [
-      { "{XI}": true },
+      { "{CRC}": true },
 
       { "#{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\"" },
       { "#{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
@@ -224,4 +224,4 @@ Configuration file is expected in JSON format with the following guidelines:
     ]
   }
 }
-</pre>
+```

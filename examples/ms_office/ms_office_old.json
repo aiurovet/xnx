@@ -2,9 +2,9 @@
   "x": {
     "rename": {
       // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
+      "{{-can-replace-content-}}": "{can-replace-content}",
       "{{-cmd-}}": "{cmd}",
       "{{-cur-dir-}}": "{cur-dir}",
-      "{{-xpd-inp-}}": "{xpd-inp}",
       "{{-inp-}}": "{inp}",
       "{{-inp-dir-}}": "{inp-dir}",
       "{{-inp-ext-}}": "{inp-ext}",
@@ -29,14 +29,14 @@
       // Decompress source files into directories
 
       {
-        "{xpd-inp}": false, "{inp}": "{src}", "{out}": "",
+        "{can-replace-content}": false, "{inp}": "{src}", "{out}": "",
         "{cmd}": "cmd/my_unzip \"{inp-unz-dir}\" \"{inp}\""
       },
 
       // Multi-copy decompressed source directories to destinations
 
       {
-        "{xpd-inp}": false, "{inp}": "{src}",
+        "{can-replace-content}": false, "{inp}": "{src}",
         "{cmd}": "cmd/my_copy \"{inp-unz-top}/{inp-name-ext}.dir\" \"{out-top}/{inp-name}-{last-name}{inp-ext}.dir\"",
         "{out}": "{tmp-file}",
         "{{-import-}}": "ms_office_data.json" // key can't be renamed, value should not contain any placeholders
@@ -46,7 +46,7 @@
 
       {
         "{inp}": "{out-top}/**", /* all files // in all subdirectories */
-        "{xpd-inp}": true,  "{cmd}": "expand-only",
+        "{can-replace-content}": true,  "{cmd}": "expand-only",
         "{out}": "{tmp-file}",
         "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
       },
@@ -54,7 +54,7 @@
       // Compress output directories file
 
       {
-        "{xpd-inp}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
+        "{can-replace-content}": false, "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
         "{cmd}": "cmd/my_zip \"{out-file}.dir\" \"{out-file}\"",
         "{out}": "{tmp-file}",
         "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
@@ -63,7 +63,7 @@
       // Delete input directories file
 
       {
-        "{xpd-inp}": false, "{inp}": "", "{out}": "",
+        "{can-replace-content}": false, "{inp}": "", "{out}": "",
         "{cmd}": "cmd/my_del \"{inp-unz-top}\""
       }
     ]

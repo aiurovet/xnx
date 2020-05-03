@@ -15,6 +15,7 @@ class AppFileLoader {
 
   static final String ALL_ARGS = r'${@}';
   static final RegExp RE_CMD_LINE_ARG = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([1-9][0-9]*))|(\$\{([1-9][0-9]*)\})');
+  static final RegExp RE_JSON_MAP_BRACES = RegExp(r'^[\s\{]+|[\s\}]+$');
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -86,12 +87,61 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  String importFiles(String paramNameImport, {String impPath, impPathsSerialized}) {
+    try {
+      var fullText = StringExt.EMPTY;
+
+      if (!StringExt.isNullOrBlank(impPath)) {
+        loadSync(impPath);
+        fullText = text;
+      }
+      else {
+        fullText += '{';
+
+        var jsonData = jsonDecode('{"${paramNameImport}": ${impPathsSerialized}}');
+        var jsonText = StringExt.EMPTY;
+        var impPaths = jsonData[paramNameImport];
+        var fileNo = 0;
+
+        for (impPath in impPaths) {
+          ++fileNo;
+
+          loadSync(impPath);
+
+          if (fullText.length > 1) {
+            fullText += ',';
+          }
+
+          jsonData = jsonDecode(text);
+          var map = <String, Object>{};
+          map['${paramNameImport}_${fileNo}'] = jsonData.values.toList()[0];
+
+          jsonText = jsonEncode(map).replaceAll(RE_JSON_MAP_BRACES, StringExt.EMPTY);
+          fullText += jsonText;
+        }
+
+        fullText += '}';
+      }
+
+      clear();
+
+      var result = '"${paramNameImport}": ${fullText}';
+
+      return result;
+    }
+    catch (e) {
+      throw Exception('Failed to parse file: "${impPath}"\n\n${e.toString()}');
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   AppFileLoader loadImportsSync(String paramNameImport) {
     if (StringExt.isNullOrBlank(paramNameImport)) {
       return this;
     }
 
-    var pattern = r'\"' + RegExp.escape(paramNameImport) + r'\"\s*\:\s*(\"(.*?)\")';
+    var pattern = r'([\{\[\,])\s*\"' + RegExp.escape(paramNameImport) + r'\"\s*\:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}])';
     var regExp = RegExp(pattern);
 
     if (!regExp.hasMatch(_text)) {
@@ -105,11 +155,12 @@ class AppFileLoader {
       .replaceAll('\'', '\x02')
       .replaceAll(r'\"', '\x03')
       .replaceAllMapped(regExp, (match) {
-        var inpPath = match.group(2);
-        lf.loadSync(inpPath);
+        var impPath = match.group(4);
+        var impPathsSerialized = match.group(5);
 
-        var result = '"${paramNameImport}": ${lf.text}';
-        lf.clear();
+        var openChar = match.group(1);
+        var closeChar = match.group(6);
+        var result = openChar + lf.importFiles(paramNameImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + closeChar;
 
         return result;
       })
@@ -127,8 +178,6 @@ class AppFileLoader {
 
   AppFileLoader loadJsonSync(String path, {String paramNameImport}) {
     loadSync(path);
-
-    _text = _text.removeJsComments();
 
     if (!StringExt.isNullOrBlank(paramNameImport)) {
       loadImportsSync(paramNameImport);
@@ -162,6 +211,8 @@ class AppFileLoader {
 
       _text = (_file.readAsStringSync() ?? StringExt.EMPTY);
     }
+
+    _text = _text.removeJsComments();
 
     return this;
   }

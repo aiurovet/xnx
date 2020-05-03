@@ -1,9 +1,9 @@
 {
   "x": {
     "rename": {
+      "{{-can-replace-content-}}": "{CRC}",
       "{{-cmd-}}": "{c}",
       "{{-cur-dir-}}": "{CD}",
-      "{{-xpd-inp-}}": "{XI}",
       "{{-inp-}}": "{i}",
       "{{-inp-dir-}}": "{id}",
       "{{-inp-ext-}}": "{ix}",
@@ -11,7 +11,7 @@
       "{{-out-}}": "{o}"
     },
     "action": [
-      { "{XI}": true },
+      { "{CRC}": true },
       { "{c}": "expand-only" },
 
       { "{CD}": "." },
