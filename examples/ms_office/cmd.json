@@ -11,8 +11,7 @@
         "{remove}": "{delete}",
         "{mkdir}": "mkdir -p",
         "{chrome}": "google-chrome",
-        //"{zip}": "cd \"{zip_dir}\" && zip -m -r \"{zip_out}\" && cd .. && rm -rf \"{zip_dir}\"",
-        "{zip}": "zip -m -r \"{zip_out}\" *",
+        "{zip}": "cd \"{zip_dir}\" && zip -m -r \"{zip_out}\" * && cd .. && rm -rf \"{zip_dir}\"",
         "{unzip}": "unzip -o -d \"{zip_dir}\" \"{zip_inp}\""
       }, "{{-else-}}": { "{{-if-}}": { "{{-ne-}}": [ "${USERPROFILE}", "" ], "{{-then-}}": {
         "{copy}": "copy /Y",

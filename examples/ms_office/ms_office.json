@@ -21,17 +21,17 @@
       { "{{-import-}}": "cmd.json" }, // key can't be renamed, value should not contain any placeholders
 
       {
-        "{src}":         "$*",
         "{inp-unz-top}": "{cur-dir}/inp_unz",
         "{inp-unz-dir}": "{inp-unz-top}/{inp-name-ext}.dir",
         "{out-top}":     "{cur-dir}/out",
+        "{out-file}":    "{out-top}/{inp-name}-{last-name}{inp-ext}",
         "{tmp-file}":    "{out-top}/{inp-sub-path}"
       },
 
       // Decompress source files into directories
 
       {
-        "{inp}": "{src}", "{out}": "",
+        "{inp}": "$*", "{out}": "",
         //"{cmd}": "cmd/my_unzip \"{inp-unz-dir}\" \"{inp}\"",
         "{zip_dir}": "{inp-unz-dir}",
         "{zip_inp}": "{inp}",
@@ -41,8 +41,8 @@
       // Multi-copy decompressed source directories to destinations
 
       {
-        "{inp}": "{src}",
-        "{cmd}": "{copy} \"{inp-unz-top}/{inp-name-ext}.dir\" \"{out-top}/{inp-name}-{last-name}{inp-ext}.dir\"",
+        "{inp}": "$*",
+        "{cmd}": "{copy} \"{inp-unz-top}/{inp-name-ext}.dir\" \"{out-file}.dir\"",
         "{out}": "",
         "{{-import-}}": "ms_office_data.json" // key can't be renamed, value should not contain any placeholders
       },
@@ -51,6 +51,7 @@
 
       {
         "{inp}": "{out-top}/**", /* all files // in all subdirectories */
+        //"{inp}": "{inp-unz-dir}/**", /* all files // in all subdirectories */
         "{cmd}": "replace-only",
         "{out}": "{tmp-file}",
         "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
@@ -59,10 +60,11 @@
       // Compress output directories file
 
       {
-        "{inp}": "{src}", "{out-file}": "{out-top}/{inp-name}-{last-name}{inp-ext}",
+        "{inp}": "$*",
         "{zip_dir}": "{out-file}.dir",
         "{zip_out}": "{out-file}",
-        "{cmd}": [ "cd \"{zip_dir}\"", "{zip}", "cd ..", "{remove} \"{zip_dir}\"" ],
+        //"{cmd}": [ "cd \"{zip_dir}\" && {zip} && cd .. && {remove} \"{zip_dir}\"" ],
+        "{cmd}": [ "{zip} && cd .. && {remove} \"{zip_dir}\"" ],
         "{out}": "",
         "{{-import-}}": "ms_office_data.json" // value should not contain any placeholders
       },

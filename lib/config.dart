@@ -290,6 +290,21 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  List<String> getInpParamNames() {
+    return [
+      paramNameInp,
+      paramNameInpDir,
+      paramNameInpExt,
+      paramNameInpName,
+      paramNameInpNameExt,
+      paramNameInpPath,
+      paramNameInpSubDir,
+      paramNameInpSubPath
+    ];
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   Map<String, Object> loadConfigSync() {
     var lf = AppFileLoader().loadJsonSync(Options.configFilePath, paramNameImport: paramNameImport);
 
