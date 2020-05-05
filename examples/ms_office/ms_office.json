@@ -16,6 +16,8 @@
       "{{-out-}}": "{out}"
     },
     "action": [
+      {"{cmd}": "$0"},
+
       { "{can-replace-content}": false, "{cur-dir}": ".", "{start-dir}": "{cur-dir}" },
 
       { "{{-import-}}": "cmd.json" }, // key can't be renamed, value should not contain any placeholders

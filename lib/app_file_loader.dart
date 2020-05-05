@@ -14,7 +14,7 @@ class AppFileLoader {
   //////////////////////////////////////////////////////////////////////////////
 
   static final String ALL_ARGS = r'${@}';
-  static final RegExp RE_CMD_LINE_ARG = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([1-9][0-9]*))|(\$\{([1-9][0-9]*)\})');
+  static final RegExp RE_CMD_LINE_ARG = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([0-9]+))|(\$\{([1-9][0-9]*)\})');
   static final RegExp RE_JSON_MAP_BRACES = RegExp(r'^[\s\{]+|[\s\}]+$');
 
   //////////////////////////////////////////////////////////////////////////////
@@ -59,9 +59,31 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  String getStartCommand() {
+    var cmd = Platform.resolvedExecutable.quote();
+    var scr = Platform.script.path;
+
+    if (scr.endsWith('.dart')) {
+      var args = Platform.executableArguments;
+
+      for (var i = 0, n = args.length; i < n; i++) {
+        cmd += StringExt.SPACE;
+        cmd += args[i].quote();
+      }
+
+      cmd += StringExt.SPACE;
+      cmd += scr.quote();
+    }
+
+    return cmd;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   void expandCmdLineArgs() {
     var args = Options.plainArgs;
     var argCount = (args?.length ?? 0);
+    var startCmd = getStartCommand().replaceAll(r'"', r'\"');
 
     _text = _text
       .replaceAll('\$\$', '\x01')
@@ -77,6 +99,9 @@ class AppFileLoader {
 
           if ((argNo > 0) && (argNo <= argCount)) {
             return args[argNo - 1];
+          }
+          else if (argNo == 0) {
+            return startCmd;
           }
         }
 

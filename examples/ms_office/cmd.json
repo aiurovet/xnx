@@ -4,7 +4,14 @@
     // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
 
     {
-      "{{-if-}}": { "{{-ne-}}": [ "${HOME}", "" ], "{{-then-}}": {
+      "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
+        "{{-if-}}": { "~": [ "${OSTYPE}", "^LINUX" ], "{{-then-}}": { // you need to export OSTYPE
+          "{OsType}": "Linux"
+        }, "{{-else-}}": { "{{-if-}}": { "~/i": [ "${OSTYPE}", "^DARWIN" ], "{{-then-}}": {
+          "{OsType}": "macOS"
+        }, "{{-else-}}": {
+          "{OsType}": "Unsupported OS"
+        } } } },
         "{copy}": "cp -pr",
         "{move}": "mv -f",
         "{delete}": "rm -rf",
@@ -13,7 +20,7 @@
         "{chrome}": "google-chrome",
         "{zip}": "cd \"{zip_dir}\" && zip -m -r \"{zip_out}\" * && cd .. && rm -rf \"{zip_dir}\"",
         "{unzip}": "unzip -o -d \"{zip_dir}\" \"{zip_inp}\""
-      }, "{{-else-}}": { "{{-if-}}": { "{{-ne-}}": [ "${USERPROFILE}", "" ], "{{-then-}}": {
+      }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
         "{copy}": "copy /Y",
         "{move}": "rename",
         "{delete}": "del /F/Q/S",

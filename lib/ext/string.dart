@@ -156,4 +156,15 @@ extension StringExt on String {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+
+  String quote({bool isSingle = false}) {
+    var plainQuote = (isSingle ? "'" : '"');
+    var escapedQuote = r'\' + plainQuote;
+
+    var result = plainQuote + replaceAll(plainQuote, escapedQuote) + plainQuote;
+
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
 }

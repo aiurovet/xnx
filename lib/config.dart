@@ -51,14 +51,18 @@ class Config {
   // Native comparison operators
   //////////////////////////////////////////////////////////////////////////////
 
-  String operNameEq = '{{-eq-}}';
-  String operNameEqi = '{{-eqi-}}';
-  String operNameNe = '{{-ne-}}';
-  String operNameNei = '{{-nei-}}';
-  String operNameNr = '{{-nr-}}';
-  String operNameNri = '{{-nri-}}';
-  String operNameRx = '{{-rx-}}';
-  String operNameRxi = '{{-rxi-}}';
+  String operNameEq = '==';
+  String operNameEqi = '==/i';
+  String operNameGe = '>=';
+  String operNameGt = '>';
+  String operNameLe = '<=';
+  String operNameLt = '<';
+  String operNameNe = '!=';
+  String operNameNei = '!=/i';
+  String operNameNr = '!~';
+  String operNameNri = '!~/i';
+  String operNameRx = '~';
+  String operNameRxi = '~/i';
 
   //////////////////////////////////////////////////////////////////////////////
   // Native commands: general-purpose - NOT IMPLEMENTED YET
@@ -331,6 +335,22 @@ class Config {
     var isEqi = (!isOperFound && mapIf.containsKey(operName));
     isOperFound = (isOperFound || isEqi);
 
+    operName = (!isOperFound ? operNameGe : operName);
+    var isGe = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isGe);
+
+    operName = (!isOperFound ? operNameGt : operName);
+    var isGt = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isGt);
+
+    operName = (!isOperFound ? operNameLe : operName);
+    var isLe = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isLe);
+
+    operName = (!isOperFound ? operNameLt : operName);
+    var isLt = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isLt);
+
     operName = (!isOperFound ? operNameNe : operName);
     var isNe = (!isOperFound && mapIf.containsKey(operName));
     isOperFound = (isOperFound || isNe);
@@ -356,31 +376,87 @@ class Config {
     isOperFound = (isOperFound || isNei);
 
     if (!isOperFound) {
-      throw Exception('Unknown conditional operation in "${condNameIf}" => "${mapIf}"');
-    }
-
-    var operands = (mapIf[operName] as List);
-
-    if (isEqi || isNei || isRxi || isNri) {
-      operands[0] = operands[0].toUpperCase();
-      operands[1] = operands[1].toUpperCase();
+      throw Exception('Unknown conditional operation in "${condNameIf}": "${mapIf}"');
     }
 
     if (!mapIf.containsKey(condNameThen)) {
-      throw Exception('Then-block not found in "${condNameIf}" => "${mapIf}"');
+      throw Exception('Then-block not found in "${condNameIf}": "${mapIf}"');
     }
 
     var blockThen = mapIf[condNameThen];
     var blockElse = (mapIf.containsKey(condNameElse) ? mapIf[condNameElse] : null);
 
-    if (isEq || isEqi) {
-      result = (operands[0] == operands[1] ? blockThen : blockElse);
+    var isIgnoreCase = (isEqi || isNei || isRxi || isNri);
+    var isRegExpMatch = (isRx || isRxi || isNr || isNri);
+    var isStringOper = (isIgnoreCase || isRegExpMatch);
+
+    var operands = (mapIf[operName] as List);
+
+    if (operands.length != 2) {
+      throw Exception('Two operands precisely required for "${operName}": ${operands}');
     }
-    else if (isNe || isNei) {
-      result = (operands[0] != operands[1] ? blockThen : blockElse);
+
+    var o1 = operands[0];
+    var o2 = operands[1];
+
+    if (isStringOper) {
+      o1 = o1.toString();
+      o2 = o2.toString();
+
+      if (isIgnoreCase && !isRegExpMatch) {
+        o1 = o1.toUpperCase();
+        o2 = o2.toUpperCase();
+      }
     }
     else {
-      var hasMatch = RegExp(operands[1]).hasMatch(operands[0]);
+      var isNum1 = ((o1 is int) || (o1 is double));
+      var isNum2 = ((o2 is int) || (o2 is double));
+
+      if (isNum1 && !isNum2) {
+        o2 = o2.toString();
+        o2 = (int.tryParse(o2) ?? double.tryParse(o2));
+      }
+      else if (!isNum1 && isNum2) {
+        o1 = o1.toString();
+        o1 = (int.tryParse(o1) ?? double.tryParse(o1));
+      }
+      else if (!isNum1 && !isNum2) {
+        o1 = o1.toString();
+        o1 = (int.tryParse(o1) ?? double.tryParse(o1));
+        o2 = o2.toString();
+        o2 = (int.tryParse(o2) ?? double.tryParse(o2));
+      }
+
+      if ((o1 == null) || (o2 == null)) {
+        if (isGe || isGt || isLe || isLt) {
+          throw Exception('Two numbers expected in "${operName}": ${operands}');
+        }
+
+        o1 = operands[0].toString();
+        o2 = operands[1].toString();
+      }
+    }
+
+    if (isEq || isEqi) {
+      result = (o1 == o2 ? blockThen : blockElse);
+    }
+    else if (isNe || isNei) {
+      result = (o1 != o2 ? blockThen : blockElse);
+    }
+    else if (isGe) {
+      result = (o1 >= o2 ? blockThen : blockElse);
+    }
+    else if (isGt) {
+      result = (o1 > o2 ? blockThen : blockElse);
+    }
+    else if (isLe) {
+      result = (o1 <= o2 ? blockThen : blockElse);
+    }
+    else if (isLt) {
+      result = (o1 < o2 ? blockThen : blockElse);
+    }
+    else {
+      var hasMatch = RegExp(o2, caseSensitive: !isIgnoreCase).hasMatch(o1);
 
       if (isRx || isRxi) {
         result = (hasMatch ? blockThen : blockElse);
@@ -391,7 +467,7 @@ class Config {
     }
 
     if (result == null) {
-      throw Exception('Incomplete IF operation: "${condNameIf}" => "${mapIf}"');
+      throw Exception('Incomplete IF operation: "${condNameIf}": "${mapIf}"');
     }
 
     return result;
