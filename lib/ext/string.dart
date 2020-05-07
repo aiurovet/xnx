@@ -167,4 +167,26 @@ extension StringExt on String {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+
+  String unquote() {
+    var len = length;
+
+    if (len <= 1) {
+      return this;
+    }
+
+    var plainQuote = this[0];
+
+    if (((plainQuote != '"') && (plainQuote != "'")) || (plainQuote != this[len - 1])) {
+      return this;
+    }
+
+    var escapedQuote = r'\' + plainQuote;
+
+    var result = substring(1, (len - 2)).replaceAll(escapedQuote, plainQuote);
+
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
 }

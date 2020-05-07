@@ -24,6 +24,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   int lastModifiedMcsec;
+  Options options = Options();
 
   String paramNameCanReplaceContent = '{{-can-replace-content-}}';
   String paramNameCmd = '{{-cmd-}}';
@@ -65,34 +66,30 @@ class Config {
   String operNameRxi = '~/i';
 
   //////////////////////////////////////////////////////////////////////////////
-  // Native commands: general-purpose - NOT IMPLEMENTED YET
+  // Built-in archiving - NOT IMPLEMENTED YET
   //////////////////////////////////////////////////////////////////////////////
 
-  String cmdNameCopy = '{{-cmd-copy-}}';
-  String cmdNameCopyNewer = '{{-cmd-copy-newer-}}';
-  String cmdNameDelete = '{{-cmd-delete-}}';
-  String cmdNameMove = '{{-cmd-move-}}';
-  String cmdNameMoveNewer = '{{-cmd-move-newer-}}';
-  String cmdNameRemove = '{{-cmd-remove-}}'; // same as delete
-  String cmdNameRename = '{{-cmd-rename-}}'; // same as move
-  String cmdNameRenameNewer = '{{-cmd-rename-newer-}}'; // same as move
+  static final String CMD_BZ2 = 'bz2';
+  static final String CMD_UNBZ2 = 'unbz2';
+  static final String CMD_GZ = 'gz';
+  static final String CMD_UNGZ = 'ungz';
+  static final String CMD_PACK = 'pack';
+  static final String CMD_UNPACK = 'unpack';
+  static final String CMD_TAR = 'tar';
+  static final String CMD_UNTAR = 'untar';
+  static final String CMD_ZIP = 'zip';
+  static final String CMD_UNZIP = 'unzip';
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Native commands: archiving - NOT IMPLEMENTED YET
-  //////////////////////////////////////////////////////////////////////////////
-
-  String cmdNameBz2 = '{{-cmd-bz2-}}';
-  String cmdNameUnBz2 = '{{-cmd-unbz2-}}';
-  String cmdNameGz = '{{-cmd-gz-}}';
-  String cmdNameUnGz = '{{-cmd-ungz-}}';
-  String cmdNamePack = '{{-cmd-pack-}}'; // based on input file extension
-  String cmdNameUnPack = '{{-cmd-unpack-}}'; // based on input file extension
-  String cmdNameTar = '{{-cmd-tar-}}';
-  String cmdNameUnTar = '{{-cmd-untar-}}';
-  String cmdNameTarGz = '{{-cmd-tar-gz-}}';
-  String cmdNameUnTarGz = '{{-cmd-untar-gz-}}';
-  String cmdNameZip = '{{-cmd-zip-}}';
-  String cmdNameUnZip = '{{-cmd-unzip-}}';
+  String cmdNameBz2 = '{{-cmd-${CMD_BZ2}-}}';
+  String cmdNameUnBz2 = '{{-cmd-${CMD_UNBZ2}-}}';
+  String cmdNameGz = '{{-cmd-${CMD_GZ}-}}';
+  String cmdNameUnGz = '{{-cmd-${CMD_UNGZ}-}}';
+  String cmdNamePack = '{{-cmd-${CMD_PACK}-}}'; // based on input file extension
+  String cmdNameUnPack = '{{-cmd-${CMD_UNPACK}-}}'; // based on input file extension
+  String cmdNameTar = '{{-cmd-${CMD_TAR}-}}';
+  String cmdNameUnTar = '{{-cmd-${CMD_UNTAR}-}}';
+  String cmdNameZip = '{{-cmd-${CMD_ZIP}-}}';
+  String cmdNameUnZip = '{{-cmd-${CMD_UNZIP}-}}';
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -215,7 +212,11 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   List<Map<String, String>> exec(List<String> args) {
-    Options.parseArgs(args);
+    options.parseArgs(args);
+
+    if (options.isCmd) {
+      return null;
+    }
 
     Log.information('Loading configuration data');
 
@@ -279,7 +280,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String getFullCurDirName(String curDirName) {
-    return Path.join(Options.startDirName, curDirName).getFullPath();
+    return Path.join(options.startDirName, curDirName).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -310,7 +311,8 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   Map<String, Object> loadConfigSync() {
-    var lf = AppFileLoader().loadJsonSync(Options.configFilePath, paramNameImport: paramNameImport);
+    var lf = AppFileLoader();
+    lf.loadJsonSync(options.configFilePath, paramNameImport: paramNameImport, appPlainArgs: options.plainArgs);
 
     lastModifiedMcsec = lf.lastModifiedMcsec;
 
@@ -517,24 +519,6 @@ class Config {
         paramNameCanReplaceContent = v;
       }
 
-      // Native commands: general-purpose - NOT IOMPLEMENTED YET
-
-      if (k == cmdNameCopy) {
-        cmdNameCopy = v;
-      }
-      else if (k == cmdNameDelete) {
-        cmdNameDelete = v;
-      }
-      else if (k == cmdNameMove) {
-        cmdNameMove = v;
-      }
-      else if (k == cmdNameRemove) {
-        cmdNameRemove = v;
-      }
-      else if (k == cmdNameRename) {
-        cmdNameRename = v;
-      }
-
       // Native commands: archiving - NOT IOMPLEMENTED YET
 
       else if (k == cmdNameBz2) {
@@ -560,12 +544,6 @@ class Config {
       }
       else if (k == cmdNameUnTar) {
         cmdNameUnTar= v;
-      }
-      else if (k == cmdNameTarGz) {
-        cmdNameTarGz = v;
-      }
-      else if (k == cmdNameUnTarGz) {
-        cmdNameUnTarGz= v;
       }
       else if (k == cmdNameZip) {
         cmdNameZip = v;

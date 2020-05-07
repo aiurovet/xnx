@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:doul/options.dart';
-
 import 'ext/stdin.dart';
 import 'ext/string.dart';
 import 'log.dart';
@@ -80,8 +78,7 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void expandCmdLineArgs() {
-    var args = Options.plainArgs;
+  void expandCmdLineArgs(List<String> args) {
     var argCount = (args?.length ?? 0);
     var startCmd = getStartCommand().replaceAll(r'"', r'\"');
 
@@ -201,14 +198,14 @@ class AppFileLoader {
   // Methods
   //////////////////////////////////////////////////////////////////////////////
 
-  AppFileLoader loadJsonSync(String path, {String paramNameImport}) {
+  AppFileLoader loadJsonSync(String path, {String paramNameImport, List<String> appPlainArgs}) {
     loadSync(path);
 
     if (!StringExt.isNullOrBlank(paramNameImport)) {
       loadImportsSync(paramNameImport);
     }
 
-    expandCmdLineArgs();
+    expandCmdLineArgs(appPlainArgs);
     _text = _text.expandEnvironmentVariables();
     _data = jsonDecode(_text);
     _text = null;

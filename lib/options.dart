@@ -62,6 +62,46 @@ class Options {
     'help': 'treat each plain argument independently (e.g. can pass multiple filenames as arguments)',
     'negatable': false,
   };
+  static final Map<String, Object> CMD_COPY = {
+    'name': 'copy',
+    'help': 'just copy files and directories specified by two plain arguments (wildcards allowed)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_COPY_NEWER = {
+    'name': 'copy-newer',
+    'help': 'just copy more recently updated files and directories specified by two plain arguments (wildcards allowed)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_DELETE = {
+    'name': 'delete',
+    'help': 'just delete (remove) files and directories specified by plain arguments (wildcards allowed)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_MKDIR = {
+    'name': 'mkdir',
+    'help': 'just create directories specified by plain arguments',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_MOVE = {
+    'name': 'move',
+    'help': 'just move (rename) files and directories specified by plain arguments (wildcards allowed)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_MOVE_NEWER = {
+    'name': 'move-newer',
+    'help': 'just move more recently updated files and directories specified by two plain arguments (wildcards allowed)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNZIP = {
+    'name': 'unzip',
+    'help': 'just unzip single archive file to destination directory',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_ZIP = {
+    'name': 'zip',
+    'help': 'just zip source file or directory destination archive file',
+    'negatable': false,
+  };
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -74,16 +114,53 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool asXargs;
-  static String configFilePath;
-  static bool isForced;
-  static bool isListOnly;
-  static List<String> plainArgs;
-  static String startDirName;
+  bool _asXargs;
+  bool get asXargs => _asXargs;
+
+  String _configFilePath;
+  String get configFilePath => _configFilePath;
+
+  bool get isCmd => (_isCmdCopy || _isCmdCopyNewer || _isCmdDelete || _isCmdMkdir || _isCmdMove || _isCmdMoveNewer || _isCmdUnzip || _isCmdZip);
+
+  bool _isCmdCopy;
+  bool get isCmdCopy => _isCmdCopy;
+
+  bool _isCmdCopyNewer;
+  bool get isCmdCopyNewer => _isCmdCopyNewer;
+
+  bool _isCmdDelete;
+  bool get isCmdDelete => _isCmdDelete;
+
+  bool _isCmdMkdir;
+  bool get isCmdMkdir => _isCmdMkdir;
+
+  bool _isCmdMove;
+  bool get isCmdMove => _isCmdMove;
+
+  bool _isCmdMoveNewer;
+  bool get isCmdMoveNewer => _isCmdMoveNewer;
+
+  bool _isCmdZip;
+  bool get isCmdZip => _isCmdZip;
+
+  bool _isCmdUnzip;
+  bool get isCmdUnzip => _isCmdUnzip;
+
+  bool _isForced;
+  bool get isForced => _isForced;
+
+  bool _isListOnly;
+  bool get isListOnly => _isListOnly;
+
+  List<String> _plainArgs;
+  List<String> get plainArgs => _plainArgs;
+
+  String _startDirName;
+  String get startDirName => _startDirName;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getConfigFullPath(List<String> args) {
+  String getConfigFullPath(List<String> args) {
     for (var arg in args) {
       if (RE_OPT_CONFIG.hasMatch(arg)) {
         return configFilePath.getFullPath();
@@ -98,8 +175,8 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void expandPlainArgs() {
-    var argCount = plainArgs.length;
+  void expandPlainArgs() {
+    var argCount = _plainArgs.length;
 
     if (argCount <= 0) {
       return;
@@ -111,7 +188,7 @@ class Options {
     var reEscW = RegExp(StringExt.ESC_CHAR_ESC + r'([\*\?' + StringExt.ESC_CHAR_ESC + '])');
 
     for (var i = 0; i < argCount; i++) {
-      var arg = plainArgs[i];
+      var arg = _plainArgs[i];
 
       if (reApos.hasMatch(arg)) {
         arg = arg.replaceAll(reApos, StringExt.EMPTY);
@@ -138,71 +215,95 @@ class Options {
       }
     }
 
-    plainArgs = newArgs;
+    _plainArgs = newArgs;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void parseArgs(List<String> args) {
+  void parseArgs(List<String> args) {
     Log.level = Log.LEVEL_DEFAULT;
 
     var errMsg = StringExt.EMPTY;
     var isHelp = false;
 
-    configFilePath = null;
-    startDirName = null;
-    isListOnly = false;
+    _configFilePath = null;
+    _startDirName = null;
+    _isListOnly = false;
 
     var isLogLevelSet = false;
 
     final parser = ArgParser()
-      ..addFlag(Options.QUIET['name'], abbr: Options.QUIET['abbr'], help: Options.QUIET['help'], negatable: Options.QUIET['negatable'], callback: (value) {
+      ..addFlag(QUIET['name'], abbr: QUIET['abbr'], help: QUIET['help'], negatable: QUIET['negatable'], callback: (value) {
         if (value) {
           Log.level = Log.LEVEL_SILENT;
           isLogLevelSet = true;
         }
       })
-      ..addOption(Options.VERBOSITY['name'], abbr: Options.VERBOSITY['abbr'], help: Options.VERBOSITY['help'], valueHelp: Options.VERBOSITY['valueHelp'], defaultsTo: Options.VERBOSITY['defaultsTo'], callback: (value) {
+      ..addOption(VERBOSITY['name'], abbr: VERBOSITY['abbr'], help: VERBOSITY['help'], valueHelp: VERBOSITY['valueHelp'], defaultsTo: VERBOSITY['defaultsTo'], callback: (value) {
         if (!isLogLevelSet) {
           Log.userLevel = int.parse(value);
         }
       })
-      ..addFlag(Options.XARGS['name'], abbr: Options.XARGS['abbr'], help: Options.XARGS['help'], negatable: Options.XARGS['negatable'], callback: (value) {
-        asXargs = value;
+      ..addFlag(XARGS['name'], abbr: XARGS['abbr'], help: XARGS['help'], negatable: XARGS['negatable'], callback: (value) {
+        _asXargs = value;
       })
-      ..addFlag(Options.HELP['name'], abbr: Options.HELP['abbr'], help: Options.HELP['help'], negatable: Options.HELP['negatable'], callback: (value) {
+      ..addFlag(HELP['name'], abbr: HELP['abbr'], help: HELP['help'], negatable: HELP['negatable'], callback: (value) {
         isHelp = value;
       })
-      ..addFlag(Options.LIST_ONLY['name'], abbr: Options.LIST_ONLY['abbr'], help: Options.LIST_ONLY['help'], negatable: Options.LIST_ONLY['negatable'], callback: (value) {
-        isListOnly = value;
+      ..addFlag(LIST_ONLY['name'], abbr: LIST_ONLY['abbr'], help: LIST_ONLY['help'], negatable: LIST_ONLY['negatable'], callback: (value) {
+        _isListOnly = value;
       })
-      ..addFlag(Options.FORCE_CONVERT['name'], abbr: Options.FORCE_CONVERT['abbr'], help: Options.FORCE_CONVERT['help'], negatable: Options.FORCE_CONVERT['negatable'], callback: (value) {
-        isForced = value;
+      ..addFlag(FORCE_CONVERT['name'], abbr: FORCE_CONVERT['abbr'], help: FORCE_CONVERT['help'], negatable: FORCE_CONVERT['negatable'], callback: (value) {
+        _isForced = value;
       })
-      ..addOption(Options.START_DIR['name'], abbr: Options.START_DIR['abbr'], help: Options.START_DIR['help'], valueHelp: Options.START_DIR['valueHelp'], defaultsTo: Options.START_DIR['defaultsTo'], callback: (value) {
-        startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
+      ..addOption(START_DIR['name'], abbr: START_DIR['abbr'], help: START_DIR['help'], valueHelp: START_DIR['valueHelp'], defaultsTo: START_DIR['defaultsTo'], callback: (value) {
+        _startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
       })
-      ..addOption(Options.CONFIG['name'], abbr: Options.CONFIG['abbr'], help: Options.CONFIG['help'], valueHelp: Options.CONFIG['valueHelp'], defaultsTo: Options.CONFIG['defaultsTo'], callback: (value) {
-        configFilePath = (value == null ? StringExt.EMPTY : (value as String).adjustPath());
+      ..addOption(CONFIG['name'], abbr: CONFIG['abbr'], help: CONFIG['help'], valueHelp: CONFIG['valueHelp'], defaultsTo: CONFIG['defaultsTo'], callback: (value) {
+        _configFilePath = (value == null ? StringExt.EMPTY : (value as String).adjustPath());
+      })
+      ..addFlag(CMD_COPY['name'], help: CMD_COPY['help'], negatable: CMD_COPY['negatable'], callback: (value) {
+        _isCmdCopy = value;
+      })
+      ..addFlag(CMD_COPY_NEWER['name'], help: CMD_COPY_NEWER['help'], negatable: CMD_COPY_NEWER['negatable'], callback: (value) {
+        _isCmdCopyNewer = value;
+      })
+      ..addFlag(CMD_MOVE['name'], help: CMD_MOVE['help'], negatable: CMD_MOVE['negatable'], callback: (value) {
+        _isCmdMove = value;
+      })
+      ..addFlag(CMD_MOVE_NEWER['name'], help: CMD_MOVE_NEWER['help'], negatable: CMD_MOVE_NEWER['negatable'], callback: (value) {
+        _isCmdMoveNewer = value;
+      })
+      ..addFlag(CMD_DELETE['name'], help: CMD_DELETE['help'], negatable: CMD_DELETE['negatable'], callback: (value) {
+        _isCmdDelete = value;
+      })
+      ..addFlag(CMD_MKDIR['name'], help: CMD_MKDIR['help'], negatable: CMD_MKDIR['negatable'], callback: (value) {
+        _isCmdMkdir = value;
+      })
+      ..addFlag(CMD_ZIP['name'], help: CMD_ZIP['help'], negatable: CMD_ZIP['negatable'], callback: (value) {
+        _isCmdZip = value;
+      })
+      ..addFlag(CMD_UNZIP['name'], help: CMD_UNZIP['help'], negatable: CMD_UNZIP['negatable'], callback: (value) {
+        _isCmdUnzip = value;
       })
     ;
 
     if ((args == null) || args.isEmpty) {
-      Options.printUsage(parser);
+      printUsage(parser);
     }
 
     try {
       var result = parser.parse(args);
 
-      plainArgs = <String>[];
-      plainArgs.addAll(result.rest);
+      _plainArgs = <String>[];
+      _plainArgs.addAll(result.rest);
 
-      if (asXargs) {
+      if (_asXargs) {
         var inpArgs = stdin.readAsStringSync().split('\n');
 
         for (var i = 0, n = inpArgs.length; i < n; i++) {
           if (inpArgs[i].trim().isNotEmpty) {
-            plainArgs.add(inpArgs[i]);
+            _plainArgs.add(inpArgs[i]);
           }
         }
       }
@@ -213,41 +314,41 @@ class Options {
     }
 
     if (isHelp) {
-      Options.printUsage(parser, error: errMsg);
+      printUsage(parser, error: errMsg);
     }
 
-    if (StringExt.isNullOrBlank(startDirName)) {
-      startDirName = null;
+    if (StringExt.isNullOrBlank(_startDirName)) {
+      _startDirName = null;
     }
 
-    startDirName = Path.canonicalize(startDirName ?? '');
+    _startDirName = Path.canonicalize(_startDirName ?? '');
 
-    if (StringExt.isNullOrBlank(configFilePath)) {
-      configFilePath = DEF_FILE_NAME;
+    if (StringExt.isNullOrBlank(_configFilePath)) {
+      _configFilePath = DEF_FILE_NAME;
     }
 
     if (configFilePath != StringExt.STDIN_PATH) {
-      if (StringExt.isNullOrBlank(Path.extension(configFilePath))) {
-        configFilePath = Path.setExtension(configFilePath, FILE_TYPE_CFG);
+      if (StringExt.isNullOrBlank(Path.extension(_configFilePath))) {
+        _configFilePath = Path.setExtension(_configFilePath, FILE_TYPE_CFG);
       }
 
-      if (!Path.isAbsolute(configFilePath)) {
-        configFilePath = getConfigFullPath(args);
+      if (!Path.isAbsolute(_configFilePath)) {
+        _configFilePath = getConfigFullPath(args);
       }
 
-      var configFile = File(configFilePath);
+      var configFile = File(_configFilePath);
 
       if (!configFile.existsSync()) {
-        var dirName = Path.dirname(configFilePath);
+        var dirName = Path.dirname(_configFilePath);
         var fileName = Path.basename(dirName) + FILE_TYPE_CFG;
 
-        configFilePath = Path.join(dirName, fileName);
+        _configFilePath = Path.join(dirName, fileName);
       }
     }
 
-    if (!StringExt.isNullOrBlank(startDirName)) {
-        Log.information('Setting current directory to: "${startDirName}"');
-        Directory.current = startDirName;
+    if (!StringExt.isNullOrBlank(_startDirName)) {
+        Log.information('Setting current directory to: "${_startDirName}"');
+        Directory.current = _startDirName;
     }
 
     expandPlainArgs();

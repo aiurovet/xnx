@@ -34,16 +34,24 @@ class Convert {
 
   Config _config;
   List<String> _inpParamNames;
+  Options _options;
 
   //////////////////////////////////////////////////////////////////////////////
 
   void exec(List<String> args) {
     _config = Config();
     var maps = _config.exec(args);
+    _options = _config.options;
+    var plainArgs = _options.plainArgs;
+
+    if ((maps == null) && _options.isCmd) {
+      execBuiltin(_options.plainArgs);
+      return;
+    }
+
     _inpParamNames = _config.getInpParamNames();
 
     var isProcessed = false;
-    var plainArgs = Options.plainArgs;
 
     if ((plainArgs?.length ?? 0) <= 0) {
       plainArgs = [ null ];
@@ -62,6 +70,27 @@ class Convert {
 
     if ((isStdOut != null) && !isStdOut && !isProcessed) {
       Log.outInfo('All output files are up to date.');
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void execBuiltin(List<String> args) {
+    if (_options.isCmdCopy) {
+    }
+    else if (_options.isCmdCopyNewer) {
+    }
+    else if (_options.isCmdMove) {
+    }
+    else if (_options.isCmdMoveNewer) {
+    }
+    else if (_options.isCmdDelete) {
+    }
+    else if (_options.isCmdMkdir) {
+    }
+    else if (_options.isCmdZip) {
+    }
+    else if (_options.isCmdUnzip) {
     }
   }
 
@@ -227,7 +256,7 @@ class Convert {
 
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
-    if (!Options.isForced && (inpFilePath != outFilePath)) {
+    if (!_options.isForced && (inpFilePath != outFilePath)) {
       var isChanged = (outFile.compareLastModifiedTo(inpFile, isCoarse: true) < 0);
 
       if (!isChanged) {
@@ -252,11 +281,11 @@ class Convert {
 
     var isVerbose = Log.isDetailed();
 
-    if (Options.isListOnly || isReplaceContentOnly || !isVerbose) {
+    if (_options.isListOnly || isReplaceContentOnly || !isVerbose) {
       Log.outInfo(command);
     }
 
-    if (Options.isListOnly || isReplaceContentOnly) {
+    if (_options.isListOnly || isReplaceContentOnly) {
       return true;
     }
 
@@ -422,6 +451,24 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  List<String> getDirList(String pattern) {
+    var dir = Directory(pattern);
+
+    List<String> lst;
+
+    if (dir.existsSync()) {
+      lst = dir.pathListSync(null, checkExists: false);
+    }
+    else {
+      dir = Directory(GlobExt.getDirectoryName(pattern));
+      lst = dir.pathListSync(pattern, checkExists: false);
+    }
+
+    return lst;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   List<String> getInpFilePaths(String filePath, String curDirName) {
     if (StringExt.isNullOrBlank(filePath)) {
       return [ filePath ]; // ensure at least one pass in a loop
@@ -439,15 +486,7 @@ class Convert {
         filePathTrim = Path.join(curDirName, filePathTrim).getFullPath();
       }
 
-      var dir = Directory(filePathTrim);
-
-      if (dir.existsSync()) {
-        lst = dir.pathListSync(null, checkExists: false);
-      }
-      else {
-        dir = Directory(GlobExt.getDirectoryName(filePathTrim));
-        lst = dir.pathListSync(filePathTrim, checkExists: false);
-      }
+      lst = getDirList(filePathTrim);
     }
 
     if (lst.isEmpty) {

@@ -9,7 +9,7 @@ extension GlobExt on Glob {
   //////////////////////////////////////////////////////////////////////////////
 
   static final RegExp _RE_RECURSIVE = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
-  static final RegExp _RE_WILDCARD = RegExp(r'[\*\?]', caseSensitive: false);
+  static final RegExp _RE_WILDCARD = RegExp(r'[\*\?]|\{[^\}]*\}', caseSensitive: false);
   static final RegExp _RE_PATH = RegExp(r'[\/\\]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool isA(String pattern) {
+  static bool hasWildcards(String pattern) {
     return ((pattern != null) && _RE_WILDCARD.hasMatch(pattern));
   }
 
