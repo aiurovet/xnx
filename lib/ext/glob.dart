@@ -21,16 +21,21 @@ extension GlobExt on Glob {
     else {
       var m = _RE_WILDCARD.firstMatch(pattern);
 
-      if ((m == null) || (m.start <= 0)) {
+      if (m != null) {
+        if (m.start > 0) {
+          return Path.dirname(pattern.substring(0, (m.start - 1)));
+        }
+        else {
+          return StringExt.EMPTY;
+        }
+      }
+      else {
         if (isDirectoryName ?? false) {
           return pattern;
         }
         else {
           return Path.dirname(pattern);
         }
-      }
-      else {
-        return pattern.substring(0, (m.start - 1));
       }
     }
   }

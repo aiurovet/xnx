@@ -4,7 +4,6 @@ import 'package:path/path.dart' as Path;
 
 import 'package:doul/ext/string.dart';
 import 'log.dart';
-import 'ext/directory.dart';
 import 'ext/stdin.dart';
 
 class Options {
@@ -64,42 +63,77 @@ class Options {
   };
   static final Map<String, Object> CMD_COPY = {
     'name': 'copy',
-    'help': 'just copy files and directories specified by two plain arguments (wildcards allowed)',
+    'help': 'just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
     'negatable': false,
   };
   static final Map<String, Object> CMD_COPY_NEWER = {
     'name': 'copy-newer',
-    'help': 'just copy more recently updated files and directories specified by two plain arguments (wildcards allowed)',
+    'help': 'just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
     'negatable': false,
   };
   static final Map<String, Object> CMD_DELETE = {
     'name': 'delete',
-    'help': 'just delete (remove) files and directories specified by plain arguments (wildcards allowed)',
+    'help': 'just delete file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
     'negatable': false,
   };
   static final Map<String, Object> CMD_MKDIR = {
     'name': 'mkdir',
-    'help': 'just create directories specified by plain arguments',
+    'help': 'just create directories passed as plain arguments',
     'negatable': false,
   };
   static final Map<String, Object> CMD_MOVE = {
     'name': 'move',
-    'help': 'just move (rename) files and directories specified by plain arguments (wildcards allowed)',
+    'help': 'just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
     'negatable': false,
   };
   static final Map<String, Object> CMD_MOVE_NEWER = {
     'name': 'move-newer',
-    'help': 'just move more recently updated files and directories specified by two plain arguments (wildcards allowed)',
+    'help': 'just move more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_RENAME = {
+    'name': 'rename',
+    'help': 'just rename a single file or directory to another one, both passed as plain arguments (glob patterns are NOT allowed)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_BZ2 = {
+    'name': 'bz2',
+    'help': 'just compress a single source file to a single destination BZ2 file (can be combined with --tar)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNBZ2 = {
+    'name': 'unbz2',
+    'help': 'just decompress a single BZ2 source file to a single destination file (can be combined with --untar)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_GZ = {
+    'name': 'gz',
+    'help': 'just compress a single source file to a single destination GZ file (can be combined with --tar)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNGZ = {
+    'name': 'ungz',
+    'help': 'just decompress a single GZ source file to a single destination file (can be combined with --untar)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_TAR = {
+    'name': 'tar',
+    'help': 'just create a single destination archive file containing source files and/or directories (can be combined with --bz2 or --gz)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNTAR = {
+    'name': 'untar',
+    'help': 'just untar a single archive file to a destination directory (can be combined with --unbz2 or --ungz)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_ZIP = {
+    'name': 'zip',
+    'help': 'just zip source files and/or directories to a single destination archive file',
     'negatable': false,
   };
   static final Map<String, Object> CMD_UNZIP = {
     'name': 'unzip',
     'help': 'just unzip single archive file to destination directory',
-    'negatable': false,
-  };
-  static final Map<String, Object> CMD_ZIP = {
-    'name': 'zip',
-    'help': 'just zip source file or directory destination archive file',
     'negatable': false,
   };
 
@@ -120,7 +154,25 @@ class Options {
   String _configFilePath;
   String get configFilePath => _configFilePath;
 
-  bool get isCmd => (_isCmdCopy || _isCmdCopyNewer || _isCmdDelete || _isCmdMkdir || _isCmdMove || _isCmdMoveNewer || _isCmdUnzip || _isCmdZip);
+  bool _isForced;
+  bool get isForced => _isForced;
+
+  bool _isListOnly;
+  bool get isListOnly => _isListOnly;
+
+  List<String> _plainArgs;
+  List<String> get plainArgs => _plainArgs;
+
+  String _startDirName;
+  String get startDirName => _startDirName;
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  bool get isCmd => (_isCmdCopy || _isCmdCopyNewer || _isCmdDelete || _isCmdMkdir || _isCmdMove || _isCmdMoveNewer ||  isCmdPack || isCmdUnpack);
+  bool get isCmdPack => (_isCmdBz2 || _isCmdGz || _isCmdTar || _isCmdZip);
+  bool get isCmdUnpack => (_isCmdUnbz2 || _isCmdUngz || _isCmdUntar || _isCmdUnzip);
+
+  //////////////////////////////////////////////////////////////////////////////
 
   bool _isCmdCopy;
   bool get isCmdCopy => _isCmdCopy;
@@ -140,23 +192,34 @@ class Options {
   bool _isCmdMoveNewer;
   bool get isCmdMoveNewer => _isCmdMoveNewer;
 
+  bool _isCmdRename;
+  bool get isCmdRename => _isCmdRename;
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  bool _isCmdBz2;
+  bool get isCmdBz2 => _isCmdBz2;
+
+  bool _isCmdUnbz2;
+  bool get isCmdUnbz2 => _isCmdUnbz2;
+
+  bool _isCmdGz;
+  bool get isCmdGz => _isCmdGz;
+
+  bool _isCmdUngz;
+  bool get isCmdUngz => _isCmdUngz;
+
+  bool _isCmdTar;
+  bool get isCmdTar => _isCmdTar;
+
+  bool _isCmdUntar;
+  bool get isCmdUntar => _isCmdUntar;
+
   bool _isCmdZip;
   bool get isCmdZip => _isCmdZip;
 
   bool _isCmdUnzip;
   bool get isCmdUnzip => _isCmdUnzip;
-
-  bool _isForced;
-  bool get isForced => _isForced;
-
-  bool _isListOnly;
-  bool get isListOnly => _isListOnly;
-
-  List<String> _plainArgs;
-  List<String> get plainArgs => _plainArgs;
-
-  String _startDirName;
-  String get startDirName => _startDirName;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -171,51 +234,6 @@ class Options {
     }
 
     return Path.join(startDirName, configFilePath).getFullPath();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void expandPlainArgs() {
-    var argCount = _plainArgs.length;
-
-    if (argCount <= 0) {
-      return;
-    }
-
-    var newArgs = <String>[];
-    var reApos = RegExp(r"^\'|\'$");
-    var reWild = RegExp(r'[\*\?]');
-    var reEscW = RegExp(StringExt.ESC_CHAR_ESC + r'([\*\?' + StringExt.ESC_CHAR_ESC + '])');
-
-    for (var i = 0; i < argCount; i++) {
-      var arg = _plainArgs[i];
-
-      if (reApos.hasMatch(arg)) {
-        arg = arg.replaceAll(reApos, StringExt.EMPTY);
-      }
-      else {
-        var checkWild = arg.replaceAll(reEscW, '');
-
-        arg = arg.replaceAllMapped(reEscW, (match) {
-          return match.group(1);
-        });
-
-        if (reWild.hasMatch(checkWild)) {
-          var fileList = Directory.current.pathListSync(arg);
-
-          if ((fileList?.length ?? 0) > 0) {
-            newArgs.addAll(fileList);
-          }
-          continue;
-        }
-      }
-
-      if (arg.isNotEmpty) {
-        newArgs.add(arg);
-      }
-    }
-
-    _plainArgs = newArgs;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -279,6 +297,24 @@ class Options {
       })
       ..addFlag(CMD_MKDIR['name'], help: CMD_MKDIR['help'], negatable: CMD_MKDIR['negatable'], callback: (value) {
         _isCmdMkdir = value;
+      })
+      ..addFlag(CMD_BZ2['name'], help: CMD_BZ2['help'], negatable: CMD_BZ2['negatable'], callback: (value) {
+        _isCmdBz2 = value;
+      })
+      ..addFlag(CMD_UNBZ2['name'], help: CMD_UNBZ2['help'], negatable: CMD_UNBZ2['negatable'], callback: (value) {
+        _isCmdUnbz2 = value;
+      })
+      ..addFlag(CMD_GZ['name'], help: CMD_GZ['help'], negatable: CMD_GZ['negatable'], callback: (value) {
+        _isCmdGz = value;
+      })
+      ..addFlag(CMD_UNGZ['name'], help: CMD_UNGZ['help'], negatable: CMD_UNGZ['negatable'], callback: (value) {
+        _isCmdUngz = value;
+      })
+      ..addFlag(CMD_TAR['name'], help: CMD_TAR['help'], negatable: CMD_TAR['negatable'], callback: (value) {
+        _isCmdTar = value;
+      })
+      ..addFlag(CMD_UNTAR['name'], help: CMD_UNTAR['help'], negatable: CMD_UNTAR['negatable'], callback: (value) {
+        _isCmdUntar = value;
       })
       ..addFlag(CMD_ZIP['name'], help: CMD_ZIP['help'], negatable: CMD_ZIP['negatable'], callback: (value) {
         _isCmdZip = value;
@@ -351,7 +387,7 @@ class Options {
         Directory.current = _startDirName;
     }
 
-    expandPlainArgs();
+    unquotePlainArgs();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -370,4 +406,23 @@ See README file for more details or visit https://phrasehacker.wordpress.com/sof
 
     throw Exception(error);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void unquotePlainArgs() {
+    var newArgs = <String>[];
+    var argCount = (_plainArgs?.length ?? 0);
+
+    for (var i = 0; i < argCount; i++) {
+      var arg = _plainArgs[i].unquote();
+
+      if (arg.isNotEmpty) {
+        newArgs.add(arg);
+      }
+    }
+
+    _plainArgs = newArgs;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
 }
