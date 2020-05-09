@@ -5,6 +5,14 @@ extension DirectoryExt on Directory {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  void deleteIfExistsSync() {
+    if (existsSync()) {
+      deleteSync(recursive: true);
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   List<FileSystemEntity> entityListSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
     var lst = <FileSystemEntity>[];
 
@@ -77,6 +85,44 @@ extension DirectoryExt on Directory {
     var lst = dir.pathListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
 
     return lst;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void xferSync(String toDirName, {bool move = false, bool silent = false}) {
+
+    if (move) {
+      renameSync(toDirName);
+      return;
+    }
+
+    createSync();
+
+    var entities = listSync(recursive: false);
+
+    entities.sort((e1, e2) {
+      var isDir1 = (e1 is Directory);
+      var isDir2 = (e2 is Directory);
+
+      if (isDir1 == isDir2) {
+        return e1.path.compareTo(e2.path);
+      }
+      else {
+        return (isDir1 ? -1 : 1);
+      }
+    });
+
+    var dirNameLen = path.length;
+
+    for (var i = 0, n = entities.length; i < n; i++) {
+      var entity = entities[i];
+
+      if (entity is Directory) {
+        var toSubDirName = toDirName + entity.path.substring(dirNameLen);
+
+        entity.xferSync(toSubDirName, move: move, silent: silent);
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

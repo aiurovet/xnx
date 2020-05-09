@@ -7,6 +7,7 @@ import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
 import 'config.dart';
+import 'file_oper.dart';
 import 'log.dart';
 import 'options.dart';
 import 'ext/directory.dart';
@@ -76,17 +77,32 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   void execBuiltin(List<String> args) {
-    if (_options.isCmdCopy) {
+    var argCount = (args?.length ?? 0);
+
+    if (argCount <= 0) {
+      throw Exception('No argument specified for the built-in command');
     }
-    else if (_options.isCmdCopyNewer) {
+
+    var entities = FileOper.listSync(paths: args, start: 0, end: args.length - 1);
+
+    if (entities == null) {
+      throw Exception('The list is empty!');
     }
-    else if (_options.isCmdMove) {
+
+    if (_options.isCmdCopy || _options.isCmdCopyNewer) {
+      //FileOper.copySync(fromPaths: args, start: 0, end: argCount - 1, newerOnly: _options.isCmdCopyNewer);
     }
-    else if (_options.isCmdMoveNewer) {
+    else if (_options.isCmdMove || _options.isCmdMoveNewer) {
+      //FileOper.moveSync(fromPaths: args, start: 0, end: argCount - 1, newerOnly: _options.isCmdMoveNewer);
     }
-    else if (_options.isCmdDelete) {
-    }
-    else if (_options.isCmdMkdir) {
+//    else if (_options.isCmdDelete) {
+//      FileOper.deleteSync(fromPaths: args);
+//    }
+//    else if (_options.isCmdMkdir) {
+//      FileOper.createDirectoriesSync(fromPaths: args);
+//    }
+    else if (_options.isCmdRename) {
+      //FileOper.renameSync(args[0], args[1]);
     }
     else if (_options.isCmdZip) {
     }
@@ -257,7 +273,7 @@ class Convert {
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
     if (!_options.isForced && (inpFilePath != outFilePath)) {
-      var isChanged = (outFile.compareLastModifiedTo(inpFile, isCoarse: true) < 0);
+      var isChanged = (outFile.compareLastModifiedTo(inpFile) < 0);
 
       if (!isChanged) {
         isChanged = (outFile.compareLastModifiedMcsecTo(_config.lastModifiedMcsec) < 0);
