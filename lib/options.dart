@@ -76,7 +76,7 @@ class Options {
     'help': 'just delete file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
     'negatable': false,
   };
-  static final Map<String, Object> CMD_MKDIR = {
+  static final Map<String, Object> CMD_CREATE_DIR = {
     'name': 'mkdir',
     'help': 'just create directories passed as plain arguments',
     'negatable': false,
@@ -91,29 +91,49 @@ class Options {
     'help': 'just move more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
     'negatable': false,
   };
+  static final Map<String, Object> CMD_REMOVE = {
+    'name': 'remove',
+    'help': 'just the same as --delete',
+    'negatable': false,
+  };
   static final Map<String, Object> CMD_RENAME = {
     'name': 'rename',
-    'help': 'just rename a single file or directory to another one, both passed as plain arguments (glob patterns are NOT allowed)',
+    'help': 'just the same as --move',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_RENAME_NEWER = {
+    'name': 'rename-newer',
+    'help': 'just the same as --move-newer',
     'negatable': false,
   };
   static final Map<String, Object> CMD_BZ2 = {
     'name': 'bz2',
-    'help': 'just compress a single source file to a single destination BZ2 file (can be combined with --tar)',
+    'help': 'just compress a single source file to a single destination BZ2 file (can be combined with --tar})',
     'negatable': false,
   };
   static final Map<String, Object> CMD_UNBZ2 = {
     'name': 'unbz2',
-    'help': 'just decompress a single BZ2 source file to a single destination file (can be combined with --untar)',
+    'help': 'just decompress a single BZ2 file to a single destination file (can be combined with --untar)',
     'negatable': false,
   };
   static final Map<String, Object> CMD_GZ = {
     'name': 'gz',
-    'help': 'just compress a single source file to a single destination GZ file (can be combined with --tar)',
+    'help': 'just compress a single source file to a single GZ file (can be combined with --tar)',
     'negatable': false,
   };
   static final Map<String, Object> CMD_UNGZ = {
     'name': 'ungz',
-    'help': 'just decompress a single GZ source file to a single destination file (can be combined with --untar)',
+    'help': 'just decompress a single GZ file to a single destination file (can be combined with --untar)',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_PACK = {
+    'name': 'pack',
+    'help': 'just compress source files and/or directories to a single destination archive file with the method specified by its extension',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNPACK = {
+    'name': 'unpack',
+    'help': 'just decompress a single source archive file to destination files and/or directories with the method specified by its extension',
     'negatable': false,
   };
   static final Map<String, Object> CMD_TAR = {
@@ -168,9 +188,9 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool get isCmd => (_isCmdCopy || _isCmdCopyNewer || _isCmdDelete || _isCmdMkdir || _isCmdMove || _isCmdMoveNewer ||  isCmdPack || isCmdUnpack);
-  bool get isCmdPack => (_isCmdBz2 || _isCmdGz || _isCmdTar || _isCmdZip);
-  bool get isCmdUnpack => (_isCmdUnbz2 || _isCmdUngz || _isCmdUntar || _isCmdUnzip);
+  bool get isCmd => (_isCmdCopy || _isCmdCopyNewer || _isCmdDelete || _isCmdCreate || _isCmdMove || _isCmdMoveNewer ||  isCmdCompress || isCmdDecompress);
+  bool get isCmdCompress => (_isCmdBz2 || _isCmdGz || _isCmdPack || _isCmdTar || _isCmdZip);
+  bool get isCmdDecompress => (_isCmdUnbz2 || _isCmdUngz || _isCmdUnpack || _isCmdUntar || _isCmdUnzip);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -183,8 +203,8 @@ class Options {
   bool _isCmdDelete;
   bool get isCmdDelete => _isCmdDelete;
 
-  bool _isCmdMkdir;
-  bool get isCmdMkdir => _isCmdMkdir;
+  bool _isCmdCreate;
+  bool get isCmdCreateDir => _isCmdCreate;
 
   bool _isCmdMove;
   bool get isCmdMove => _isCmdMove;
@@ -208,6 +228,12 @@ class Options {
 
   bool _isCmdUngz;
   bool get isCmdUngz => _isCmdUngz;
+
+  bool _isCmdPack;
+  bool get isCmdPack => _isCmdPack;
+
+  bool _isCmdUnpack;
+  bool get isCmdUnpack => _isCmdUnpack;
 
   bool _isCmdTar;
   bool get isCmdTar => _isCmdTar;
@@ -292,11 +318,20 @@ class Options {
       ..addFlag(CMD_MOVE_NEWER['name'], help: CMD_MOVE_NEWER['help'], negatable: CMD_MOVE_NEWER['negatable'], callback: (value) {
         _isCmdMoveNewer = value;
       })
+      ..addFlag(CMD_RENAME['name'], help: CMD_RENAME['help'], negatable: CMD_RENAME['negatable'], callback: (value) {
+        _isCmdMoveNewer = value;
+      })
+      ..addFlag(CMD_RENAME_NEWER['name'], help: CMD_RENAME_NEWER['help'], negatable: CMD_RENAME_NEWER['negatable'], callback: (value) {
+        _isCmdMoveNewer = value;
+      })
+      ..addFlag(CMD_CREATE_DIR['name'], help: CMD_CREATE_DIR['help'], negatable: CMD_CREATE_DIR['negatable'], callback: (value) {
+        _isCmdCreate = value;
+      })
       ..addFlag(CMD_DELETE['name'], help: CMD_DELETE['help'], negatable: CMD_DELETE['negatable'], callback: (value) {
         _isCmdDelete = value;
       })
-      ..addFlag(CMD_MKDIR['name'], help: CMD_MKDIR['help'], negatable: CMD_MKDIR['negatable'], callback: (value) {
-        _isCmdMkdir = value;
+      ..addFlag(CMD_REMOVE['name'], help: CMD_REMOVE['help'], negatable: CMD_REMOVE['negatable'], callback: (value) {
+        _isCmdDelete = value;
       })
       ..addFlag(CMD_BZ2['name'], help: CMD_BZ2['help'], negatable: CMD_BZ2['negatable'], callback: (value) {
         _isCmdBz2 = value;
@@ -321,6 +356,12 @@ class Options {
       })
       ..addFlag(CMD_UNZIP['name'], help: CMD_UNZIP['help'], negatable: CMD_UNZIP['negatable'], callback: (value) {
         _isCmdUnzip = value;
+      })
+      ..addFlag(CMD_PACK['name'], help: CMD_PACK['help'], negatable: CMD_PACK['negatable'], callback: (value) {
+        _isCmdPack = value;
+      })
+      ..addFlag(CMD_UNPACK['name'], help: CMD_UNPACK['help'], negatable: CMD_UNPACK['negatable'], callback: (value) {
+        _isCmdUnpack = value;
       })
     ;
 

@@ -157,6 +157,32 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  int tokensOf(String that) {
+    var thisLen = length;
+    var thatLen = (that?.length ?? 0);
+
+    if ((thatLen <= 0) || (thatLen > thisLen)) {
+      return 0;
+    }
+    else if (thatLen > 1) {
+      return (((thisLen - replaceAll(that, EMPTY).length) / thatLen) as int);
+    }
+    else {
+      var tokCount = 0;
+      var thatChar = that[0];
+
+      for (var i = 0; i < thisLen; i++) {
+        if (this[i] == thatChar) {
+          tokCount++;
+        }
+      }
+
+      return tokCount;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String quote({bool isSingle = false}) {
     var plainQuote = (isSingle ? "'" : '"');
     var escapedQuote = r'\' + plainQuote;

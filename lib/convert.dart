@@ -83,30 +83,28 @@ class Convert {
       throw Exception('No argument specified for the built-in command');
     }
 
-    var entities = FileOper.listSync(paths: args, start: 0, end: args.length - 1);
+    var end = (args.length - 1);
 
-    if (entities == null) {
-      throw Exception('The list is empty!');
+    if (_options.isCmdCompress || _options.isCmdDecompress) {
+      if (_options.isCmdZip) {
+        FileOper.zipSync(fromPaths: args, end: end, move: _options.isCmdMove);
+      }
+      else if (_options.isCmdUnzip) {
+      }
     }
-
-    if (_options.isCmdCopy || _options.isCmdCopyNewer) {
-      //FileOper.copySync(fromPaths: args, start: 0, end: argCount - 1, newerOnly: _options.isCmdCopyNewer);
-    }
-    else if (_options.isCmdMove || _options.isCmdMoveNewer) {
-      //FileOper.moveSync(fromPaths: args, start: 0, end: argCount - 1, newerOnly: _options.isCmdMoveNewer);
-    }
-//    else if (_options.isCmdDelete) {
-//      FileOper.deleteSync(fromPaths: args);
-//    }
-//    else if (_options.isCmdMkdir) {
-//      FileOper.createDirectoriesSync(fromPaths: args);
-//    }
-    else if (_options.isCmdRename) {
-      //FileOper.renameSync(args[0], args[1]);
-    }
-    else if (_options.isCmdZip) {
-    }
-    else if (_options.isCmdUnzip) {
+    else {
+      if (_options.isCmdCopy || _options.isCmdCopyNewer) {
+        FileOper.xferSync(fromPaths: args, end: end, move: false, newerOnly: _options.isCmdCopyNewer);
+      }
+      else if (_options.isCmdMove || _options.isCmdMoveNewer) {
+        FileOper.xferSync(fromPaths: args, end: end, move: true, newerOnly: _options.isCmdMoveNewer);
+      }
+      else if (_options.isCmdCreateDir) {
+        FileOper.createDirSync(dirNames: args);
+      }
+      else if (_options.isCmdDelete) {
+        FileOper.deleteSync(paths: args);
+      }
     }
   }
 

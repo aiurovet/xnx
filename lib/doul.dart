@@ -10,6 +10,7 @@ class Doul {
 
     try {
       Convert().exec(args);
+      isOK = true;
     }
     catch (e, stackTrace) {
       isOK = onError(e, stackTrace);

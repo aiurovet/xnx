@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:io';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as Path;
 
@@ -23,7 +24,16 @@ extension GlobExt on Glob {
 
       if (m != null) {
         if (m.start > 0) {
-          return Path.dirname(pattern.substring(0, (m.start - 1)));
+          var dirName = pattern.substring(0, m.start);
+
+          if (dirName.endsWith(Platform.pathSeparator)) {
+            dirName = dirName.substring(0, dirName.length - 1);
+          }
+          else {
+            dirName = Path.dirname(dirName);
+          }
+
+          return dirName;
         }
         else {
           return StringExt.EMPTY;

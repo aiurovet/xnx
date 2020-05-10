@@ -87,7 +87,6 @@ extension FileExt on File {
   //////////////////////////////////////////////////////////////////////////////
 
   void xferSync(String toPath, {bool move = false, bool newerOnly = false, bool silent = false}) {
-
     // Ensuring source file exists
 
     if (!existsSync()) {
@@ -95,7 +94,7 @@ extension FileExt on File {
         return;
       }
       else {
-        throw Exception('Copy failed, as source file was not found: "${path}"');
+        throw Exception('Copy failed, as source file "${path}" was not found');
       }
     }
 
@@ -106,7 +105,7 @@ extension FileExt on File {
         return;
       }
       else {
-        throw Exception('Unable to copy: source and target are the same: "${path}" and "${toPath}"');
+        throw Exception('Unable to copy: source and target are the same: "${path}"');
       }
     }
 
@@ -126,14 +125,31 @@ extension FileExt on File {
 
     if (move) {
       if (canDo) {
+        if (!silent) {
+          print('Moving file "${path}"');
+        }
         renameSync(toPathEx);
       }
       else {
+        if (!silent) {
+          print('Deleting file "${path}"');
+        }
         deleteSync();
       }
     }
     else if (canDo) {
+      if (!silent) {
+        print('Copying file "${path}"');
+      }
+
+      var fromStat = statSync();
+
       copySync(toPathEx);
+
+      var toFile = File(toPathEx);
+
+      toFile.setLastModifiedSync(fromStat.modified);
+      toFile.setLastAccessedSync(fromStat.accessed);
     }
   }
 
