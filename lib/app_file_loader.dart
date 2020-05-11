@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'ext/file.dart';
 import 'ext/stdin.dart';
 import 'ext/string.dart';
 import 'log.dart';
@@ -28,8 +29,8 @@ class AppFileLoader {
   bool _isStdIn;
   bool get isStdIn => _isStdIn;
 
-  int _lastModifiedMcsec;
-  int get lastModifiedMcsec => _lastModifiedMcsec;
+  int _lastModifiedSec;
+  int get lastModifiedSec => _lastModifiedSec;
 
   String _text;
   String get text => _text;
@@ -41,7 +42,7 @@ class AppFileLoader {
   AppFileLoader({bool isStdIn, File file, String text}) {
     _file = file;
     _isStdIn = (isStdIn ?? false);
-    _lastModifiedMcsec = (file?.lastModifiedSync()?.microsecondsSinceEpoch ?? 0);
+    _lastModifiedSec = (file?.lastModifiedSecSync() ?? 0);
     _text = text;
   }
 
@@ -51,7 +52,7 @@ class AppFileLoader {
     _data = null;
     _file = null;
     _isStdIn = null;
-    _lastModifiedMcsec = null;
+    _lastModifiedSec = null;
     _text = null;
   }
 

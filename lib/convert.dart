@@ -278,10 +278,10 @@ class Convert {
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
     if (!_options.isForced && (inpFilePath != outFilePath)) {
-      var isChanged = (outFile.compareLastModifiedTo(inpFile) < 0);
+      var isChanged = (outFile.compareLastModifiedToSync(inpFile) < 0);
 
       if (!isChanged) {
-        isChanged = (outFile.compareLastModifiedMcsecTo(_config.lastModifiedMcsec) < 0);
+        isChanged = (outFile.compareLastModifiedSecToSync(_config.lastModifiedSec) < 0);
       }
 
       if (!isChanged) {

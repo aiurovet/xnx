@@ -20,14 +20,18 @@ extension GlobExt on Glob {
       return pattern;
     }
     else {
+      final pathSep = Platform.pathSeparator;
       var m = _RE_WILDCARD.firstMatch(pattern);
 
       if (m != null) {
         if (m.start > 0) {
           var dirName = pattern.substring(0, m.start);
 
-          if (dirName.endsWith(Platform.pathSeparator)) {
+          if (dirName.endsWith(pathSep)) {
             dirName = dirName.substring(0, dirName.length - 1);
+          }
+          else if (!dirName.contains(pathSep)) {
+            dirName = StringExt.EMPTY;
           }
           else {
             dirName = Path.dirname(dirName);

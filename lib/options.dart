@@ -276,6 +276,10 @@ class Options {
 
     var isLogLevelSet = false;
 
+    var isCmdRename;
+    var isCmdRenameNewer;
+    var isCmdRemove;
+
     final parser = ArgParser()
       ..addFlag(QUIET['name'], abbr: QUIET['abbr'], help: QUIET['help'], negatable: QUIET['negatable'], callback: (value) {
         if (value) {
@@ -319,10 +323,10 @@ class Options {
         _isCmdMoveNewer = value;
       })
       ..addFlag(CMD_RENAME['name'], help: CMD_RENAME['help'], negatable: CMD_RENAME['negatable'], callback: (value) {
-        _isCmdMoveNewer = value;
+        isCmdRename = value;
       })
       ..addFlag(CMD_RENAME_NEWER['name'], help: CMD_RENAME_NEWER['help'], negatable: CMD_RENAME_NEWER['negatable'], callback: (value) {
-        _isCmdMoveNewer = value;
+        isCmdRenameNewer = value;
       })
       ..addFlag(CMD_CREATE_DIR['name'], help: CMD_CREATE_DIR['help'], negatable: CMD_CREATE_DIR['negatable'], callback: (value) {
         _isCmdCreate = value;
@@ -331,7 +335,7 @@ class Options {
         _isCmdDelete = value;
       })
       ..addFlag(CMD_REMOVE['name'], help: CMD_REMOVE['help'], negatable: CMD_REMOVE['negatable'], callback: (value) {
-        _isCmdDelete = value;
+        isCmdRemove = value;
       })
       ..addFlag(CMD_BZ2['name'], help: CMD_BZ2['help'], negatable: CMD_BZ2['negatable'], callback: (value) {
         _isCmdBz2 = value;
@@ -371,6 +375,10 @@ class Options {
 
     try {
       var result = parser.parse(args);
+
+      _isCmdMove = (_isCmdMove || isCmdRename);
+      _isCmdMoveNewer = (_isCmdMoveNewer || isCmdRenameNewer);
+      _isCmdDelete = (_isCmdDelete || isCmdRemove);
 
       _plainArgs = <String>[];
       _plainArgs.addAll(result.rest);

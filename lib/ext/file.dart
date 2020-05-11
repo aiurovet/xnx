@@ -3,11 +3,12 @@ import 'package:path/path.dart' as Path;
 import 'string.dart';
 
 extension FileExt on File {
+
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final int _FAT16_FILE_TIME_PRECISION_MCSEC = 2000000;
+  static final int _FILE_TIME_PRECISION_MCSEC = 1000000;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -19,29 +20,32 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int lastModifiedMcsec() {
+  int lastModifiedSecSync() {
     var fileStat = statSync();
 
     if (fileStat.type == FileSystemEntityType.notFound) {
       return null;
     }
     else {
-      return fileStat.modified.microsecondsSinceEpoch;
+      var result = (fileStat.modified.microsecondsSinceEpoch);
+      result -= (result % _FILE_TIME_PRECISION_MCSEC);
+
+      return result;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int compareLastModifiedTo(File toFile) {
-    var toLastMod = toFile?.lastModifiedMcsec();
+  int compareLastModifiedToSync(File toFile) {
+    var toLastMod = toFile?.lastModifiedSecSync();
 
-    return compareLastModifiedMcsecTo(toLastMod);
+    return compareLastModifiedSecToSync(toLastMod);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int compareLastModifiedMcsecTo(int toLastMod) {
-    var lastMod = lastModifiedMcsec();
+  int compareLastModifiedSecToSync(int toLastMod) {
+    var lastMod = lastModifiedSecSync();
 
     if (lastMod == null) {
       return -1;
@@ -51,18 +55,14 @@ extension FileExt on File {
       return 1;
     }
 
-    if ((lastMod % _FAT16_FILE_TIME_PRECISION_MCSEC) == 0) {
-      toLastMod -= (toLastMod % _FAT16_FILE_TIME_PRECISION_MCSEC);
-    }
-    else if ((toLastMod % _FAT16_FILE_TIME_PRECISION_MCSEC) == 0) {
-      lastMod -= (lastMod % _FAT16_FILE_TIME_PRECISION_MCSEC);
-    }
+    var lastModEx = (lastMod - (lastMod % _FILE_TIME_PRECISION_MCSEC));
+    var toLastModEx = (toLastMod - (toLastMod % _FILE_TIME_PRECISION_MCSEC));
 
-    if (lastMod < toLastMod) {
+    if (lastModEx < toLastModEx) {
       return -1;
     }
 
-    if (lastMod == toLastMod) {
+    if (lastModEx == toLastModEx) {
       return 0;
     }
 
@@ -71,8 +71,8 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool isNewerThan(File toFile) {
-    return (compareLastModifiedTo(toFile) > 0);
+  bool isNewerThanSync(File toFile) {
+    return (compareLastModifiedToSync(toFile) > 0);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -115,7 +115,7 @@ extension FileExt on File {
     var isToDirValid = isToDir;
     var toPathEx = (isToDir ? Path.join(toPath, Path.basename(path)) : toPath);
     var toDirName = (isToDir ? toPath : Path.dirname(toPath));
-    var canDo = (!newerOnly || isNewerThan(File(toPathEx)));
+    var canDo = (!newerOnly || isNewerThanSync(File(toPathEx)));
 
     // Setting operation flag depending on whether the destination is newer or not
 

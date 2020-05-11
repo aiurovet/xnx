@@ -18,7 +18,7 @@ class ArchOper {
     }
 
     var toFile = File(toPath ?? fromPaths[end]);
-    print('\nCreating archive "${toFile.path}"\n');
+    print('Creating archive "${toFile.path}"');
 
     var toDir = Directory(Path.dirname(toFile.path));
     var hadToDir = toDir.existsSync();
@@ -101,7 +101,7 @@ class ArchOper {
     final toDir = Directory(toDirName);
 
     if (!isSilent) {
-      print('\nDecompressing "${fromPath}" to "${toDirName}"\n');
+      print('Decompressing "${fromPath}" to "${toDirName}"');
     }
 
     final toDirExisted = toDir.existsSync();
