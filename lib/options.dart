@@ -434,6 +434,8 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   static void printUsage(ArgParser parser, {String error}) {
+    final hasError = !StringExt.isNullOrBlank(error);
+
     stderr.writeln('''
 
 USAGE:
@@ -445,7 +447,7 @@ ${parser.usage}
 See README file for more details or visit https://phrasehacker.wordpress.com/software/doul/
       ''');
 
-    throw Exception(error);
+    throw Exception(hasError ? error : HELP['name']);
   }
 
   //////////////////////////////////////////////////////////////////////////////

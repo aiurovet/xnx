@@ -79,21 +79,13 @@ class Log {
     return (_level >= minLevel);
   }
 
-  static bool isDetailed() {
-    return (_level >= LEVEL_INFORMATION);
-  }
+  static bool get isDetailed => (_level >= LEVEL_INFORMATION);
 
-  static bool isDefault() {
-    return (_level == LEVEL_DEFAULT);
-  }
+  static bool get isDefault => (_level == LEVEL_DEFAULT);
 
-  static bool isSilent() {
-    return (_level == LEVEL_SILENT);
-  }
+  static bool get isSilent => (_level == LEVEL_SILENT);
 
-  static bool isUltimate() {
-    return (_level >= LEVEL_DEBUG);
-  }
+  static bool get isUltimate => (_level >= LEVEL_DEBUG);
 
   static void information(String data) {
     print(data, LEVEL_INFORMATION);

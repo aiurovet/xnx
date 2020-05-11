@@ -6,6 +6,7 @@ import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
+import 'arch_oper.dart';
 import 'config.dart';
 import 'file_oper.dart';
 import 'log.dart';
@@ -76,8 +77,10 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void execBuiltin(List<String> args) {
+  void execBuiltin(List<String> args, {bool isSilent}) {
     var argCount = (args?.length ?? 0);
+
+    isSilent ??= Log.isSilent;
 
     if (argCount <= 0) {
       throw Exception('No argument specified for the built-in command');
@@ -87,23 +90,27 @@ class Convert {
 
     if (_options.isCmdCompress || _options.isCmdDecompress) {
       if (_options.isCmdZip) {
-        FileOper.zipSync(fromPaths: args, end: end, move: _options.isCmdMove);
+        ArchOper.zipSync(fromPaths: args, end: end, isMove: _options.isCmdMove, isSilent: isSilent);
       }
       else if (_options.isCmdUnzip) {
+        if (argCount != 2) {
+          throw Exception('Invalid arguments: ${args}. Expected: from-path and to-dir');
+        }
+        ArchOper.unzipSync(args[0], args[1], isMove: _options.isCmdMove, isSilent: isSilent);
       }
     }
     else {
       if (_options.isCmdCopy || _options.isCmdCopyNewer) {
-        FileOper.xferSync(fromPaths: args, end: end, move: false, newerOnly: _options.isCmdCopyNewer);
+        FileOper.xferSync(fromPaths: args, end: end, isMove: false, isNewerOnly: _options.isCmdCopyNewer, isSilent: isSilent);
       }
       else if (_options.isCmdMove || _options.isCmdMoveNewer) {
-        FileOper.xferSync(fromPaths: args, end: end, move: true, newerOnly: _options.isCmdMoveNewer);
+        FileOper.xferSync(fromPaths: args, end: end, isMove: true, isNewerOnly: _options.isCmdMoveNewer, isSilent: isSilent);
       }
       else if (_options.isCmdCreateDir) {
-        FileOper.createDirSync(dirNames: args);
+        FileOper.createDirSync(dirNames: args, isSilent: isSilent);
       }
       else if (_options.isCmdDelete) {
-        FileOper.deleteSync(paths: args);
+        FileOper.deleteSync(paths: args, isSilent: isSilent);
       }
     }
   }
@@ -293,7 +300,7 @@ class Convert {
 
     command = (getValue(map, value: command, canReplace: true) ?? StringExt.EMPTY);
 
-    var isVerbose = Log.isDetailed();
+    var isVerbose = Log.isDetailed;
 
     if (_options.isListOnly || isReplaceContentOnly || !isVerbose) {
       Log.outInfo(command);
@@ -356,7 +363,7 @@ class Convert {
       }
     }
 
-    if (Log.isUltimate()) {
+    if (Log.isUltimate) {
       Log.debug('\n...content of expanded "${inpFile.path}":\n');
       Log.debug(text);
     }

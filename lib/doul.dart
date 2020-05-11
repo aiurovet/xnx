@@ -3,6 +3,7 @@ import 'dart:io';
 import 'convert.dart';
 import 'ext/string.dart';
 import 'log.dart';
+import 'options.dart';
 
 class Doul {
   static void main(List<String> args) {
@@ -20,20 +21,28 @@ class Doul {
   }
 
   static bool onError(Exception e, StackTrace stackTrace) {
-    var errDecorRE = RegExp(r'^Exception[\:\s]*', caseSensitive: false);
-    var errMsg = e?.toString()?.replaceFirst(errDecorRE, StringExt.EMPTY);
-    var isOK = false;
+    var errMsg = e?.toString();
 
     if (StringExt.isNullOrBlank(errMsg)) {
-      isOK = true; // help
+      return false;
     }
     else {
-      var errDtl = (Log.isDetailed() ? '\n\n' + stackTrace?.toString() : StringExt.EMPTY);
+      var errDecorRE = RegExp(r'^Exception[\:\s]*', caseSensitive: false);
+      errMsg = errMsg.replaceFirst(errDecorRE, StringExt.EMPTY);
+
+      if (errMsg == Options.HELP['name']) {
+        return true;
+      }
+      else if (Log.isSilent) {
+        return false;
+      }
+
+      var errDtl = (Log.isDetailed ? '\n\n' + stackTrace?.toString() : StringExt.EMPTY);
       errMsg = '\n*** ERROR: ${errMsg}${errDtl}\n';
 
       Log.error(errMsg);
-    }
 
-    return isOK;
+      return false;
+    }
   }
 }

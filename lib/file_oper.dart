@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:archive/archive_io.dart';
 import 'package:doul/ext/string.dart';
 import 'package:path/path.dart' as Path;
 
@@ -12,7 +11,7 @@ class FileOper {
   //////////////////////////////////////////////////////////////////////////////
 
   static void createDirSync({String dirName, List<String> dirNames, int start = 0,
-    int end, delete = false, bool silent = false}) {
+    int end, delete = false, bool isSilent = false}) {
 
     var dirNamesEx = <String>[];
 
@@ -39,7 +38,7 @@ class FileOper {
         throw Exception('Can\'t create dir "${currDirName}", as this is an existing file');
       }
 
-      if (!silent) {
+      if (!isSilent) {
         print('Creating dir "${currDirName}"');
       }
 
@@ -50,24 +49,26 @@ class FileOper {
   //////////////////////////////////////////////////////////////////////////////
 
   static void deleteSync({String path, List<String> paths, int start = 0,
-    int end, delete = false, bool silent = false}) {
+    int end, delete = false, bool isSilent = false}) {
 
     if ((path == null) && ((paths == null) || paths.isEmpty)) {
       return;
     }
 
     listSync(path: path, paths: paths, start: start, end: end,
-      silent: silent, sorted: true, minimal: false,
+      isSilent: isSilent, isSorted: true, isMinimal: false,
       listProc: (entities, entityNo, repeatNo, subPath) {
         if (entityNo < 0) { // empty list
-          if (!silent) {
-            throw Exception('Source was not found: "${path ?? paths[start] ?? StringExt.EMPTY}"');
-          }
+          throw Exception('Source was not found: "${path ?? paths[start] ?? StringExt.EMPTY}"');
         }
 
         var entity = entities[entityNo];
 
         if (entity.existsSync()) {
+          if (!isSilent) {
+            print('Deleting ${entity is Directory ? 'dir' : 'file'} "${entity.path}"');
+          }
+
           entity.deleteSync(recursive: true);
         }
 
@@ -79,8 +80,8 @@ class FileOper {
   //////////////////////////////////////////////////////////////////////////////
 
   static List<FileSystemEntity> listSync({String path, List<String> paths,
-    int start = 0, int end, int repeats = 1, bool sorted = true,
-    bool minimal = false, bool silent = false,
+    int start = 0, int end, int repeats = 1, bool isSorted = true,
+    bool isMinimal = false, bool isSilent = false,
     bool Function(List<FileSystemEntity> entities, int entityNo, int repeatNo, String subPath) listProc,
     int Function(FileSystemEntity entity1, FileSystemEntity entity2) sortProc}) {
 
@@ -117,7 +118,7 @@ class FileOper {
 
         entities.add(currDir);
 
-        if (!(minimal ?? false)) {
+        if (!(isMinimal ?? false)) {
           entities.addAll(currDir.listSync(recursive: true));
         }
       }
@@ -146,12 +147,7 @@ class FileOper {
           // If source directory does not exist, ensure the parent directory exists
 
           if (!currDir.existsSync()) {
-            if (silent ?? false) {
-              return null;
-            }
-            else {
-              throw Exception('Top source directory was not found: "${currDir.path}"');
-            }
+            throw Exception('Top source directory was not found: "${currDir.path}"');
           }
 
           // Ensure no trailing path separator
@@ -177,11 +173,11 @@ class FileOper {
     }
 
     if (entities.isNotEmpty) {
-      if (sorted ?? false) {
+      if (isSorted ?? false) {
         sort(entities, sortProc: sortProc);
       }
-      if (minimal ?? false) {
-        removeSubPaths(entities, fast: (sortProc == null));
+      if (isMinimal ?? false) {
+        removeSubPaths(entities, isFast: (sortProc == null));
       }
     }
 
@@ -211,7 +207,7 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void removeSubPaths(List<FileSystemEntity> entities, {bool fast = true}) {
+  static void removeSubPaths(List<FileSystemEntity> entities, {bool isFast = true}) {
     var entitiesToRemove = <FileSystemEntity>[];
     var pathCount = entities.length;
     var pathSep = Platform.pathSeparator;
@@ -225,7 +221,7 @@ class FileOper {
 
       var currPath = currEntity.path;
       var startPrevPathNo = 0;
-      var endPrevPathNo = (fast ? currPathNo : pathCount);
+      var endPrevPathNo = (isFast ? currPathNo : pathCount);
 
       for (var prevPathNo = startPrevPathNo; prevPathNo < endPrevPathNo; prevPathNo++) {
         if (prevPathNo == currPathNo) {
@@ -296,7 +292,7 @@ class FileOper {
 
   static void xferSync({String fromPath, List<String> fromPaths,
     String toFilePath, String toDirName, int start = 0, int end,
-    bool move = false, bool newerOnly = false, bool silent = false}) {
+    bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
 
     if ((fromPath == null) && ((fromPaths == null) || fromPaths.isEmpty)) {
       return;
@@ -304,7 +300,7 @@ class FileOper {
 
     if (toDirName == null) {
       if (toFilePath != null) {
-        File(fromPath).xferSync(toFilePath, move: move, newerOnly: newerOnly, silent: silent);
+        File(fromPath).xferSync(toFilePath, move: isMove, newerOnly: isNewerOnly, silent: isSilent);
         return;
       }
 
@@ -312,97 +308,24 @@ class FileOper {
     }
 
     listSync(path: fromPath, paths: fromPaths, start: start, end: end,
-      silent: silent, sorted: true, minimal: true,
+      isSilent: isSilent, isSorted: true, isMinimal: true,
       listProc: (entities, entityNo, repeatNo, subPath) {
         if (entityNo < 0) { // empty list
-          if (!silent) {
-            throw Exception('Source was not found: "${fromPath ?? fromPaths[start] ?? StringExt.EMPTY}"');
-          }
+          throw Exception('Source was not found: "${fromPath ?? fromPaths[start] ?? StringExt.EMPTY}"');
         }
 
         var entity = entities[entityNo];
 
         if (entity is Directory) {
-          entity.xferSync(Path.join(toDirName, subPath), move: move, newerOnly: newerOnly, silent: silent);
+          entity.xferSync(Path.join(toDirName, subPath), move: isMove, newerOnly: isNewerOnly, silent: isSilent);
         }
         else if (entity is File) {
-          entity.xferSync(toDirName, move: move, newerOnly: newerOnly, silent: silent);
+          entity.xferSync(toDirName, move: isMove, newerOnly: isNewerOnly, silent: isSilent);
         }
 
         return true;
       }
     );
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static void zipSync({String fromPath, List<String> fromPaths,
-    String toFilePath, int start = 0, int end,
-    bool move = false, bool silent = false}) {
-
-    if ((fromPath == null) && ((fromPaths == null) || fromPaths.isEmpty)) {
-      return;
-    }
-
-    var toFile = File(toFilePath ?? fromPaths[end]);
-    var toDir = Directory(Path.dirname(toFile.path));
-    var hadToDir = toDir.existsSync();
-
-    if (!hadToDir) {
-      toDir.createSync(recursive: true);
-    }
-    else if (toFile.existsSync()) {
-      toFile.deleteSync();
-    }
-
-    var encoder = ZipFileEncoder();
-    encoder.create(toFile.path);
-
-    listSync(path: fromPath, paths: fromPaths, start: start, end: end,
-      repeats: (move ? 2 : 1), silent: silent, sorted: true, minimal: true,
-      listProc: (entities, entityNo, repeatNo, subPath) {
-        if (entityNo < 0) { // empty list
-          if (!silent) {
-            encoder.close();
-
-            if (toFile.existsSync()) {
-              toFile.deleteSync();
-            }
-
-            if (!hadToDir) {
-              toDir.deleteSync(recursive: true);
-            }
-
-            throw Exception('Source was not found: "${fromPath ?? fromPaths[start] ?? StringExt.EMPTY}"');
-          }
-        }
-
-        var entity = entities[entityNo];
-        var isDir = (entity is Directory);
-
-        if (repeatNo == 0) {
-          if (!silent) {
-            print('${move ? 'Moving' : 'Adding'} ${isDir ? 'dir ' : 'file'} "${entity.path}"');
-          }
-
-          if (isDir) {
-            encoder.addDirectory(entity, includeDirName: (subPath.length > 0));
-          }
-          else {
-            encoder.addFile(entity);
-          }
-        }
-        else if (move && (repeatNo == 1)) {
-          if (entity.existsSync()) {
-            entity.deleteSync(recursive: true);
-          }
-        }
-
-        return true;
-      }
-    );
-
-    encoder.close();
   }
 
   //////////////////////////////////////////////////////////////////////////////
