@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'file.dart';
+import 'file_system_entity.dart';
 import 'glob.dart';
 import 'string.dart';
 
@@ -14,21 +15,13 @@ extension DirectoryExt on Directory {
   //////////////////////////////////////////////////////////////////////////////
 
   static String appendPathSeparator(String dirName) {
-    var pathSep = Platform.pathSeparator;
+    var pathSep = StringExt.PATH_SEP;
 
     if (StringExt.isNullOrEmpty(dirName) || dirName.endsWith(pathSep)) {
       return dirName;
     }
     else {
       return (dirName + pathSep);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void deleteIfExistsSync() {
-    if (existsSync()) {
-      deleteSync(recursive: true);
     }
   }
 
@@ -72,13 +65,13 @@ extension DirectoryExt on Directory {
   //////////////////////////////////////////////////////////////////////////////
 
   int getFullLevel() {
-    return path.getFullPath().tokensOf(Platform.pathSeparator);
+    return path.getFullPath().tokensOf(StringExt.PATH_SEP);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   int getLevel() {
-    return path.tokensOf(Platform.pathSeparator);
+    return path.tokensOf(StringExt.PATH_SEP);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -122,34 +115,27 @@ extension DirectoryExt on Directory {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void xferSync(String toDirName, {bool move = false, bool newerOnly = false, bool silent = false}) {
+  void xferSync(String toDirName, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
     var fromFullDirName = appendPathSeparator(path.getFullPath());
     var toFullDirName = appendPathSeparator(toDirName.getFullPath());
 
     if (toFullDirName.contains(fromFullDirName)) {
-      if (silent) {
-        return;
-      }
-      else {
-        var action = 'Can\'t ${move ? 'rename' : 'copy'} directory "${fromFullDirName}"';
-        var target = (toFullDirName == fromFullDirName ? 'itself' : 'it\'s sub-directory ${toFullDirName}');
+      var action = 'Can\'t ${isMove ? 'rename' : 'copy'} directory "${fromFullDirName}"';
+      var target = (toFullDirName == fromFullDirName ? 'itself' : 'it\'s sub-directory ${toFullDirName}');
 
-        throw Exception('${action} to ${target}');
-      }
+      throw Exception('${action} to ${target}');
     }
 
-    if (!silent) {
-      print('--- ${move ? 'Renaming' : 'Copying'} dir "${path}"');
+    if (!isSilent) {
+      print('--- ${isMove ? 'Renaming' : 'Copying'} dir "${path}"');
     }
 
-    if (move) {
+    if (isMove) {
       Directory(Path.dirname(toDirName)).createSync();
 
       var toDir = Directory(toDirName);
 
-      if (toDir.existsSync()) {
-        toDir.deleteSync(recursive: true);
-      }
+      toDir.deleteIfExistsSync(recursive: true);
 
       renameSync(toDirName);
 
@@ -181,11 +167,11 @@ extension DirectoryExt on Directory {
       if (entity is Directory) {
         var toSubDirName = toDirName + entity.path.substring(dirNameLen);
 
-        entity.xferSync(toSubDirName, move: move, newerOnly: newerOnly, silent: silent);
+        entity.xferSync(toSubDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
       else if (entity is File) {
         var toPath = Path.join(toDirName, Path.basename(entity.path));
-        entity.xferSync(toPath, move: move, newerOnly: newerOnly, silent: silent);
+        entity.xferSync(toPath, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
     }
   }

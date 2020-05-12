@@ -210,7 +210,6 @@ class FileOper {
   static void removeSubPaths(List<FileSystemEntity> entities, {bool isFast = true}) {
     var entitiesToRemove = <FileSystemEntity>[];
     var pathCount = entities.length;
-    var pathSep = Platform.pathSeparator;
 
     for (var currPathNo = 0; currPathNo < pathCount; currPathNo++) {
       var currEntity = entities[currPathNo];
@@ -231,8 +230,8 @@ class FileOper {
         var prevEntity = entities[prevPathNo];
         var prevPath = prevEntity.path;
 
-        if (!prevPath.endsWith(pathSep)) {
-          prevPath += pathSep;
+        if (!prevPath.endsWith(StringExt.PATH_SEP)) {
+          prevPath += StringExt.PATH_SEP;
         }
 
         if (currPath.contains(prevPath)) {
@@ -250,8 +249,6 @@ class FileOper {
   static void sort(List<FileSystemEntity> entities,
     {int Function(FileSystemEntity entity1, FileSystemEntity entity2) sortProc}) {
 
-    var pathSep = Platform.pathSeparator;
-
     if (sortProc != null) {
       entities.sort(sortProc);
     }
@@ -263,8 +260,8 @@ class FileOper {
         var isDir2 = (e2 is Directory);
 
         if (isDir1 == isDir2) {
-          var pathComps1 = e1.path.split(pathSep);
-          var pathComps2 = e2.path.split(pathSep);
+          var pathComps1 = e1.path.split(StringExt.PATH_SEP);
+          var pathComps2 = e2.path.split(StringExt.PATH_SEP);
 
           var pathCompCount1 = pathComps1.length;
           var pathCompCount2 = pathComps2.length;
@@ -300,7 +297,7 @@ class FileOper {
 
     if (toDirName == null) {
       if (toFilePath != null) {
-        File(fromPath).xferSync(toFilePath, move: isMove, newerOnly: isNewerOnly, silent: isSilent);
+        File(fromPath).xferSync(toFilePath, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
         return;
       }
 
@@ -317,10 +314,10 @@ class FileOper {
         var entity = entities[entityNo];
 
         if (entity is Directory) {
-          entity.xferSync(Path.join(toDirName, subPath), move: isMove, newerOnly: isNewerOnly, silent: isSilent);
+          entity.xferSync(Path.join(toDirName, subPath), isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
         }
         else if (entity is File) {
-          entity.xferSync(toDirName, move: isMove, newerOnly: isNewerOnly, silent: isSilent);
+          entity.xferSync(toDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
         }
 
         return true;

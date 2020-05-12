@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as Path;
-import 'string.dart';
+import 'file_system_entity.dart';
 
 extension FileExt on File {
 
@@ -8,105 +8,94 @@ extension FileExt on File {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final int _FILE_TIME_PRECISION_MCSEC = 1000000;
+  static final int MCSEC_PER_SEC = 1000000;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void deleteIfExistsSync() {
-    if (existsSync()) {
-      deleteSync(recursive: true);
-    }
-  }
+  int lastModifiedStampSync() {
+    final theStat = statSync();
 
-  //////////////////////////////////////////////////////////////////////////////
-
-  int lastModifiedSecSync() {
-    var fileStat = statSync();
-
-    if (fileStat.type == FileSystemEntityType.notFound) {
+    if (theStat.type == FileSystemEntityType.notFound) {
       return null;
     }
     else {
-      var result = (fileStat.modified.microsecondsSinceEpoch);
-      result -= (result % _FILE_TIME_PRECISION_MCSEC);
-
-      return result;
+      return theStat.modified.microsecondsSinceEpoch;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int compareLastModifiedToSync(File toFile) {
-    var toLastMod = toFile?.lastModifiedSecSync();
+  int compareLastModifiedToSync({File toFile, DateTime toLastModified}) {
+    var toLastModStamp = (toFile?.lastModifiedStampSync() ?? toLastModified?.microsecondsSinceEpoch);
 
-    return compareLastModifiedSecToSync(toLastMod);
+    return compareLastModifiedStampToSync(toLastModifiedStamp: toLastModStamp);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int compareLastModifiedSecToSync(int toLastMod) {
-    var lastMod = lastModifiedSecSync();
+  int compareLastModifiedStampToSync({File toFile, int toLastModifiedStamp}) {
+    var lastModStamp = (lastModifiedStampSync() ?? -1);
+    var toLastModStamp = (toFile?.lastModifiedStampSync() ?? toLastModifiedStamp ?? -1);
 
-    if (lastMod == null) {
-      return -1;
-    }
-
-    if (toLastMod == null) {
-      return 1;
-    }
-
-    var lastModEx = (lastMod - (lastMod % _FILE_TIME_PRECISION_MCSEC));
-    var toLastModEx = (toLastMod - (toLastMod % _FILE_TIME_PRECISION_MCSEC));
-
-    if (lastModEx < toLastModEx) {
-      return -1;
-    }
-
-    if (lastModEx == toLastModEx) {
-      return 0;
-    }
-
-    return 1;
+    return (lastModStamp == toLastModStamp ? 0 : (lastModStamp < toLastModStamp ? -1 : 1));
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   bool isNewerThanSync(File toFile) {
-    return (compareLastModifiedToSync(toFile) > 0);
+    return (compareLastModifiedToSync(toFile: toFile) > 0);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool isSamePath(String toPath) {
-    var pathEx = (Platform.isWindows ? path.toUpperCase() : path).getFullPath();
-    var toPathEx = (Platform.isWindows ? toPath.toUpperCase() : toPath).getFullPath();
+  void setTimeSync({DateTime modified, FileStat stat}) {
+    var modifiedEx = (stat?.modified ?? modified);
 
-    return (pathEx.compareTo(toPathEx) == 0);
+    if (modifiedEx == null) {
+      return;
+    }
+
+    setLastModifiedSync(modifiedEx);
+    setLastAccessedSync(modifiedEx);
+
+    var newStat = statSync();
+
+    if (modifiedEx != null) {
+      var stamp1 = modifiedEx.microsecondsSinceEpoch;
+      var stamp2 = newStat.modified.microsecondsSinceEpoch;
+
+      if (stamp2 < stamp1) {
+        stamp1 = ((stamp2 + MCSEC_PER_SEC) - (stamp2 % MCSEC_PER_SEC));
+        modifiedEx = DateTime.fromMicrosecondsSinceEpoch(stamp1);
+
+        setLastModifiedSync(modifiedEx);
+        newStat = statSync();
+        stamp2 = newStat.modified.microsecondsSinceEpoch;
+
+        if (stamp2 < stamp1) {
+          stamp1 += MCSEC_PER_SEC;
+          modifiedEx = DateTime.fromMicrosecondsSinceEpoch(stamp1);
+          setLastModifiedSync(modifiedEx);
+        }
+
+        setLastAccessedSync(modifiedEx);
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void xferSync(String toPath, {bool move = false, bool newerOnly = false, bool silent = false}) {
+  void xferSync(String toPath, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
     // Ensuring source file exists
 
     if (!existsSync()) {
-      if (silent) {
-        return;
-      }
-      else {
-        throw Exception('Copy failed, as source file "${path}" was not found');
-      }
+      throw Exception('Copy failed, as source file "${path}" was not found');
     }
 
     // Sanity check
 
     if (isSamePath(toPath)) {
-      if (silent) {
-        return;
-      }
-      else {
-        throw Exception('Unable to copy: source and target are the same: "${path}"');
-      }
+      throw Exception('Unable to copy: source and target are the same: "${path}"');
     }
 
     // Getting destination path and directory, as well as checking what's newer
@@ -115,7 +104,7 @@ extension FileExt on File {
     var isToDirValid = isToDir;
     var toPathEx = (isToDir ? Path.join(toPath, Path.basename(path)) : toPath);
     var toDirName = (isToDir ? toPath : Path.dirname(toPath));
-    var canDo = (!newerOnly || isNewerThanSync(File(toPathEx)));
+    var canDo = (!isNewerOnly || isNewerThanSync(File(toPathEx)));
 
     // Setting operation flag depending on whether the destination is newer or not
 
@@ -123,33 +112,28 @@ extension FileExt on File {
       Directory(toDirName).createSync();
     }
 
-    if (move) {
+    if (isMove) {
       if (canDo) {
-        if (!silent) {
+        if (!isSilent) {
           print('Moving file "${path}"');
         }
         renameSync(toPathEx);
       }
       else {
-        if (!silent) {
+        if (!isSilent) {
           print('Deleting file "${path}"');
         }
         deleteSync();
       }
     }
     else if (canDo) {
-      if (!silent) {
+      if (!isSilent) {
         print('Copying file "${path}"');
       }
 
       var fromStat = statSync();
-
       copySync(toPathEx);
-
-      var toFile = File(toPathEx);
-
-      toFile.setLastModifiedSync(fromStat.modified);
-      toFile.setLastAccessedSync(fromStat.accessed);
+      File(toPathEx).setTimeSync(stat: fromStat);
     }
   }
 

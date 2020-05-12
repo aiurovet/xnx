@@ -23,7 +23,7 @@ class Config {
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  int lastModifiedSec;
+  int lastModifiedStamp;
   Options options = Options();
 
   String paramNameCanReplaceContent = '{{-can-replace-content-}}';
@@ -314,7 +314,7 @@ class Config {
     var lf = AppFileLoader();
     lf.loadJsonSync(options.configFilePath, paramNameImport: paramNameImport, appPlainArgs: options.plainArgs);
 
-    lastModifiedSec = lf.lastModifiedSec;
+    lastModifiedStamp = lf.lastModifiedStamp;
 
     if (lf.data is Map) {
       return (lf.data as Map).values.toList()[0];

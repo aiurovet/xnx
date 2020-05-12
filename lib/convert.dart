@@ -13,6 +13,7 @@ import 'log.dart';
 import 'options.dart';
 import 'ext/directory.dart';
 import 'ext/file.dart';
+import 'ext/file_system_entity.dart';
 import 'ext/stdin.dart';
 import 'ext/string.dart';
 
@@ -89,14 +90,17 @@ class Convert {
     var end = (args.length - 1);
 
     if (_options.isCmdCompress || _options.isCmdDecompress) {
-      if (_options.isCmdZip) {
-        ArchOper.zipSync(fromPaths: args, end: end, isMove: _options.isCmdMove, isSilent: isSilent);
+      final archMode = (_options.isCmdTar || _options.isCmdUntar ? ArchMode.Tar :
+                        _options.isCmdZip || _options.isCmdUnzip ? ArchMode.Zip : null);
+
+      if (_options.isCmdTar || _options.isCmdZip) {
+        ArchOper.archSync(fromPaths: args, end: end, archMode: archMode, isMove: _options.isCmdMove, isSilent: isSilent);
       }
-      else if (_options.isCmdUnzip) {
+      else if ((_options.isCmdUntar) || _options.isCmdUnzip) {
         if (argCount != 2) {
           throw Exception('Invalid arguments: ${args}. Expected: from-path and to-dir');
         }
-        ArchOper.unzipSync(args[0], args[1], isMove: _options.isCmdMove, isSilent: isSilent);
+        ArchOper.unarchSync(args[0], args[1], archMode: archMode, isMove: _options.isCmdMove, isSilent: isSilent);
       }
     }
     else {
@@ -278,10 +282,10 @@ class Convert {
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
     if (!_options.isForced && (inpFilePath != outFilePath)) {
-      var isChanged = (outFile.compareLastModifiedToSync(inpFile) < 0);
+      var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
       if (!isChanged) {
-        isChanged = (outFile.compareLastModifiedSecToSync(_config.lastModifiedSec) < 0);
+        isChanged = (outFile.compareLastModifiedStampToSync(toLastModifiedStamp: _config.lastModifiedStamp) < 0);
       }
 
       if (!isChanged) {
@@ -290,8 +294,8 @@ class Convert {
       }
     }
 
-    if (!isStdOut && (inpFilePath != outFilePath) && (outFile != null) && outFile.existsSync()) {
-      outFile.deleteSync();
+    if (!isStdOut && (inpFilePath != outFilePath) && (outFile != null)) {
+      outFile.deleteIfExistsSync();
     }
 
     if (canReplaceContent) {
@@ -325,9 +329,7 @@ class Convert {
     if (tmpFilePath != null) {
       var tmpFile = File(tmpFilePath);
 
-      if (tmpFile.existsSync()) {
-        tmpFile.deleteSync();
-      }
+      tmpFile.deleteIfExistsSync();
     }
 
     return true;
@@ -381,10 +383,7 @@ class Convert {
 
       var tmpFile = File(tmpFilePath ?? outFilePath);
 
-      if (tmpFile.existsSync()) {
-        tmpFile.deleteSync();
-      }
-
+      tmpFile.deleteIfExistsSync();
       tmpFile.writeAsStringSync(text);
 
       if (inpFile.path == outFilePath) {

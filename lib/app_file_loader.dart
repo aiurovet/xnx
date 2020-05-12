@@ -29,8 +29,8 @@ class AppFileLoader {
   bool _isStdIn;
   bool get isStdIn => _isStdIn;
 
-  int _lastModifiedSec;
-  int get lastModifiedSec => _lastModifiedSec;
+  int _lastModifiedStamp;
+  int get lastModifiedStamp => _lastModifiedStamp;
 
   String _text;
   String get text => _text;
@@ -42,7 +42,7 @@ class AppFileLoader {
   AppFileLoader({bool isStdIn, File file, String text}) {
     _file = file;
     _isStdIn = (isStdIn ?? false);
-    _lastModifiedSec = (file?.lastModifiedSecSync() ?? 0);
+    _lastModifiedStamp = (file?.lastModifiedStampSync() ?? 0);
     _text = text;
   }
 
@@ -52,7 +52,7 @@ class AppFileLoader {
     _data = null;
     _file = null;
     _isStdIn = null;
-    _lastModifiedSec = null;
+    _lastModifiedStamp = null;
     _text = null;
   }
 

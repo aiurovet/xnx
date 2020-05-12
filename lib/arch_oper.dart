@@ -4,14 +4,27 @@ import 'package:doul/ext/string.dart';
 import 'package:path/path.dart' as Path;
 
 import 'file_oper.dart';
+import 'ext/file_system_entity.dart';
+
+enum ArchMode {
+  Tar,
+  Zip
+}
 
 class ArchOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void zipSync({String fromPath, List<String> fromPaths,
-    int start = 0, int end, String toPath,
+  static void archSync({String fromPath, List<String> fromPaths,
+    int start = 0, int end, String toPath, ArchMode archMode,
     bool isMove = false, bool isSilent = false}) {
+
+    if (archMode == null) {
+      throw Exception('Archive type is not defined');
+    }
+
+    final isTar = (archMode == ArchMode.Tar);
+    final isZip = (archMode == ArchMode.Zip);
 
     if ((fromPath == null) && ((fromPaths == null) || fromPaths.isEmpty)) {
       return;
@@ -26,71 +39,91 @@ class ArchOper {
     if (!hadToDir) {
       toDir.createSync(recursive: true);
     }
-    else if (toFile.existsSync()) {
-      toFile.deleteSync();
+    else {
+      toFile.deleteIfExistsSync();
     }
 
-    var encoder = ZipFileEncoder();
-    encoder.create(toFile.path);
+    var tarFileEncoder = (isTar ? TarFileEncoder() : null);
+    tarFileEncoder?.create(toFile.path);
+
+    var zipFileEncoder = (isZip ? ZipFileEncoder() : null);
+    zipFileEncoder?.create(toFile.path);
 
     FileOper.listSync(path: fromPath, paths: fromPaths, start: start, end: end,
-      repeats: (isMove ? 2 : 1), isSilent: isSilent, isSorted: true, isMinimal: true,
-      listProc: (entities, entityNo, repeatNo, subPath) {
-        if (entityNo < 0) { // empty list
-          if (!isSilent) {
-            encoder.close();
-
-            if (toFile.existsSync()) {
-              toFile.deleteSync();
-            }
-
-            if (!hadToDir) {
-              toDir.deleteSync(recursive: true);
-            }
-
-            throw Exception('Source was not found: "${fromPath ?? fromPaths[start] ?? StringExt.EMPTY}"');
-          }
-        }
-
-        var entity = entities[entityNo];
-        var isDir = (entity is Directory);
-
-        if (repeatNo == 0) {
-          if (!isSilent) {
-            print('Adding ${isDir ? 'dir' : 'file'} "${entity.path}"');
-          }
-
-          if (isDir) {
-            encoder.addDirectory(entity, includeDirName: (subPath.length > 0));
-          }
-          else {
-            encoder.addFile(entity);
-          }
-        }
-        else if (isMove && (repeatNo == 1)) {
-          if (entity.existsSync()) {
+        repeats: (isMove ? 2 : 1), isSilent: isSilent, isSorted: true, isMinimal: true,
+        listProc: (entities, entityNo, repeatNo, subPath) {
+          if (entityNo < 0) { // empty list
             if (!isSilent) {
-              print('Deleting ${isDir ? 'dir' : 'file'} "${entity.path}"');
-            }
-            entity.deleteSync(recursive: true);
-          }
-        }
+              tarFileEncoder?.close();
+              zipFileEncoder?.close();
 
-        return true;
-      }
+              toFile.deleteIfExistsSync();
+
+              if (!hadToDir) {
+                toDir.deleteSync(recursive: true);
+              }
+
+              throw Exception('Source was not found: "${fromPath ?? fromPaths[start] ?? StringExt.EMPTY}"');
+            }
+          }
+
+          var entity = entities[entityNo];
+          var isDir = (entity is Directory);
+
+          if (repeatNo == 0) {
+            if (!isSilent) {
+              print('Adding ${isDir ? 'dir' : 'file'} "${entity.path}"');
+            }
+
+            if (isTar) {
+              if (isDir) {
+                tarFileEncoder.addDirectory(entity);
+              }
+              else {
+                tarFileEncoder.addFile(entity);
+              }
+            }
+            else if (isZip) {
+              if (isDir) {
+                zipFileEncoder.addDirectory(entity, includeDirName: (subPath.length > 0));
+              }
+              else {
+                zipFileEncoder.addFile(entity);
+              }
+            }
+          }
+          else if (isMove && (repeatNo == 1)) {
+            if (entity.existsSync()) {
+              if (!isSilent) {
+                print('Deleting ${isDir ? 'dir' : 'file'} "${entity.path}"');
+              }
+              entity.deleteSync(recursive: true);
+            }
+          }
+
+          return true;
+        }
     );
 
     if (!isSilent) {
       print(StringExt.EMPTY);
     }
 
-    encoder.close();
+    tarFileEncoder?.close();
+    zipFileEncoder?.close();
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void unzipSync(String fromPath, String toDirName,
-    {bool isMove = false, bool isSilent = false}) {
+  static void unarchSync(String fromPath, String toDirName,
+      {ArchMode archMode, bool isMove = false, bool isSilent = false}) {
+
+    if (archMode == null) {
+      throw Exception('Archive type is not defined');
+    }
+
+    final isTar = (archMode == ArchMode.Tar);
+    final isZip = (archMode == ArchMode.Zip);
 
     final fromFile = (fromPath == null ? null : File(fromPath));
 
@@ -101,12 +134,16 @@ class ArchOper {
     final toDir = Directory(toDirName);
 
     if (!isSilent) {
-      print('Decompressing "${fromPath}" to "${toDirName}"');
+      print('Extracting from archive "${fromPath}" to "${toDirName}"');
     }
 
     final toDirExisted = toDir.existsSync();
     final bytes = fromFile.readAsBytesSync();
-    final archive = ZipDecoder().decodeBytes(bytes);
+
+    final archive = (
+      (isTar ? TarDecoder() : null)?.decodeBytes(bytes) ??
+      (isZip ? ZipDecoder() : null)?.decodeBytes(bytes)
+    );
 
     try {
       if (!toDirExisted) {

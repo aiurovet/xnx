@@ -11,6 +11,8 @@ extension StringExt on String {
   static Map<String, String> ENVIRONMENT;
 
   static final bool IS_WINDOWS = Platform.isWindows;
+  static final String PATH_SEP = Platform.pathSeparator;
+
   static final String ESC_CHAR = (IS_WINDOWS ? r'^' : r'\');
   static final String ESC_CHAR_ESC = (IS_WINDOWS ? r'\^' : r'\\');
 
@@ -39,7 +41,7 @@ extension StringExt on String {
   //////////////////////////////////////////////////////////////////////////////
 
   String adjustPath() {
-    var adjustedPath = trim().replaceAll(RE_PATH_SEP, Platform.pathSeparator);
+    var adjustedPath = trim().replaceAll(RE_PATH_SEP, PATH_SEP);
 
     return adjustedPath;
   }
