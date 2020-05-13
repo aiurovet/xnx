@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'file_system_entity.dart';
+import 'string.dart';
 
 extension FileExt on File {
 
@@ -38,6 +39,25 @@ extension FileExt on File {
     var toLastModStamp = (toFile?.lastModifiedStampSync() ?? toLastModifiedStamp ?? -1);
 
     return (lastModStamp == toLastModStamp ? 0 : (lastModStamp < toLastModStamp ? -1 : 1));
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static File getIfExists(String path, {bool canThrow = true, String description}) {
+    final file = (StringExt.isNullOrBlank(path) ? null : File(path));
+
+    if (!(file?.existsSync() ?? false)) {
+      if (canThrow ?? false) {
+        var descEx = (description == null ? 'File' : description + ' file');
+        var pathEx = (file == null ? StringExt.EMPTY : path);
+        throw Exception('${descEx} was not found: "${pathEx}"');
+      }
+      else {
+        return null;
+      }
+    }
+
+    return file;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -81,6 +101,28 @@ extension FileExt on File {
         setLastAccessedSync(modifiedEx);
       }
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static File truncateIfExists(String path, {bool canThrow = true, String description}) {
+    final file = (StringExt.isNullOrBlank(path) ? null : File(path));
+
+    if (file == null) {
+      if (canThrow ?? false) {
+        var descEx = (description == null ? 'File' : description + ' file');
+        throw Exception('${descEx} path is empty');
+      }
+      else {
+        return null;
+      }
+    }
+
+    if (file.existsSync()) {
+      file.deleteSync();
+    }
+
+    return file;
   }
 
   //////////////////////////////////////////////////////////////////////////////

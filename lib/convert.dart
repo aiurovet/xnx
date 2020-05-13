@@ -88,19 +88,32 @@ class Convert {
     }
 
     var end = (args.length - 1);
+    var arg1 = (end >= 0 ? args[0] : null);
+    var arg2 = (end >= 1 ? args[1] : null);
 
-    if (_options.isCmdCompress || _options.isCmdDecompress) {
-      final archMode = (_options.isCmdTar || _options.isCmdUntar ? ArchMode.Tar :
-                        _options.isCmdZip || _options.isCmdUnzip ? ArchMode.Zip : null);
+    final isCompress = _options.isCmdCompress;
+    final isDecompress = _options.isCmdDecompress;
+    final isMove = _options.isCmdMove;
 
-      if (_options.isCmdTar || _options.isCmdZip) {
-        ArchOper.archSync(fromPaths: args, end: end, archMode: archMode, isMove: _options.isCmdMove, isSilent: isSilent);
-      }
-      else if ((_options.isCmdUntar) || _options.isCmdUnzip) {
-        if (argCount != 2) {
-          throw Exception('Invalid arguments: ${args}. Expected: from-path and to-dir');
+    if (isCompress || isDecompress) {
+      final archType = _options.archType;
+      final isTar = ArchOper.isArchTypeTar(archType);
+
+      if (isTar || (archType == ArchType.Zip)) {
+        if (isCompress) {
+          ArchOper.archSync(fromPaths: args, end: end, archType: archType, isMove: isMove, isSilent: isSilent);
         }
-        ArchOper.unarchSync(args[0], args[1], archMode: archMode, isMove: _options.isCmdMove, isSilent: isSilent);
+        else {
+          ArchOper.unarchSync(arg1, arg2, archType: archType, isMove: isMove, isSilent: isSilent);
+        }
+      }
+      else {
+        if (isCompress) {
+          ArchOper.packSync(arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+        }
+        else {
+          ArchOper.unpackSync(arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+        }
       }
     }
     else {
@@ -458,6 +471,9 @@ class Convert {
         return Path.join(tmpDirName, tmpFileName);
       }
     }
+    else {
+      return inpFilePath;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -525,7 +541,7 @@ class Convert {
 
     if (!StringExt.isNullOrBlank(value)) {
       if ((canReplace ?? false) && (value != null)) {
-        for (var oldValue = null; (oldValue != value); ) {
+        for (String oldValue; (oldValue != value); ) {
           oldValue = value;
 
           map.forEach((k, v) {

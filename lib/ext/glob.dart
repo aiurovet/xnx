@@ -70,9 +70,7 @@ extension GlobExt on Glob {
     Glob filter;
 
     if (pattern != null) {
-      if (isPath == null) {
-        isPath = _RE_PATH.hasMatch(pattern);
-      }
+      isPath = (isPath ?? _RE_PATH.hasMatch(pattern));
 
       var caseSensitive = !StringExt.IS_WINDOWS;
       var recursive = isRecursive(pattern);

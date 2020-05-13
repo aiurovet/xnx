@@ -3,6 +3,7 @@ import 'package:args/args.dart';
 import 'package:path/path.dart' as Path;
 
 import 'package:doul/ext/string.dart';
+import 'arch_oper.dart';
 import 'log.dart';
 import 'ext/stdin.dart';
 
@@ -108,52 +109,92 @@ class Options {
   };
   static final Map<String, Object> CMD_BZ2 = {
     'name': 'bz2',
-    'help': 'just compress a single source file to a single destination BZ2 file (can be combined with --tar})',
+    'help': 'just compress a single source file to a single destination BZip2 file, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object> CMD_UNBZ2 = {
     'name': 'unbz2',
-    'help': 'just decompress a single BZ2 file to a single destination file (can be combined with --untar)',
+    'help': 'just decompress a single BZip2 file to a single destination file, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object> CMD_GZ = {
     'name': 'gz',
-    'help': 'just compress a single source file to a single GZ file (can be combined with --tar)',
+    'help': 'just compress a single source file to a single GZip file, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object> CMD_UNGZ = {
     'name': 'ungz',
-    'help': 'just decompress a single GZ file to a single destination file (can be combined with --untar)',
+    'help': 'just decompress a single GZip file to a single destination file, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object> CMD_PACK = {
     'name': 'pack',
-    'help': 'just compress source files and/or directories to a single destination archive file with the method specified by its extension',
+    'help': 'just compress source files and/or directories to a single destination archive file depending on its extension, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object> CMD_UNPACK = {
     'name': 'unpack',
-    'help': 'just decompress a single source archive file to destination files and/or directories with the method specified by its extension',
+    'help': 'just decompress a single source archive file to destination files and/or directories depending on source extension, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object> CMD_TAR = {
     'name': 'tar',
-    'help': 'just create a single destination archive file containing source files and/or directories (can be combined with --bz2 or --gz)',
+    'help': 'just create a single destination archive file containing source files and/or directories, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object> CMD_UNTAR = {
     'name': 'untar',
-    'help': 'just untar a single archive file to a destination directory (can be combined with --unbz2 or --ungz)',
+    'help': 'just untar a single archive file to a destination directory, can be used with --move',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_TAR_BZ2 = {
+    'name': 'tbz',
+    'help': 'just a combination of --tar and --bz2, can be used with --move',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNTAR_BZ2 = {
+    'name': 'untbz',
+    'help': 'just a combination of --untar and --unbz2, can be used with --move',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_TAR_GZ = {
+    'name': 'tgz',
+    'help': 'just a combination of --tar and --gz, can be used with --move',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNTAR_GZ = {
+    'name': 'untgz',
+    'help': 'just a combination of --untar and --ungz, can be used with --move',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_TAR_Z = {
+    'name': 'tz',
+    'help': 'just a combination of --tar and --z, can be used with --move',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNTAR_Z = {
+    'name': 'untz',
+    'help': 'just a combination of --untar and --unz, can be used with --move',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_Z = {
+    'name': 'z',
+    'help': 'just compress a single source file to a single ZLib file, can be used with with --move to delete source to delete source',
+    'negatable': false,
+  };
+  static final Map<String, Object> CMD_UNZ = {
+    'name': 'unz',
+    'help': 'just decompress a single ZLib file to a single destination file, can be used with with --move to delete source to delete source',
     'negatable': false,
   };
   static final Map<String, Object> CMD_ZIP = {
     'name': 'zip',
-    'help': 'just zip source files and/or directories to a single destination archive file',
+    'help': 'just zip source files and/or directories to a single destination archive file, can be used with with --move to delete source to delete source',
     'negatable': false,
   };
   static final Map<String, Object> CMD_UNZIP = {
     'name': 'unzip',
-    'help': 'just unzip single archive file to destination directory',
+    'help': 'just unzip single archive file to destination directory, can be used with with --move to delete source to delete source',
     'negatable': false,
   };
 
@@ -189,16 +230,23 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   bool get isCmd => (_isCmdCopy || _isCmdCopyNewer || _isCmdDelete || _isCmdCreate || _isCmdMove || _isCmdMoveNewer ||  isCmdCompress || isCmdDecompress);
-  bool get isCmdCompress => (_isCmdBz2 || _isCmdGz || _isCmdPack || _isCmdTar || _isCmdZip);
-  bool get isCmdDecompress => (_isCmdUnbz2 || _isCmdUngz || _isCmdUnpack || _isCmdUntar || _isCmdUnzip);
 
   //////////////////////////////////////////////////////////////////////////////
+
+  ArchType _archType;
+  ArchType get archType => _archType;
+
+  bool _isCmdCompress;
+  bool get isCmdCompress => _isCmdCompress;
 
   bool _isCmdCopy;
   bool get isCmdCopy => _isCmdCopy;
 
   bool _isCmdCopyNewer;
   bool get isCmdCopyNewer => _isCmdCopyNewer;
+
+  bool _isCmdDecompress;
+  bool get isCmdDecompress => _isCmdDecompress;
 
   bool _isCmdDelete;
   bool get isCmdDelete => _isCmdDelete;
@@ -211,41 +259,6 @@ class Options {
 
   bool _isCmdMoveNewer;
   bool get isCmdMoveNewer => _isCmdMoveNewer;
-
-  bool _isCmdRename;
-  bool get isCmdRename => _isCmdRename;
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  bool _isCmdBz2;
-  bool get isCmdBz2 => _isCmdBz2;
-
-  bool _isCmdUnbz2;
-  bool get isCmdUnbz2 => _isCmdUnbz2;
-
-  bool _isCmdGz;
-  bool get isCmdGz => _isCmdGz;
-
-  bool _isCmdUngz;
-  bool get isCmdUngz => _isCmdUngz;
-
-  bool _isCmdPack;
-  bool get isCmdPack => _isCmdPack;
-
-  bool _isCmdUnpack;
-  bool get isCmdUnpack => _isCmdUnpack;
-
-  bool _isCmdTar;
-  bool get isCmdTar => _isCmdTar;
-
-  bool _isCmdUntar;
-  bool get isCmdUntar => _isCmdUntar;
-
-  bool _isCmdZip;
-  bool get isCmdZip => _isCmdZip;
-
-  bool _isCmdUnzip;
-  bool get isCmdUnzip => _isCmdUnzip;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -274,11 +287,13 @@ class Options {
     _startDirName = null;
     _isListOnly = false;
 
-    var isLogLevelSet = false;
+    _isCmdCompress = false;
+    _isCmdDecompress = false;
+    _isCmdMove = false;
+    _isCmdMoveNewer = false;
+    _isCmdDelete = false;
 
-    var isCmdRename;
-    var isCmdRenameNewer;
-    var isCmdRemove;
+    var isLogLevelSet = false;
 
     final parser = ArgParser()
       ..addFlag(QUIET['name'], abbr: QUIET['abbr'], help: QUIET['help'], negatable: QUIET['negatable'], callback: (value) {
@@ -317,55 +332,163 @@ class Options {
         _isCmdCopyNewer = value;
       })
       ..addFlag(CMD_MOVE['name'], help: CMD_MOVE['help'], negatable: CMD_MOVE['negatable'], callback: (value) {
-        _isCmdMove = value;
+        if (value) {
+          _isCmdMove = value;
+        }
       })
       ..addFlag(CMD_MOVE_NEWER['name'], help: CMD_MOVE_NEWER['help'], negatable: CMD_MOVE_NEWER['negatable'], callback: (value) {
-        _isCmdMoveNewer = value;
+        if (value) {
+          _isCmdMoveNewer = value;
+        }
       })
       ..addFlag(CMD_RENAME['name'], help: CMD_RENAME['help'], negatable: CMD_RENAME['negatable'], callback: (value) {
-        isCmdRename = value;
+        if (value) {
+          _isCmdMove = value;
+        }
       })
       ..addFlag(CMD_RENAME_NEWER['name'], help: CMD_RENAME_NEWER['help'], negatable: CMD_RENAME_NEWER['negatable'], callback: (value) {
-        isCmdRenameNewer = value;
+        if (value) {
+          _isCmdMoveNewer = value;
+        }
       })
       ..addFlag(CMD_CREATE_DIR['name'], help: CMD_CREATE_DIR['help'], negatable: CMD_CREATE_DIR['negatable'], callback: (value) {
         _isCmdCreate = value;
       })
       ..addFlag(CMD_DELETE['name'], help: CMD_DELETE['help'], negatable: CMD_DELETE['negatable'], callback: (value) {
-        _isCmdDelete = value;
+        if (value) {
+          _isCmdDelete = value;
+        }
       })
       ..addFlag(CMD_REMOVE['name'], help: CMD_REMOVE['help'], negatable: CMD_REMOVE['negatable'], callback: (value) {
-        isCmdRemove = value;
+        if (value) {
+          _isCmdDelete = value;
+        }
       })
       ..addFlag(CMD_BZ2['name'], help: CMD_BZ2['help'], negatable: CMD_BZ2['negatable'], callback: (value) {
-        _isCmdBz2 = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Bz2;
+        }
       })
       ..addFlag(CMD_UNBZ2['name'], help: CMD_UNBZ2['help'], negatable: CMD_UNBZ2['negatable'], callback: (value) {
-        _isCmdUnbz2 = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Bz2;
+        }
       })
       ..addFlag(CMD_GZ['name'], help: CMD_GZ['help'], negatable: CMD_GZ['negatable'], callback: (value) {
-        _isCmdGz = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Gz;
+        }
       })
       ..addFlag(CMD_UNGZ['name'], help: CMD_UNGZ['help'], negatable: CMD_UNGZ['negatable'], callback: (value) {
-        _isCmdUngz = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Gz;
+        }
       })
       ..addFlag(CMD_TAR['name'], help: CMD_TAR['help'], negatable: CMD_TAR['negatable'], callback: (value) {
-        _isCmdTar = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Tar;
+        }
       })
       ..addFlag(CMD_UNTAR['name'], help: CMD_UNTAR['help'], negatable: CMD_UNTAR['negatable'], callback: (value) {
-        _isCmdUntar = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Tar;
+        }
+      })
+      ..addFlag(CMD_TAR_BZ2['name'], help: CMD_TAR_BZ2['help'], negatable: CMD_TAR_BZ2['negatable'], callback: (value) {
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.TarBz2;
+        }
+      })
+      ..addFlag(CMD_UNTAR_BZ2['name'], help: CMD_UNTAR_BZ2['help'], negatable: CMD_UNTAR_BZ2['negatable'], callback: (value) {
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.TarBz2;
+        }
+      })
+      ..addFlag(CMD_TAR_GZ['name'], help: CMD_TAR_GZ['help'], negatable: CMD_TAR_GZ['negatable'], callback: (value) {
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.TarGz;
+        }
+      })
+      ..addFlag(CMD_UNTAR_GZ['name'], help: CMD_UNTAR_GZ['help'], negatable: CMD_UNTAR_GZ['negatable'], callback: (value) {
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.TarGz;
+        }
+      })
+      ..addFlag(CMD_TAR_Z['name'], help: CMD_TAR_Z['help'], negatable: CMD_TAR_Z['negatable'], callback: (value) {
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.TarZ;
+        }
+      })
+      ..addFlag(CMD_UNTAR_Z['name'], help: CMD_UNTAR_Z['help'], negatable: CMD_UNTAR_Z['negatable'], callback: (value) {
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.TarZ;
+        }
+      })
+      ..addFlag(CMD_Z['name'], help: CMD_Z['help'], negatable: CMD_Z['negatable'], callback: (value) {
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Z;
+        }
+      })
+      ..addFlag(CMD_UNZ['name'], help: CMD_UNZ['help'], negatable: CMD_UNZ['negatable'], callback: (value) {
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Z;
+        }
       })
       ..addFlag(CMD_ZIP['name'], help: CMD_ZIP['help'], negatable: CMD_ZIP['negatable'], callback: (value) {
-        _isCmdZip = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Zip;
+        }
       })
       ..addFlag(CMD_UNZIP['name'], help: CMD_UNZIP['help'], negatable: CMD_UNZIP['negatable'], callback: (value) {
-        _isCmdUnzip = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = ArchType.Zip;
+        }
       })
       ..addFlag(CMD_PACK['name'], help: CMD_PACK['help'], negatable: CMD_PACK['negatable'], callback: (value) {
-        _isCmdPack = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = null;
+        }
       })
       ..addFlag(CMD_UNPACK['name'], help: CMD_UNPACK['help'], negatable: CMD_UNPACK['negatable'], callback: (value) {
-        _isCmdUnpack = value;
+        if (value) {
+          _isCmdCompress = value;
+          _isCmdDecompress = !value;
+          _archType = null;
+        }
       })
     ;
 
@@ -375,10 +498,6 @@ class Options {
 
     try {
       var result = parser.parse(args);
-
-      _isCmdMove = (_isCmdMove || isCmdRename);
-      _isCmdMoveNewer = (_isCmdMoveNewer || isCmdRenameNewer);
-      _isCmdDelete = (_isCmdDelete || isCmdRemove);
 
       _plainArgs = <String>[];
       _plainArgs.addAll(result.rest);
