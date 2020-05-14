@@ -96,7 +96,8 @@ class Convert {
     final isMove = _options.isCmdMove;
 
     if (isCompress || isDecompress) {
-      final archType = _options.archType;
+      final archPath = (isDecompress ? arg1 : (end >= 0 ? args[end] : 0));
+      final archType = ArchOper.getArchType(_options.archType, archPath);
       final isTar = ArchOper.isArchTypeTar(archType);
 
       if (isTar || (archType == ArchType.Zip)) {
@@ -104,15 +105,15 @@ class Convert {
           ArchOper.archSync(fromPaths: args, end: end, archType: archType, isMove: isMove, isSilent: isSilent);
         }
         else {
-          ArchOper.unarchSync(arg1, arg2, archType: archType, isMove: isMove, isSilent: isSilent);
+          ArchOper.unarchSync(archType, arg1, arg2, isMove: isMove, isSilent: isSilent);
         }
       }
       else {
         if (isCompress) {
-          ArchOper.packSync(arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+          ArchOper.packSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
         }
         else {
-          ArchOper.unpackSync(arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+          ArchOper.unpackSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
         }
       }
     }

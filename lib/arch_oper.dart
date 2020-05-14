@@ -13,9 +13,9 @@ enum ArchType {
   Tar,
   TarBz2,
   TarGz,
-  TarZ,
-  Z,
-  Zip
+  TarZlib,
+  Zip,
+  Zlib,
 }
 
 class ArchOper {
@@ -30,30 +30,25 @@ class ArchOper {
     ArchType.Tar: [ '.tar', ],
     ArchType.TarBz2: [ '.tar.bz2', '.tbz', ],
     ArchType.TarGz: [ '.tar.gz', '.tgz', ],
-    ArchType.TarZ: [ '.tar.z', ],
-    ArchType.Z: [ '.z', ],
+    ArchType.TarZlib: [ '.tar.zlib', '.tzl' ],
+    ArchType.Zlib: [ '.zlib', ],
     ArchType.Zip: [ '.zip', ],
   };
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void archSync({String fromPath, List<String> fromPaths,
-    int start = 0, int end, String toPath, ArchType archType,
-    bool isMove = false, bool isSilent = false}) {
+  static void archSync({ArchType archType, String fromPath, List<String> fromPaths,
+    int start = 0, int end, String toPath, bool isMove = false, bool isSilent = false}) {
 
     var toPathEx = (toPath ?? fromPaths[end]);
 
     if (archType == null) {
-      archType = getDefaultArchType(toPathEx);
-
-      if (archType == null) {
-        throw Exception('Archive type is not defined');
-      }
+      throw Exception('Archive type is not defined');
     }
 
     final isZip = (archType == ArchType.Zip);
-    final isTarOnly = (archType == ArchType.Tar);
     final isTar = isArchTypeTar(archType);
+    final isTarPacked = (isTar && (archType != ArchType.Tar));
 
     if ((fromPath == null) && ((fromPaths == null) || fromPaths.isEmpty)) {
       return;
@@ -61,8 +56,8 @@ class ArchOper {
 
     String toPathExEx;
 
-    if (isTar && !isTarOnly) {
-      toPathExEx = getUnpackPath(toPathEx, null, archType);
+    if (isTarPacked) {
+      toPathExEx = getUnpackPath(archType, toPathEx, null);
     }
     else {
       toPathExEx = toPathEx;
@@ -106,6 +101,7 @@ class ArchOper {
 
           var entity = entities[entityNo];
           var isDir = (entity is Directory);
+          var isDirOnly = entity.path.endsWith(StringExt.PATH_SEP);
 
           if (repeatNo == 0) {
             if (!isSilent) {
@@ -114,7 +110,12 @@ class ArchOper {
 
             if (isTar) {
               if (isDir) {
-                tarFileEncoder.addDirectory(entity);
+                if (isDirOnly) {
+                  tarFileEncoder.addDirectory(entity);
+                }
+                else {
+                  tarFileEncoder.addDirectory(entity);
+                }
               }
               else {
                 tarFileEncoder.addFile(entity);
@@ -122,8 +123,7 @@ class ArchOper {
             }
             else if (isZip) {
               if (isDir) {
-                zipFileEncoder.addDirectory(
-                    entity, includeDirName: subPath.isNotEmpty);
+                zipFileEncoder.addDirectory(entity, includeDirName: (subPath.isNotEmpty || isDirOnly));
               }
               else {
                 zipFileEncoder.addFile(entity);
@@ -157,18 +157,14 @@ class ArchOper {
       zipFileEncoder?.close();
     }
 
-    if (!isSilent) {
-      print(StringExt.EMPTY);
-    }
-
-    if (isTar && !isTarOnly) {
-      packSync(toPathExEx, archType: archType, toPath: toPathEx, isMove: true, isSilent: isSilent);
+    if (isTarPacked) {
+      packSync(archType, toPathExEx, toPath: toPathEx, isMove: true, isSilent: isSilent);
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Archive decodeArchSync(File file, ArchType archType) {
+  static Archive decodeArchSync(ArchType archType, File file) {
     final bytes = file.readAsBytesSync();
 
     if (archType == ArchType.Tar) {
@@ -184,7 +180,7 @@ class ArchOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<int> decodeFileSync(File file, ArchType archType) {
+  static List<int> decodeFileSync(ArchType archType, File file) {
     final bytes = file.readAsBytesSync();
     List<int> result;
 
@@ -197,8 +193,8 @@ class ArchOper {
       case ArchType.TarGz:
         result = GZipDecoder().decodeBytes(bytes);
         break;
-      case ArchType.Z:
-      case ArchType.TarZ:
+      case ArchType.Zlib:
+      case ArchType.TarZlib:
         result = ZLibDecoder().decodeBytes(bytes);
         break;
       default:
@@ -210,7 +206,7 @@ class ArchOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<int> encodeFileSync(File file, ArchType archType) {
+  static List<int> encodeFileSync(ArchType archType, File file) {
     final bytes = file.readAsBytesSync();
     List<int> result;
 
@@ -223,8 +219,8 @@ class ArchOper {
       case ArchType.TarGz:
         result = GZipEncoder().encode(bytes);
         break;
-      case ArchType.Z:
-      case ArchType.TarZ:
+      case ArchType.Zlib:
+      case ArchType.TarZlib:
         result = ZLibEncoder().encode(bytes);
         break;
       default:
@@ -236,33 +232,42 @@ class ArchOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static ArchType getDefaultArchType(String path, {ArchType defArchType}) {
-    var pathExt = (path == null ? null : Path.extension(path).toLowerCase());
-
-    if (StringExt.isNullOrBlank(pathExt)) {
-      return defArchType;
+  static ArchType getArchType(ArchType archType, String path) {
+    if (archType != null) {
+      return archType;
     }
 
-    ArchType archType;
+    if (StringExt.isNullOrBlank(path)) {
+      return archType;
+    }
 
-    DEFAULT_EXTENSIONS.forEach((key, value) {
-      if (archType == null) {
-        value.forEach((ext) {
-          if (archType == null) {
-            if (pathExt == ext) {
-              archType = key;
+    var fileName = Path.basename(path).toLowerCase();
+
+    ArchType archTypeByExt;
+
+    if (!StringExt.isNullOrBlank(fileName)) {
+      var maxMatchLen = 0;
+
+      DEFAULT_EXTENSIONS.forEach((key, value) {
+          value.forEach((currExt) {
+            final currLen = currExt.length;
+
+            if ((archTypeByExt == null) || (currLen > maxMatchLen)) {
+              if (fileName.endsWith(currExt)) {
+                maxMatchLen = currLen;
+                archTypeByExt = key;
+              }
             }
-          }
         });
-      }
-    });
+      });
+    }
 
-    return (archType ?? defArchType);
+    return archTypeByExt;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getPackPath(String fromPath, String toPath, ArchType archType) {
+  static String getPackPath(ArchType archType, String fromPath, String toPath) {
     if (!StringExt.isNullOrBlank(toPath) || (archType == null) || (archType == ArchType.Zip)) {
       return toPath;
     }
@@ -276,8 +281,8 @@ class ArchOper {
       case ArchType.TarGz:
         archTypeEx = ArchType.Gz;
         break;
-      case ArchType.TarZ:
-        archTypeEx = ArchType.Z;
+      case ArchType.TarZlib:
+        archTypeEx = ArchType.Zlib;
         break;
       default:
         archTypeEx = archType;
@@ -289,42 +294,52 @@ class ArchOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getUnpackPath(String fromPath, String toPath, ArchType archType) {
-    if (!StringExt.isNullOrBlank(toPath) || (archType == null) || (archType == ArchType.Zip)) {
-      return toPath;
+  static String getUnpackPath(ArchType archType, String fromPath, String toPath) {
+    final hasToPath = !StringExt.isNullOrBlank(toPath);
+
+    if ((archType == null) || (archType == ArchType.Tar) || !isArchTypeTar(archType)) {
+      return (toPath ?? fromPath);
     }
 
-    final defExt = DEFAULT_EXTENSIONS[archType][0];
-    final newLen = (fromPath.length - defExt.length);
-
-    if (fromPath.toLowerCase().endsWith(defExt)) {
-      return fromPath.substring(0, newLen);
+    if (hasToPath) {
+      if (Directory(toPath).existsSync()) {
+        return Path.join(toPath, Path.basenameWithoutExtension(fromPath));
+      }
+      else {
+        return toPath;
+      }
     }
-    else if (isArchTypeTar(archType)) {
-      return fromPath.substring(0, newLen) + DEFAULT_EXTENSIONS[ArchType.Tar][0];
+    else if (isArchTypeTar(archType) && (archType != ArchType.Tar)) {
+      var defExt = DEFAULT_EXTENSIONS[ArchType.Tar][0];
+      var result = Path.join(Path.dirname(fromPath), Path.basenameWithoutExtension(fromPath));
+
+      if (!result.endsWith(defExt)) {
+        result += defExt;
+      }
+
+      return result;
     }
     else {
-      return toPath;
+      return fromPath;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   static bool isArchTypeTar(ArchType archType) =>
-      ((archType == ArchType.Tar) || (archType == ArchType.TarBz2) || (archType == ArchType.TarGz) || (archType == ArchType.TarZ));
+      ((archType == ArchType.Tar) || (archType == ArchType.TarBz2) || (archType == ArchType.TarGz) || (archType == ArchType.TarZlib));
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String packSync(String fromPath, {ArchType archType, String toPath, bool isMove = true, bool isSilent = false}) {
+  static String packSync(ArchType archType, String fromPath, {String toPath, bool isMove = true, bool isSilent = false}) {
     final fromFile = FileExt.getIfExists(fromPath);
-    final archTypeEx = (archType ?? getDefaultArchType(toPath));
 
     if (!isSilent ?? false) {
       print('Packing "${fromFile.path}"');
     }
 
-    final encoder = encodeFileSync(fromFile, archTypeEx);
-    final toPathEx = getPackPath(fromPath, toPath, archTypeEx);
+    final encoder = encodeFileSync(archType, fromFile);
+    final toPathEx = getPackPath(archType, fromPath, toPath);
     final toFile = FileExt.truncateIfExists(toPathEx);
 
     toFile.writeAsBytesSync(encoder);
@@ -333,25 +348,19 @@ class ArchOper {
       fromFile.delete();
     }
 
-    encoder.clear();
-
     return toPathEx;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void unarchSync(String fromPath, String toDirName,
-    {ArchType archType, bool isMove = false, bool isSilent = false}) {
+  static void unarchSync(ArchType archType, String fromPath, String toDirName,
+    {bool isMove = false, bool isSilent = false}) {
 
     isMove = (isMove ?? false);
     isSilent = (isSilent ?? false);
 
     if (archType == null) {
-      archType = getDefaultArchType(fromPath);
-
-      if (archType == null) {
-        throw Exception('Archive type is not defined');
-      }
+      throw Exception('Archive type is not defined');
     }
 
     final isTar = isArchTypeTar(archType);
@@ -365,13 +374,15 @@ class ArchOper {
     String fromPathEx;
 
     if (isTarPack) {
-      fromPathEx = unpackSync(fromPath, toPath: null, archType: archType, isMove: isMove, isSilent: isSilent);
+      fromPathEx = unpackSync(archType, fromPath, toPath: null, isMove: isMove, isSilent: isSilent);
     }
     else {
       fromPathEx = fromPath;
     }
 
     final fromFileEx = FileExt.getIfExists(fromPathEx, description: 'Archive');
+
+    toDirName ??= Path.dirname(fromPathEx);
     final toDir = Directory(toDirName);
 
     if (!isSilent) {
@@ -379,7 +390,7 @@ class ArchOper {
     }
 
     final toDirExisted = toDir.existsSync();
-    final archive = decodeArchSync(fromFileEx, archType);
+    final archive = decodeArchSync((isTarPack ? ArchType.Tar : archType), fromFileEx);
 
     try {
       if (!toDirExisted) {
@@ -405,19 +416,21 @@ class ArchOper {
       }
 
       if (isMove || isTarPack) {
-        if (!isSilent) {
-          print('Deleting archive "${fromPath}"'); // original path
-        }
-
         if (isTarPack) {
           if (!isSilent) {
             print('Deleting archive "${fromPathEx}"'); // current path
           }
 
-          File(fromPath).deleteIfExistsSync();
+          fromFileEx.deleteSync();
         }
 
-        fromFileEx.deleteSync();
+        if (!isTarPack || isMove) {
+          if (!isSilent) {
+            print('Deleting archive "${fromPath}"'); // original path
+          }
+
+          File(fromPath).deleteIfExistsSync();
+        }
       }
     }
     catch (e) {
@@ -430,24 +443,19 @@ class ArchOper {
 
       rethrow;
     }
-
-    if (!isSilent) {
-      print(StringExt.EMPTY);
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String unpackSync(String fromPath, {ArchType archType, String toPath, bool isMove = true, bool isSilent = false}) {
+  static String unpackSync(ArchType archType, String fromPath, {String toPath, bool isMove = true, bool isSilent = false}) {
     final fromFile = FileExt.getIfExists(fromPath);
-    final archTypeEx = (archType ?? getDefaultArchType(fromPath));
 
     if (!isSilent ?? false) {
-      print('Unacking "${fromFile.path}"');
+      print('Unpacking "${fromFile.path}"');
     }
 
-    final decoder = decodeFileSync(fromFile, archTypeEx);
-    final toPathEx = getUnpackPath(fromPath, toPath, archTypeEx);
+    final decoder = decodeFileSync(archType, fromFile);
+    final toPathEx = getUnpackPath(archType, fromPath, toPath);
     final toFile = FileExt.truncateIfExists(toPathEx);
 
     toFile.writeAsBytesSync(decoder);
@@ -455,8 +463,6 @@ class ArchOper {
     if (isMove) {
       fromFile.delete();
     }
-
-    decoder.clear();
 
     return toPathEx;
   }

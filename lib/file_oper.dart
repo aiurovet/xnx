@@ -137,24 +137,17 @@ class FileOper {
 
           var currDirName = GlobExt.getDirectoryName(currPath);
 
-          if (StringExt.isNullOrBlank(currDirName)) {
-            currDirName = DirectoryExt.CUR_DIR_ABBR;
-            currPath = Path.join(currDirName, currPath);
-          }
-
-          var currDir = Directory(currDirName);
-
-          // If source directory does not exist, ensure the parent directory exists
-
-          if (!currDir.existsSync()) {
-            throw Exception('Top source directory was not found: "${currDir.path}"');
+          if (!StringExt.isNullOrBlank(currDirName) && (currDirName != DirectoryExt.CUR_DIR_ABBR)) {
+            if (!Directory(currDirName).existsSync()) {
+              throw Exception('Top source directory was not found: "${currDir.path}"');
+            }
           }
 
           // Ensure no trailing path separator
 
           currDirNameLen = currDirName.length;
 
-          if (currDirNameLen < currPath.length) {
+          if ((currDirNameLen > 0) && (currDirNameLen < currPath.length)) {
             ++currDirNameLen;
           }
 
@@ -178,6 +171,12 @@ class FileOper {
       }
       if (isMinimal ?? false) {
         removeSubPaths(entities, isFast: (sortProc == null));
+      }
+
+      dirNameLen -= shortenSubPaths(entities, (DirectoryExt.CUR_DIR_ABBR + StringExt.PATH_SEP));
+
+      if (dirNameLen < 0) {
+        dirNameLen = 0;
       }
     }
 
@@ -207,7 +206,7 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void removeSubPaths(List<FileSystemEntity> entities, {bool isFast = true}) {
+  static int removeSubPaths(List<FileSystemEntity> entities, {bool isFast = true}) {
     var entitiesToRemove = <FileSystemEntity>[];
     var pathCount = entities.length;
 
@@ -241,7 +240,43 @@ class FileOper {
       }
     }
 
-    entities.removeWhere((entity) => entitiesToRemove.contains(entity));
+    final removedCount = entitiesToRemove.length;
+
+    if (removedCount > 0) {
+      entities.removeWhere((entity) => entitiesToRemove.contains(entity));
+    }
+
+    return removedCount;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static int shortenSubPaths(List<FileSystemEntity> entities, String prefix) {
+    if (StringExt.isNullOrBlank(prefix)) {
+      return 0;
+    }
+
+    final prefixLen = prefix.length;
+    var wasShortened = false;
+
+    for (var i = 0, n = entities.length; i < n; i++) {
+      var entity = entities[i];
+      final path = entities[i].path;
+
+      if (path.startsWith(prefix)) {
+        if (entity is Directory) {
+          entity = Directory(entity.path.substring(prefixLen));
+        }
+        else if (entity is File) {
+          entity = File(entity.path.substring(prefixLen));
+        }
+
+        entities[i] = entity;
+        wasShortened = true;
+      }
+    }
+
+    return (wasShortened ? prefixLen : 0);
   }
 
   //////////////////////////////////////////////////////////////////////////////
