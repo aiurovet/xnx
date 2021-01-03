@@ -15,28 +15,23 @@
         "{copy}": "cp -pr",
         "{move}": "mv -f",
         "{delete}": "rm -rf",
+        "{remove}": "{delete}",
+        "{rename}": "{move}",
         "{mkdir}": "mkdir -p",
-
-        "{chrome}": "google-chrome"
+        "{chrome}": "google-chrome",
+        "{zip}": "cd \"{zip_dir}\" && zip -m -r \"{zip_out}\" * && cd .. && rm -rf \"{zip_dir}\"",
+        "{unzip}": "unzip -o -d \"{zip_dir}\" \"{zip_inp}\""
       }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
         "{copy}": "copy /Y",
         "{move}": "ren",
         "{delete}": "del /F/Q/S",
+        "{remove}": "{delete}",
+        "{rename}": "{move}",
         "{mkdir}": "mkdir",
-
-        "{chrome}": "chrome"
-      } } } },
-
-      "{this}": "$0",
-
-      "{copy-newer}": "{this} --copy-newer",
-      "{move-newer}": "{this} --move-newer",
-      "{zip}": "{this} --zip",
-      "{unzip}": "{this} --unzip",
-
-      "{rename}": "{move}",
-      "{rename-newer}": "{move-newer}",
-      "{remove}": "{delete}"
+        "{chrome}": "chrome",
+        "{zip}": "Compress-Archive \"{zip_dir}\" \"{zip_out}\"",
+        "{unzip}": "Expand-Archive \"{zip_inp}\" \"{zip_dir}\""
+      } } } }
     }
   ]
 }

@@ -10,7 +10,7 @@ class Doul {
     var isOK = false;
 
     try {
-      Convert().exec(args);
+      exec(args);
       isOK = true;
     }
     catch (e, stackTrace) {
@@ -18,6 +18,10 @@ class Doul {
     }
 
     exit(isOK ? 0 : 1);
+  }
+
+  static void exec(List<String> args) {
+    Convert().exec(args);
   }
 
   static bool onError(Exception e, StackTrace stackTrace) {

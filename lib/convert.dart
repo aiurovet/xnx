@@ -2,11 +2,12 @@ import 'dart:cli';
 import 'dart:io';
 
 import 'package:doul/app_file_loader.dart';
+import 'package:doul/doul.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
-import 'arch_oper.dart';
+import 'pack_oper.dart';
 import 'config.dart';
 import 'file_oper.dart';
 import 'log.dart';
@@ -34,6 +35,7 @@ class Convert {
   bool isStdIn;
   bool isStdOut;
   String outDirName;
+  String startCmd;
 
   Config _config;
   List<String> _inpParamNames;
@@ -42,6 +44,8 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   void exec(List<String> args) {
+    startCmd = FileExt.getStartCommand();
+
     _config = Config();
     var maps = _config.exec(args);
     _options = _config.options;
@@ -97,23 +101,23 @@ class Convert {
 
     if (isCompress || isDecompress) {
       final archPath = (isDecompress ? arg1 : (end >= 0 ? args[end] : 0));
-      final archType = ArchOper.getArchType(_options.archType, archPath);
-      final isTar = ArchOper.isArchTypeTar(archType);
+      final archType = PackOper.getPackType(_options.archType, archPath);
+      final isTar = PackOper.isPackTypeTar(archType);
 
-      if (isTar || (archType == ArchType.Zip)) {
+      if (isTar || (archType == PackType.Zip)) {
         if (isCompress) {
-          ArchOper.archSync(fromPaths: args, end: end, archType: archType, isMove: isMove, isSilent: isSilent);
+          PackOper.archiveSync(fromPaths: args, end: end, packType: archType, isMove: isMove, isSilent: isSilent);
         }
         else {
-          ArchOper.unarchSync(archType, arg1, arg2, isMove: isMove, isSilent: isSilent);
+          PackOper.unarchiveSync(archType, arg1, arg2, isMove: isMove, isSilent: isSilent);
         }
       }
       else {
         if (isCompress) {
-          ArchOper.packSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+          PackOper.compressSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
         }
         else {
-          ArchOper.unpackSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+          PackOper.uncompressSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
         }
       }
     }
@@ -225,6 +229,7 @@ class Convert {
         mapCurr[_config.paramNameInpName] = Path.basenameWithoutExtension(inpNameExt);
         mapCurr[_config.paramNameInpPath] = inpFilePathEx;
         mapCurr[_config.paramNameInpSubPath] = inpFilePathEx.substring(subStart);
+        mapCurr[_config.paramNameThis] = startCmd;
 
         mapCurr.forEach((k, v) {
           if ((v != null) && (k != _config.paramNameCmd) && !_inpParamNames.contains(k)) {
@@ -275,7 +280,7 @@ class Convert {
       throw Exception('Input file is not found: "${inpFilePath}"');
     }
 
-    var hasOutFile = (!isStdOut && !StringExt.isNullOrBlank(outFilePath));
+    var hasOutFile = (!isStdOut && !StringExt.isNullOrBlank(outFilePath) && !Directory(outFilePath).existsSync());
 
     String tmpFilePath;
 
@@ -289,13 +294,10 @@ class Convert {
       cmdTemplateEx += ' "${_config.paramNameInp}" "${_config.paramNameOut}"';
     }
 
-    var command = cmdTemplateEx
-      .replaceAll(_config.paramNameOut, outFilePath)
-      .replaceAll(_config.paramNameInp, (tmpFilePath ?? inpFilePath));
-
+    var command = replaceInpNames(cmdTemplateEx.replaceAll(_config.paramNameOut, outFilePath), map);
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
-    if (!_options.isForced && (inpFilePath != outFilePath)) {
+    if (!_options.isForced && (inpFilePath != outFilePath) && (outFile != null)) {
       var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
       if (!isChanged) {
@@ -329,11 +331,16 @@ class Convert {
     }
 
     try {
-      var exitCodes = waitFor<List<ProcessResult>>(
-          Shell(verbose: isVerbose, runInShell: false).run(command));
+      if (command.startsWith(Config.CMD_THIS + StringExt.SPACE)) {
+        Doul.exec(command.splitCommandLine(skipCharCount: Config.CMD_THIS.length));
+      }
+      else {
+        var exitCodes = waitFor<List<ProcessResult>>(
+            Shell(verbose: isVerbose, runInShell: false).run(command));
 
-      if (exitCodes.any((x) => (x.exitCode != 0))) {
-        throw Exception('Command failed${isVerbose ? StringExt.EMPTY : '\n\n${command}\n\n'}');
+        if (exitCodes.any((x) => (x.exitCode != 0))) {
+          throw Exception('Command failed${isVerbose ? StringExt.EMPTY : '\n\n${command}\n\n'}');
+        }
       }
     }
     catch (e) {

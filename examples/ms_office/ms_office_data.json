@@ -1,16 +1,30 @@
 {
+  "rename": {
+    "{{-cmd-}}": "{c}",
+    "{{-inp-}}": "{i}",
+    "{{-out-}}": "{o}"
+  },
   "x": [
-      {
-        "{last-name}": "Ashwood",
-        "{name}": "Ann {last-name}", "{dob}": "1 Jan 1961",
-        "{spouse-name}": "Alfred {last-name}", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "her",
-        "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson"
-      }//,
-//      {
-//        "{last-name}": "Bourie",
-//        "{name}": "Brian {last-name}", "{dob}": "1 Feb 1952",
-//        "{spouse-name}": "Blanche {last-name}", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "his",
-//        "{disease}": "Botkin's", "{dr-name}": "Benny Balderson"
-//      }
+    { "{c}": "replace-only" },
+
+    { "data": [
+        {
+          "{last-name}": "Ashwood",
+          "{name}": "Ann {last-name}", "{dob}": "1 Jan 1961",
+          "{spouse-name}": "Alfred {last-name}", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "her",
+          "{disease}": "Alzheimer's", "{dr-name}": "Archibald Anderson",
+
+          "{i}": "**", "{o}": ""
+        },
+        {
+          "{last-name}": "Bourie",
+          "{name}": "Brian {last-name}", "{dob}": "1 Feb 1952",
+          "{spouse-name}": "Blanche {last-name}", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "his",
+          "{disease}": "Botkin's", "{dr-name}": "Benny Balderson",
+
+          "{i}": "**", "{o}": ""
+        }
+      ]
+    }
   ]
 }

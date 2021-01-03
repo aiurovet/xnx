@@ -3,7 +3,7 @@ import 'package:args/args.dart';
 import 'package:path/path.dart' as Path;
 
 import 'package:doul/ext/string.dart';
-import 'arch_oper.dart';
+import 'pack_oper.dart';
 import 'log.dart';
 import 'ext/stdin.dart';
 
@@ -233,8 +233,8 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ArchType _archType;
-  ArchType get archType => _archType;
+  PackType _archType;
+  PackType get archType => _archType;
 
   bool _isCmdCompress;
   bool get isCmdCompress => _isCmdCompress;
@@ -368,112 +368,112 @@ class Options {
         if (value) {
           _isCmdCompress = value;
           _isCmdDecompress = !value;
-          _archType = ArchType.Bz2;
+          _archType = PackType.Bz2;
         }
       })
       ..addFlag(CMD_UNBZ2['name'], help: CMD_UNBZ2['help'], negatable: CMD_UNBZ2['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = !value;
           _isCmdDecompress = value;
-          _archType = ArchType.Bz2;
+          _archType = PackType.Bz2;
         }
       })
       ..addFlag(CMD_GZ['name'], help: CMD_GZ['help'], negatable: CMD_GZ['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = value;
           _isCmdDecompress = !value;
-          _archType = ArchType.Gz;
+          _archType = PackType.Gz;
         }
       })
       ..addFlag(CMD_UNGZ['name'], help: CMD_UNGZ['help'], negatable: CMD_UNGZ['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = !value;
           _isCmdDecompress = value;
-          _archType = ArchType.Gz;
+          _archType = PackType.Gz;
         }
       })
       ..addFlag(CMD_TAR['name'], help: CMD_TAR['help'], negatable: CMD_TAR['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = value;
           _isCmdDecompress = !value;
-          _archType = ArchType.Tar;
+          _archType = PackType.Tar;
         }
       })
       ..addFlag(CMD_UNTAR['name'], help: CMD_UNTAR['help'], negatable: CMD_UNTAR['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = !value;
           _isCmdDecompress = value;
-          _archType = ArchType.Tar;
+          _archType = PackType.Tar;
         }
       })
       ..addFlag(CMD_TAR_BZ2['name'], help: CMD_TAR_BZ2['help'], negatable: CMD_TAR_BZ2['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = value;
           _isCmdDecompress = !value;
-          _archType = ArchType.TarBz2;
+          _archType = PackType.TarBz2;
         }
       })
       ..addFlag(CMD_UNTAR_BZ2['name'], help: CMD_UNTAR_BZ2['help'], negatable: CMD_UNTAR_BZ2['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = !value;
           _isCmdDecompress = value;
-          _archType = ArchType.TarBz2;
+          _archType = PackType.TarBz2;
         }
       })
       ..addFlag(CMD_TAR_GZ['name'], help: CMD_TAR_GZ['help'], negatable: CMD_TAR_GZ['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = value;
           _isCmdDecompress = !value;
-          _archType = ArchType.TarGz;
+          _archType = PackType.TarGz;
         }
       })
       ..addFlag(CMD_UNTAR_GZ['name'], help: CMD_UNTAR_GZ['help'], negatable: CMD_UNTAR_GZ['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = !value;
           _isCmdDecompress = value;
-          _archType = ArchType.TarGz;
+          _archType = PackType.TarGz;
         }
       })
       ..addFlag(CMD_TAR_ZLIB['name'], help: CMD_TAR_ZLIB['help'], negatable: CMD_TAR_ZLIB['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = value;
           _isCmdDecompress = !value;
-          _archType = ArchType.TarZlib;
+          _archType = PackType.TarZlib;
         }
       })
       ..addFlag(CMD_UNTAR_ZLIB['name'], help: CMD_UNTAR_ZLIB['help'], negatable: CMD_UNTAR_ZLIB['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = !value;
           _isCmdDecompress = value;
-          _archType = ArchType.TarZlib;
+          _archType = PackType.TarZlib;
         }
       })
       ..addFlag(CMD_ZIP['name'], help: CMD_ZIP['help'], negatable: CMD_ZIP['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = value;
           _isCmdDecompress = !value;
-          _archType = ArchType.Zip;
+          _archType = PackType.Zip;
         }
       })
       ..addFlag(CMD_UNZIP['name'], help: CMD_UNZIP['help'], negatable: CMD_UNZIP['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = !value;
           _isCmdDecompress = value;
-          _archType = ArchType.Zip;
+          _archType = PackType.Zip;
         }
       })
       ..addFlag(CMD_ZLIB['name'], help: CMD_ZLIB['help'], negatable: CMD_ZLIB['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = value;
           _isCmdDecompress = !value;
-          _archType = ArchType.Zlib;
+          _archType = PackType.Zlib;
         }
       })
       ..addFlag(CMD_UNZLIB['name'], help: CMD_UNZLIB['help'], negatable: CMD_UNZLIB['negatable'], callback: (value) {
         if (value) {
           _isCmdCompress = !value;
           _isCmdDecompress = value;
-          _archType = ArchType.Zlib;
+          _archType = PackType.Zlib;
         }
       })
       ..addFlag(CMD_PACK['name'], help: CMD_PACK['help'], negatable: CMD_PACK['negatable'], callback: (value) {

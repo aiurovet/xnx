@@ -13,9 +13,6 @@ extension StringExt on String {
   static final bool IS_WINDOWS = Platform.isWindows;
   static final String PATH_SEP = Platform.pathSeparator;
 
-  static final String ESC_CHAR = (IS_WINDOWS ? r'^' : r'\');
-  static final String ESC_CHAR_ESC = (IS_WINDOWS ? r'\^' : r'\\');
-
   static final RegExp BLANK = RegExp(r'^[\s]*$');
 
   static const String EMPTY = '';
@@ -23,10 +20,17 @@ extension StringExt on String {
   static final String EOT = String.fromCharCode(StringExt.EOT_CODE);
   static const String FALSE_STR = 'false';
   static const String NEWLINE = '\n';
+  static const String QUOTE_1 = "'";
+  static const String QUOTE_2 = '"';
   static const String SPACE = ' ';
   static const String TAB = '\t';
   static const String TRUE = 'true';
   static const String FALSE = 'false';
+
+  static final String ESC = r'\'; // must be portable
+  static final String ESC_ESC = (ESC + ESC);
+  static final String ESC_QUOTE_1 = (ESC + QUOTE_1);
+  static final String ESC_QUOTE_2 = (ESC + QUOTE_2);
 
   static const String STDIN_DISP = '<stdin>';
   static const String STDIN_PATH = '-';
@@ -34,6 +38,7 @@ extension StringExt on String {
   static const String STDOUT_DISP = '<stdout>';
   static const String STDOUT_PATH = StringExt.STDIN_PATH;
 
+  static final RegExp RE_CMD_LINE = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
   static final RegExp RE_ENV_VAR_NAME = RegExp(r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9]*)[\}]', caseSensitive: false);
   static final RegExp RE_PATH_SEP = RegExp(r'[\/\\]');
   static final RegExp RE_PROTOCOL = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
@@ -159,6 +164,35 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  List<String> splitCommandLine({int skipCharCount = 0}) {
+    var line = ((skipCharCount ?? 0) == 0 ? this : substring(skipCharCount));
+    var args = <String>[];
+
+    line.replaceAll(ESC_ESC, '\x01')
+        .replaceAll(ESC_QUOTE_1, '\x02')
+        .replaceAll(ESC_QUOTE_2, '\x03')
+        .replaceAllMapped(RE_CMD_LINE, (match) {
+          var s = match.group(2);
+
+          if (StringExt.isNullOrBlank(s)) {
+            s = match.group(4);
+
+            if (StringExt.isNullOrBlank(s)) {
+              s = match.group(6);
+            }
+          }
+
+          args.add(s.trim());
+
+          return s;
+        })
+    ;
+
+    return args;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   int tokensOf(String that) {
     var thisLen = length;
     var thatLen = (that?.length ?? 0);
@@ -186,8 +220,8 @@ extension StringExt on String {
   //////////////////////////////////////////////////////////////////////////////
 
   String quote({bool isSingle = false}) {
-    var plainQuote = (isSingle ? "'" : '"');
-    var escapedQuote = r'\' + plainQuote;
+    var plainQuote = (isSingle ? QUOTE_1 : QUOTE_2);
+    var escapedQuote = ESC + plainQuote;
 
     var result = plainQuote + replaceAll(plainQuote, escapedQuote) + plainQuote;
 

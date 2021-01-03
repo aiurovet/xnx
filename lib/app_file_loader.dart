@@ -58,30 +58,9 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String getStartCommand() {
-    var cmd = Platform.resolvedExecutable.quote();
-    var scr = Platform.script.path;
-
-    if (scr.endsWith('.dart')) {
-      var args = Platform.executableArguments;
-
-      for (var i = 0, n = args.length; i < n; i++) {
-        cmd += StringExt.SPACE;
-        cmd += args[i].quote();
-      }
-
-      cmd += StringExt.SPACE;
-      cmd += scr.quote();
-    }
-
-    return cmd;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   void expandCmdLineArgs(List<String> args) {
     var argCount = (args?.length ?? 0);
-    var startCmd = getStartCommand().replaceAll(r'"', r'\"');
+    var startCmd = FileExt.getStartCommand(escapeQuotes: true);
 
     _text = _text
       .replaceAll('\$\$', '\x01')
@@ -110,9 +89,28 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static String getImportFileKey(String prefix, {String impPath}) {
+    var key = StringExt.EMPTY;
+    var sep = '_';
+
+    if (!StringExt.isNullOrBlank(prefix)) {
+      key += prefix;
+    }
+
+    if (!StringExt.isNullOrBlank(impPath)) {
+      key += sep;
+      key += impPath.replaceAll(StringExt.PATH_SEP, sep).replaceAll('.', sep);
+    }
+
+    return key;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String importFiles(String paramNameImport, {String impPath, impPathsSerialized}) {
     try {
       var fullText = StringExt.EMPTY;
+      var keyPrefix = 'import';
 
       if (!StringExt.isNullOrBlank(impPath)) {
         loadSync(impPath);
@@ -124,11 +122,8 @@ class AppFileLoader {
         var jsonData = jsonDecode('{"${paramNameImport}": ${impPathsSerialized}}');
         var jsonText = StringExt.EMPTY;
         var impPaths = jsonData[paramNameImport];
-        var fileNo = 0;
 
         for (impPath in impPaths) {
-          ++fileNo;
-
           loadSync(impPath);
 
           if (fullText.length > 1) {
@@ -137,7 +132,7 @@ class AppFileLoader {
 
           jsonData = jsonDecode(text);
           var map = <String, Object>{};
-          map['${paramNameImport}_${fileNo}'] = jsonData.values.toList()[0];
+          map[getImportFileKey(keyPrefix, impPath: impPath)] = jsonData.values.toList()[0];
 
           jsonText = jsonEncode(map).replaceAll(RE_JSON_MAP_BRACES, StringExt.EMPTY);
           fullText += jsonText;
@@ -148,7 +143,7 @@ class AppFileLoader {
 
       clear();
 
-      var result = '"${paramNameImport}": ${fullText}';
+      var result = '"${getImportFileKey(keyPrefix, impPath: impPath)}": ${fullText}';
 
       return result;
     }
@@ -216,11 +211,15 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  AppFileLoader loadSync(String path) {
-    _isStdIn = (StringExt.isNullOrBlank(path) || (path == StringExt.STDIN_PATH));
-    var dispName = (_isStdIn ? path : '"' + path + '"');
+  AppFileLoader loadSync(String pathAndFilter) {
+    var parts = pathAndFilter.split(',');
+    var path = parts[0];
+    var filter = (parts.length > 1 ? parts[1] : null);
 
-    Log.information('Loading ${dispName}');
+    _isStdIn = (StringExt.isNullOrBlank(path) || (path == StringExt.STDIN_PATH));
+    var displayName = (_isStdIn ? path : '"' + path + '"');
+
+    Log.information('Loading ${displayName}');
 
     _file = (_isStdIn ? null : File(path));
 
@@ -229,13 +228,49 @@ class AppFileLoader {
     }
     else {
       if (!_file.existsSync()) {
-        throw Exception('File not found: ${dispName}');
+        throw Exception('File not found: ${displayName}');
       }
 
       _text = (_file.readAsStringSync() ?? StringExt.EMPTY);
     }
 
     _text = _text.removeJsComments();
+
+    if (!StringExt.isNullOrBlank(filter)) {
+      var jsonData = jsonDecode(_text);
+
+      var steps = filter.split('/');
+      var step = steps[0];
+
+      var map = jsonData as Map;
+      var tmp = map[step];
+
+      steps.removeAt(0);
+      var isFound = false;
+
+      for (step in steps) {
+        if (tmp is List) {
+          tmp.firstWhere((m) {
+            if ((m as Map).containsKey(step)) {
+              map = (m as Map);
+              isFound = true;
+            }
+            return isFound;
+          }, orElse: () => null);
+        }
+        else if (tmp is Map) {
+          map = map[step] as Map;
+          isFound = true;
+        }
+
+        if (!isFound) {
+          map = null;
+          break;
+        }
+      }
+
+      _text = (map == null ? StringExt.EMPTY : jsonEncode(map));
+    }
 
     return this;
   }

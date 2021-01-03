@@ -14,6 +14,7 @@ class Config {
   static final String CFG_RENAME = 'rename';
 
   static final String CMD_REPLACE = 'replace-only';
+  static final String CMD_THIS = 'this'; // unlike {{-this-}} and its renames, does not spawn a sub-process
 
   //static final int MAX_EXPANSION_ITERATIONS = 10;
 
@@ -39,6 +40,7 @@ class Config {
   String paramNameInpSubPath = '{{-inp-sub-path-}}';
   String paramNameImport = '{{-import-}}';
   String paramNameOut = '{{-out-}}';
+  String paramNameThis = '{{-this-}}';
 
   //////////////////////////////////////////////////////////////////////////////
   // Native conditional operators
@@ -515,11 +517,14 @@ class Config {
       else if (k == paramNameOut) {
         paramNameOut = v;
       }
+      else if (k == paramNameThis) {
+        paramNameThis = v;
+      }
       else if (k == paramNameCanReplaceContent) {
         paramNameCanReplaceContent = v;
       }
 
-      // Native commands: archiving - NOT IOMPLEMENTED YET
+      // Native commands: archiving - NOT IMPLEMENTED YET
 
       else if (k == cmdNameBz2) {
         cmdNameBz2 = v;

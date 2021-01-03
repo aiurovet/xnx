@@ -13,6 +13,31 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static String getStartCommand({bool escapeQuotes = false}) {
+    var cmd = Platform.resolvedExecutable.quote();
+    var scr = Platform.script.path;
+
+    if (scr.endsWith('.dart')) {
+      var args = Platform.executableArguments;
+
+      for (var i = 0, n = args.length; i < n; i++) {
+        cmd += StringExt.SPACE;
+        cmd += args[i].quote();
+      }
+
+      cmd += StringExt.SPACE;
+      cmd += scr.quote();
+    }
+
+    if (escapeQuotes ?? false) {
+      cmd = cmd.replaceAll(r'"', r'\"');
+    }
+
+    return cmd;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   int lastModifiedStampSync() {
     final theStat = statSync();
 
