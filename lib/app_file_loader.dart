@@ -12,8 +12,11 @@ class AppFileLoader {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
+  static const String IMP_FILE_KEY_SEP = '_';
+
   static final String ALL_ARGS = r'${@}';
   static final RegExp RE_CMD_LINE_ARG = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([0-9]+))|(\$\{([1-9][0-9]*)\})');
+  static final RegExp RE_IMP_FILE_KEY_BAD_CHARS = RegExp(r'[\\\/\.,;]');
   static final RegExp RE_JSON_MAP_BRACES = RegExp(r'^[\s\{]+|[\s\}]+$');
 
   //////////////////////////////////////////////////////////////////////////////
@@ -91,15 +94,14 @@ class AppFileLoader {
 
   static String getImportFileKey(String prefix, {String impPath}) {
     var key = StringExt.EMPTY;
-    var sep = '_';
 
     if (!StringExt.isNullOrBlank(prefix)) {
       key += prefix;
     }
 
     if (!StringExt.isNullOrBlank(impPath)) {
-      key += sep;
-      key += impPath.replaceAll(StringExt.PATH_SEP, sep).replaceAll('.', sep);
+      key += IMP_FILE_KEY_SEP;
+      key += impPath.replaceAll(RE_IMP_FILE_KEY_BAD_CHARS, IMP_FILE_KEY_SEP);
     }
 
     return key;
@@ -240,36 +242,51 @@ class AppFileLoader {
       var jsonData = jsonDecode(_text);
 
       var steps = filter.split('/');
-      var step = steps[0];
 
       var map = jsonData as Map;
-      var tmp = map[step];
+      var stepCount = steps.length;
 
-      steps.removeAt(0);
-      var isFound = false;
+      dynamic val;
 
-      for (step in steps) {
-        if (tmp is List) {
-          tmp.firstWhere((m) {
-            if ((m as Map).containsKey(step)) {
-              map = (m as Map);
-              isFound = true;
+      for (var stepNo = 0; (stepNo < stepCount) && (map != null); stepNo++) {
+        var step = steps[stepNo];
+        val = map[step];
+
+        if (val is List) {
+          ++stepNo;
+
+          if (stepNo == stepCount) {
+            val = null;
+          }
+          else {
+            step = steps[stepNo];
+
+            val = val.firstWhere(
+              (m) => ((m is Map) && m.containsKey(step)),
+              orElse: () => null
+            );
+
+            if ((val == null) || !(val is Map)) {
+              break;
             }
-            return isFound;
-          }, orElse: () => null);
-        }
-        else if (tmp is Map) {
-          map = map[step] as Map;
-          isFound = true;
-        }
 
-        if (!isFound) {
-          map = null;
+            val = val[step];
+
+            if (val is Map) {
+              map = val;
+            }
+          }
+        }
+        else if (val is Map) {
+          map = val;
+        }
+        else {
+          val = null;
           break;
         }
       }
 
-      _text = (map == null ? StringExt.EMPTY : jsonEncode(map));
+      _text = (val == null ? StringExt.EMPTY : jsonEncode(val));
     }
 
     return this;

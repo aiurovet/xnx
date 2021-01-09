@@ -31,6 +31,12 @@ class Options {
     'valueHelp': 'FILE',
     'defaultsTo': './' + DEF_FILE_NAME,
   };
+  static final Map<String, Object> EARLY_WC_EXP = {
+    'name': 'early-wc-exp',
+    'abbr': 'w',
+    'help': 'early wildcard expansion',
+    'negatable': false,
+  };
   static final Map<String, Object> FORCE_CONVERT = {
     'name': 'force',
     'abbr': 'f',
@@ -215,6 +221,9 @@ class Options {
   String _configFilePath;
   String get configFilePath => _configFilePath;
 
+  bool _isEarlyWildcardExpansionAllowed;
+  bool get isEarlyWildcardExpansionAllowed => _isEarlyWildcardExpansionAllowed;
+
   bool _isForced;
   bool get isForced => _isForced;
 
@@ -315,6 +324,9 @@ class Options {
       })
       ..addFlag(LIST_ONLY['name'], abbr: LIST_ONLY['abbr'], help: LIST_ONLY['help'], negatable: LIST_ONLY['negatable'], callback: (value) {
         _isListOnly = value;
+      })
+      ..addFlag(EARLY_WC_EXP['name'], abbr: EARLY_WC_EXP['abbr'], help: EARLY_WC_EXP['help'], negatable: EARLY_WC_EXP['negatable'], callback: (value) {
+        _isEarlyWildcardExpansionAllowed = value;
       })
       ..addFlag(FORCE_CONVERT['name'], abbr: FORCE_CONVERT['abbr'], help: FORCE_CONVERT['help'], negatable: FORCE_CONVERT['negatable'], callback: (value) {
         _isForced = value;

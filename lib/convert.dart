@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:doul/app_file_loader.dart';
 import 'package:doul/doul.dart';
-import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
 
@@ -34,6 +33,7 @@ class Convert {
   bool isReplaceContentOnly;
   bool isStdIn;
   bool isStdOut;
+  String curDirName;
   String outDirName;
   String startCmd;
 
@@ -160,7 +160,7 @@ class Convert {
       mapOrig[keyArgs] = plainArg;
     }
 
-    var curDirName = getCurDirName(mapOrig);
+    curDirName = getCurDirName(mapOrig);
 
     var inpFilePath = (getValue(mapOrig, key: _config.paramNameInp, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY);
     var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
@@ -331,8 +331,10 @@ class Convert {
     }
 
     try {
-      if (command.startsWith(Config.CMD_THIS + StringExt.SPACE)) {
-        Doul.exec(command.splitCommandLine(skipCharCount: Config.CMD_THIS.length));
+      if (command.startsWith(Config.CMD_SUB + StringExt.SPACE)) {
+        var oldCurDir = Directory.current;
+        Doul.exec(command.splitCommandLine(skipCharCount: Config.CMD_SUB.length));
+        Directory.current = oldCurDir;
       }
       else {
         var exitCodes = waitFor<List<ProcessResult>>(
@@ -400,6 +402,19 @@ class Convert {
 
       if (!outDir.existsSync()) {
         outDir.createSync(recursive: true);
+      }
+
+      if (Directory(outFilePath).existsSync()) {
+        var inpFilePath = inpFile.path;
+        var outFileName = (inpFilePath.startsWith(curDirName) ? inpFilePath.substring(curDirName.length) : Path.basename(inpFilePath));
+
+        var rootPrefixLen = Path.rootPrefix(outFileName).length;
+
+        if (rootPrefixLen > 0) {
+          outFileName = outFileName.substring(rootPrefixLen);
+        }
+
+        outFilePath = Path.join(outFilePath, outFileName);
       }
 
       var tmpFile = File(tmpFilePath ?? outFilePath);
@@ -495,25 +510,11 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<String> getDirList(String pattern) {
-    var dir = Directory(pattern);
-
-    List<String> lst;
-
-    if (dir.existsSync()) {
-      lst = dir.pathListSync(null, checkExists: false);
-    }
-    else {
-      dir = Directory(GlobExt.getDirectoryName(pattern));
-      lst = dir.pathListSync(pattern, checkExists: false);
-    }
-
-    return lst;
-  }
+  static List<String> getDirList(String pattern) => DirectoryExt.pathListExSync(pattern);
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<String> getInpFilePaths(String filePath, String curDirName) {
+  static List<String> getInpFilePaths(String filePath, String curDirName) {
     if (StringExt.isNullOrBlank(filePath)) {
       return [ filePath ]; // ensure at least one pass in a loop
     }

@@ -1,3 +1,5 @@
+import 'package:doul/ext/directory.dart';
+import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 import 'app_file_loader.dart';
 import 'log.dart';
@@ -13,8 +15,9 @@ class Config {
   static final String CFG_ACTION = 'action';
   static final String CFG_RENAME = 'rename';
 
-  static final String CMD_REPLACE = 'replace-only';
-  static final String CMD_THIS = 'this'; // unlike {{-this-}} and its renames, does not spawn a sub-process
+  static final String CMD_FIND = 'find-only'; // not implemented yet
+  static final String CMD_REPLACE = 'replace-only'; // no external command used
+  static final String CMD_SUB = 'sub'; // run another internal instance
 
   //static final int MAX_EXPANSION_ITERATIONS = 10;
 
@@ -30,6 +33,7 @@ class Config {
   String paramNameCanReplaceContent = '{{-can-replace-content-}}';
   String paramNameCmd = '{{-cmd-}}';
   String paramNameCurDir = '{{-cur-dir-}}';
+  String paramNameEarlyWildcardExpansion = '{{-early-wildcard-expansion-}}';
   String paramNameInp = '{{-inp-}}';
   String paramNameInpDir = '{{-inp-dir-}}';
   String paramNameInpExt = '{{-inp-ext-}}';
@@ -117,6 +121,10 @@ class Config {
 
         isMapFlat = false;
         addFlatMapsToList_addMap(listOfMaps, cloneMap, k, v);
+      }
+      else if (options.isEarlyWildcardExpansionAllowed && (k == paramNameInp) && (GlobExt.isGlobPattern(v))) {
+        isMapFlat = false;
+        addFlatMapsToList_addList(listOfMaps, cloneMap, k, DirectoryExt.pathListExSync(v));
       }
       else {
         cloneMap[k] = v;
@@ -522,6 +530,9 @@ class Config {
       }
       else if (k == paramNameCanReplaceContent) {
         paramNameCanReplaceContent = v;
+      }
+      else if (k == paramNameEarlyWildcardExpansion) {
+        paramNameEarlyWildcardExpansion = v;
       }
 
       // Native commands: archiving - NOT IMPLEMENTED YET

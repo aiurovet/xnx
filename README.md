@@ -16,11 +16,15 @@ doul [OPTIONS]
 -h, --help                 this help screen
 -H, --help-all             display detailed help, including config file format
 -l, --list-only            display all commands, but do not execute those
--d, --dir=(DIR)            startup directory
-                           (defaults to ".")
-
 -c, --config=(FILE)        configuration file in json format
                            (defaults to "./doul.json")
+-d, --dir=(DIR)            startup directory
+                           (defaults to ".")
+-f, --force                don't check the date/time when the output file was generated,
+                           but rather enforce processing
+-w, --early-wc-exp         when set, means that wildcards in filename patterns
+                           can be expanded immediately 
+                           (defaults to false)
 ```
 
 ##### DETAILS:

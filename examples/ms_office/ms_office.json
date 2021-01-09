@@ -2,7 +2,7 @@
   "x": {
     "rename": {
       // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
-      "{{-cmd-}}": "{cmd}",
+      "{{-cmd-}}": "{zmd}", // ensure it comes alphabetically after {inp} and {out}
       "{{-cur-dir-}}": "{cur-dir}",
       "{{-can-replace-content-}}": "{can-replace-content}",
       "{{-inp-}}": "{inp}",
@@ -17,23 +17,27 @@
       "{{-this-}}": "{this}"
     },
     "action": [
-      { "{can-replace-content}": false, "{cur-dir}": ".", "{start-dir}": "{cur-dir}" },
+      {
+        "{can-replace-content}": false,
+        "{cur-dir}": ".",
+        "{start-dir}": "{cur-dir}"
+      },
 
       { "{{-import-}}": "cmd.json" }, // import commands
-      { "{{-import-}}": "ms_office_data.json,x/data" }, // import just substitution data array
+      { "{{-import-}}": "ms_office_data.json,x/action/data" }, // import just substitution data array
 
       {
         "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
-        "{out-file}": "{cur-dir}/out/{inp-name}-{last-name}{inp-ext}",
+        "{out-file}": "{cur-dir}/out/{inp-name}-{last-name}-{given-names}{inp-ext}",
 
-        "{cmd}": [
-          "this --unzip \"{inp}\" \"{unz-dir}\"",                // decompress file
-          "this -d \"{unz-dir}\" -c ms_office_data.json",   // make replacements (inside the same executable)
-          "this --zip --move \"{unz-dir}\" \"{out-file}\"", // compress back (inside the same executable)
-          "{delete} \"{unz-dir}\""                          // delete uncompressed dir
-        ],
+        "{inp}": "inp/*", "{out}": "", // go through all MS Office input files
 
-        "{inp}": "inp/*", "{out}": "" // go through all MS Office files in the start dir
+        "{zmd}": [
+          "sub --unzip \"{inp}\" \"{unz-dir}\"",           // decompress file
+          "sub --dir \"{unz-dir}\" --config \"{cur-dir}/ms_office_data.json\"", // make replacements (inside the same executable)
+          "sub --zip --move \"{unz-dir}\" \"{out-file}\"", // compress back (inside the same executable)
+          "{delete} \"{cur-dir}/unz\""                     // delete uncompressed dir
+        ]
       }
     ]
   }

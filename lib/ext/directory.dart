@@ -105,10 +105,19 @@ extension DirectoryExt on Directory {
   //////////////////////////////////////////////////////////////////////////////
 
   static List<String> pathListExSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
-    var dirName = GlobExt.getDirectoryName(pattern);
-    var subPattern = ((dirName == null) || (dirName.length <= 1) ? pattern : pattern.substring(dirName.length + 1));
-    var dir = Directory(dirName);
-    var lst = dir.pathListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
+    var dir = Directory(pattern);
+    List<String> lst;
+
+    if (dir.existsSync()) {
+      lst = dir.pathListSync(null, checkExists: false, takeDirs: takeDirs, takeFiles: takeFiles);
+    }
+    else {
+      var dirName = GlobExt.getDirectoryName(pattern);
+      var subPattern = ((dirName == null) || (dirName.length <= 1) ? pattern : pattern.substring(dirName.length + 1));
+
+      dir = (StringExt.isNullOrBlank(dirName) ? Directory.current : Directory(dirName));
+      lst = dir.pathListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
+    }
 
     return lst;
   }
