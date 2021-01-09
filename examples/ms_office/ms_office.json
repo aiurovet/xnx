@@ -5,6 +5,10 @@
       "{{-cmd-}}": "{zmd}", // ensure it comes alphabetically after {inp} and {out}
       "{{-cur-dir-}}": "{cur-dir}",
       "{{-can-replace-content-}}": "{can-replace-content}",
+
+      "{{-early-wildcard-expansion-}}": "{EWE}", // allows to get list of files before command, hence a file will be
+                                                 // processed by every command before taking on the next file
+
       "{{-inp-}}": "{inp}",
       "{{-inp-dir-}}": "{inp-dir}",
       "{{-inp-ext-}}": "{inp-ext}",
@@ -30,6 +34,7 @@
         "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
         "{out-file}": "{cur-dir}/out/{inp-name}-{last-name}-{given-names}{inp-ext}",
 
+        "{EWE}": false, // should be explicit bool
         "{inp}": "inp/*", "{out}": "", // go through all MS Office input files
 
         "{zmd}": [

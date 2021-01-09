@@ -27,6 +27,7 @@ class Config {
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
+  bool isEarlyWildcardExpansionAllowed = false;
   int lastModifiedStamp;
   Options options = Options();
 
@@ -122,7 +123,10 @@ class Config {
         isMapFlat = false;
         addFlatMapsToList_addMap(listOfMaps, cloneMap, k, v);
       }
-      else if (options.isEarlyWildcardExpansionAllowed && (k == paramNameInp) && (GlobExt.isGlobPattern(v))) {
+      else if (k == paramNameEarlyWildcardExpansion) {
+        isEarlyWildcardExpansionAllowed = v;
+      }
+      else if (isEarlyWildcardExpansionAllowed && (k == paramNameInp) && (GlobExt.isGlobPattern(v))) {
         isMapFlat = false;
         addFlatMapsToList_addList(listOfMaps, cloneMap, k, DirectoryExt.pathListExSync(v));
       }
