@@ -7,7 +7,7 @@ PRJ="doul"
 ################################################################################
 
 function exitApp() {
-  local ret=${1:0}
+  local ret=${1:-0}
   local msg="${2}"
 
   (( ${ret} != 0 )) && msg="*** ERROR: ${msg:-Build failed}"
