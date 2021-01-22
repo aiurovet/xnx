@@ -8,6 +8,8 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static const String ALL = '*';
+
   static final RegExp _RE_RECURSIVE = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
   static final RegExp _RE_WILDCARD = RegExp(r'\*|\?|\[[^\]]*\]|\{[^\}]*\}', caseSensitive: false);
   static final RegExp _RE_PATH = RegExp(r'[\/\\]', caseSensitive: false);
@@ -69,14 +71,13 @@ extension GlobExt on Glob {
   static Glob toGlob(String pattern, {bool isPath}) {
     Glob filter;
 
-    if (pattern != null) {
-      isPath = (isPath ?? _RE_PATH.hasMatch(pattern));
+    pattern = (StringExt.isNullOrBlank(pattern) ? ALL : pattern);
+    isPath = (isPath ?? _RE_PATH.hasMatch(pattern));
 
-      var caseSensitive = !StringExt.IS_WINDOWS;
-      var recursive = isRecursive(pattern);
+    var caseSensitive = !StringExt.IS_WINDOWS;
+    var recursive = isRecursive(pattern);
 
-      filter = Glob(pattern, recursive: recursive, caseSensitive: caseSensitive);
-    }
+    filter = Glob(pattern, recursive: recursive, caseSensitive: caseSensitive);
 
     return filter;
   }

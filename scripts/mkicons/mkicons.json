@@ -1,0 +1,58 @@
+{
+  "x": {
+    "rename": {
+      "{{-cmd-}}": "{zmd}",
+      "{{-cur-dir-}}": "{CD}",
+      "{{-can-replace-content-}}": "{CRC}",
+      "{{-inp-}}": "{inp}",
+      "{{-out-}}": "{out}"
+    },
+    "action": [
+      {
+        "{CRC}": true,
+        "{zmd}": [
+          "replace-only",
+          "chrome --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{png-path}\" \"file://{svg-path}\""
+        ],
+        "{dim-name}": "{icon-name}-{dim}x{dim}",
+        "{png-path}": "png/{dim-name}.svg",
+        "{svg-path}": "svg/{dim-name}.svg",
+      },
+
+      {
+        "{prj}": "doul",
+        "{inp}": "{prj}.svg",
+        "{icon}": [
+          { "{icon-name}": "{prj}",      "{icon-fill}": "white", "{icon-stroke}": "black" },
+          { "{icon-name}": "{prj}-dark", "{icon-fill}": "black", "{icon-stroke}": "white" }
+        ]
+      },
+
+      {
+        "{param}": [
+          {
+            "{dim}": "16",
+            "{scn-transform}":  "",
+            "{drw-transform}":   "translate(1,1)", "{stroke-width}": "1",
+            "{chr-d-transform}": "translate(0,0)", "{chr-d-path}":  "M5,0 L5,6 L0,6 L0,2 L5,2",
+            "{chr-o-transform}": "translate(3,4)", "{chr-o-path}":  "M0,0 L0,4 L5,4 L5,0 L0,0",
+            "{chr-u-transform}": "translate(6,6)", "{chr-u-path}":  "M0,0 L0,4 L5,4 L5,0",
+            "{chr-l-transform}": "translate(9,8)", "{chr-l-path}":  "M0,0 L0,5 L4,5",
+            "{out}": "{svg-path}"
+          },
+
+          { "{dim}":   "32", "{scn-transform}":  "scale( 2, 2)", "{drw-transform}":  "translate(1.5,1.5)", "{out}": "{svg-path}" },
+          { "{dim}":   "48", "{scn-transform}":  "scale( 3, 3)", "{out}": "{svg-path}" },
+          { "{dim}":   "64", "{scn-transform}":  "scale( 4, 4)", "{out}": "{svg-path}" },
+          { "{dim}":   "96", "{scn-transform}":  "scale( 6, 6)", "{out}": "{svg-path}" },
+          { "{dim}":  "128", "{scn-transform}":  "scale( 8, 8)", "{out}": "{svg-path}" },
+          { "{dim}":  "256", "{scn-transform}":  "scale(16,16)", "{out}": "{svg-path}" },
+          { "{dim}":  "512", "{scn-transform}":  "scale(32,32)", "{out}": "{svg-path}" },
+          { "{dim}": "1024", "{scn-transform}":  "scale(64,64)", "{out}": "{svg-path}" }
+        ]
+      },
+
+      { "": null }
+    ]
+  }
+}

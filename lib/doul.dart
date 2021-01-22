@@ -13,8 +13,11 @@ class Doul {
       exec(args);
       isOK = true;
     }
-    catch (e, stackTrace) {
-      isOK = onError(e, stackTrace);
+    on ArgumentError catch (e, stackTrace) {
+      isOK = onError(e?.toString(), stackTrace);
+    }
+    on Exception catch (e, stackTrace) {
+      isOK = onError(e?.toString(), stackTrace);
     }
 
     exit(isOK ? 0 : 1);
@@ -24,9 +27,7 @@ class Doul {
     Convert().exec(args);
   }
 
-  static bool onError(Exception e, StackTrace stackTrace) {
-    var errMsg = e?.toString();
-
+  static bool onError(String errMsg, StackTrace stackTrace) {
     if (StringExt.isNullOrBlank(errMsg)) {
       return false;
     }

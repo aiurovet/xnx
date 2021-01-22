@@ -438,7 +438,7 @@ class Convert {
 
     for (var i = 0, n = _inpParamNames.length; i < n; i++) {
       inpParamName = _inpParamNames[i];
-      result = result.replaceAll(inpParamName, map[inpParamName]);
+      result = result.replaceAll(inpParamName, (map[inpParamName] ?? StringExt.EMPTY));
     }
 
     return result;
