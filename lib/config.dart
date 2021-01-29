@@ -27,9 +27,11 @@ class Config {
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
+  Map all;
   bool isEarlyWildcardExpansionAllowed = false;
   int lastModifiedStamp;
   Options options = Options();
+  int runsDone = 0;
 
   String paramNameCanReplaceContent = '{{-can-replace-content-}}';
   String paramNameCmd = '{{-cmd-}}';
@@ -45,6 +47,7 @@ class Config {
   String paramNameInpSubPath = '{{-inp-sub-path-}}';
   String paramNameImport = '{{-import-}}';
   String paramNameOut = '{{-out-}}';
+  String paramNameReset = '{{-reset-}}';
   String paramNameThis = '{{-this-}}';
 
   //////////////////////////////////////////////////////////////////////////////
@@ -225,20 +228,34 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<Map<String, String>> exec(List<String> args) {
-    options.parseArgs(args);
+  List<Map<String, String>> exec([List<String> args]) {
+    var isFirstRun = (runsDone == 0);
 
-    if (options.isCmd) {
-      return null;
+    ++runsDone;
+
+    if (isFirstRun) {
+      options.parseArgs(args);
+
+      if (options.isCmd) {
+        return null;
+      }
+
+      Log.information('Loading configuration data');
+
+      var tmpAll = loadConfigSync();
+
+      if (tmpAll is Map) {
+        all = tmpAll;
+      }
+      else {
+        Log.information('Nothing found');
+        return null;
+      }
     }
-
-    Log.information('Loading configuration data');
-
-    var all = loadConfigSync();
 
     Log.information('Processing configuration data');
 
-    if (all is Map) {
+    if (isFirstRun) {
       var rename = all[CFG_RENAME];
 
       Log.information('Processing renames');
@@ -246,49 +263,62 @@ class Config {
       if (rename is Map) {
         setActualParamNames(rename);
       }
+    }
 
-      Log.information('Processing actions');
+    Log.information('Processing actions for run #$runsDone');
 
-      var params = <String, Object>{};
-      params[paramNameCurDir] = '';
+    var params = <String, Object>{};
+    params[paramNameCurDir] = '';
 
-      var action = all[CFG_ACTION];
-      assert(action is List);
+    var action = all[CFG_ACTION];
+    assert(action is List);
 
-      var actions = (action as List);
-      var result = <Map<String, String>>[];
+    var actions = (action as List);
+    var result = <Map<String, String>>[];
 
-      actions.forEach((map) {
-        assert(map is Map);
+    var runNo = 1;
 
-        Log.debug('');
+    actions.forEach((map) {
+      if (runNo > runsDone) {
+        return;
+      }
 
-        map.forEach((key, value) {
-          if (!StringExt.isNullOrBlank(key)) {
-            Log.debug('...${key}: ${value}');
+      assert(map is Map);
 
-            params[key] = (value ?? StringExt.EMPTY);
-          }
-        });
+      Log.debug('');
 
-        if (params.isNotEmpty) {
-          Log.debug('...adding to the list of actions');
-
-          addMapsToList(result, params);
+      map.forEach((key, value) {
+        if ((runNo > runsDone) || StringExt.isNullOrBlank(key)) {
+          return;
         }
 
-        Log.debug('...completed row processing');
+        Log.debug('...${key}: ${value}');
+
+        var valueEx = (value ?? StringExt.EMPTY);
+
+        if (key == paramNameReset) {
+          if (((valueEx is bool) && valueEx) || (valueEx is String) && StringExt.parseBool(valueEx)) {
+            ++runNo;
+            params = <String, Object>{};
+          }
+        }
+        else if (runNo == runsDone) {
+          params[key] = valueEx;
+        }
       });
 
-      Log.information('\nAdded ${result.length} commands\n');
+      if (params.isNotEmpty) {
+        Log.debug('...adding to the list of actions');
 
-      return result;
-    }
-    else {
-      Log.information('No command added');
+        addMapsToList(result, params);
+      }
 
-      return null;
-    }
+      Log.debug('...completed row processing');
+    });
+
+    Log.information('\nAdded ${result.length} commands\n');
+
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -528,6 +558,9 @@ class Config {
       }
       else if (k == paramNameOut) {
         paramNameOut = v;
+      }
+      else if (k == paramNameReset) {
+        paramNameReset = v;
       }
       else if (k == paramNameThis) {
         paramNameThis = v;

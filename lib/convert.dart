@@ -58,25 +58,29 @@ class Convert {
 
     _inpParamNames = _config.getInpParamNames();
 
-    var isProcessed = false;
+    for (; ((maps != null) && !maps.isEmpty);) {
+      var isProcessed = false;
 
-    if ((plainArgs?.length ?? 0) <= 0) {
-      plainArgs = [ null ];
-    }
+      if ((plainArgs?.length ?? 0) <= 0) {
+        plainArgs = [ null ];
+      }
 
-    for (var i = 0, n = plainArgs.length; i < n; i++) {
-      var mapPrev = <String, String>{};
-      var plainArg = plainArgs[i];
+      for (var i = 0, n = plainArgs.length; i < n; i++) {
+        var mapPrev = <String, String>{};
+        var plainArg = plainArgs[i];
 
-      for (var mapOrig in maps) {
-        if (execMap(plainArg, mapOrig, mapPrev)) {
-          isProcessed = true;
+        for (var mapOrig in maps) {
+          if (execMap(plainArg, mapOrig, mapPrev)) {
+            isProcessed = true;
+          }
         }
       }
-    }
 
-    if ((isStdOut != null) && !isStdOut && !isProcessed) {
-      Log.outInfo('All output files are up to date.');
+      if ((isStdOut != null) && !isStdOut && !isProcessed) {
+        Log.outInfo('All output files are up to date.');
+      }
+
+      maps = _config.exec();
     }
   }
 

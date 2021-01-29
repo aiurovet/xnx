@@ -4,10 +4,15 @@
       "{{-cmd-}}": "{zmd}",
       "{{-cur-dir-}}": "{CD}",
       "{{-can-replace-content-}}": "{CRC}",
+      "{{-reset-}}": "{reset}",
       "{{-inp-}}": "{inp}",
       "{{-out-}}": "{out}"
     },
     "action": [
+      { "{zmd}": "sub --mkdir \"png\" \"svg\"", "{inp}": "", "{out}": "" },
+
+      { "{reset}": true },
+
       {
         "{CRC}": true,
         "{zmd}": [
@@ -16,7 +21,7 @@
         ],
         "{dim-name}": "{icon-name}-{dim}x{dim}",
         "{png-path}": "png/{dim-name}.svg",
-        "{svg-path}": "svg/{dim-name}.svg",
+        "{svg-path}": "svg/{dim-name}.svg"
       },
 
       {
@@ -51,6 +56,10 @@
           { "{dim}": "1024", "{scn-transform}":  "scale(64,64)", "{out}": "{svg-path}" }
         ]
       },
+
+      { "{reset}": true },
+
+      { "{zmd}": "sub --delete \"svg\"", "{inp}": "", "{out}": "" },
 
       { "": null }
     ]
