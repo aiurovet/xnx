@@ -175,8 +175,8 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
-    var isReady = ((map != null) && deepContainsKeys(map, [paramNameInp, paramNameOut]));
+  void addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map, hasReset) {
+    var isReady = ((map != null) && (hasReset || deepContainsKeys(map, [paramNameInp, paramNameOut]) || deepContainsKeys(map, [StringExt.EMPTY])));
 
     if (isReady) {
       addFlatMapsToList(listOfMaps, map);
@@ -288,17 +288,21 @@ class Config {
       Log.debug('');
 
       map.forEach((key, value) {
-        if ((runNo > runsDone) || StringExt.isNullOrBlank(key)) {
-          return;
+        var isLastKey = StringExt.isNullOrBlank(key);
+
+        if (isLastKey || (runNo > runsDone)) {
+          if (isLastKey) {
+            params[StringExt.EMPTY] = null;
+            return;
+          }
         }
 
         Log.debug('...${key}: ${value}');
 
-        var valueEx = (value ?? StringExt.EMPTY);
+        var valueEx = (value == null ? StringExt.EMPTY : value);
 
-        if (key == paramNameReset) {
-          if (((valueEx is bool) && valueEx) || (valueEx is String) && StringExt.parseBool(valueEx)) {
-            ++runNo;
+        if (key == paramNameReset) { // value is ignored
+          if ((++runNo) < runsDone) {
             params = <String, Object>{};
           }
         }
@@ -307,10 +311,10 @@ class Config {
         }
       });
 
-      if (params.isNotEmpty) {
+      if ((runNo >= runsDone) && params.isNotEmpty) {
         Log.debug('...adding to the list of actions');
 
-        addMapsToList(result, params);
+        addMapsToList(result, params, (runNo > runsDone));
       }
 
       Log.debug('...completed row processing');

@@ -51,14 +51,14 @@ class Convert {
     _options = _config.options;
     var plainArgs = _options.plainArgs;
 
-    if ((maps == null) && _options.isCmd) {
+    if ((maps?.isEmpty ?? true) && _options.isCmd) {
       execBuiltin(_options.plainArgs);
       return;
     }
 
     _inpParamNames = _config.getInpParamNames();
 
-    for (; ((maps != null) && !maps.isEmpty);) {
+    for (; (maps?.isNotEmpty ?? false);) {
       var isProcessed = false;
 
       if ((plainArgs?.length ?? 0) <= 0) {
@@ -81,6 +81,10 @@ class Convert {
       }
 
       maps = _config.exec();
+
+      if (maps?.isNotEmpty ?? false) {
+        Log.debug('\nRun #${_config.runsDone} found\n');
+      }
     }
   }
 
@@ -246,10 +250,25 @@ class Convert {
           outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
         }
 
-        //command = replaceInpNames(command, mapCurr);
+        Log.debug('''
+
+Input dir:       "${mapCurr[_config.paramNameInpDir]}"
+Input sub-dir:   "${mapCurr[_config.paramNameInpSubDir]}"
+Input name:      "${mapCurr[_config.paramNameInpName]}"
+Input extension: "${mapCurr[_config.paramNameInpExt]}"
+Input name-ext:  "${mapCurr[_config.paramNameInpNameExt]}"
+Input path:      "${mapCurr[_config.paramNameInpPath]}"
+Input sub-path:  "${mapCurr[_config.paramNameInpSubPath]}"
+        ''');
       }
 
       outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
+
+      Log.debug('''
+
+Output dir:  "${outDirName}"
+Output path: "${outFilePathEx ?? StringExt.EMPTY}"
+        ''');
 
       if (isStdOut && !isReplaceContentOnly) {
         throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
@@ -291,6 +310,8 @@ class Convert {
     if (canReplaceContent && (!isReplaceContentOnly || (hasInpFile && hasOutFile && (inpFilePath == outFilePath)))) {
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
     }
+
+    Log.debug('Temp file path: "${tmpFilePath ?? StringExt.EMPTY}"');
 
     var cmdTemplateEx = cmdTemplate;
 
@@ -353,11 +374,11 @@ class Convert {
       throw Exception(e.toString());
     }
 
-    if (tmpFilePath != null) {
-      var tmpFile = File(tmpFilePath);
-
-      tmpFile.deleteIfExistsSync();
-    }
+    // if (tmpFilePath != null) {
+    //   var tmpFile = File(tmpFilePath);
+    //
+    //   tmpFile.deleteIfExistsSync();
+    // }
 
     return true;
   }
@@ -458,6 +479,9 @@ class Convert {
     var paramNameInp = _config.paramNameInp;
 
     newMap.forEach((k, v) {
+      if (StringExt.isNullOrBlank(k)) {
+        return;
+      }
       if (k == paramNameCurDir) {
         newMap[k] = curDirName;
       }
@@ -558,7 +582,7 @@ class Convert {
           oldValue = value;
 
           map.forEach((k, v) {
-            if (k != key) {
+            if ((k != key) && !StringExt.isNullOrBlank(k)) {
               if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
                 value = value.replaceAll(k, v);
               }

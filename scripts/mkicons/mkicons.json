@@ -9,7 +9,10 @@
       "{{-out-}}": "{out}"
     },
     "action": [
-      { "{zmd}": "sub --mkdir \"png\" \"svg\"", "{inp}": "", "{out}": "" },
+      { "{zmd}": [
+        "sub --delete \"png\"",
+        "sub --mkdir \"png\" \"svg\""
+      ] },
 
       { "{reset}": true },
 
@@ -20,8 +23,8 @@
           "chrome --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{png-path}\" \"file://{svg-path}\""
         ],
         "{dim-name}": "{icon-name}-{dim}x{dim}",
-        "{png-path}": "png/{dim-name}.svg",
-        "{svg-path}": "svg/{dim-name}.svg"
+        "{png-path}": "{CD}/png/{dim-name}.png",
+        "{svg-path}": "{CD}/svg/{dim-name}.svg"
       },
 
       {
@@ -36,7 +39,7 @@
       {
         "{param}": [
           {
-            "{dim}": "16",
+            "{dim}": 16,
             "{scn-transform}":  "",
             "{drw-transform}":   "translate(1,1)", "{stroke-width}": "1",
             "{chr-d-transform}": "translate(0,0)", "{chr-d-path}":  "M5,0 L5,6 L0,6 L0,2 L5,2",
@@ -46,20 +49,20 @@
             "{out}": "{svg-path}"
           },
 
-          { "{dim}":   "32", "{scn-transform}":  "scale( 2, 2)", "{drw-transform}":  "translate(1.5,1.5)", "{out}": "{svg-path}" },
-          { "{dim}":   "48", "{scn-transform}":  "scale( 3, 3)", "{out}": "{svg-path}" },
-          { "{dim}":   "64", "{scn-transform}":  "scale( 4, 4)", "{out}": "{svg-path}" },
-          { "{dim}":   "96", "{scn-transform}":  "scale( 6, 6)", "{out}": "{svg-path}" },
-          { "{dim}":  "128", "{scn-transform}":  "scale( 8, 8)", "{out}": "{svg-path}" },
-          { "{dim}":  "256", "{scn-transform}":  "scale(16,16)", "{out}": "{svg-path}" },
-          { "{dim}":  "512", "{scn-transform}":  "scale(32,32)", "{out}": "{svg-path}" },
-          { "{dim}": "1024", "{scn-transform}":  "scale(64,64)", "{out}": "{svg-path}" }
+          { "{dim}":   32, "{scn-transform}":  "scale( 2, 2)", "{drw-transform}":  "translate(1.5,1.5)", "{out}": "{svg-path}" },
+          { "{dim}":   48, "{scn-transform}":  "scale( 3, 3)", "{out}": "{svg-path}" },
+          { "{dim}":   64, "{scn-transform}":  "scale( 4, 4)", "{out}": "{svg-path}" },
+          { "{dim}":   96, "{scn-transform}":  "scale( 6, 6)", "{out}": "{svg-path}" },
+          { "{dim}":  128, "{scn-transform}":  "scale( 8, 8)", "{out}": "{svg-path}" },
+          { "{dim}":  256, "{scn-transform}":  "scale(16,16)", "{out}": "{svg-path}" },
+          { "{dim}":  512, "{scn-transform}":  "scale(32,32)", "{out}": "{svg-path}" },
+          { "{dim}": 1024, "{scn-transform}":  "scale(64,64)", "{out}": "{svg-path}" }
         ]
       },
 
       { "{reset}": true },
 
-      { "{zmd}": "sub --delete \"svg\"", "{inp}": "", "{out}": "" },
+      { "{zmd}": "sub --delete \"svg\"" },
 
       { "": null }
     ]
