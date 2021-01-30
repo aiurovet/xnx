@@ -17,10 +17,18 @@
       { "{reset}": true },
 
       {
+        "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
+          "{svg2png}": "chrome --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
+        }, "{{-else-}}": {
+          "{svg2png}": "\"C:\\Program Files\\Inkscape\\inkscape.exe\" -z -e \"{out}\" -w {dim} -h {dim} \"{svg-path}\""
+        }
+      } },
+
+      {
         "{CEC}": true,
         "{zmd}": [
           "expand-content \"{inp}\" \"{svg-path}\"",
-          "chrome --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
+          "{svg2png}"
         ],
         "{dim-name}": "{icon-name}-{dim}x{dim}",
         "{png-path}": "{CD}/png/{dim-name}.png",
