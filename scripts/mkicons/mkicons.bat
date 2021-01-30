@@ -13,7 +13,8 @@ if not exist "%PRJ_EXE%" (
 
 if not exist "%PRJ_EXE%" goto FAILURE
 
-"%PRJ_EXE%" -d "scripts/mkicons/" -c mkicons %*
+set WINE=1
+"%PRJ_EXE%" -d "scripts\\mkicons" -c mkicons %*
 
 @echo off
 
