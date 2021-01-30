@@ -4,11 +4,14 @@
       "{{-cmd-}}": "{zmd}",
       "{{-cur-dir-}}": "{CD}",
       "{{-can-expand-content-}}": "{CEC}",
+      "{{-detect-paths-}}": "{dtp}",
       "{{-reset-}}": "{reset}",
       "{{-inp-}}": "{inp}",
       "{{-out-}}": "{out}"
     },
     "action": [
+      { "{dtp}": "\\{[^\\{\\}\\-]+\\-path\\}" }, // regular expression
+
       { "{zmd}": [
         "sub --delete 'png' 'svg'",
         "sub --mkdir 'png' 'svg'"
@@ -31,8 +34,8 @@
           "{svg2png}"
         ],
         "{dim-name}": "{icon-name}-{dim}x{dim}",
-        "{png-path}": "{CD}/png/{dim-name}.png",
-        "{svg-path}": "{CD}/svg/{dim-name}.svg"
+        "{png-path}": "{CD}\\png\\{dim-name}.png",
+        "{svg-path}": "{CD}\\svg\\{dim-name}.svg"
       },
 
       {

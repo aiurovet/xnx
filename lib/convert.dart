@@ -30,6 +30,7 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   bool canExpandContent;
+  RegExp detectPathsRE;
   bool isExpandContentOnly;
   bool isStdIn;
   bool isStdOut;
@@ -197,6 +198,7 @@ class Convert {
     var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
     for (var inpFilePathEx in inpFilePaths) {
+      inpFilePathEx = inpFilePathEx.adjustPath();
       mapCurr.addAll(expandMap(mapOrig, curDirName, inpFilePathEx));
 
       mapPrev.forEach((k, v) {
@@ -204,6 +206,15 @@ class Convert {
           mapCurr[k] = v;
         }
       });
+
+      var detectPathsPattern = getValue(mapCurr, key: _config.paramNameDetectPaths, canReplace: true);
+
+      if (mapCurr.containsKey(_config.paramNameDetectPaths) && StringExt.isNullOrBlank(detectPathsPattern)) {
+        detectPathsRE = null;
+      }
+      else {
+        detectPathsRE = RegExp(detectPathsPattern, caseSensitive: false);
+      }
 
       var command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
       isExpandContentOnly = Config.RE_CMD_EXPAND.hasMatch(command);
@@ -218,8 +229,8 @@ class Convert {
         throw Exception('Undefined command for\n\n${mapCurr.toString()}');
       }
 
-      var outFilePath = (getValue(mapCurr, key: _config.paramNameOut, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY);
-      var hasOutFile = !StringExt.isNullOrBlank(outFilePath);
+      var outFilePath = (getValue(mapCurr, key: _config.paramNameOut, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY).adjustPath();
+      var hasOutFile = outFilePath.isNotEmpty;
 
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
       isStdOut = (outFilePath == StringExt.STDOUT_PATH);
@@ -249,6 +260,8 @@ class Convert {
           outFilePathEx = replaceInpNames(outFilePathEx, mapCurr);
           outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
         }
+
+        outFilePathEx = outFilePathEx.adjustPath();
 
         Log.debug('''
 
@@ -498,7 +511,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
       else {
         if (v.contains(paramNameCurDir)) {
-          newMap[k] = v.replaceAll(paramNameCurDir, curDirName);
+          newMap[k] = v.replaceAll(paramNameCurDir, curDirName).adjustPath();
         }
 
         newMap[k] = getValue(newMap, key: k, canReplace: true);
@@ -593,6 +606,10 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
             if ((k != key) && !StringExt.isNullOrBlank(k)) {
               if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
                 value = value.replaceAll(k, v);
+
+                if ((detectPathsRE != null) && detectPathsRE.hasMatch(k)) {
+                  value = value.adjustPath();
+                }
               }
             }
           });

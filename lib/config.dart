@@ -36,6 +36,7 @@ class Config {
   String paramNameCanExpandContent = '{{-can-expand-content-}}';
   String paramNameCmd = '{{-cmd-}}';
   String paramNameCurDir = '{{-cur-dir-}}';
+  String paramNameDetectPaths = '{{-detect-paths-}}';
   String paramNameEarlyWildcardExpansion = '{{-early-wildcard-expansion-}}';
   String paramNameInp = '{{-inp-}}';
   String paramNameInpDir = '{{-inp-dir-}}';
@@ -535,6 +536,9 @@ class Config {
       }
       else if (k == paramNameCurDir) {
         paramNameCurDir = v;
+      }
+      else if (k == paramNameDetectPaths) {
+        paramNameDetectPaths = v;
       }
       else if (k == paramNameInp) {
         paramNameInp = v;

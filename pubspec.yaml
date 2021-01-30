@@ -1,5 +1,5 @@
 name: doul
-description: A sample command-line application.
+description: Command-line utility to expand text content by placeholders and to run external utilities.
 # version: 1.0.0
 # homepage: https://www.example.com
 
