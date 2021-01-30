@@ -5,12 +5,12 @@
     "rename": {
       "{{-cmd-}}": "{c}",
       "{{-cur-dir-}}": "{CD}",
-      "{{-can-replace-content-}}": "{CRC}",
+      "{{-can-expand-content-}}": "{CEC}",
       "{{-inp-}}": "{i}",
       "{{-out-}}": "{o}"
     },
     "action": [
-      { "{CRC}": true },
+      { "{CEC}": true },
 
       // Terribly slow,
       // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },

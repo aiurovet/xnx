@@ -15,12 +15,12 @@ class Config {
   static final String CFG_ACTION = 'action';
   static final String CFG_RENAME = 'rename';
 
-  static final String CMD_FIND = 'find-only'; // not implemented yet
-  static final String CMD_REPLACE = 'replace-only'; // no external command used
+  static final String CMD_EXPAND = 'expand-content'; // plain text expansion
   static final String CMD_SUB = 'sub'; // run another internal instance
 
   //static final int MAX_EXPANSION_ITERATIONS = 10;
 
+  static final RegExp RE_CMD_EXPAND = RegExp(r'^' + CMD_EXPAND + r'([\s]|$)', caseSensitive: false);
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -31,9 +31,9 @@ class Config {
   bool isEarlyWildcardExpansionAllowed = false;
   int lastModifiedStamp;
   Options options = Options();
-  int runsDone = 0;
+  int nextRunNo = 0;
 
-  String paramNameCanReplaceContent = '{{-can-replace-content-}}';
+  String paramNameCanExpandContent = '{{-can-expand-content-}}';
   String paramNameCmd = '{{-cmd-}}';
   String paramNameCurDir = '{{-cur-dir-}}';
   String paramNameEarlyWildcardExpansion = '{{-early-wildcard-expansion-}}';
@@ -175,13 +175,15 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map, hasReset) {
+  bool addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map, hasReset) {
     var isReady = ((map != null) && (hasReset || deepContainsKeys(map, [paramNameInp, paramNameOut]) || deepContainsKeys(map, [StringExt.EMPTY])));
 
     if (isReady) {
       addFlatMapsToList(listOfMaps, map);
       map.remove(paramNameOut);
     }
+
+    return isReady;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -229,9 +231,9 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   List<Map<String, String>> exec([List<String> args]) {
-    var isFirstRun = (runsDone == 0);
+    var isFirstRun = (nextRunNo == 0);
 
-    ++runsDone;
+    ++nextRunNo;
 
     if (isFirstRun) {
       options.parseArgs(args);
@@ -265,7 +267,7 @@ class Config {
       }
     }
 
-    Log.information('Processing actions for run #$runsDone');
+    Log.information('Processing actions for run #$nextRunNo');
 
     var params = <String, Object>{};
     params[paramNameCurDir] = '';
@@ -276,10 +278,10 @@ class Config {
     var actions = (action as List);
     var result = <Map<String, String>>[];
 
-    var runNo = 1;
+    var currRunNo = 1;
 
     actions.forEach((map) {
-      if (runNo > runsDone) {
+      if (currRunNo > nextRunNo) {
         return;
       }
 
@@ -288,13 +290,8 @@ class Config {
       Log.debug('');
 
       map.forEach((key, value) {
-        var isLastKey = StringExt.isNullOrBlank(key);
-
-        if (isLastKey || (runNo > runsDone)) {
-          if (isLastKey) {
-            params[StringExt.EMPTY] = null;
-            return;
-          }
+        if ((currRunNo > nextRunNo) || StringExt.isNullOrBlank(key)) {
+          return;
         }
 
         Log.debug('...${key}: ${value}');
@@ -302,25 +299,31 @@ class Config {
         var valueEx = (value == null ? StringExt.EMPTY : value);
 
         if (key == paramNameReset) { // value is ignored
-          if ((++runNo) < runsDone) {
+          if ((++currRunNo) < nextRunNo) {
             params = <String, Object>{};
           }
         }
-        else if (runNo == runsDone) {
+        else if (currRunNo == nextRunNo) {
           params[key] = valueEx;
         }
       });
 
-      if ((runNo >= runsDone) && params.isNotEmpty) {
+      if ((currRunNo >= nextRunNo) && params.isNotEmpty) {
         Log.debug('...adding to the list of actions');
 
-        addMapsToList(result, params, (runNo > runsDone));
+        if (addMapsToList(result, params, (currRunNo > nextRunNo))) {
+          params = <String, Object>{};
+        }
       }
 
       Log.debug('...completed row processing');
     });
 
-    Log.information('\nAdded ${result.length} commands\n');
+    if ((currRunNo >= nextRunNo) && params.isNotEmpty) {
+      addMapsToList(result, params, true);
+    }
+
+    Log.information('\nAdded ${result.length} rules\n');
 
     return result;
   }
@@ -569,8 +572,8 @@ class Config {
       else if (k == paramNameThis) {
         paramNameThis = v;
       }
-      else if (k == paramNameCanReplaceContent) {
-        paramNameCanReplaceContent = v;
+      else if (k == paramNameCanExpandContent) {
+        paramNameCanExpandContent = v;
       }
       else if (k == paramNameEarlyWildcardExpansion) {
         paramNameEarlyWildcardExpansion = v;

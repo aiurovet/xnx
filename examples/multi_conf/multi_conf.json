@@ -1,7 +1,7 @@
 {
   "x": {
     "rename": {
-      "{{-can-replace-content-}}": "{CRC}",
+      "{{-can-expand-content-}}": "{CEC}",
       "{{-cmd-}}": "{c}",
       "{{-cur-dir-}}": "{CD}",
       "{{-inp-}}": "{i}",
@@ -11,8 +11,8 @@
       "{{-out-}}": "{o}"
     },
     "action": [
-      { "{CRC}": true },
-      { "{c}": "replace-only" },
+      { "{CEC}": true },
+      { "{c}": "expand-content \"{i}\" \"{o}\"" },
 
       { "{CD}": "." },
 

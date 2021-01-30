@@ -51,11 +51,39 @@ class FileOper {
   static void deleteSync({String path, List<String> paths, int start = 0,
     int end, delete = false, bool isSilent = false}) {
 
-    if ((path == null) && ((paths == null) || paths.isEmpty)) {
+    var pathsEx = <String>[];
+
+    if (StringExt.isNullOrBlank(path)) {
+      pathsEx = paths;
+    }
+    else {
+      pathsEx.add(path);
+
+      if (paths?.isNotEmpty ?? false) {
+        pathsEx.addAll(paths);
+      }
+    }
+
+    if (pathsEx.isNotEmpty) {
+      var tmpPaths = <String>[];
+
+      for (var currPath in paths) {
+        if (Directory(currPath).existsSync() || File(currPath).existsSync()) {
+          tmpPaths.add(currPath);
+        }
+      }
+
+      pathsEx = tmpPaths;
+    }
+    else {
       return;
     }
 
-    listSync(path: path, paths: paths, start: start, end: end,
+    if (pathsEx.isEmpty) {
+      return;
+    }
+
+    listSync(path: null, paths: pathsEx, start: start, end: end,
       isSilent: isSilent, isSorted: true, isMinimal: false,
       listProc: (entities, entityNo, repeatNo, subPath) {
         if (entityNo < 0) { // empty list

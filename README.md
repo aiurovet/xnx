@@ -10,21 +10,43 @@ Command-line utility to run multiple commands against the same input with variou
 doul [OPTIONS]
 
 -q, --quiet                quiet mode (no output except when "-" is specified as output)
--v, --verbosity=(LEVEL)    how much information to show: 0-3 (default: 1)
+-v, --verbosity=<LEVEL>    how much information to show: 0-3
                            (defaults to "1")
-
+-x, --xargs                treat each plain argument independently (e.g. can pass multiple filenames as arguments)
 -h, --help                 this help screen
--H, --help-all             display detailed help, including config file format
 -l, --list-only            display all commands, but do not execute those
--c, --config=(FILE)        configuration file in json format
-                           (defaults to "./doul.json")
--d, --dir=(DIR)            startup directory
+-f, --force                ignore timestamps and force conversion
+-d, --dir=<DIR>            startup directory
                            (defaults to ".")
--f, --force                don't check the date/time when the output file was generated,
-                           but rather enforce processing
--w, --early-wc-exp         when set, means that wildcards in filename patterns
-                           can be expanded immediately 
-                           (defaults to false)
+-c, --config=<FILE>        configuration file in json format
+                           (defaults to "./doul.json")
+    --copy                 just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --copy-newer           just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --move                 just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --move-newer           just move more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --rename               just the same as --move
+    --rename-newer         just the same as --move-newer
+    --mkdir                just create directories passed as plain arguments
+    --delete               just delete file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --remove               just the same as --delete
+    --bz2                  just compress a single source file to a single destination BZip2 file, can be used with --move
+    --unbz2                just decompress a single BZip2 file to a single destination file, can be used with --move
+    --gz                   just compress a single source file to a single GZip file, can be used with --move
+    --ungz                 just decompress a single GZip file to a single destination file, can be used with --move
+    --tar                  just create a single destination archive file containing source files and/or directories, can be used with --move
+    --untar                just untar a single archive file to a destination directory, can be used with --move
+    --tbz                  just a combination of --tar and --bz2, can be used with --move
+    --untbz                just a combination of --untar and --unbz2, can be used with --move
+    --tgz                  just a combination of --tar and --gz, can be used with --move
+    --untgz                just a combination of --untar and --ungz, can be used with --move
+    --tzl                  just a combination of --tar and --zlib, can be used with --move
+    --untzl                just a combination of --untar and --unzlib, can be used with --move
+    --zip                  just zip source files and/or directories to a single destination archive file, can be used with with --move to delete source to delete source
+    --unzip                just unzip single archive file to destination directory, can be used with with --move to delete source to delete source
+    --zlib                 just compress a single source file to a single ZLib file, can be used with with --move to delete source to delete source
+    --unzlib               just decompress a single ZLib file to a single destination file, can be used with with --move to delete source to delete source
+    --pack                 just compress source files and/or directories to a single destination archive file depending on its extension, can be used with --move
+    --unpack               just decompress a single source archive file to destination files and/or directories depending on source extension, can be used with --move
 ```
 
 ##### DETAILS:
@@ -38,7 +60,7 @@ doul [OPTIONS]
      it as an option while running from a batch script, console, or by double-
      clicking a launcher (shortcut) icon. You can specify pathname separators
      in any style (forward slashes as in Unix or backslashes as in Windows),
-     the program will replace all of those depending on the OS it is run under.
+     the program will expand all of those depending on the OS it is run under.
 
 1.2. If the path to config file (option -c, --config) is not absolute, then its
      absolute path will be resolved using either program startup directory, or
@@ -91,14 +113,14 @@ Configuration file is expected in JSON format with the following guidelines:
      pre-defined placeholders (see above). The key is a pre-defined placeholder,
      and the value is the placeholder to use instead. As you can see, this can
      make config file less verbose and easier to read. These placeholders are
-     self-descriptive, except "{expand-input}", which means that the content of
+     self-descriptive, except "expand-content", which means that the content of
      the input file will also be expanded using pre-defined as well as user-
      defined placeholders, and optionally, environment variables. Then it will
      be saved to a temporary file, which will be used as an input for the sub-
      sequent external command execution. All temporary files will be deleted on
      the go. If no external command defined, then this will be interpreted as a
      simple expansion of the input. However, in order to achieve that, the
-     "{expand-input}" flag is still required to be set to true.
+     "expand-content" flag is still required to be set to true.
 
 2.4. For the sake of source code portability, the environment variables are
      required to be specified strictly in UNIX/Linux/macOS format:
@@ -106,7 +128,7 @@ Configuration file is expected in JSON format with the following guidelines:
      variables will be considered case-insensitive). You can escape expansion
      by doubling the dollar sign: \$\$ABC.
 
-2.5. To support "expand-input" feature, the program creates a temporary file
+2.5. To support "expand-content" feature, the program creates a temporary file
      where all placeholders get expanded. This file is located in the same
      directory where the current output file is supposed to be as well as
      with the same name, but the extension is replaced with .tmp.<input-ext>.
@@ -160,7 +182,7 @@ Configuration file is expected in JSON format with the following guidelines:
     "rename": {
       "{cmd}": "{c}",
       "{cur-dir}": "{CD}",
-      "{{-can-replace-content-}}": "{CRC}",
+      "{{-can-expand-content-}}": "{CEC}",
       "{inp}": "{i}",
       "{out}": "{o}"
     },

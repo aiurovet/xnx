@@ -32,3 +32,4 @@ examples/multi_icon/png/
 
 examples/ms_office/*.dir/
 examples/ms_office/out/
+scripts/mkicons/*/

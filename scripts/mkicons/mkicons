@@ -3,8 +3,9 @@
 ################################################################################
 
 PRJ_NAME="doul"
-PRJ_EXE="${SCR_DIR}/../bin/linux/${PRJ_NAME}"
 ICO_DIR=$( dirname "${0}" )
+SCR_DIR=$( dirname "${ICO_DIR}" )
+PRJ_EXE="${SCR_DIR}/../bin/linux/${PRJ_NAME}"
 
 ################################################################################
 
@@ -12,7 +13,7 @@ if [ ! -f "${PRJ_EXE}" ]; then
   "${SCR_DIR}/build" || exit 1
 fi
 
-"${BIN}" -d "${ICO_DIR}" -c mkicons-00,mkicons,mkicons-99 ${@}
+"${PRJ_EXE}" -d "${ICO_DIR}" -c mkicons ${@}
 
 exit ${?}
 

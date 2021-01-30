@@ -4,7 +4,7 @@
       // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
       "{{-cmd-}}": "{zmd}", // ensure it comes alphabetically after {inp} and {out}
       "{{-cur-dir-}}": "{cur-dir}",
-      "{{-can-replace-content-}}": "{can-replace-content}",
+      "{{-can-expand-content-}}": "{can-expand-content}",
 
       "{{-early-wildcard-expansion-}}": "{EWE}", // allows to get list of files before command, hence a file will be
                                                  // processed by every command before taking on the next file
@@ -22,7 +22,7 @@
     },
     "action": [
       {
-        "{can-replace-content}": false,
+        "{can-expand-content}": false,
         "{cur-dir}": ".",
         "{start-dir}": "{cur-dir}"
       },
@@ -39,7 +39,7 @@
 
         "{zmd}": [
           "sub --unzip \"{inp}\" \"{unz-dir}\"",           // decompress file
-          "sub --dir \"{unz-dir}\" --config \"{cur-dir}/ms_office_data.json\"", // make replacements (inside the same executable)
+          "sub --dir \"{unz-dir}\" --config \"{cur-dir}/ms_office_data.json\"", // make expansions (inside the same executable)
           "sub --zip --move \"{unz-dir}\" \"{out-file}\"", // compress back (inside the same executable)
           "{delete} \"{cur-dir}/unz\""                     // delete uncompressed dir
         ]

@@ -29,8 +29,8 @@ class Convert {
   // Parameters
   //////////////////////////////////////////////////////////////////////////////
 
-  bool canReplaceContent;
-  bool isReplaceContentOnly;
+  bool canExpandContent;
+  bool isExpandContentOnly;
   bool isStdIn;
   bool isStdOut;
   String curDirName;
@@ -83,7 +83,7 @@ class Convert {
       maps = _config.exec();
 
       if (maps?.isNotEmpty ?? false) {
-        Log.debug('\nRun #${_config.runsDone} found\n');
+        Log.debug('\nRun #${_config.nextRunNo} found\n');
       }
     }
   }
@@ -206,8 +206,8 @@ class Convert {
       });
 
       var command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
-      isReplaceContentOnly = (command == Config.CMD_REPLACE);
-      canReplaceContent = (isReplaceContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanReplaceContent, canReplace: false)));
+      isExpandContentOnly = Config.RE_CMD_EXPAND.hasMatch(command);
+      canExpandContent = (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
 
       if (!StringExt.isNullOrBlank(curDirName)) {
         Log.debug('Setting current directory to: "${curDirName}"');
@@ -270,7 +270,7 @@ Output dir:  "${outDirName}"
 Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         ''');
 
-      if (isStdOut && !isReplaceContentOnly) {
+      if (isStdOut && !isExpandContentOnly) {
         throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
       }
 
@@ -291,10 +291,25 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) {
+    var command = replaceInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map);
+
+    if (isExpandContentOnly) {
+      var cmdParts = command.splitCommandLine();
+      var argCount = cmdParts.length - 1;
+
+      if (argCount > 0) {
+        outFilePath = cmdParts[argCount];
+      }
+
+      if (argCount > 1) {
+        inpFilePath = cmdParts[1];
+      }
+    }
+
     var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath));
 
-    if (isReplaceContentOnly && !hasInpFile) {
-      throw Exception('Input file is undefined for ${Config.CMD_REPLACE} operation');
+    if (isExpandContentOnly && !hasInpFile) {
+      throw Exception('Input file is undefined for ${Config.CMD_EXPAND} operation');
     }
 
     var inpFile = (hasInpFile ? File(inpFilePath) : null);
@@ -307,19 +322,12 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     String tmpFilePath;
 
-    if (canReplaceContent && (!isReplaceContentOnly || (hasInpFile && hasOutFile && (inpFilePath == outFilePath)))) {
+    if (canExpandContent && (!isExpandContentOnly || (hasInpFile && hasOutFile && (inpFilePath == outFilePath)))) {
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
     }
 
     Log.debug('Temp file path: "${tmpFilePath ?? StringExt.EMPTY}"');
 
-    var cmdTemplateEx = cmdTemplate;
-
-    if (isReplaceContentOnly) {
-      cmdTemplateEx += ' "${_config.paramNameInp}" "${_config.paramNameOut}"';
-    }
-
-    var command = replaceInpNames(cmdTemplateEx.replaceAll(_config.paramNameOut, outFilePath), map);
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
     if (!_options.isForced && (inpFilePath != outFilePath) && (outFile != null)) {
@@ -339,7 +347,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       outFile.deleteIfExistsSync();
     }
 
-    if (canReplaceContent) {
+    if (canExpandContent) {
       replaceInpContent(inpFile, outFilePath, tmpFilePath, map);
     }
 
@@ -347,11 +355,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     var isVerbose = Log.isDetailed;
 
-    if (_options.isListOnly || isReplaceContentOnly || !isVerbose) {
+    if (_options.isListOnly || isExpandContentOnly || !isVerbose) {
       Log.outInfo(command);
     }
 
-    if (_options.isListOnly || isReplaceContentOnly) {
+    if (_options.isListOnly || isExpandContentOnly) {
       return true;
     }
 
@@ -374,11 +382,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       throw Exception(e.toString());
     }
 
-    // if (tmpFilePath != null) {
-    //   var tmpFile = File(tmpFilePath);
-    //
-    //   tmpFile.deleteIfExistsSync();
-    // }
+    if (tmpFilePath != null) {
+      var tmpFile = File(tmpFilePath);
+
+      tmpFile.deleteIfExistsSync();
+    }
 
     return true;
   }
@@ -451,7 +459,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         tmpFile.renameSync(outFilePath);
       }
 
-      return (isReplaceContentOnly ? null : tmpFile);
+      return (isExpandContentOnly ? null : tmpFile);
     }
   }
 
@@ -507,7 +515,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   String getActualInpFilePath(String inpFilePath, String outFilePath) {
-    if (isStdIn || (isReplaceContentOnly && (inpFilePath != outFilePath)) || !canReplaceContent) {
+    if (isStdIn || (isExpandContentOnly && (inpFilePath != outFilePath)) || !canExpandContent) {
       return inpFilePath;
     }
     else if (!isStdOut) {

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="{dim}" height="{dim}">
+
+<defs>
+    <style>
+
+        g {
+            shape-rendering: crispEdges;
+        }
+
+        .drw {
+            fill: none;
+            stroke: {icon-stroke};
+            stroke-linecap: square;
+            stroke-linejoin: square;
+            stroke-width: {stroke-width};
+        }
+
+        .scn {
+            fill: {icon-fill};
+            stroke: none;
+        }
+
+    </style>
+</defs>
+
+<g class="scn" transform="{scn-transform}">
+    <rect height="100%" width="100%" />
+    <g class="drw" transform="{drw-transform}">
+        <g transform="{chr-d-transform}"><path d="{chr-d-path}" /></g>
+        <g transform="{chr-o-transform}"><path d="{chr-o-path}" /></g>
+        <g transform="{chr-u-transform}"><path d="{chr-u-path}" /></g>
+        <g transform="{chr-l-transform}"><path d="{chr-l-path}" /></g>
+    </g>
+
+    Sorry, your browser does not support SVG!
+</g>
+
+</svg>
