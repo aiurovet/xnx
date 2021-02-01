@@ -271,7 +271,7 @@ class Config {
     Log.information('Processing actions for run #$nextRunNo');
 
     var params = <String, Object>{};
-    params[paramNameCurDir] = '';
+    params[paramNameCurDir] = options.startDirName;
 
     var action = all[CFG_ACTION];
     assert(action is List);

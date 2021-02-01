@@ -217,6 +217,7 @@ class Convert {
       }
 
       var command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
+
       isExpandContentOnly = Config.RE_CMD_EXPAND.hasMatch(command);
       canExpandContent = (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
 
@@ -304,7 +305,8 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) {
-    var command = replaceInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map);
+    var command = replaceInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map)
+        .replaceAll(_config.paramNameCurDir, curDirName);
 
     if (isExpandContentOnly) {
       var cmdParts = command.splitCommandLine();
@@ -607,7 +609,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
               if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
                 value = value.replaceAll(k, v);
 
-                if ((detectPathsRE != null) && detectPathsRE.hasMatch(k)) {
+                if ((detectPathsRE != null) && detectPathsRE.hasMatch(k) && (k != _config.paramNameDetectPaths)) {
                   value = value.adjustPath();
                 }
               }

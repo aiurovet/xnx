@@ -10,19 +10,21 @@
       "{{-out-}}": "{out}"
     },
     "action": [
-      { "{dtp}": "\\{[^\\{\\}\\-]+\\-path\\}" }, // regular expression
+      { "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}" }, // regular expression
 
       { "{zmd}": [
-        "sub --delete 'png' 'svg'",
-        "sub --mkdir 'png' 'svg'"
+        "sub --delete 'out' 'png' 'svg'",
+        "sub --mkdir 'out' 'png' 'svg'"
       ] },
 
       { "{reset}": true },
 
       {
         "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
+          // WINE environment variable is set
           "{svg2png}": "\"C:\\Program Files\\Inkscape\\inkscape.exe\" -z -e \"{out}\" -w {dim} -h {dim} \"{svg-path}\""
         }, "{{-else-}}": {
+          // WINE environment variable is not set
           "{svg2png}": "chrome --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
         }
       } },
@@ -33,9 +35,9 @@
           "expand-content \"{inp}\" \"{svg-path}\"",
           "{svg2png}"
         ],
-        "{dim-name}": "{icon-name}-{dim}x{dim}",
-        "{png-path}": "{CD}\\png\\{dim-name}.png",
-        "{svg-path}": "{CD}\\svg\\{dim-name}.svg"
+        "{dim-name}": "{icon-name}_{dim}x{dim}",
+        "{png-path}": "{CD}/png/{dim-name}.png",
+        "{svg-path}": "{CD}/svg/{dim-name}.svg"
       },
 
       {
@@ -43,7 +45,7 @@
         "{inp}": "{prj}.svg",
         "{icon}": [
           { "{icon-name}": "{prj}",      "{icon-fill}": "white", "{icon-stroke}": "black" },
-          { "{icon-name}": "{prj}-dark", "{icon-fill}": "black", "{icon-stroke}": "white" }
+          { "{icon-name}": "{prj}_dark", "{icon-fill}": "black", "{icon-stroke}": "white" }
         ]
       },
 
@@ -60,7 +62,8 @@
             "{out}": "{png-path}"
           },
 
-          { "{dim}":   32, "{scn-transform}":  "scale( 2, 2)", "{drw-transform}":  "translate(1.5,1.5)", "{out}": "{png-path}" },
+          { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{drw-transform}":  "translate(1.5,1.5)", "{out}": "{png-path}" },
+          { "{dim}":   32, "{scn-transform}":  "scale( 2, 2)", "{out}": "{png-path}" },
           { "{dim}":   48, "{scn-transform}":  "scale( 3, 3)", "{out}": "{png-path}" },
           { "{dim}":   64, "{scn-transform}":  "scale( 4, 4)", "{out}": "{png-path}" },
           { "{dim}":   96, "{scn-transform}":  "scale( 6, 6)", "{out}": "{png-path}" },
@@ -69,6 +72,25 @@
           { "{dim}":  512, "{scn-transform}":  "scale(32,32)", "{out}": "{png-path}" },
           { "{dim}": 1024, "{scn-transform}":  "scale(64,64)", "{out}": "{png-path}" }
         ]
+      },
+
+      {
+        "{reset}": true,
+        "{dtp}": "\\{png\\}", // repeat after reset
+        "{prj}": "doul"
+      },
+
+      {
+        // Requires: ImageMagick (convert) and png2icns
+        "{zmd}": [
+          "sleep 0.5s",
+          "convert +antialias \"{png}_16x16.png\" \"{png}_24x24.png\" \"{png}_32x32.png\" \"{png}_48x48.png\" \"{png}_256x256.png\" \"{out}.ico\"",
+          "convert +antialias \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_32x32.png\" \"{png}_dark_48x48.png\" \"{png}_dark_256x256.png\" \"{out}_dark.ico\"",
+          "png2icns \"{out}.icns\" \"{png}_16x16.png\" \"{png}_32x32.png\" \"{png}_128x128.png\" \"{png}_256x256.png\" \"{png}_512x512.png\" \"{png}_1024x1024.png\"",
+          "png2icns \"{out}_dark.icns\" \"{png}_dark_16x16.png\" \"{png}_dark_32x32.png\" \"{png}_dark_128x128.png\" \"{png}_dark_256x256.png\" \"{png}_dark_512x512.png\" \"{png}_dark_1024x1024.png\""
+        ],
+        "{png}": "png/{prj}",
+        "{out}": "out/{prj}"
       },
 
       { "{reset}": true },
