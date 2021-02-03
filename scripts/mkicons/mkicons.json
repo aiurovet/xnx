@@ -1,3 +1,7 @@
+// Generate icons for this application using itself
+// The file designed for runs primarily on Linux
+// Requires: Google Chrome, ImageMagick's convert, png2icns as well as InkScape for Wine
+
 {
   "x": {
     "rename": {
@@ -13,8 +17,8 @@
       { "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}" }, // regular expression
 
       { "{zmd}": [
-        "sub --delete 'out' 'png' 'svg'",
-        "sub --mkdir 'out' 'png' 'svg'"
+        "sub --delete out png svg",
+        "sub --mkdir out/linux out/macos out/windows png svg'"
       ] },
 
       { "{reset}": true },
@@ -76,26 +80,29 @@
 
       {
         "{reset}": true,
-        "{dtp}": "\\{png\\}", // repeat after reset
+        "{dtp}": "\\{out|\\{png\\}", // repeat after reset
         "{prj}": "doul"
       },
 
       {
-        // Requires: ImageMagick (convert) and png2icns
         "{zmd}": [
           "sleep 0.5s",
-          "convert +antialias \"{png}_16x16.png\" \"{png}_24x24.png\" \"{png}_32x32.png\" \"{png}_48x48.png\" \"{png}_256x256.png\" \"{out}.ico\"",
-          "convert +antialias \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_32x32.png\" \"{png}_dark_48x48.png\" \"{png}_dark_256x256.png\" \"{out}_dark.ico\"",
-          "png2icns \"{out}.icns\" \"{png}_16x16.png\" \"{png}_32x32.png\" \"{png}_128x128.png\" \"{png}_256x256.png\" \"{png}_512x512.png\" \"{png}_1024x1024.png\"",
-          "png2icns \"{out}_dark.icns\" \"{png}_dark_16x16.png\" \"{png}_dark_32x32.png\" \"{png}_dark_128x128.png\" \"{png}_dark_256x256.png\" \"{png}_dark_512x512.png\" \"{png}_dark_1024x1024.png\""
+          "sub --copy \"{png}_16x16.png\" \"{png}_24x24.png\" \"{png}_48x48.png\" \"{png}_96x96.png\" \"{out-lnx}\"",
+          "sub --copy \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_48x48.png\" \"{png}_dark_96x96.png\" \"{out-lnx}\"",
+          "png2icns \"{out-mac}.icns\" \"{png}_16x16.png\" \"{png}_32x32.png\" \"{png}_128x128.png\" \"{png}_256x256.png\" \"{png}_512x512.png\" \"{png}_1024x1024.png\"",
+          "png2icns \"{out-mac}_dark.icns\" \"{png}_dark_16x16.png\" \"{png}_dark_32x32.png\" \"{png}_dark_128x128.png\" \"{png}_dark_256x256.png\" \"{png}_dark_512x512.png\" \"{png}_dark_1024x1024.png\"",
+          "convert +antialias \"{png}_16x16.png\" \"{png}_24x24.png\" \"{png}_32x32.png\" \"{png}_48x48.png\" \"{png}_256x256.png\" \"{out-win}.ico\"",
+          "convert +antialias \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_32x32.png\" \"{png}_dark_48x48.png\" \"{png}_dark_256x256.png\" \"{out-win}_dark.ico\""
         ],
-        "{png}": "png/{prj}",
-        "{out}": "out/{prj}"
+        "{png}": "png\\{prj}",
+        "{out-lnx}": "out\\linux",
+        "{out-mac}": "out\\macos\\{prj}",
+        "{out-win}": "out\\windows\\{prj}"
       },
 
       { "{reset}": true },
 
-      { "{zmd}": "sub --delete 'svg'" }
+      { "{zmd}": "sub --delete png svg" }
     ]
   }
 }
