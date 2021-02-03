@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:args/args.dart';
+import 'package:doul/ext/directory.dart';
+import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 
 import 'package:doul/ext/string.dart';
@@ -29,7 +31,7 @@ class Options {
     'abbr': 'c',
     'help': 'configuration file in json format',
     'valueHelp': 'FILE',
-    'defaultsTo': './' + DEF_FILE_NAME,
+    'defaultsTo': null,
   };
   static final Map<String, Object> FORCE_CONVERT = {
     'name': 'force',
@@ -202,7 +204,7 @@ class Options {
 
   static final String APP_NAME = 'doul';
   static final String FILE_TYPE_CFG = '.json';
-  static final String DEF_FILE_NAME = '${APP_NAME}${FILE_TYPE_CFG}';
+  static final String FILE_MASK_CFG = '${GlobExt.ALL}${FILE_TYPE_CFG}';
 
   static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-]${CONFIG['name']}|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
   static final RegExp RE_OPT_START_DIR = RegExp('^[\\-]([\\-]${START_DIR['name']}|${START_DIR['abbr']})([\\=]|\$)', caseSensitive: true);
@@ -323,7 +325,7 @@ class Options {
         _startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
       })
       ..addOption(CONFIG['name'], abbr: CONFIG['abbr'], help: CONFIG['help'], valueHelp: CONFIG['valueHelp'], defaultsTo: CONFIG['defaultsTo'], callback: (value) {
-        _configFilePath = (value == null ? StringExt.EMPTY : (value as String).adjustPath());
+        _configFilePath = value;
       })
       ..addFlag(CMD_COPY['name'], help: CMD_COPY['help'], negatable: CMD_COPY['negatable'], callback: (value) {
         _isCmdCopy = value;
@@ -527,13 +529,20 @@ class Options {
 
     _startDirName = Path.canonicalize(_startDirName ?? '');
 
-    if (StringExt.isNullOrBlank(_configFilePath)) {
-      _configFilePath = DEF_FILE_NAME;
-    }
-
     if (configFilePath != StringExt.STDIN_PATH) {
-      if (StringExt.isNullOrBlank(Path.extension(_configFilePath))) {
+      if (StringExt.isNullOrBlank(_configFilePath)) {
+        _configFilePath = Path.join(_startDirName, Path.basename(_startDirName) + FILE_TYPE_CFG);
+
+        if (!File(_configFilePath).existsSync()) {
+            _configFilePath = DirectoryExt.pathListExSync(Path.join(_startDirName, FILE_MASK_CFG)).first ?? StringExt.EMPTY;
+        }
+      }
+      else if (StringExt.isNullOrBlank(Path.extension(_configFilePath))) {
         _configFilePath = Path.setExtension(_configFilePath, FILE_TYPE_CFG);
+      }
+
+      if (StringExt.isNullOrBlank(_configFilePath)) {
+        printUsage(parser, error: 'Configuration file is not found');
       }
 
       if (!Path.isAbsolute(_configFilePath)) {
