@@ -188,7 +188,7 @@ class Convert {
           inpFilePath.contains(_config.paramNameInpSubDir) ||
           inpFilePath.contains(_config.paramNameInpSubPath)) {
         //throw Exception('Circular reference is not allowed: input file path is "${inpFilePath}"');
-        inpFilePath = replaceInpNames(inpFilePath, mapPrev);
+        inpFilePath = expandInpNames(inpFilePath, mapPrev);
       }
 
       inpFilePath = inpFilePath.getFullPath();
@@ -253,12 +253,12 @@ class Convert {
 
         mapCurr.forEach((k, v) {
           if ((v != null) && (k != _config.paramNameCmd) && !_inpParamNames.contains(k)) {
-            mapCurr[k] = replaceInpNames(v, mapCurr);
+            mapCurr[k] = expandInpNames(v, mapCurr);
           }
         });
 
         if (hasOutFile) {
-          outFilePathEx = replaceInpNames(outFilePathEx, mapCurr);
+          outFilePathEx = expandInpNames(outFilePathEx, mapCurr);
           outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
         }
 
@@ -305,7 +305,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) {
-    var command = replaceInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map)
+    var command = expandInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map)
         .replaceAll(_config.paramNameCurDir, curDirName);
 
     if (isExpandContentOnly) {
@@ -363,10 +363,14 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     }
 
     if (canExpandContent) {
-      replaceInpContent(inpFile, outFilePath, tmpFilePath, map);
+      expandInpContent(inpFile, outFilePath, tmpFilePath, map);
     }
 
     command = (getValue(map, value: command, canReplace: true) ?? StringExt.EMPTY);
+
+    if (tmpFilePath != null) {
+      command = command.replaceAll(map[_config.paramNameInp], tmpFilePath);
+    }
 
     var isVerbose = Log.isDetailed;
 
@@ -408,7 +412,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  File replaceInpContent(File inpFile, String outFilePath, String tmpFilePath, Map<String, String> map) {
+  File expandInpContent(File inpFile, String outFilePath, String tmpFilePath, Map<String, String> map) {
     var text = StringExt.EMPTY;
 
     if (inpFile == null) {
@@ -480,7 +484,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String replaceInpNames(String value, Map<String, String> map) {
+  String expandInpNames(String value, Map<String, String> map) {
     String inpParamName;
     var result = value;
 
