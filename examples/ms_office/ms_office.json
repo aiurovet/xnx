@@ -28,21 +28,24 @@
       },
 
       { "{{-import-}}": "cmd.json" }, // import commands
-      { "{{-import-}}": "ms_office_data.json,x/action/data" }, // import just substitution data array
+      { "{{-import-}}": "ms_office_data.json,x/action/data" }, // import just substitution data array - for filenames
 
       {
         "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
         "{out-file}": "{cur-dir}/out/{inp-name}-{last-name}-{given-names}{inp-ext}",
 
         "{EWE}": false, // should be explicit bool
-        "{inp}": "inp/*", "{out}": "", // go through all MS Office input files
+
+        "{inp}": "inp/*", // go through all MS Office input files
 
         "{zmd}": [
           "sub --unzip \"{inp}\" \"{unz-dir}\"",           // decompress file
           "sub --dir \"{unz-dir}\" --config \"{cur-dir}/ms_office_data.json\"", // make expansions (inside the same executable)
           "sub --zip --move \"{unz-dir}\" \"{out-file}\"", // compress back (inside the same executable)
           "{delete} \"{cur-dir}/unz\""                     // delete uncompressed dir
-        ]
+        ],
+
+        "{out}": ""
       }
     ]
   }

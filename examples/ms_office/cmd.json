@@ -5,25 +5,23 @@
 
     {
       "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
-        "{{-if-}}": { "~": [ "${OSTYPE}", "^LINUX" ], "{{-then-}}": { // you need to export OSTYPE
-          "{OsType}": "Linux"
-        }, "{{-else-}}": { "{{-if-}}": { "~/i": [ "${OSTYPE}", "^DARWIN" ], "{{-then-}}": {
-          "{OsType}": "macOS"
+        "{{-if-}}": { "~": [ "${OSTYPE}", "^DARWIN" ], "{{-then-}}": { // you need to export OSTYPE
+          "{OsType}": "macos",
+          "{chrome}": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
         }, "{{-else-}}": {
-          "{OsType}": "Unsupported OS"
-        } } } },
+          "{OsType}": "linux",
+          "{chrome}": "google-chrome"
+        } },
         "{copy}": "cp -pr",
         "{move}": "mv -f",
         "{delete}": "rm -rf",
-        "{mkdir}": "mkdir -p",
-
-        "{chrome}": "google-chrome"
+        "{mkdir}": "mkdir -p"
       }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
+        "{OsType}": "windows",
         "{copy}": "copy /Y",
         "{move}": "ren",
         "{delete}": "del /F/Q/S",
         "{mkdir}": "mkdir",
-
         "{chrome}": "chrome"
       } } } },
 

@@ -290,6 +290,8 @@ class Config {
 
       Log.debug('');
 
+      var hasReset = false;
+
       map.forEach((key, value) {
         if ((currRunNo > nextRunNo) || StringExt.isNullOrBlank(key)) {
           return;
@@ -302,6 +304,7 @@ class Config {
         if (key == paramNameReset) { // value is ignored
           if ((++currRunNo) < nextRunNo) {
             params = <String, Object>{};
+            hasReset = true;
           }
         }
         else if (currRunNo == nextRunNo) {
@@ -309,10 +312,12 @@ class Config {
         }
       });
 
-      if ((currRunNo >= nextRunNo) && params.isNotEmpty) {
+      if (params.isNotEmpty) {
         Log.debug('...adding to the list of actions');
 
-        if (addMapsToList(result, params, (currRunNo > nextRunNo))) {
+        addMapsToList(result, params, hasReset);
+
+        if (hasReset) {
           params = <String, Object>{};
         }
       }

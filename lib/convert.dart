@@ -603,23 +603,31 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       value = map[key];
     }
 
-    if (!StringExt.isNullOrBlank(value)) {
-      if ((canReplace ?? false) && (value != null)) {
-        for (String oldValue; (oldValue != value); ) {
-          oldValue = value;
+    if ((canReplace ?? false) && !StringExt.isNullOrBlank(value)) {
+      for (String oldValue; (oldValue != value); ) {
+        oldValue = value;
 
-          map.forEach((k, v) {
-            if ((k != key) && !StringExt.isNullOrBlank(k)) {
-              if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
-                value = value.replaceAll(k, v);
+        map.forEach((k, v) {
+          if ((k != key) && !StringExt.isNullOrBlank(k)) {
+            if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
+              value = value.replaceAll(k, v);
 
-                if ((detectPathsRE != null) && detectPathsRE.hasMatch(k) && (k != _config.paramNameDetectPaths)) {
-                  value = value.adjustPath();
-                }
+              var hasPath = false;
+
+              if (value.contains(_config.paramNameCurDir)) {
+                value = value.replaceAll(_config.paramNameCurDir, curDirName);
+                hasPath = true;
+              }
+              else {
+                hasPath = (detectPathsRE != null) && detectPathsRE.hasMatch(k) && (k != _config.paramNameDetectPaths);
+              }
+
+              if (hasPath) {
+                value = value.adjustPath();
               }
             }
-          });
-        }
+          }
+        });
       }
 
       if ((key != null) && value.contains(key) && (mapPrev != null) && mapPrev.containsKey(key)) {

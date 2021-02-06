@@ -21,7 +21,7 @@
         "sub --mkdir out/linux out/macos out/windows png svg'"
       ] },
 
-      { "{reset}": true },
+      { "{reset}": null },
 
       {
         "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
@@ -79,7 +79,7 @@
       },
 
       {
-        "{reset}": true,
+        "{reset}": null,
         "{dtp}": "\\{out|\\{png\\}", // repeat after reset
         "{prj}": "doul"
       },
@@ -100,7 +100,7 @@
         "{out-win}": "out\\windows\\{prj}"
       },
 
-      { "{reset}": true },
+      { "{reset}": null },
 
       { "{zmd}": "sub --delete png svg" }
     ]
