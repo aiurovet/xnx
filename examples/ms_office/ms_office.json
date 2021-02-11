@@ -2,7 +2,7 @@
   "x": {
     "rename": {
       // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
-      "{{-cmd-}}": "{zmd}", // ensure it comes alphabetically after {inp} and {out}
+      "{{-cmd-}}": "{cmd}", // ensure it comes alphabetically after {inp} and {out}
       "{{-cur-dir-}}": "{cur-dir}",
       "{{-can-expand-content-}}": "{can-expand-content}",
 
@@ -28,20 +28,19 @@
       },
 
       { "{{-import-}}": "cmd.json" }, // import commands
-      { "{{-import-}}": "ms_office_data.json,x/action/data" }, // import just substitution data array - for filenames
 
       {
         "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
         "{out-file}": "{cur-dir}/out/{inp-name}-{last-name}-{given-names}{inp-ext}",
 
-        "{EWE}": false, // should be explicit bool
+        "{EWE}": true, // should be explicit bool
 
         "{inp}": "inp/*", // go through all MS Office input files
 
-        "{zmd}": [
+        "{cmd}": [
           "sub --unzip \"{inp}\" \"{unz-dir}\"",           // decompress file
-          "sub --dir \"{unz-dir}\" --config \"{cur-dir}/ms_office_data.json\"", // make expansions (inside the same executable)
-          "sub --zip --move \"{unz-dir}\" \"{out-file}\"", // compress back (inside the same executable)
+          "sub --config \"{cur-dir}/ms_office_data.json\" \"{unz-dir}\" \"{inp-name}\" \"{inp-ext}\"", // make expansions (inside the same executable)
+          //"sub --zip --move \"{unz-dir}\" \"{out-file}\"", // compress back (inside the same executable)
           "{delete} \"{cur-dir}/unz\""                     // delete uncompressed dir
         ],
 

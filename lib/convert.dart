@@ -84,7 +84,7 @@ class Convert {
       maps = _config.exec();
 
       if (maps?.isNotEmpty ?? false) {
-        Log.debug('\nRun #${_config.nextRunNo} found\n');
+        Log.debug('\nRun #${_config.runNo} found\n');
       }
     }
   }
@@ -209,7 +209,7 @@ class Convert {
 
       var detectPathsPattern = getValue(mapCurr, key: _config.paramNameDetectPaths, canReplace: true);
 
-      if (mapCurr.containsKey(_config.paramNameDetectPaths) && StringExt.isNullOrBlank(detectPathsPattern)) {
+      if (StringExt.isNullOrBlank(detectPathsPattern)) {
         detectPathsRE = null;
       }
       else {

@@ -2,7 +2,6 @@
   "cmd": [
     // You can specify either just command names, or command names with options, or command names with options and
     // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
-
     {
       "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
         "{{-if-}}": { "~": [ "${OSTYPE}", "^DARWIN" ], "{{-then-}}": { // you need to export OSTYPE

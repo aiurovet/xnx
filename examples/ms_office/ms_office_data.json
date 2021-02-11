@@ -6,7 +6,16 @@
       "{{-out-}}": "{o}"
     },
     "action": [
-      { "{c}": "expand-content \"{i}\" \"{o}\"" },
+      {
+        "{d}": "${1}",
+        "{f}": "${2}${3}",
+        "{t}": "${2}-{last-name}-{given-names}${3}",
+
+        "{c}": [
+          "expand-content \"{i}\" \"{o}\"",
+          "sub --zip --move \"{d}\" \"{t}\""
+        ]
+      },
 
       { "data": [
           {
@@ -15,7 +24,7 @@
             "{spouse-full-name}": "Alfred {last-name}", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "her",
             "{disease}": "Alzheimer's", "{dr-full-name}": "Archibald Anderson",
 
-            "{i}": "**", "{o}": ""
+            "{i}": "{d}/**", "{o}": "{i}"
           },
           {
             "{last-name}": "Bourie", "{given-names}": "Brian",
@@ -23,7 +32,7 @@
             "{spouse-full-name}": "Blanche {last-name}", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "his",
             "{disease}": "Botkin's", "{dr-full-name}": "Benny Balderson",
 
-            "{i}": "**", "{o}": ""
+            "{i}": "{d}/**", "{o}": "{i}"
           }
         ]
       }

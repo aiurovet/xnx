@@ -7,7 +7,8 @@
       "{{-cur-dir-}}": "{CD}",
       "{{-can-expand-content-}}": "{CEC}",
       "{{-inp-}}": "{i}",
-      "{{-out-}}": "{o}"
+      "{{-out-}}": "{o}",
+      "{{-reset-}}": "{x}"
     },
     "action": [
       { "{CEC}": true },
@@ -70,9 +71,9 @@
       { "{ox}":  "web/icons/Icon-{d}.png" },
 
       { "{d}":  192, "{o}": "{ox}" },
-      { "{d}":  512, "{o}": "{ox}" },
+      { "{d}":  512, "{o}": "{ox}" }//,
 
-      { "": null }
+      //{ "{x}": null, "{c}": "sub --delete android ios web", "{i}": "", "{o}": "" }
     ]
   }
 }

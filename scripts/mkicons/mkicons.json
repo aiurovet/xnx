@@ -66,15 +66,15 @@
             "{out}": "{png-path}"
           },
 
-          { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{drw-transform}":  "translate(1.5,1.5)", "{out}": "{png-path}" },
-          { "{dim}":   32, "{scn-transform}":  "scale( 2, 2)", "{out}": "{png-path}" },
-          { "{dim}":   48, "{scn-transform}":  "scale( 3, 3)", "{out}": "{png-path}" },
-          { "{dim}":   64, "{scn-transform}":  "scale( 4, 4)", "{out}": "{png-path}" },
-          { "{dim}":   96, "{scn-transform}":  "scale( 6, 6)", "{out}": "{png-path}" },
-          { "{dim}":  128, "{scn-transform}":  "scale( 8, 8)", "{out}": "{png-path}" },
-          { "{dim}":  256, "{scn-transform}":  "scale(16,16)", "{out}": "{png-path}" },
-          { "{dim}":  512, "{scn-transform}":  "scale(32,32)", "{out}": "{png-path}" },
-          { "{dim}": 1024, "{scn-transform}":  "scale(64,64)", "{out}": "{png-path}" }
+          { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{stroke-width}": "1.5", "{drw-transform}":  "translate(1.5,1.5)", "{out}": "{png-path}" },
+          { "{dim}":   32, "{scn-transform}":  "scale(  2,  2)", "{stroke-width}": "1", "{out}": "{png-path}" },
+          { "{dim}":   48, "{scn-transform}":  "scale(  3,  3)", "{out}": "{png-path}" },
+          { "{dim}":   64, "{scn-transform}":  "scale(  4,  4)", "{out}": "{png-path}" },
+          { "{dim}":   96, "{scn-transform}":  "scale(  6,  6)", "{out}": "{png-path}" },
+          { "{dim}":  128, "{scn-transform}":  "scale(  8,  8)", "{out}": "{png-path}" },
+          { "{dim}":  256, "{scn-transform}":  "scale( 16, 16)", "{out}": "{png-path}" },
+          { "{dim}":  512, "{scn-transform}":  "scale( 32, 32)", "{out}": "{png-path}" },
+          { "{dim}": 1024, "{scn-transform}":  "scale( 64, 64)", "{out}": "{png-path}" }
         ]
       },
 

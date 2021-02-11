@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:doul/ext/directory.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
@@ -31,7 +33,7 @@ class Config {
   bool isEarlyWildcardExpansionAllowed = false;
   int lastModifiedStamp;
   Options options = Options();
-  int nextRunNo = 0;
+  int runNo = 0;
 
   String paramNameCanExpandContent = '{{-can-expand-content-}}';
   String paramNameCmd = '{{-cmd-}}';
@@ -65,6 +67,7 @@ class Config {
 
   String operNameEq = '==';
   String operNameEqi = '==/i';
+  String operNameExists = 'exists';
   String operNameGe = '>=';
   String operNameGt = '>';
   String operNameLe = '<=';
@@ -232,9 +235,9 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   List<Map<String, String>> exec([List<String> args]) {
-    var isFirstRun = (nextRunNo == 0);
+    var isFirstRun = (runNo == 0);
 
-    ++nextRunNo;
+    ++runNo;
 
     if (isFirstRun) {
       options.parseArgs(args);
@@ -268,10 +271,9 @@ class Config {
       }
     }
 
-    Log.information('Processing actions for run #$nextRunNo');
+    Log.information('Processing actions for run #$runNo');
 
     var params = <String, Object>{};
-    params[paramNameCurDir] = options.startDirName;
 
     var action = all[CFG_ACTION];
     assert(action is List);
@@ -282,7 +284,7 @@ class Config {
     var currRunNo = 1;
 
     actions.forEach((map) {
-      if (currRunNo > nextRunNo) {
+      if (currRunNo > runNo) {
         return;
       }
 
@@ -293,7 +295,7 @@ class Config {
       var hasReset = false;
 
       map.forEach((key, value) {
-        if ((currRunNo > nextRunNo) || StringExt.isNullOrBlank(key)) {
+        if (hasReset || (currRunNo > runNo) || StringExt.isNullOrBlank(key)) {
           return;
         }
 
@@ -302,12 +304,10 @@ class Config {
         var valueEx = (value == null ? StringExt.EMPTY : value);
 
         if (key == paramNameReset) { // value is ignored
-          if ((++currRunNo) < nextRunNo) {
-            params = <String, Object>{};
-            hasReset = true;
-          }
+          ++currRunNo;
+          hasReset = true;
         }
-        else if (currRunNo == nextRunNo) {
+        else if (currRunNo == runNo) {
           params[key] = valueEx;
         }
       });
@@ -315,17 +315,16 @@ class Config {
       if (params.isNotEmpty) {
         Log.debug('...adding to the list of actions');
 
-        addMapsToList(result, params, hasReset);
-
-        if (hasReset) {
+        if (addMapsToList(result, params, hasReset) && hasReset) {
           params = <String, Object>{};
+          hasReset = false;
         }
       }
 
       Log.debug('...completed row processing');
     });
 
-    if ((currRunNo >= nextRunNo) && params.isNotEmpty) {
+    if ((currRunNo >= runNo) && params.isNotEmpty) {
       addMapsToList(result, params, true);
     }
 
@@ -387,8 +386,14 @@ class Config {
     var result = <String, Object>{};
 
     var isOperFound = false;
-    var operName = operNameEq;
+
+    var operName = operNameExists;
+    var isExists = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isExists);
+
+    operName = (!isOperFound ? operNameEq : operName);
     var isEq = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isEq);
 
     operName = (!isOperFound ? operNameEqi : operName);
     var isEqi = (!isOperFound && mapIf.containsKey(operName));
@@ -445,11 +450,23 @@ class Config {
     var blockThen = mapIf[condNameThen];
     var blockElse = (mapIf.containsKey(condNameElse) ? mapIf[condNameElse] : null);
 
+    var operands = (mapIf[operName] as List);
+
+    if (isExists) {
+      var operandsEx = (operands == null ? [ mapIf[operName] as String ] : operands);
+
+      for (var entityName in operandsEx) {
+        if ((entityName == null) || (!File(entityName).existsSync() && !Directory(entityName).existsSync())) {
+          return blockElse;
+        }
+      }
+
+      return blockThen;
+    }
+
     var isIgnoreCase = (isEqi || isNei || isRxi || isNri);
     var isRegExpMatch = (isRx || isRxi || isNr || isNri);
     var isStringOper = (isIgnoreCase || isRegExpMatch);
-
-    var operands = (mapIf[operName] as List);
 
     if (operands.length != 2) {
       throw Exception('Two operands precisely required for "${operName}": ${operands}');
