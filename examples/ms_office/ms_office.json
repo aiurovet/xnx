@@ -6,8 +6,9 @@
       "{{-cur-dir-}}": "{cur-dir}",
       "{{-can-expand-content-}}": "{can-expand-content}",
 
-      "{{-early-wildcard-expansion-}}": "{EWE}", // allows to get list of files before command, hence a file will be
-                                                 // processed by every command before taking on the next file
+      // Allows to get list of files before command, hence a file will
+      // be processed by every command before taking on the next file
+      "{{-early-wildcard-expansion-}}": "{EWE}",
 
       "{{-inp-}}": "{inp}",
       "{{-inp-dir-}}": "{inp-dir}",
@@ -22,30 +23,42 @@
     },
     "action": [
       {
-        "{can-expand-content}": false,
-        "{cur-dir}": ".",
-        "{start-dir}": "{cur-dir}"
+        "{can-expand-content}": false
       },
 
-      { "{{-import-}}": "cmd.json" }, // import commands
+      // import commands
+      { "{{-import-}}": "cmd.json" },
+
+      // import data
+      { "{{-import-}}": "ms_office_data.json?path=$..data.*" },
 
       {
         "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
         "{out-file}": "{cur-dir}/out/{inp-name}-{last-name}-{given-names}{inp-ext}",
 
-        "{EWE}": true, // should be explicit bool
+        // Early wildcard expansion
+        "{EWE}": true,
 
-        "{inp}": "inp/*", // go through all MS Office input files
+        // Go through all MS Office input files
+        "{inp}": "inp/*",
 
         "{cmd}": [
-          "sub --unzip \"{inp}\" \"{unz-dir}\"",           // decompress file
-          "sub --config \"{cur-dir}/ms_office_data.json\" \"{unz-dir}\" \"{inp-name}\" \"{inp-ext}\"", // make expansions (inside the same executable)
-          //"sub --zip --move \"{unz-dir}\" \"{out-file}\"", // compress back (inside the same executable)
-          "{delete} \"{cur-dir}/unz\""                     // delete uncompressed dir
+          // Decompress file
+          "sub --unzip \"{inp}\" \"{unz-dir}\"",
+
+          // Expand placeholders in every decompressed file
+          "sub --dir \"{unz-dir}\" --config \"{cur-dir}/ms_office_data.json?flags=i&key={full-name}\"",
+
+          // Compress back to a single file
+          "sub --zip --move \"{unz-dir}\" \"{out-file}\""
         ],
 
-        "{out}": ""
-      }
+        // Make a signal to start processing (command, input and output files are all defined
+        "{out}": "{out-file}"
+      },
+
+      // Stop branching array elements and execute a single command
+      { "reset": null, "{cmd}": "{delete} \"{cur-dir}/unz\"" }
     ]
   }
 }

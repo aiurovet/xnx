@@ -1,21 +1,22 @@
 import 'dart:cli';
 import 'dart:io';
 
-import 'package:doul/app_file_loader.dart';
+import 'package:doul/config_file_loader.dart';
+import 'package:doul/config.dart';
 import 'package:doul/doul.dart';
+import 'package:doul/ext/glob.dart';
+import 'package:doul/file_oper.dart';
+import 'package:doul/log.dart';
+import 'package:doul/options.dart';
+import 'package:doul/pack_oper.dart';
+import 'package:doul/ext/directory.dart';
+import 'package:doul/ext/file.dart';
+import 'package:doul/ext/file_system_entity.dart';
+import 'package:doul/ext/stdin.dart';
+import 'package:doul/ext/string.dart';
+
 import 'package:path/path.dart' as Path;
 import 'package:process_run/shell_run.dart';
-
-import 'pack_oper.dart';
-import 'config.dart';
-import 'file_oper.dart';
-import 'log.dart';
-import 'options.dart';
-import 'ext/directory.dart';
-import 'ext/file.dart';
-import 'ext/file_system_entity.dart';
-import 'ext/stdin.dart';
-import 'ext/string.dart';
 
 class Convert {
 
@@ -152,13 +153,27 @@ class Convert {
     var isProcessed = false;
     var isKeyArgsFound = false;
     var mapCurr = <String, String>{};
-    var keyArgs = AppFileLoader.ALL_ARGS;
+    var keyArgs = ConfigFileLoader.ALL_ARGS;
+    var configFileInfo = _config.options.configFileInfo;
+    var hasDataKeyFilter = configFileInfo.hasKey;
+    var hasDataKeyMatch = true;
 
     mapOrig.forEach((k, v) {
+      if (hasDataKeyFilter && hasDataKeyMatch && (k == _config.paramNameKey)) {
+        var dataKey = getValue(mapOrig, key: k, mapPrev: mapPrev, canReplace: true);
+
+        if (!configFileInfo.hasMatch(dataKey)) {
+          hasDataKeyMatch = false;
+        }
+      }
       if ((v != null) && v.contains(keyArgs)) {
         isKeyArgsFound = true;
       }
     });
+
+    if (!hasDataKeyMatch) {
+      return true;
+    }
 
     if (StringExt.isNullOrBlank(plainArg)) {
       if (isKeyArgsFound) {
@@ -609,7 +624,13 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
         map.forEach((k, v) {
           if ((k != key) && !StringExt.isNullOrBlank(k)) {
-            if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
+            if ((k == _config.paramNameInp) || (k == _config.paramNameOut)) {
+              if (GlobExt.isGlobPattern(v)) {
+                return;
+              }
+            }
+
+            //if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
               value = value.replaceAll(k, v);
 
               var hasPath = false;
@@ -625,7 +646,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
               if (hasPath) {
                 value = value.adjustPath();
               }
-            }
+            //}
           }
         });
       }

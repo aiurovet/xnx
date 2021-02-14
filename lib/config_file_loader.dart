@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'ext/file.dart';
-import 'ext/stdin.dart';
-import 'ext/string.dart';
-import 'log.dart';
+import 'package:doul/config_file_info.dart';
+import 'package:json_path/json_path.dart';
 
-class AppFileLoader {
+import 'package:doul/log.dart';
+import 'package:doul/ext/file.dart';
+import 'package:doul/ext/stdin.dart';
+import 'package:doul/ext/string.dart';
+
+class ConfigFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
   // Constants
@@ -42,7 +45,7 @@ class AppFileLoader {
   // Construction
   //////////////////////////////////////////////////////////////////////////////
 
-  AppFileLoader({bool isStdIn, File file, String text}) {
+  ConfigFileLoader({bool isStdIn, File file, String text}) {
     _file = file;
     _isStdIn = (isStdIn ?? false);
     _lastModifiedStamp = (file?.lastModifiedStampSync() ?? 0);
@@ -156,7 +159,7 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  AppFileLoader loadImportsSync(String paramNameImport) {
+  ConfigFileLoader loadImportsSync(String paramNameImport) {
     if (StringExt.isNullOrBlank(paramNameImport)) {
       return this;
     }
@@ -168,7 +171,7 @@ class AppFileLoader {
       return this;
     }
 
-    var lf = AppFileLoader();
+    var lf = ConfigFileLoader();
 
     _text = _text
       .replaceAll(r'\\', '\x01')
@@ -196,8 +199,8 @@ class AppFileLoader {
   // Methods
   //////////////////////////////////////////////////////////////////////////////
 
-  AppFileLoader loadJsonSync(String path, {String paramNameImport, List<String> appPlainArgs}) {
-    loadSync(path);
+  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {String paramNameImport, List<String> appPlainArgs}) {
+    loadSyncEx(fileInfo);
 
     if (!StringExt.isNullOrBlank(paramNameImport)) {
       loadImportsSync(paramNameImport);
@@ -213,17 +216,21 @@ class AppFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  AppFileLoader loadSync(String pathAndFilter) {
-    var parts = pathAndFilter.split(',');
-    var path = parts[0];
-    var filter = (parts.length > 1 ? parts[1] : null);
+  ConfigFileLoader loadSync(String pathAndFilter) {
+    return loadSyncEx(ConfigFileInfo(pathAndFilter));
+  }
 
-    _isStdIn = (StringExt.isNullOrBlank(path) || (path == StringExt.STDIN_PATH));
-    var displayName = (_isStdIn ? path : '"' + path + '"');
+  //////////////////////////////////////////////////////////////////////////////
+
+  ConfigFileLoader loadSyncEx(ConfigFileInfo fileInfo) {
+    var filePath = fileInfo.filePath;
+
+    _isStdIn = (StringExt.isNullOrBlank(filePath) || (filePath == StringExt.STDIN_PATH));
+    var displayName = (_isStdIn ? filePath : '"' + filePath + '"');
 
     Log.information('Loading ${displayName}');
 
-    _file = (_isStdIn ? null : File(path));
+    _file = (_isStdIn ? null : File(filePath));
 
     if (_file == null) {
       _text = stdin.readAsStringSync();
@@ -238,56 +245,24 @@ class AppFileLoader {
 
     _text = _text.removeJsComments();
 
-    if (!StringExt.isNullOrBlank(filter)) {
-      var jsonData = jsonDecode(_text);
-
-      var steps = filter.split('/');
-
-      var map = jsonData as Map;
-      var stepCount = steps.length;
-
-      dynamic val;
-
-      for (var stepNo = 0; (stepNo < stepCount) && (map != null); stepNo++) {
-        var step = steps[stepNo];
-        val = map[step];
-
-        if (val is List) {
-          ++stepNo;
-
-          if (stepNo == stepCount) {
-            val = null;
-          }
-          else {
-            step = steps[stepNo];
-
-            val = val.firstWhere(
-              (m) => ((m is Map) && m.containsKey(step)),
-              orElse: () => null
-            );
-
-            if ((val == null) || !(val is Map)) {
-              break;
-            }
-
-            val = val[step];
-
-            if (val is Map) {
-              map = val;
-            }
-          }
-        }
-        else if (val is Map) {
-          map = val;
-        }
-        else {
-          val = null;
-          break;
-        }
-      }
-
-      _text = (val == null ? StringExt.EMPTY : jsonEncode(val));
+    if (fileInfo.jsonPath.isEmpty) {
+      _data = jsonDecode(_text);
     }
+    else {
+      var data = <Object>[];
+
+      var jsonPath = JsonPath(fileInfo.jsonPath);
+      var decoded = jsonDecode(_text);
+
+      if ((jsonPath != null) && (decoded != null)) {
+        data.addAll(jsonPath.read(decoded).map((x) => x.value));
+
+        _data = data;
+        _text = (data.isEmpty ? StringExt.EMPTY : jsonEncode(_data));
+      }
+    }
+
+    //filterDataByKey(fileInfo, _data);
 
     return this;
   }

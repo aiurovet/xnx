@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:doul/ext/directory.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
-import 'app_file_loader.dart';
+import 'config_file_loader.dart';
 import 'log.dart';
 import 'options.dart';
 import 'ext/string.dart';
@@ -49,6 +49,7 @@ class Config {
   String paramNameInpSubDir = '{{-inp-sub-dir-}}';
   String paramNameInpSubPath = '{{-inp-sub-path-}}';
   String paramNameImport = '{{-import-}}';
+  String paramNameKey = '{{-key-}}';
   String paramNameOut = '{{-out-}}';
   String paramNameReset = '{{-reset-}}';
   String paramNameThis = '{{-this-}}';
@@ -367,8 +368,8 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   Map<String, Object> loadConfigSync() {
-    var lf = AppFileLoader();
-    lf.loadJsonSync(options.configFilePath, paramNameImport: paramNameImport, appPlainArgs: options.plainArgs);
+    var lf = ConfigFileLoader();
+    lf.loadJsonSync(options.configFileInfo, paramNameImport: paramNameImport, appPlainArgs: options.plainArgs);
 
     lastModifiedStamp = lf.lastModifiedStamp;
 
@@ -588,6 +589,9 @@ class Config {
       }
       else if (k == paramNameImport) {
         paramNameImport = v;
+      }
+      else if (k == paramNameKey) {
+        paramNameKey = v;
       }
       else if (k == paramNameOut) {
         paramNameOut = v;

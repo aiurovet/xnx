@@ -9,6 +9,7 @@ environment:
 dependencies:
   archive: ^2.0.13
   args: ^1.5.3
+  json_path: ^0.2.1
   glob: ^1.2.0
   path: ^1.6.4
   process_run: ^0.10.7

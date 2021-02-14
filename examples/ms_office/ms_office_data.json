@@ -2,37 +2,37 @@
   "x": {
     "rename": {
       "{{-cmd-}}": "{c}",
+      "{{-filter-}}": "{filter}",
       "{{-inp-}}": "{i}",
-      "{{-out-}}": "{o}"
+      "{{-out-}}": "{o}",
+      "{{-key-}}": "{k}"
     },
     "action": [
       {
-        "{d}": "${1}",
-        "{f}": "${2}${3}",
-        "{t}": "${2}-{last-name}-{given-names}${3}",
-
-        "{c}": [
-          "expand-content \"{i}\" \"{o}\"",
-          "sub --zip --move \"{d}\" \"{t}\""
-        ]
+        "{c}": "expand-content \"{i}\" \"{o}\""
       },
 
-      { "data": [
+      {
+        "data": [
           {
+            "{k}": "{full-name}",
+
             "{last-name}": "Ashwood", "{given-names}": "Ann",
             "{full-name}": "{given-names} {last-name}", "{dob}": "1 Jan 1961",
             "{spouse-full-name}": "Alfred {last-name}", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "her",
             "{disease}": "Alzheimer's", "{dr-full-name}": "Archibald Anderson",
 
-            "{i}": "{d}/**", "{o}": "{i}"
+            "{i}": "**", "{o}": "{i}"
           },
           {
+            "{k}": "{full-name}",
+
             "{last-name}": "Bourie", "{given-names}": "Brian",
             "{full-name}": "{given-names} {last-name}", "{dob}": "1 Feb 1952",
             "{spouse-full-name}": "Blanche {last-name}", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "his",
             "{disease}": "Botkin's", "{dr-full-name}": "Benny Balderson",
 
-            "{i}": "{d}/**", "{o}": "{i}"
+            "{i}": "**", "{o}": "{i}"
           }
         ]
       }

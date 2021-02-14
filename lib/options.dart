@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:args/args.dart';
+import 'package:doul/config_file_info.dart';
 import 'package:doul/ext/directory.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
@@ -214,8 +215,8 @@ class Options {
   bool _asXargs;
   bool get asXargs => _asXargs;
 
-  String _configFilePath;
-  String get configFilePath => _configFilePath;
+  ConfigFileInfo _configFileInfo;
+  ConfigFileInfo get configFileInfo => _configFileInfo;
 
   bool _isForced;
   bool get isForced => _isForced;
@@ -267,14 +268,14 @@ class Options {
   String getConfigFullPath(List<String> args) {
     for (var arg in args) {
       if (RE_OPT_CONFIG.hasMatch(arg)) {
-        return configFilePath.getFullPath();
+        return configFileInfo.filePath.getFullPath();
       }
       if (RE_OPT_START_DIR.hasMatch(arg)) {
         break;
       }
     }
 
-    return Path.join(startDirName, configFilePath).getFullPath();
+    return Path.join(startDirName, configFileInfo.filePath).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -285,7 +286,7 @@ class Options {
     var errMsg = StringExt.EMPTY;
     var isHelp = false;
 
-    _configFilePath = null;
+    _configFileInfo = null;
     _startDirName = null;
     _isListOnly = false;
 
@@ -294,6 +295,7 @@ class Options {
     _isCmdMove = false;
     _isCmdMoveNewer = false;
     _isCmdDelete = false;
+
 
     var isLogLevelSet = false;
 
@@ -325,7 +327,7 @@ class Options {
         _startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
       })
       ..addOption(CONFIG['name'], abbr: CONFIG['abbr'], help: CONFIG['help'], valueHelp: CONFIG['valueHelp'], defaultsTo: CONFIG['defaultsTo'], callback: (value) {
-        _configFilePath = value;
+        _configFileInfo = ConfigFileInfo(value);
       })
       ..addFlag(CMD_COPY['name'], help: CMD_COPY['help'], negatable: CMD_COPY['negatable'], callback: (value) {
         _isCmdCopy = value;
@@ -529,33 +531,41 @@ class Options {
 
     _startDirName = Path.canonicalize(_startDirName ?? '');
 
-    if (configFilePath != StringExt.STDIN_PATH) {
-      if (StringExt.isNullOrBlank(_configFilePath)) {
-        _configFilePath = Path.join(_startDirName, Path.basename(_startDirName) + FILE_TYPE_CFG);
+    if (!isCmd) {
+      var filePath = _configFileInfo.filePath;
 
-        if (!File(_configFilePath).existsSync()) {
-            _configFilePath = DirectoryExt.pathListExSync(Path.join(_startDirName, FILE_MASK_CFG)).first ?? StringExt.EMPTY;
+      if (filePath != StringExt.STDIN_PATH) {
+        if (filePath.isEmpty) {
+          filePath = Path.join(_startDirName, Path.basename(_startDirName) + FILE_TYPE_CFG);
+
+          if (!File(filePath).existsSync()) {
+            filePath = DirectoryExt.pathListExSync(Path.join(_startDirName, FILE_MASK_CFG)).first ?? StringExt.EMPTY;
+          }
         }
-      }
-      else if (StringExt.isNullOrBlank(Path.extension(_configFilePath))) {
-        _configFilePath = Path.setExtension(_configFilePath, FILE_TYPE_CFG);
-      }
+        else {
+          if (StringExt.isNullOrBlank(Path.extension(filePath))) {
+            filePath = Path.setExtension(filePath, FILE_TYPE_CFG);
+          }
 
-      if (StringExt.isNullOrBlank(_configFilePath)) {
-        printUsage(parser, error: 'Configuration file is not found');
-      }
+          if (StringExt.isNullOrBlank(filePath)) {
+            printUsage(parser, error: 'Configuration file is not found');
+          }
 
-      if (!Path.isAbsolute(_configFilePath)) {
-        _configFilePath = getConfigFullPath(args);
-      }
+          if (!Path.isAbsolute(filePath)) {
+            filePath = getConfigFullPath(args);
+          }
 
-      var configFile = File(_configFilePath);
+          var configFile = File(filePath);
 
-      if (!configFile.existsSync()) {
-        var dirName = Path.dirname(_configFilePath);
-        var fileName = Path.basename(dirName) + FILE_TYPE_CFG;
+          if (!configFile.existsSync()) {
+            var dirName = Path.dirname(filePath);
+            var fileName = Path.basename(dirName) + FILE_TYPE_CFG;
 
-        _configFilePath = Path.join(dirName, fileName);
+            filePath = Path.join(dirName, fileName);
+          }
+        }
+
+        _configFileInfo.filePath = filePath;
       }
     }
 
