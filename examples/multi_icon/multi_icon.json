@@ -2,23 +2,20 @@
   "x": {
     "rename": {
       "{{-cmd-}}": "{c}",
-      "{{-cur-dir-}}": "{CD}",
+      "{{-cur-dir-}}": "{cur-dir}",
       "{{-can-expand-content-}}": "{CEC}",
       "{{-inp-}}": "{i}",
       "{{-out-}}": "{o}"
     },
     "action": [
-      { "{CEC}": true },
+      {
+        "{CEC}": true, "{img-src-dir}":  "{cur-dir}/svg", "{icons}": [ "edit", "find", "save" ],
+        "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\""
+      },
 
-      { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+      { "{i}": "{cur-dir}/resizer.svg" },
 
-      { "{CD}": ".", "{icons}": [ "edit", "find", "save" ], "{img-src-dir}":  "{CD}/svg" },
-
-      { "{i}": "resizer.svg" },
-
-      { "{d}": [ 20, 40, 80, 160 ], "{a}": "{icons}", "{o}": "png/icon-{a}-{d}x{d}.png" },
-
-      { "": null }
+      { "{d}": [ 20, 40, 80, 160 ], "{action}": "{icons}", "{o}": "png/icon-{action}-{d}x{d}.png" }
     ]
   }
 }

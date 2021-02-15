@@ -276,7 +276,7 @@ class Config {
 
     var params = <String, Object>{};
 
-    var action = all[CFG_ACTION];
+    var action = (all.containsKey(CFG_ACTION) ? all[CFG_ACTION] : (all is List ? all : [all]));
     assert(action is List);
 
     var actions = (action as List);
@@ -373,11 +373,13 @@ class Config {
 
     lastModifiedStamp = lf.lastModifiedStamp;
 
-    if (lf.data is Map) {
-      return (lf.data as Map).values.toList()[0];
+    var data = lf.data;
+
+    if (data is Map) {
+      return data.values.toList()[0];
     }
     else {
-      return lf.data;
+      return <String, Object>{ '+': data };
     }
   }
 

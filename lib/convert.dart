@@ -1,4 +1,5 @@
 import 'dart:cli';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:doul/config_file_loader.dart';
@@ -242,7 +243,13 @@ class Convert {
       }
 
       if (StringExt.isNullOrBlank(command)) {
-        throw Exception('Undefined command for\n\n${mapCurr.toString()}');
+        if (_config.options.isListOnly) {
+          Log.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.RECORD_SEP : StringExt.EMPTY));
+          return true;
+        }
+        else {
+          throw Exception('Undefined command for\n\n${mapCurr.toString()}');
+        }
       }
 
       var outFilePath = (getValue(mapCurr, key: _config.paramNameOut, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY).adjustPath();
@@ -465,7 +472,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       return null;
     }
     else {
-      var outDir = Directory(outDirName);
+      var outDir = Directory(Path.dirname(outFilePath));
 
       if (!outDir.existsSync()) {
         outDir.createSync(recursive: true);

@@ -1,41 +1,33 @@
 {
-  "x": {
-    "rename": {
-      "{{-cmd-}}": "{c}",
-      "{{-filter-}}": "{filter}",
-      "{{-inp-}}": "{i}",
-      "{{-out-}}": "{o}",
-      "{{-key-}}": "{k}"
+  "data": [
+    {
+      "{{-key-}}": "<full-name>",
+
+      "<last-name>": "Ashwood",
+      "<given-names>": "Ann",
+      "<full-name>": "<given-names> <last-name>",
+      "<dob>": "1 Jan 1961",
+      "<spouse-given-names>": "Alfred",
+      "<spouse-full-name>": "Alfred <last-name>",
+      "<spouse-dob>": "2 Jan 1951",
+      "<pronoun>": "he",
+      "<pronoun-att>": "her",
+      "<disease>": "Alzheimer's",
+      "<dr-full-name>": "Archibald Anderson"
     },
-    "action": [
-      {
-        "{c}": "expand-content \"{i}\" \"{o}\""
-      },
+    {
+      "{{-key-}}": "<full-name>",
 
-      {
-        "data": [
-          {
-            "{k}": "{full-name}",
-
-            "{last-name}": "Ashwood", "{given-names}": "Ann",
-            "{full-name}": "{given-names} {last-name}", "{dob}": "1 Jan 1961",
-            "{spouse-full-name}": "Alfred {last-name}", "{spouse-dob}": "2 Jan 1951", "{pronoun}": "he", "{pronoun-att}": "her",
-            "{disease}": "Alzheimer's", "{dr-full-name}": "Archibald Anderson",
-
-            "{i}": "**", "{o}": "{i}"
-          },
-          {
-            "{k}": "{full-name}",
-
-            "{last-name}": "Bourie", "{given-names}": "Brian",
-            "{full-name}": "{given-names} {last-name}", "{dob}": "1 Feb 1952",
-            "{spouse-full-name}": "Blanche {last-name}", "{spouse-dob}": "2 Feb 1962", "{pronoun}": "she", "{pronoun-att}": "his",
-            "{disease}": "Botkin's", "{dr-full-name}": "Benny Balderson",
-
-            "{i}": "**", "{o}": "{i}"
-          }
-        ]
-      }
-    ]
-  }
+      "<last-name>": "Bourie",
+      "<given-names>": "Brian",
+      "<full-name>": "<given-names> <last-name>",
+      "<dob>": "1 Feb 1952",
+      "<spouse-full-name>": "Blanche <last-name>",
+      "<spouse-dob>": "2 Feb 1962",
+      "<pronoun>": "she",
+      "<pronoun-att>": "his",
+      "<disease>": "Botkin's",
+      "<dr-full-name>": "Benny Balderson"
+    }
+  ]
 }

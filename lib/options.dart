@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:doul/config_file_info.dart';
+import 'package:doul/config_file_loader.dart';
 import 'package:doul/ext/directory.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
@@ -14,18 +15,11 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final Map<String, Object> HELP = {
-    'name': 'help',
-    'abbr': 'h',
-    'help': 'this help screen',
+  static final Map<String, Object> APPEND_SEP = {
+    'name': 'append-sep',
+    'abbr': 's',
+    'help': 'append record separator "${ConfigFileLoader.RECORD_SEP}" when filtering input config file (for "${LIST_ONLY['name']}" exclusively)',
     'negatable': false,
-  };
-  static final Map<String, Object> START_DIR = {
-    'name': 'dir',
-    'abbr': 'd',
-    'help': 'startup directory',
-    'valueHelp': 'DIR',
-    'defaultsTo': '.',
   };
   static final Map<String, Object> CONFIG = {
     'name': 'config',
@@ -40,10 +34,16 @@ class Options {
     'help': 'ignore timestamps and force conversion',
     'negatable': false,
   };
+  static final Map<String, Object> HELP = {
+    'name': 'help',
+    'abbr': 'h',
+    'help': 'this help screen',
+    'negatable': false,
+  };
   static final Map<String, Object> LIST_ONLY = {
     'name': 'list-only',
     'abbr': 'l',
-    'help': 'display all commands, but do not execute those',
+    'help': 'display all commands, but do not execute those; if no command specified, then show config',
     'negatable': false,
   };
   static final Map<String, Object> QUIET = {
@@ -51,6 +51,13 @@ class Options {
     'abbr': 'q',
     'help': 'quiet mode (no output except when \"${StringExt.STDOUT_PATH}\" is specified as output)',
     'negatable': false,
+  };
+  static final Map<String, Object> START_DIR = {
+    'name': 'dir',
+    'abbr': 'd',
+    'help': 'startup directory',
+    'valueHelp': 'DIR',
+    'defaultsTo': '.',
   };
   static final Map<String, Object> VERBOSITY = {
     'name': 'verbosity',
@@ -218,6 +225,9 @@ class Options {
   ConfigFileInfo _configFileInfo;
   ConfigFileInfo get configFileInfo => _configFileInfo;
 
+  bool _isAppendSep;
+  bool get isAppendSep => _isAppendSep;
+
   bool _isForced;
   bool get isForced => _isForced;
 
@@ -288,6 +298,7 @@ class Options {
 
     _configFileInfo = null;
     _startDirName = null;
+    _isAppendSep = false;
     _isListOnly = false;
 
     _isCmdCompress = false;
@@ -314,20 +325,23 @@ class Options {
       ..addFlag(XARGS['name'], abbr: XARGS['abbr'], help: XARGS['help'], negatable: XARGS['negatable'], callback: (value) {
         _asXargs = value;
       })
-      ..addFlag(HELP['name'], abbr: HELP['abbr'], help: HELP['help'], negatable: HELP['negatable'], callback: (value) {
-        isHelp = value;
+      ..addOption(CONFIG['name'], abbr: CONFIG['abbr'], help: CONFIG['help'], valueHelp: CONFIG['valueHelp'], defaultsTo: CONFIG['defaultsTo'], callback: (value) {
+        _configFileInfo = ConfigFileInfo(value);
       })
       ..addFlag(LIST_ONLY['name'], abbr: LIST_ONLY['abbr'], help: LIST_ONLY['help'], negatable: LIST_ONLY['negatable'], callback: (value) {
         _isListOnly = value;
       })
+      ..addFlag(APPEND_SEP['name'], abbr: APPEND_SEP['abbr'], help: APPEND_SEP['help'], negatable: APPEND_SEP['negatable'], callback: (value) {
+        _isAppendSep = value;
+      })
       ..addFlag(FORCE_CONVERT['name'], abbr: FORCE_CONVERT['abbr'], help: FORCE_CONVERT['help'], negatable: FORCE_CONVERT['negatable'], callback: (value) {
         _isForced = value;
       })
+      ..addFlag(HELP['name'], abbr: HELP['abbr'], help: HELP['help'], negatable: HELP['negatable'], callback: (value) {
+        isHelp = value;
+      })
       ..addOption(START_DIR['name'], abbr: START_DIR['abbr'], help: START_DIR['help'], valueHelp: START_DIR['valueHelp'], defaultsTo: START_DIR['defaultsTo'], callback: (value) {
         _startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
-      })
-      ..addOption(CONFIG['name'], abbr: CONFIG['abbr'], help: CONFIG['help'], valueHelp: CONFIG['valueHelp'], defaultsTo: CONFIG['defaultsTo'], callback: (value) {
-        _configFileInfo = ConfigFileInfo(value);
       })
       ..addFlag(CMD_COPY['name'], help: CMD_COPY['help'], negatable: CMD_COPY['negatable'], callback: (value) {
         _isCmdCopy = value;

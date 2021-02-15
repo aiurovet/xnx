@@ -16,6 +16,7 @@ class ConfigFileLoader {
   //////////////////////////////////////////////////////////////////////////////
 
   static const String IMP_FILE_KEY_SEP = '_';
+  static const String RECORD_SEP = ',';
 
   static final String ALL_ARGS = r'${@}';
   static final RegExp RE_CMD_LINE_ARG = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([0-9]+))|(\$\{([1-9][0-9]*)\})');
@@ -132,7 +133,7 @@ class ConfigFileLoader {
           loadSync(impPath);
 
           if (fullText.length > 1) {
-            fullText += ',';
+            fullText += RECORD_SEP;
           }
 
           jsonData = jsonDecode(text);
