@@ -5,7 +5,7 @@
 {
   "x": {
     "rename": {
-      "{{-cmd-}}": "{zmd}",
+      "{{-cmd-}}": "{cmd}",
       "{{-cur-dir-}}": "{CD}",
       "{{-can-expand-content-}}": "{CEC}",
       "{{-detect-paths-}}": "{dtp}",
@@ -16,7 +16,7 @@
     "action": [
       { "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}" }, // regular expression
 
-      { "{zmd}": [
+      { "{cmd}": [
         "sub --delete out png svg",
         "sub --mkdir out/linux out/macos out/windows png svg'"
       ] },
@@ -35,7 +35,7 @@
 
       {
         "{CEC}": true,
-        "{zmd}": [
+        "{cmd}": [
           "expand-content \"{inp}\" \"{svg-path}\"",
           "{svg2png}"
         ],
@@ -85,7 +85,7 @@
       },
 
       {
-        "{zmd}": [
+        "{cmd}": [
           "sleep 0.5s",
           "sub --copy \"{png}_16x16.png\" \"{png}_24x24.png\" \"{png}_48x48.png\" \"{png}_96x96.png\" \"{out-lnx}\"",
           "sub --copy \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_48x48.png\" \"{png}_dark_96x96.png\" \"{out-lnx}\"",
@@ -94,15 +94,15 @@
           "convert +antialias \"{png}_16x16.png\" \"{png}_24x24.png\" \"{png}_32x32.png\" \"{png}_48x48.png\" \"{png}_256x256.png\" \"{out-win}.ico\"",
           "convert +antialias \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_32x32.png\" \"{png}_dark_48x48.png\" \"{png}_dark_256x256.png\" \"{out-win}_dark.ico\""
         ],
-        "{png}": "png\\{prj}",
-        "{out-lnx}": "out\\linux",
-        "{out-mac}": "out\\macos\\{prj}",
-        "{out-win}": "out\\windows\\{prj}"
+        "{png}": "png/{prj}",
+        "{out-lnx}": "out/linux/icons",
+        "{out-mac}": "out/macos/icons",
+        "{out-win}": "out/windows/icons"
       },
 
       { "{reset}": null },
 
-      { "{zmd}": "sub --delete png svg" }
+      { "{cmd}": "sub --delete png svg" }
     ]
   }
 }
