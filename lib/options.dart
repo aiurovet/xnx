@@ -604,7 +604,7 @@ ${APP_NAME} [OPTIONS]
 
 ${parser.usage}
 
-See README file for more details or visit https://phrasehacker.wordpress.com/software/doul/
+See README.md file for more details or visit https://phrasehacker.wordpress.com/software/doul/
       ''');
 
     throw Exception(hasError ? error : HELP['name']);

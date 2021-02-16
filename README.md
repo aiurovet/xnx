@@ -1,6 +1,6 @@
 ## doul
 
-**Copyright © Alexander Iurovetski, 2020**
+**Copyright © Alexander Iurovetski, 2020 - 2021**
 
 Command-line utility to run multiple commands against the same input with various parameters, and optionally, to expand placeholders inside the input
 
@@ -13,13 +13,13 @@ doul [OPTIONS]
 -v, --verbosity=<LEVEL>    how much information to show: 0-3
                            (defaults to "1")
 -x, --xargs                treat each plain argument independently (e.g. can pass multiple filenames as arguments)
--h, --help                 this help screen
--l, --list-only            display all commands, but do not execute those
+-c, --config=<FILE>        configuration file in json format
+-l, --list-only            display all commands, but do not execute those; if no command specified, then show config
+-s, --append-sep           append record separator "," when filtering input config file (for "list-only" exclusively)
 -f, --force                ignore timestamps and force conversion
+-h, --help                 this help screen
 -d, --dir=<DIR>            startup directory
                            (defaults to ".")
--c, --config=<FILE>        configuration file in json format
-                           (defaults to "./doul.json")
     --copy                 just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
     --copy-newer           just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
     --move                 just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
@@ -60,7 +60,11 @@ doul [OPTIONS]
      it as an option while running from a batch script, console, or by double-
      clicking a launcher (shortcut) icon. You can specify pathname separators
      in any style (forward slashes as in Unix or backslashes as in Windows),
-     the program will expand all of those depending on the OS it is run under.
+     the program will expand those depending on the OS it is run under. This
+     applies to {{-cur-dir-}}, {{-inp-}}, {{-out-}} as well as any other key,
+     which matches the regular expression pattern in {{-detect-paths-}}. This
+     does not apply to {{-cmd-}} by default, as the forward slashes might
+     represent command-line option character(s) under Windows.
 
 1.2. If the path to config file (option -c, --config) is not absolute, then its
      absolute path will be resolved using either program startup directory, or
@@ -178,75 +182,79 @@ Configuration file is expected in JSON format with the following guidelines:
 
 ```
 {
+  // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
+
   "x": {
     "rename": {
-      "{cmd}": "{c}",
-      "{cur-dir}": "{CD}",
+      "{{-cmd-}}": "{c}",
+      "{{-cur-dir-}}": "{CD}",
       "{{-can-expand-content-}}": "{CEC}",
-      "{inp}": "{i}",
-      "{out}": "{o}"
+      "{{-inp-}}": "{i}",
+      "{{-out-}}": "{o}",
+      "{{-reset-}}": "{x}"
     },
     "action": [
-      { "{CRC}": true },
+      { "{CEC}": true },
 
-      { "#{c}": "firefox --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\"" },
-      { "#{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
-      { "#{c}": "convert \"{i}\" \"{o}\"" },
-      { "#{c}": "inkscape -z -e \"{o}\" -w {w} -h {h} \"{i}\"" },
-      { "{c}": "chrome --headless --default-background-color=0 --window-size={w},{h} --screenshot=\"{o}\" \"file://{i}\"" },
+      // Terribly slow,
+      // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{CD}": "flutter_app", "{img-src-dir}": "{CD}/assets/images" },
+      // Sometimes fails to display svg properly,
+      // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
 
-      { "{i}": "{img-src-dir}/app_bg.svg" },
+      // Not the best quality
+      // { "{c}": "convert \"{i}\" \"{o}\"" },
 
-      { "{w}":  48, "{h}":  48, "{o}": "android/app/src/main/res/drawable-mdpi/ic_launcher_background.png" },
-      { "{w}":  72, "{h}":  72, "{o}": "android/app/src/main/res/drawable-hdpi/ic_launcher_background.png" },
-      { "{w}":  96, "{h}":  96, "{o}": "android/app/src/main/res/drawable-xhdpi/ic_launcher_background.png" },
-      { "{w}": 144, "{h}": 144, "{o}": "android/app/src/main/res/drawable-xxhdpi/ic_launcher_background.png" },
-      { "{w}": 192, "{h}": 192, "{o}": "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_background.png" },
+      // Not the best quality
+      // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
-      { "{i}": "{img-src-dir}/app_fg.svg" },
+      // The most accurate
+      { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{w}":  48, "{h}":  48, "{o}": "android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png" },
-      { "{w}":  72, "{h}":  72, "{o}": "android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png" },
-      { "{w}":  96, "{h}":  96, "{o}": "android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png" },
-      { "{w}": 144, "{h}": 144, "{o}": "android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" },
-      { "{w}": 192, "{h}": 192, "{o}": "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" },
+      { "{CD}": ".", "{img-src-dir}": "{CD}/assets/images" },
 
-      { "{i}": "{img-src-dir}/app.svg" },
+      { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
 
-      { "{w}":  48,  "{h}": 48, "{o}": "android/app/src/main/res/mipmap-mdpi/ic_launcher.png" },
-      { "{w}":  72, "{h}":  72, "{o}": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png" },
-      { "{w}":  96, "{h}":  96, "{o}": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" },
-      { "{w}": 144, "{h}": 144, "{o}": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" },
-      { "{w}": 192, "{h}": 192, "{o}": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" },
+      { "{i}": "{img-src-dir}/app{m}.svg" },
+      { "{ox}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png" },
 
-      { "{w}": 1024, "{h}": 1024, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" },
-      { "{w}": 20, "{h}": 20, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" },
-      { "{w}": 40, "{h}": 40, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" },
-      { "{w}": 60, "{h}": 60, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" },
-      { "{w}": 29, "{h}": 29, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" },
-      { "{w}": 58, "{h}": 58, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" },
-      { "{w}": 87, "{h}": 87, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" },
-      { "{w}": 40, "{h}": 40, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" },
-      { "{w}": 80, "{h}": 80, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" },
-      { "{w}": 120, "{h}": 120, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" },
-      { "{w}": 50, "{h}": 50, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@1x.png" },
-      { "{w}": 100, "{h}": 100, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@2x.png" },
-      { "{w}": 57, "{h}": 57, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@1x.png" },
-      { "{w}": 114, "{h}": 114, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@2x.png" },
-      { "{w}": 120, "{h}": 120, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" },
-      { "{w}": 180, "{h}": 180, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" },
-      { "{w}": 72, "{h}": 72, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@1x.png" },
-      { "{w}": 144, "{h}": 144, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png" },
-      { "{w}": 76, "{h}": 76, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" },
-      { "{w}": 152, "{h}": 152, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" },
-      { "{w}": 167, "{h}": 167, "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" },
+      { "{d}":   48, "{r}": "m",    "{o}": "{ox}" },
+      { "{d}":   72, "{r}": "h",    "{o}": "{ox}" },
+      { "{d}":   96, "{r}": "xh",   "{o}": "{ox}" },
+      { "{d}":  144, "{r}": "xxh",  "{o}": "{ox}" },
+      { "{d}":  192, "{r}": "xxxh", "{o}": "{ox}" },
 
-      { "{w}": 192, "{h}": 192, "{o}": "web/icons/Icon-192.png" },
-      { "{w}": 512, "{h}": 512, "{o}": "web/icons/Icon-512.png" },
+      { "{mm}": null, "{m}": null, "{D}": null }, // discard arrays to avoid repetitions onwards
 
-      { "": null }
+      { "{ox}":  "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png" },
+
+      { "{d}": 1024, "{r}": 1024, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":   20, "{r}":   20, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":   40, "{r}":   20, "{k}": 2, "{o}": "{ox}" },
+      { "{d}":   60, "{r}":   20, "{k}": 3, "{o}": "{ox}" },
+      { "{d}":   29, "{r}":   29, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":   58, "{r}":   29, "{k}": 2, "{o}": "{ox}" },
+      { "{d}":   87, "{r}":   29, "{k}": 3, "{o}": "{ox}" },
+      { "{d}":   40, "{r}":   40, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":   80, "{r}":   40, "{k}": 2, "{o}": "{ox}" },
+      { "{d}":  120, "{r}":   40, "{k}": 3, "{o}": "{ox}" },
+      { "{d}":   50, "{r}":   50, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":  100, "{r}":   50, "{k}": 2, "{o}": "{ox}" },
+      { "{d}":   57, "{r}":   57, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":  114, "{r}":   57, "{k}": 2, "{o}": "{ox}" },
+      { "{d}":   60, "{r}":   60, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":  120, "{r}":   60, "{k}": 2, "{o}": "{ox}" },
+      { "{d}":  180, "{r}":   60, "{k}": 3, "{o}": "{ox}" },
+      { "{d}":   72, "{r}":   72, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":  144, "{r}":   72, "{k}": 2, "{o}": "{ox}" },
+      { "{d}":   76, "{r}":   76, "{k}": 1, "{o}": "{ox}" },
+      { "{d}":  152, "{r}":   76, "{k}": 2, "{o}": "{ox}" },
+      { "{d}":  167, "{r}": 83.5, "{k}": 2, "{o}": "{ox}" },
+
+      { "{ox}":  "web/icons/Icon-{d}.png" },
+
+      { "{d}":  192, "{o}": "{ox}" },
+      { "{d}":  512, "{o}": "{ox}" }
     ]
   }
 }

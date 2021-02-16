@@ -71,9 +71,7 @@
       { "{ox}":  "web/icons/Icon-{d}.png" },
 
       { "{d}":  192, "{o}": "{ox}" },
-      { "{d}":  512, "{o}": "{ox}" }//,
-
-      //{ "{x}": null, "{c}": "sub --delete android ios web", "{i}": "", "{o}": "" }
+      { "{d}":  512, "{o}": "{ox}" }
     ]
   }
 }
