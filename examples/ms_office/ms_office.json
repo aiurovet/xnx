@@ -19,15 +19,13 @@
       "{{-inp-sub-dir-}}": "{inp-sub-dir}",
       "{{-inp-sub-path-}}": "{inp-sub-path}",
       "{{-out-}}": "{out}",
+      "{{-reset-}}": "{reset}",
       "{{-this-}}": "{this}"
     },
     "action": [
       {
         "{can-expand-content}": false
       },
-
-      // import commands
-      { "{{-import-}}": "cmd.json" },
 
       // import data
       { "{{-import-}}": "ms_office_data.json?path=$.data.*" },
@@ -61,12 +59,12 @@
           "sub --delete \"{cfg-curr}\""
         ],
 
-        // Make a signal to start processing (command, input and output files are all defined
+        // Make a signal to start processing (command, input and output files are all defined)
         "{out}": ""
       },
 
       // Stop branching array elements and execute a single command
-      { "reset": null, "{cmd}": "{delete} \"{cur-dir}/unz\"" }
+      { "{reset}": null, "{cmd}": "sub --delete \"{cur-dir}/unz\"" }
     ]
   }
 }

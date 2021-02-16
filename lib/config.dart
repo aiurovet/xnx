@@ -296,7 +296,7 @@ class Config {
       var hasReset = false;
 
       map.forEach((key, value) {
-        if (hasReset || (currRunNo > runNo) || StringExt.isNullOrBlank(key)) {
+        if ((currRunNo > runNo) || StringExt.isNullOrBlank(key)) {
           return;
         }
 
@@ -306,7 +306,7 @@ class Config {
 
         if (key == paramNameReset) { // value is ignored
           ++currRunNo;
-          hasReset = true;
+          hasReset = (currRunNo > runNo);
         }
         else if (currRunNo == runNo) {
           params[key] = valueEx;

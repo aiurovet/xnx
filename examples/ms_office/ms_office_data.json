@@ -1,14 +1,14 @@
 {
   "data": [
     {
-      "{{-key-}}": "<full-name>",
+      //"{{-key-}}": "<full-name>",
 
       "<last-name>": "Ashwood",
       "<given-names>": "Ann",
       "<full-name>": "<given-names> <last-name>",
       "<dob>": "1 Jan 1961",
       "<spouse-given-names>": "Alfred",
-      "<spouse-full-name>": "Alfred <last-name>",
+      "<spouse-full-name>": "<spouse-given-names> <last-name>",
       "<spouse-dob>": "2 Jan 1951",
       "<pronoun>": "he",
       "<pronoun-att>": "her",
@@ -16,13 +16,14 @@
       "<dr-full-name>": "Archibald Anderson"
     },
     {
-      "{{-key-}}": "<full-name>",
+      //"{{-key-}}": "<full-name>",
 
       "<last-name>": "Bourie",
       "<given-names>": "Brian",
       "<full-name>": "<given-names> <last-name>",
       "<dob>": "1 Feb 1952",
-      "<spouse-full-name>": "Blanche <last-name>",
+      "<spouse-given-names>": "Blanche",
+      "<spouse-full-name>": "<spouse-given-names> <last-name>",
       "<spouse-dob>": "2 Feb 1962",
       "<pronoun>": "she",
       "<pronoun-att>": "his",
