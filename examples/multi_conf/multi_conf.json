@@ -1,32 +1,28 @@
 {
-  "x": {
-    "rename": {
-      "{{-can-expand-content-}}": "{CEC}",
-      "{{-cmd-}}": "{c}",
-      "{{-cur-dir-}}": "{CD}",
-      "{{-inp-}}": "{i}",
-      "{{-inp-dir-}}": "{id}",
-      "{{-inp-ext-}}": "{ix}",
-      "{{-inp-name-}}": "{in}",
-      "{{-out-}}": "{o}"
-    },
-    "action": [
-      { "{CEC}": true },
-      { "{c}": "expand-content \"{i}\" \"{o}\"" },
+  "rename": {
+    "{{-can-expand-content-}}": "{CEC}",
+    "{{-cmd-}}": "{c}",
+    "{{-cur-dir-}}": "{CD}",
+    "{{-inp-}}": "{i}",
+    "{{-inp-dir-}}": "{id}",
+    "{{-inp-ext-}}": "{ix}",
+    "{{-inp-name-}}": "{in}",
+    "{{-out-}}": "{o}"
+  },
+  "action": [
+    { "{CEC}": true },
+    { "{c}": "expand-content \"{i}\" \"{o}\"" },
 
-      { "{CD}": "." },
+    { "{i}": "{CD}/template/*settings.json" },
 
-      { "{i}": "{CD}/template/*settings.json" },
+    { "{env}": [
+        { "{envTC}": "Dev",  "{envLC}": "dev"  },
+        { "{envTC}": "Test", "{envLC}": "test" },
+        { "{envTC}": "Prod", "{envLC}": "prod" }
+    ] },
 
-      { "{env}": [
-          { "{envTC}": "Dev",  "{envLC}": "dev"  },
-          { "{envTC}": "Test", "{envLC}": "test" },
-          { "{envTC}": "Prod", "{envLC}": "prod" }
-      ] },
+    { "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envLC}{ix}" },
 
-      { "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envLC}{ix}" },
-
-      { "": null }
-    ]
-  }
+    { "": null }
+  ]
 }

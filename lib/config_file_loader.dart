@@ -263,8 +263,6 @@ class ConfigFileLoader {
       }
     }
 
-    //filterDataByKey(fileInfo, _data);
-
     return this;
   }
 

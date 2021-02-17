@@ -1,70 +1,68 @@
 {
-  "x": {
-    "rename": {
-      // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
-      "{{-cmd-}}": "{cmd}", // ensure it comes alphabetically after {inp} and {out}
-      "{{-cur-dir-}}": "{cur-dir}",
-      "{{-can-expand-content-}}": "{can-expand-content}",
+  "rename": {
+    // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
+    "{{-cmd-}}": "{cmd}", // ensure it comes alphabetically after {inp} and {out}
+    "{{-cur-dir-}}": "{cur-dir}",
+    "{{-can-expand-content-}}": "{can-expand-content}",
 
-      // Allows to get list of files before command, hence a file will
-      // be processed by every command before taking on the next file
-      "{{-early-wildcard-expansion-}}": "{EWE}",
+    // Allows to get list of files before command, hence a file will
+    // be processed by every command before taking on the next file
+    "{{-early-wildcard-expansion-}}": "{EWE}",
 
-      "{{-inp-}}": "{inp}",
-      "{{-inp-dir-}}": "{inp-dir}",
-      "{{-inp-ext-}}": "{inp-ext}",
-      "{{-inp-name-}}": "{inp-name}",
-      "{{-inp-name-ext-}}": "{inp-name-ext}",
-      "{{-inp-path-}}": "{inp-path}",
-      "{{-inp-sub-dir-}}": "{inp-sub-dir}",
-      "{{-inp-sub-path-}}": "{inp-sub-path}",
-      "{{-out-}}": "{out}",
-      "{{-reset-}}": "{reset}",
-      "{{-this-}}": "{this}"
+    "{{-inp-}}": "{inp}",
+    "{{-inp-dir-}}": "{inp-dir}",
+    "{{-inp-ext-}}": "{inp-ext}",
+    "{{-inp-name-}}": "{inp-name}",
+    "{{-inp-name-ext-}}": "{inp-name-ext}",
+    "{{-inp-path-}}": "{inp-path}",
+    "{{-inp-sub-dir-}}": "{inp-sub-dir}",
+    "{{-inp-sub-path-}}": "{inp-sub-path}",
+    "{{-out-}}": "{out}",
+    "{{-reset-}}": "{reset}",
+    "{{-this-}}": "{this}"
+  },
+  "action": [
+    {
+      "{can-expand-content}": false
     },
-    "action": [
-      {
-        "{can-expand-content}": false
-      },
 
-      // import data
-      { "{{-import-}}": "ms_office_data.json?path=$.data.*" },
+    // import data
+    { "{{-import-}}": "ms_office_data.json?path=$.data.*" },
 
-      {
-        "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
-        "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
+    {
+      "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
+      "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
 
-        // Early wildcard expansion
-        "{EWE}": true,
+      // Early wildcard expansion
+      "{EWE}": true,
 
-        // Go through all MS Office input files
-        "{inp}": "inp/*",
+      // Go through all MS Office input files
+      "{inp}": "inp/*",
 
-        "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.json",
+      "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.json",
 
-        "{cmd}": [
-          // Expand template config file
-          "expand-content \"{cur-dir}/ms_office_tmpl.json\" \"{cfg-curr}\"",
+      "{cmd}": [
+        // Expand template config file
+        "expand-content \"{cur-dir}/ms_office_tmpl.json\" \"{cfg-curr}\"",
 
-          // Decompress file
-          "sub --unzip \"{inp}\" \"{unz-dir}\"",
+        // Decompress file
+        "sub --unzip \"{inp}\" \"{unz-dir}\"",
 
-          // Expand placeholders in every decompressed file
-          "sub --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
+        // Expand placeholders in every decompressed file
+        "sub --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
 
-          // Compress back to a single file
-          "sub --zip --move \"{unz-dir}\" \"{out-file}\"",
+        // Compress back to a single file
+        "sub --zip --move \"{unz-dir}\" \"{out-file}\"",
 
-          // Delete temp expanded config file
-          "sub --delete \"{cfg-curr}\""
-        ],
+        // Delete temp expanded config file
+        "sub --delete \"{cfg-curr}\""
+      ],
 
-        // Make a signal to start processing (command, input and output files are all defined)
-        "{out}": ""
-      },
+      // Make a signal to start processing (command, input and output files are all defined)
+      "{out}": ""
+    },
 
-      // Stop branching array elements and execute a single command
-      { "{reset}": null, "{cmd}": "sub --delete \"{cur-dir}/unz\"" }
-    ]
-  }
+    // Stop branching array elements and execute a single command
+    { "{reset}": null, "{cmd}": "sub --delete \"{cur-dir}/unz\"" }
+  ]
 }

@@ -49,7 +49,6 @@ class Config {
   String paramNameInpSubDir = '{{-inp-sub-dir-}}';
   String paramNameInpSubPath = '{{-inp-sub-path-}}';
   String paramNameImport = '{{-import-}}';
-  String paramNameKey = '{{-key-}}';
   String paramNameOut = '{{-out-}}';
   String paramNameReset = '{{-reset-}}';
   String paramNameThis = '{{-this-}}';
@@ -376,7 +375,7 @@ class Config {
     var data = lf.data;
 
     if (data is Map) {
-      return data.values.toList()[0];
+      return data; // .values.toList()[0];
     }
     else {
       return <String, Object>{ '+': data };
@@ -591,9 +590,6 @@ class Config {
       }
       else if (k == paramNameImport) {
         paramNameImport = v;
-      }
-      else if (k == paramNameKey) {
-        paramNameKey = v;
       }
       else if (k == paramNameOut) {
         paramNameOut = v;

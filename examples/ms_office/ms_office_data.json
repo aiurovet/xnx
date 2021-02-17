@@ -1,8 +1,6 @@
 {
   "data": [
     {
-      //"{{-key-}}": "<full-name>",
-
       "<last-name>": "Ashwood",
       "<given-names>": "Ann",
       "<full-name>": "<given-names> <last-name>",
@@ -16,8 +14,6 @@
       "<dr-full-name>": "Archibald Anderson"
     },
     {
-      //"{{-key-}}": "<full-name>",
-
       "<last-name>": "Bourie",
       "<given-names>": "Brian",
       "<full-name>": "<given-names> <last-name>",

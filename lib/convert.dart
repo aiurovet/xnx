@@ -155,26 +155,12 @@ class Convert {
     var isKeyArgsFound = false;
     var mapCurr = <String, String>{};
     var keyArgs = ConfigFileLoader.ALL_ARGS;
-    var configFileInfo = _config.options.configFileInfo;
-    var hasDataKeyFilter = configFileInfo.hasKey;
-    var hasDataKeyMatch = true;
 
     mapOrig.forEach((k, v) {
-      if (hasDataKeyFilter && hasDataKeyMatch && (k == _config.paramNameKey)) {
-        var dataKey = getValue(mapOrig, key: k, mapPrev: mapPrev, canReplace: true);
-
-        if (!configFileInfo.hasMatch(dataKey)) {
-          hasDataKeyMatch = false;
-        }
-      }
       if ((v != null) && v.contains(keyArgs)) {
         isKeyArgsFound = true;
       }
     });
-
-    if (!hasDataKeyMatch) {
-      return true;
-    }
 
     if (StringExt.isNullOrBlank(plainArg)) {
       if (isKeyArgsFound) {
