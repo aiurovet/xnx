@@ -27,10 +27,10 @@
 
       "{this}": "$0",
 
-      "{copy-newer}": "{this} --copy-newer",
-      "{move-newer}": "{this} --move-newer",
-      "{zip}": "{this} --zip",
-      "{unzip}": "{this} --unzip",
+      "{copy-newer}": "sub --copy-newer",
+      "{move-newer}": "sub --move-newer",
+      "{zip}": "sub --zip",
+      "{unzip}": "sub --unzip",
 
       "{rename}": "{move}",
       "{rename-newer}": "{move-newer}",
