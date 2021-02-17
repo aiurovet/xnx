@@ -184,78 +184,76 @@ Configuration file is expected in JSON format with the following guidelines:
 {
   // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
 
-  "x": {
-    "rename": {
-      "{{-cmd-}}": "{c}",
-      "{{-cur-dir-}}": "{CD}",
-      "{{-can-expand-content-}}": "{CEC}",
-      "{{-inp-}}": "{i}",
-      "{{-out-}}": "{o}",
-      "{{-reset-}}": "{x}"
-    },
-    "action": [
-      { "{CEC}": true },
+  "rename": {
+    "{{-cmd-}}": "{c}",
+    "{{-cur-dir-}}": "{CD}",
+    "{{-can-expand-content-}}": "{CEC}",
+    "{{-inp-}}": "{i}",
+    "{{-out-}}": "{o}",
+    "{{-reset-}}": "{x}"
+  },
+  "action": [
+    { "{CEC}": true },
 
-      // Terribly slow,
-      // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+    // Terribly slow,
+    // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      // Sometimes fails to display svg properly,
-      // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
+    // Sometimes fails to display svg properly,
+    // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
 
-      // Not the best quality
-      // { "{c}": "convert \"{i}\" \"{o}\"" },
+    // Not the best quality
+    // { "{c}": "convert \"{i}\" \"{o}\"" },
 
-      // Not the best quality
-      // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+    // Not the best quality
+    // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
-      // The most accurate
-      { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+    // The most accurate
+    { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-      { "{CD}": ".", "{img-src-dir}": "{CD}/assets/images" },
+    { "{CD}": ".", "{img-src-dir}": "{CD}/assets/images" },
 
-      { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
+    { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
 
-      { "{i}": "{img-src-dir}/app{m}.svg" },
-      { "{ox}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png" },
+    { "{i}": "{img-src-dir}/app{m}.svg" },
+    { "{ox}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png" },
 
-      { "{d}":   48, "{r}": "m",    "{o}": "{ox}" },
-      { "{d}":   72, "{r}": "h",    "{o}": "{ox}" },
-      { "{d}":   96, "{r}": "xh",   "{o}": "{ox}" },
-      { "{d}":  144, "{r}": "xxh",  "{o}": "{ox}" },
-      { "{d}":  192, "{r}": "xxxh", "{o}": "{ox}" },
+    { "{d}":   48, "{r}": "m",    "{o}": "{ox}" },
+    { "{d}":   72, "{r}": "h",    "{o}": "{ox}" },
+    { "{d}":   96, "{r}": "xh",   "{o}": "{ox}" },
+    { "{d}":  144, "{r}": "xxh",  "{o}": "{ox}" },
+    { "{d}":  192, "{r}": "xxxh", "{o}": "{ox}" },
 
-      { "{mm}": null, "{m}": null, "{D}": null }, // discard arrays to avoid repetitions onwards
+    { "{mm}": null, "{m}": null, "{D}": null }, // discard arrays to avoid repetitions onwards
 
-      { "{ox}":  "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png" },
+    { "{ox}":  "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png" },
 
-      { "{d}": 1024, "{r}": 1024, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":   20, "{r}":   20, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":   40, "{r}":   20, "{k}": 2, "{o}": "{ox}" },
-      { "{d}":   60, "{r}":   20, "{k}": 3, "{o}": "{ox}" },
-      { "{d}":   29, "{r}":   29, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":   58, "{r}":   29, "{k}": 2, "{o}": "{ox}" },
-      { "{d}":   87, "{r}":   29, "{k}": 3, "{o}": "{ox}" },
-      { "{d}":   40, "{r}":   40, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":   80, "{r}":   40, "{k}": 2, "{o}": "{ox}" },
-      { "{d}":  120, "{r}":   40, "{k}": 3, "{o}": "{ox}" },
-      { "{d}":   50, "{r}":   50, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":  100, "{r}":   50, "{k}": 2, "{o}": "{ox}" },
-      { "{d}":   57, "{r}":   57, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":  114, "{r}":   57, "{k}": 2, "{o}": "{ox}" },
-      { "{d}":   60, "{r}":   60, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":  120, "{r}":   60, "{k}": 2, "{o}": "{ox}" },
-      { "{d}":  180, "{r}":   60, "{k}": 3, "{o}": "{ox}" },
-      { "{d}":   72, "{r}":   72, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":  144, "{r}":   72, "{k}": 2, "{o}": "{ox}" },
-      { "{d}":   76, "{r}":   76, "{k}": 1, "{o}": "{ox}" },
-      { "{d}":  152, "{r}":   76, "{k}": 2, "{o}": "{ox}" },
-      { "{d}":  167, "{r}": 83.5, "{k}": 2, "{o}": "{ox}" },
+    { "{d}": 1024, "{r}": 1024, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":   20, "{r}":   20, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":   40, "{r}":   20, "{k}": 2, "{o}": "{ox}" },
+    { "{d}":   60, "{r}":   20, "{k}": 3, "{o}": "{ox}" },
+    { "{d}":   29, "{r}":   29, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":   58, "{r}":   29, "{k}": 2, "{o}": "{ox}" },
+    { "{d}":   87, "{r}":   29, "{k}": 3, "{o}": "{ox}" },
+    { "{d}":   40, "{r}":   40, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":   80, "{r}":   40, "{k}": 2, "{o}": "{ox}" },
+    { "{d}":  120, "{r}":   40, "{k}": 3, "{o}": "{ox}" },
+    { "{d}":   50, "{r}":   50, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":  100, "{r}":   50, "{k}": 2, "{o}": "{ox}" },
+    { "{d}":   57, "{r}":   57, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":  114, "{r}":   57, "{k}": 2, "{o}": "{ox}" },
+    { "{d}":   60, "{r}":   60, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":  120, "{r}":   60, "{k}": 2, "{o}": "{ox}" },
+    { "{d}":  180, "{r}":   60, "{k}": 3, "{o}": "{ox}" },
+    { "{d}":   72, "{r}":   72, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":  144, "{r}":   72, "{k}": 2, "{o}": "{ox}" },
+    { "{d}":   76, "{r}":   76, "{k}": 1, "{o}": "{ox}" },
+    { "{d}":  152, "{r}":   76, "{k}": 2, "{o}": "{ox}" },
+    { "{d}":  167, "{r}": 83.5, "{k}": 2, "{o}": "{ox}" },
 
-      { "{ox}":  "web/icons/Icon-{d}.png" },
+    { "{ox}":  "web/icons/Icon-{d}.png" },
 
-      { "{d}":  192, "{o}": "{ox}" },
-      { "{d}":  512, "{o}": "{ox}" }
-    ]
-  }
+    { "{d}":  192, "{o}": "{ox}" },
+    { "{d}":  512, "{o}": "{ox}" }
+  ]
 }
 ```
