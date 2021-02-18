@@ -1,4 +1,5 @@
-// Currently, unused
+// Portable way to define OS-specific commands
+// Used via {{-import-}} (see in sub-folders)
 {
   "cmd": [
     // You can specify either just command names, or command names with options, or command names with options and

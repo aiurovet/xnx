@@ -3,14 +3,16 @@
 
   "rename": {
     "{{-cmd-}}": "{c}",
-    "{{-cur-dir-}}": "{CD}",
-    "{{-can-expand-content-}}": "{CEC}",
+    "{{-cur-dir-}}": "{cur-dir}",
+    "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
     "{{-reset-}}": "{x}"
   },
   "action": [
-    { "{CEC}": true },
+    { "{{-import-}}": "../cmd.json" },
+
+    { "{can-expand-content}": true },
 
     // Terribly slow,
     // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
@@ -25,9 +27,9 @@
     // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
     // The most accurate
-    { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+    { "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-    { "{CD}": ".", "{img-src-dir}": "{CD}/assets/images" },
+    { "{cur-dir}": ".", "{img-src-dir}": "{cur-dir}/assets/images" },
 
     { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
 

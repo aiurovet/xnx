@@ -2,14 +2,16 @@
   "rename": {
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{cur-dir}",
-    "{{-can-expand-content-}}": "{CEC}",
+    "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}"
   },
   "action": [
     {
-      "{CEC}": true, "{img-src-dir}":  "{cur-dir}/svg", "{icons}": [ "edit", "find", "save" ],
-      "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\""
+      "{{-import-}}": "../cmd.json",
+
+      "{can-expand-content}": true, "{img-src-dir}":  "{cur-dir}/svg", "{icons}": [ "edit", "find", "save" ],
+      "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\""
     },
 
     { "{i}": "{cur-dir}/resizer.svg" },

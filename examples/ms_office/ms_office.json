@@ -1,13 +1,13 @@
 {
   "rename": {
     // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
-    "{{-cmd-}}": "{cmd}", // ensure it comes alphabetically after {inp} and {out}
+    "{{-cmd-}}": "{cmd}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
 
     // Allows to get list of files before command, hence a file will
     // be processed by every command before taking on the next file
-    "{{-early-wildcard-expansion-}}": "{EWE}",
+    "{{-early-wildcard-expansion-}}": "{early-wildcard-expansion}",
 
     "{{-inp-}}": "{inp}",
     "{{-inp-dir-}}": "{inp-dir}",
@@ -33,8 +33,7 @@
       "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
       "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
 
-      // Early wildcard expansion
-      "{EWE}": true,
+      "{early-wildcard-expansion}": true,
 
       // Go through all MS Office input files
       "{inp}": "inp/*",
