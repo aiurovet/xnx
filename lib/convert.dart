@@ -537,7 +537,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
       else {
         if (v.contains(paramNameCurDir)) {
-          newMap[k] = v.replaceAll(paramNameCurDir, curDirName).adjustPath();
+          newMap[k] = v.replaceAll(paramNameCurDir, curDirName);
         }
 
         newMap[k] = getValue(newMap, key: k, canReplace: true);
@@ -635,23 +635,20 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
               }
             }
 
-            //if ((k != _config.paramNameInp) && (k != _config.paramNameOut)) {
-              value = value.replaceAll(k, v);
+            value = value.replaceAll(k, v);
 
-              var hasPath = false;
+            var hasPath = false;
 
-              if (value.contains(_config.paramNameCurDir)) {
-                value = value.replaceAll(_config.paramNameCurDir, curDirName);
-                hasPath = true;
-              }
-              else {
-                hasPath = (detectPathsRE != null) && detectPathsRE.hasMatch(k) && (k != _config.paramNameDetectPaths);
-              }
+            if (value.contains(_config.paramNameCurDir)) {
+              value = value.replaceAll(_config.paramNameCurDir, curDirName);
+            }
+            else {
+              hasPath = (detectPathsRE != null) && detectPathsRE.hasMatch(k) && (k != _config.paramNameDetectPaths);
+            }
 
-              if (hasPath) {
-                value = value.adjustPath();
-              }
-            //}
+            if (hasPath) {
+              value = value.adjustPath();
+            }
           }
         });
       }
