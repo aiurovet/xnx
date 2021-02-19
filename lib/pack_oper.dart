@@ -35,6 +35,14 @@ class PackOper {
     PackType.Zip: [ '.zip', ],
   };
 
+  static const int DEFAULT_COMPRESSION = Deflate.DEFAULT_COMPRESSION;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Configuration
+  //////////////////////////////////////////////////////////////////////////////
+
+  static int compression = DEFAULT_COMPRESSION;
+
   //////////////////////////////////////////////////////////////////////////////
 
   static void archiveSync({PackType packType, String fromPath, List<String> fromPaths,
@@ -84,7 +92,7 @@ class PackOper {
       tarFileEncoder?.create(toPathExEx);
 
       zipFileEncoder = (isZip ? ZipFileEncoder() : null);
-      zipFileEncoder?.create(toPathExEx);
+      zipFileEncoder?.create(toPathExEx, level: compression);
 
       FileOper.listSync(path: fromPath,
         paths: fromPaths,
@@ -217,11 +225,11 @@ class PackOper {
         break;
       case PackType.Gz:
       case PackType.TarGz:
-        result = GZipEncoder().encode(bytes);
+        result = GZipEncoder().encode(bytes, level: compression);
         break;
       case PackType.Zlib:
       case PackType.TarZlib:
-        result = ZLibEncoder().encode(bytes);
+        result = ZLibEncoder().encode(bytes, level: compression);
         break;
       default:
         throw Exception('Unknown archive type to decode: "${packType ?? StringExt.EMPTY}"');

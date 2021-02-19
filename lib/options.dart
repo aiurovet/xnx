@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:archive/archive.dart';
 import 'package:args/args.dart';
 import 'package:doul/config_file_info.dart';
 import 'package:doul/config_file_loader.dart';
@@ -20,6 +21,13 @@ class Options {
     'abbr': 's',
     'help': 'append record separator "${ConfigFileLoader.RECORD_SEP}" when filtering input config file (for "${LIST_ONLY['name']}" exclusively)',
     'negatable': false,
+  };
+  static final Map<String, Object> COMPRESSION = {
+    'name': 'compression',
+    'abbr': 'p',
+    'help': 'compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2',
+    'valueHelp': 'LEVEL',
+    'defaultsTo': PackOper.DEFAULT_COMPRESSION.toString(),
   };
   static final Map<String, Object> CONFIG = {
     'name': 'config',
@@ -221,6 +229,9 @@ class Options {
 
   bool _asXargs;
   bool get asXargs => _asXargs;
+
+  int _compression;
+  int get compression => _compression;
 
   ConfigFileInfo _configFileInfo;
   ConfigFileInfo get configFileInfo => _configFileInfo;
@@ -507,6 +518,9 @@ class Options {
           _isCmdDecompress = value;
           _archType = null;
         }
+      })
+      ..addOption(COMPRESSION['name'], abbr: COMPRESSION['abbr'], help: COMPRESSION['help'], valueHelp: COMPRESSION['valueHelp'], defaultsTo: COMPRESSION['defaultsTo'], callback: (value) {
+        _compression = int.parse(value);
       })
     ;
 

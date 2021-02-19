@@ -52,6 +52,7 @@ class Convert {
     _config = Config();
     var maps = _config.exec(args);
     _options = _config.options;
+    PackOper.compression = _options.compression;
     var plainArgs = _options.plainArgs;
 
     if ((maps?.isEmpty ?? true) && _options.isCmd) {

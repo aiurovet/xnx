@@ -7,7 +7,7 @@ environment:
   sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
-  archive: ^2.0.13
+  archive: ^3.0.0
   args: ^1.5.3
   json_path: ^0.2.1
   glob: ^1.2.0
