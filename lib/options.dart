@@ -354,6 +354,9 @@ class Options {
       ..addOption(START_DIR['name'], abbr: START_DIR['abbr'], help: START_DIR['help'], valueHelp: START_DIR['valueHelp'], defaultsTo: START_DIR['defaultsTo'], callback: (value) {
         _startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
       })
+      ..addOption(COMPRESSION['name'], abbr: COMPRESSION['abbr'], help: COMPRESSION['help'], valueHelp: COMPRESSION['valueHelp'], defaultsTo: COMPRESSION['defaultsTo'], callback: (value) {
+        _compression = int.parse(value);
+      })
       ..addFlag(CMD_COPY['name'], help: CMD_COPY['help'], negatable: CMD_COPY['negatable'], callback: (value) {
         _isCmdCopy = value;
       })
@@ -518,9 +521,6 @@ class Options {
           _isCmdDecompress = value;
           _archType = null;
         }
-      })
-      ..addOption(COMPRESSION['name'], abbr: COMPRESSION['abbr'], help: COMPRESSION['help'], valueHelp: COMPRESSION['valueHelp'], defaultsTo: COMPRESSION['defaultsTo'], callback: (value) {
-        _compression = int.parse(value);
       })
     ;
 

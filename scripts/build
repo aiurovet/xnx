@@ -48,6 +48,7 @@ echo "Compiling..."
 dart2native "${SRC}" -o "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
 chmod 755 "${EXE}" || exitApp 1 "Failed to grant execution permission to the executable file \"${EXE}\""
 cp -pr "${TOP}/README.md" "${BIN}" || exitApp 1 "Failed to copy readme file to \"${BIN}\""
+${TOP}/scripts/mkicons/mkicons || exitApp 1 "Failed to copy readme file to \"${BIN}\""
 
 exitApp 0
 

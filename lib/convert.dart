@@ -33,6 +33,7 @@ class Convert {
 
   bool canExpandContent;
   RegExp detectPathsRE;
+  bool hasStop;
   bool isExpandContentOnly;
   bool isStdIn;
   bool isStdOut;
@@ -69,6 +70,8 @@ class Convert {
         plainArgs = [ null ];
       }
 
+      hasStop = false;
+
       for (var i = 0, n = plainArgs.length; i < n; i++) {
         var mapPrev = <String, String>{};
         var plainArg = plainArgs[i];
@@ -76,6 +79,9 @@ class Convert {
         for (var mapOrig in maps) {
           if (execMap(plainArg, mapOrig, mapPrev)) {
             isProcessed = true;
+          }
+          if (hasStop) {
+            return;
           }
         }
       }
@@ -152,6 +158,14 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   bool execMap(String plainArg, Map<String, String> mapOrig, Map<String, String> mapPrev) {
+    if (mapOrig.containsKey(_config.paramNameStop)) {
+      hasStop = true;
+      return true;
+    }
+    if (mapOrig.containsKey(_config.paramNameNext)) {
+      return true;
+    }
+
     var isProcessed = false;
     var isKeyArgsFound = false;
     var mapCurr = <String, String>{};
@@ -232,11 +246,8 @@ class Convert {
       if (StringExt.isNullOrBlank(command)) {
         if (_config.options.isListOnly) {
           Log.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.RECORD_SEP : StringExt.EMPTY));
-          return true;
         }
-        else {
-          throw Exception('Undefined command for\n\n${mapCurr.toString()}');
-        }
+        return true;
       }
 
       var outFilePath = (getValue(mapCurr, key: _config.paramNameOut, mapPrev: mapPrev, canReplace: true) ?? StringExt.EMPTY).adjustPath();

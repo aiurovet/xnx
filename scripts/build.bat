@@ -16,6 +16,10 @@ if errorlevel 1 exit /B 1
 call dart2native "%BIN%\main.dart" -o "%BIN_OS%\%PRJ%.exe"
 if errorlevel 1 exit /B 1
 
+set OSTYPE=Windows
+call scripts\mkicons\mkicons
+if errorlevel 1 exit /B 1
+
 copy /Y "README.md" "%BIN_OS%"
 if errorlevel 1 exit /B 1
 

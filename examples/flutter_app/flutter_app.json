@@ -14,7 +14,7 @@
 
     { "{can-expand-content}": true },
 
-    // Terribly slow,
+    // Terribly slow
     // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
     // Sometimes fails to display svg properly,

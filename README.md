@@ -9,44 +9,46 @@ Command-line utility to run multiple commands against the same input with variou
 ```
 doul [OPTIONS]
 
--q, --quiet                quiet mode (no output except when "-" is specified as output)
--v, --verbosity=<LEVEL>    how much information to show: 0-3
-                           (defaults to "1")
--x, --xargs                treat each plain argument independently (e.g. can pass multiple filenames as arguments)
--c, --config=<FILE>        configuration file in json format
--l, --list-only            display all commands, but do not execute those; if no command specified, then show config
--s, --append-sep           append record separator "," when filtering input config file (for "list-only" exclusively)
--f, --force                ignore timestamps and force conversion
--h, --help                 this help screen
--d, --dir=<DIR>            startup directory
-                           (defaults to ".")
-    --copy                 just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
-    --copy-newer           just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
-    --move                 just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
-    --move-newer           just move more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
-    --rename               just the same as --move
-    --rename-newer         just the same as --move-newer
-    --mkdir                just create directories passed as plain arguments
-    --delete               just delete file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
-    --remove               just the same as --delete
-    --bz2                  just compress a single source file to a single destination BZip2 file, can be used with --move
-    --unbz2                just decompress a single BZip2 file to a single destination file, can be used with --move
-    --gz                   just compress a single source file to a single GZip file, can be used with --move
-    --ungz                 just decompress a single GZip file to a single destination file, can be used with --move
-    --tar                  just create a single destination archive file containing source files and/or directories, can be used with --move
-    --untar                just untar a single archive file to a destination directory, can be used with --move
-    --tbz                  just a combination of --tar and --bz2, can be used with --move
-    --untbz                just a combination of --untar and --unbz2, can be used with --move
-    --tgz                  just a combination of --tar and --gz, can be used with --move
-    --untgz                just a combination of --untar and --ungz, can be used with --move
-    --tzl                  just a combination of --tar and --zlib, can be used with --move
-    --untzl                just a combination of --untar and --unzlib, can be used with --move
-    --zip                  just zip source files and/or directories to a single destination archive file, can be used with with --move to delete source to delete source
-    --unzip                just unzip single archive file to destination directory, can be used with with --move to delete source to delete source
-    --zlib                 just compress a single source file to a single ZLib file, can be used with with --move to delete source to delete source
-    --unzlib               just decompress a single ZLib file to a single destination file, can be used with with --move to delete source to delete source
-    --pack                 just compress source files and/or directories to a single destination archive file depending on its extension, can be used with --move
-    --unpack               just decompress a single source archive file to destination files and/or directories depending on source extension, can be used with --move
+-q, --quiet                  quiet mode (no output except when "-" is specified as output)
+-v, --verbosity=<LEVEL>      how much information to show: 0-3
+                             (defaults to "1")
+-x, --xargs                  treat each plain argument independently (e.g. can pass multiple filenames as arguments)
+-c, --config=<FILE>          configuration file in json format
+-l, --list-only              display all commands, but do not execute those; if no command specified, then show config
+-s, --append-sep             append record separator "," when filtering input config file (for "list-only" exclusively)
+-f, --force                  ignore timestamps and force conversion
+-h, --help                   this help screen
+-d, --dir=<DIR>              startup directory
+                             (defaults to ".")
+-p, --compression=<LEVEL>    compression level for archiving-related operations (1..9) excepting BZip2
+                             (defaults to "6")
+    --copy                   just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --copy-newer             just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --move                   just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --move-newer             just move more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --rename                 just the same as --move
+    --rename-newer           just the same as --move-newer
+    --mkdir                  just create directories passed as plain arguments
+    --delete                 just delete file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --remove                 just the same as --delete
+    --bz2                    just compress a single source file to a single destination BZip2 file, can be used with --move
+    --unbz2                  just decompress a single BZip2 file to a single destination file, can be used with --move
+    --gz                     just compress a single source file to a single GZip file, can be used with --move
+    --ungz                   just decompress a single GZip file to a single destination file, can be used with --move
+    --tar                    just create a single destination archive file containing source files and/or directories, can be used with --move
+    --untar                  just untar a single archive file to a destination directory, can be used with --move
+    --tbz                    just a combination of --tar and --bz2, can be used with --move
+    --untbz                  just a combination of --untar and --unbz2, can be used with --move
+    --tgz                    just a combination of --tar and --gz, can be used with --move
+    --untgz                  just a combination of --untar and --ungz, can be used with --move
+    --tzl                    just a combination of --tar and --zlib, can be used with --move
+    --untzl                  just a combination of --untar and --unzlib, can be used with --move
+    --zip                    just zip source files and/or directories to a single destination archive file, can be used with with --move to delete source to delete source
+    --unzip                  just unzip single archive file to destination directory, can be used with with --move to delete source to delete source
+    --zlib                   just compress a single source file to a single ZLib file, can be used with with --move to delete source to delete source
+    --unzlib                 just decompress a single ZLib file to a single destination file, can be used with with --move to delete source to delete source
+    --pack                   just compress source files and/or directories to a single destination archive file depending on its extension, can be used with --move
+    --unpack                 just decompress a single source archive file to destination files and/or directories depending on source extension, can be used with --move
 ```
 
 ##### DETAILS:
@@ -180,22 +182,26 @@ Configuration file is expected in JSON format with the following guidelines:
 
 ##### Full sample configuration file to generate mobile (Flutter) app icons
 
+See the details of the imported file `cmd.json` beyond this configuration
+
 ```
 {
   // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
 
   "rename": {
     "{{-cmd-}}": "{c}",
-    "{{-cur-dir-}}": "{CD}",
-    "{{-can-expand-content-}}": "{CEC}",
+    "{{-cur-dir-}}": "{cur-dir}",
+    "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
     "{{-reset-}}": "{x}"
   },
   "action": [
-    { "{CEC}": true },
+    { "{{-import-}}": "../cmd.json" },
 
-    // Terribly slow,
+    { "{can-expand-content}": true },
+
+    // Terribly slow
     // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
     // Sometimes fails to display svg properly,
@@ -208,9 +214,9 @@ Configuration file is expected in JSON format with the following guidelines:
     // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
     // The most accurate
-    { "{c}": "chrome --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+    { "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-    { "{CD}": ".", "{img-src-dir}": "{CD}/assets/images" },
+    { "{cur-dir}": ".", "{img-src-dir}": "{cur-dir}/assets/images" },
 
     { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
 
@@ -254,6 +260,50 @@ Configuration file is expected in JSON format with the following guidelines:
 
     { "{d}":  192, "{o}": "{ox}" },
     { "{d}":  512, "{o}": "{ox}" }
+  ]
+}
+```
+And here are the details of the imported file `cmd.json`
+```
+// Portable way to define OS-specific commands
+// Used via {{-import-}} (see in sub-folders)
+{
+  "cmd": [
+    // You can specify either just command names, or command names with options, or command names with options and
+    // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
+    {
+      "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
+        "{{-if-}}": { "~": [ "${OSTYPE}", "^DARWIN" ], "{{-then-}}": { // you need to export OSTYPE
+          "{OsType}": "macos",
+          "{chrome}": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        }, "{{-else-}}": {
+          "{OsType}": "linux",
+          "{chrome}": "google-chrome"
+        } },
+        "{copy}": "cp -pr",
+        "{move}": "mv -f",
+        "{delete}": "rm -rf",
+        "{mkdir}": "mkdir -p"
+      }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
+        "{OsType}": "windows",
+        "{copy}": "copy /Y",
+        "{move}": "ren",
+        "{delete}": "del /F/Q/S",
+        "{mkdir}": "mkdir",
+        "{chrome}": "chrome"
+      } } } },
+
+      "{this}": "$0",
+
+      "{copy-newer}": "sub --copy-newer",
+      "{move-newer}": "sub --move-newer",
+      "{zip}": "sub --zip",
+      "{unzip}": "sub --unzip",
+
+      "{rename}": "{move}",
+      "{rename-newer}": "{move-newer}",
+      "{remove}": "{delete}"
+    }
   ]
 }
 ```

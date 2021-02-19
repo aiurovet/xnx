@@ -49,8 +49,10 @@ class Config {
   String paramNameInpSubDir = '{{-inp-sub-dir-}}';
   String paramNameInpSubPath = '{{-inp-sub-path-}}';
   String paramNameImport = '{{-import-}}';
+  String paramNameNext = '{{-next-}}';
   String paramNameOut = '{{-out-}}';
   String paramNameReset = '{{-reset-}}';
+  String paramNameStop = '{{-stop-}}';
   String paramNameThis = '{{-this-}}';
 
   //////////////////////////////////////////////////////////////////////////////
@@ -125,6 +127,10 @@ class Config {
       else if (v is Map) {
         if (k == condNameIf) {
           v = resolveMapForIf(v);
+
+          if (v == null) {
+            return;
+          }
         }
 
         isMapFlat = false;
@@ -439,7 +445,7 @@ class Config {
 
     operName = (!isOperFound ? operNameNri : operName);
     var isNri = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isNei);
+    isOperFound = (isOperFound || isNri);
 
     if (!isOperFound) {
       throw Exception('Unknown conditional operation in "${condNameIf}": "${mapIf}"');
@@ -451,6 +457,10 @@ class Config {
 
     var blockThen = mapIf[condNameThen];
     var blockElse = (mapIf.containsKey(condNameElse) ? mapIf[condNameElse] : null);
+
+    if ((blockThen == null) && (blockElse == null)) {
+      throw Exception('Incomplete IF operation: "${condNameIf}": "${mapIf}"');
+    }
 
     var operands = (mapIf[operName] as List);
 
@@ -544,10 +554,6 @@ class Config {
       }
     }
 
-    if (result == null) {
-      throw Exception('Incomplete IF operation: "${condNameIf}": "${mapIf}"');
-    }
-
     return result;
   }
 
@@ -591,11 +597,17 @@ class Config {
       else if (k == paramNameImport) {
         paramNameImport = v;
       }
+      else if (k == paramNameNext) {
+        paramNameNext = v;
+      }
       else if (k == paramNameOut) {
         paramNameOut = v;
       }
       else if (k == paramNameReset) {
         paramNameReset = v;
+      }
+      else if (k == paramNameStop) {
+        paramNameStop = v;
       }
       else if (k == paramNameThis) {
         paramNameThis = v;
