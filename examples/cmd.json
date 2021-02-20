@@ -11,7 +11,7 @@
           "{chrome}": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
         }, "{{-else-}}": {
           "{OsType}": "linux",
-          "{chrome}": "chrome"
+          "{chrome}": "google-chrome"
         } },
         "{copy}": "cp -pr",
         "{move}": "mv -f",

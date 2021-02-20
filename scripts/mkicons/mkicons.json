@@ -37,7 +37,7 @@
         "{svg2png}": "\"C:\\Program Files\\Inkscape\\inkscape.exe\" -z -e \"{out}\" -w {dim} -h {dim} \"{svg-path}\""
       }, "{{-else-}}": {
         // WINE environment variable is not set
-        "{svg2png}": "google-chrome --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
+        "{svg2png}": "chrome --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
       }
     } },
 
