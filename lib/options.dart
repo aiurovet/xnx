@@ -567,7 +567,8 @@ class Options {
           filePath = Path.join(_startDirName, Path.basename(_startDirName) + FILE_TYPE_CFG);
 
           if (!File(filePath).existsSync()) {
-            filePath = DirectoryExt.pathListExSync(Path.join(_startDirName, FILE_MASK_CFG)).first ?? StringExt.EMPTY;
+            var lst = DirectoryExt.pathListExSync(Path.join(_startDirName, FILE_MASK_CFG));
+            filePath = ((lst.length <= 0 ? null : lst.first) ?? StringExt.EMPTY);
           }
         }
         else {
