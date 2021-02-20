@@ -39,3 +39,7 @@ jobs:
       # want to change this to 'flutter test'.
       ##- name: Run tests
       ##  run: dart test
+
+      # Compilation
+      - name: Compile to native
+        run: dart2native bin/main.dart -o bin/linux/doul
