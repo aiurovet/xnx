@@ -45,8 +45,8 @@ jobs:
         run: dart2native bin/main.dart -o bin/linux/doul
 
       # Extra installation
-      - name: Install Chrome
-        run: scripts/install-chrome
+      - name: Install tools - Chrome, ImageMagick and png2icns
+        run: scripts/install-tools
 
       # Icons
       - name: Create application icons
