@@ -208,7 +208,7 @@ class ConfigFileLoader {
     }
 
     expandCmdLineArgs(appPlainArgs);
-    _text = _text.expandEnvironmentVariables();
+    _text = _text.expandEnvironmentVariables(canEscape: true);
     _data = jsonDecode(_text);
     _text = null;
 

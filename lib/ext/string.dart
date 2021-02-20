@@ -53,7 +53,7 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String expandEnvironmentVariables({List<String> args}) {
+  String expandEnvironmentVariables({List<String> args, bool canEscape = false}) {
     if (ENVIRONMENT == null) {
       _initEnvironmentVariables();
     }
@@ -80,7 +80,9 @@ extension StringExt on String {
         }
 
         if (ENVIRONMENT.containsKey(envVarName)) {
-          return ENVIRONMENT[envVarName];
+          var envExp = ENVIRONMENT[envVarName];
+
+          return (canEscape ? envExp.replaceAll(r'\', r'\\') : envExp);
         }
         else {
           return EMPTY;
