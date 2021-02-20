@@ -44,6 +44,10 @@ jobs:
       - name: Compile to native
         run: dart2native bin/main.dart -o bin/linux/doul
 
+      # Check chrome
+      - name: Check chrome
+        run: which chromium chrome google-chrome
+
       # Icons
       - name: Create application icons
         run: bin/linux/doul -d scripts/mkicons
