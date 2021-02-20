@@ -1,4 +1,6 @@
 import 'dart:core';
+import 'dart:io';
+import 'package:file/local.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as Path;
 
@@ -13,6 +15,10 @@ extension GlobExt on Glob {
   static final RegExp _RE_RECURSIVE = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
   static final RegExp _RE_WILDCARD = RegExp(r'\*|\?|\[[^\]]*\]|\{[^\}]*\}', caseSensitive: false);
   static final RegExp _RE_PATH = RegExp(r'[\/\\]', caseSensitive: false);
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static final _fileSystem = LocalFileSystem();
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -64,6 +70,12 @@ extension GlobExt on Glob {
 
   static bool isRecursive(String pattern) {
     return ((pattern != null) && _RE_RECURSIVE.hasMatch(pattern));
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  List<FileSystemEntity> listSync({String root, bool followLinks = true}) {
+    return listFileSystemSync(_fileSystem, root: root, followLinks: followLinks);
   }
 
   //////////////////////////////////////////////////////////////////////////////
