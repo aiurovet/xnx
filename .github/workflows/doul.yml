@@ -44,6 +44,10 @@ jobs:
       - name: Compile to native
         run: dart2native bin/main.dart -o bin/linux/doul
 
+      # Extra installation
+      - name: Install Chrome
+        run: scripts/install-chrome
+
       # Icons
       - name: Create application icons
         run: bin/linux/doul -d scripts/mkicons
