@@ -20,8 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Chrome 1
-        command: bash -c "
+      - name: Install Chrome
+        run: bash -c "
             apt-get update; apt-get install -y gettext-base;
             echo 'deb http://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/chrome.list;
             wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -;
