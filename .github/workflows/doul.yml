@@ -20,17 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Chrome
-        run: bash -c "
-            apt-get update; apt-get install -y gettext-base;
-            echo 'deb http://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/chrome.list;
-            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -;
-            set -x && apt-get update && apt-get install -y xvfb google-chrome-stable;
-            wget -q -O /usr/bin/xvfb-chrome https://bitbucket.org/atlassian/docker-node-chrome-firefox/raw/ff180e2f16ea8639d4ca4a3abb0017ee23c2836c/scripts/xvfb-chrome;
-            ln -sf /usr/bin/xvfb-chrome /usr/bin/google-chrome;
-            chmod 755 /usr/bin/google-chrome
-        "
-
       - name: Print Dart SDK version
         run: dart --version
 
@@ -55,9 +44,27 @@ jobs:
       - name: Compile to native
         run: dart2native bin/main.dart -o bin/linux/doul
 
-      # Check chrome
-      - name: Check chrome
-        run: which chromium chrome google-chrome
+      # Extra installation
+      - name: Installing Chrome 1 of 7
+        run: apt-get update; apt-get install -y gettext-base
+
+      - name: Installing Chrome 2 of 7
+        run: echo 'deb http://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/chrome.list;
+
+      - name: Installing Chrome 3 of 7
+        run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+
+      - name: Installing Chrome 4 of 7
+        run: set -x && apt-get update && apt-get install -y xvfb google-chrome-stable
+
+      - name: Installing Chrome 5 of 7
+        run: wget -q -O /usr/bin/xvfb-chrome https://bitbucket.org/atlassian/docker-node-chrome-firefox/raw/ff180e2f16ea8639d4ca4a3abb0017ee23c2836c/scripts/xvfb-chrome
+
+      - name: Installing Chrome 6 of 7
+        run: ln -sf /usr/bin/xvfb-chrome /usr/bin/google-chrome
+
+      - name: Installing Chrome 7 of 7
+        run: chmod 755 /usr/bin/google-chrome
 
       # Icons
       - name: Create application icons
