@@ -24,7 +24,7 @@
   "action": [
     {
       "{can-expand-content}": false,
-      "{compression}": "9" // just to show the capability; default is 6
+      "{compression}": 6 // just to show the capability; 6 is the default
     },
 
     // import data
