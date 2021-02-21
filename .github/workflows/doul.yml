@@ -45,7 +45,8 @@ jobs:
         run: dart2native bin/main.dart -o bin/linux/doul
 
       # Extra installation
-      - name: Install tools - Chrome, ImageMagick and png2icns
+      #- name: Install tools - Chrome, ImageMagick and png2icns
+      - name: Install Dart SDK
         run: |
           sudo apt-get update
           sudo apt-get install apt-transport-https
