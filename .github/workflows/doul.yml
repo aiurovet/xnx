@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install apt-transport-https
-          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key --keyring /etc/apt/trusted.gpg.d/docker-apt-key.gpg add'
+          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null'
           sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_beta.list > /etc/apt/sources.list.d/dart_beta.list'
 
       - name: Print Dart SDK version
