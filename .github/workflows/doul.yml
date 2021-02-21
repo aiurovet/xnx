@@ -2,7 +2,7 @@ name: Doul
 
 on:
   push:
-    branches: [ master ] 
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -19,6 +19,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Install Dart SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install apt-transport-https
+          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_beta.list > /etc/apt/sources.list.d/dart_beta.list'
 
       - name: Print Dart SDK version
         run: dart --version
@@ -46,13 +53,6 @@ jobs:
 
       # Extra installation
       #- name: Install tools - Chrome, ImageMagick and png2icns
-      - name: Install Dart SDK
-        run: |
-          sudo apt-get update
-          sudo apt-get install apt-transport-https
-          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
-          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_beta.list > /etc/apt/sources.list.d/dart_beta.list'
-
       # Icons
       - name: Create application icons
         run: bin/linux/doul -d scripts/mkicons
