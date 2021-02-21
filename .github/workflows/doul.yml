@@ -38,6 +38,7 @@ jobs:
           $env:Path = "C:\tools\dart-sdk\bin;" + $env:Path
           refreshenv
           $env:path -split ";"
+          dir C:\tools\dart-sdk\bin
 
       - name: Post-Install Dart SDK on Linux
         if: runner.os == 'linux'
