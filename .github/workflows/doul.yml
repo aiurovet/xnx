@@ -29,6 +29,10 @@ jobs:
       - name: Install Dart SDK
         run: |
           brew install dart-lang/dart/dart-beta
+
+      - name: Post-Install Dart SDK on Linux
+        if: runner.os == 'linux'
+        run: |
           sudo ln -s /usr/lib/dart/bin/dart2native /usr/bin/dart2native
           sudo apt-get update
 
