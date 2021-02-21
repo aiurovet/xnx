@@ -39,7 +39,7 @@ jobs:
           echo Step 8
           which dart
           echo Step 9
-          which dart2native
+          ls -l /usr/lib/dart/bin
           echo Dart installation completed
 
       - name: Print Dart SDK version
