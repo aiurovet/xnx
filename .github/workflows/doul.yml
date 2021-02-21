@@ -26,11 +26,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install icnsutils
 
-      - name: Install Dart SDK
+      - name: Install Dart SDK on Linux and macOS
+        if: runner.os != 'windows'
         run: |
           brew install dart-lang/dart/dart-beta
 
-      #    sudo ln -s /usr/lib/dart/bin/dart2native /usr/bin/dart2native
+      - name: Install Dart SDK on Windows
+        if: runner.os == 'windows'
+        run: |
+          choco install dart-sdk --pre
 
       - name: Post-Install Dart SDK on Linux
         if: runner.os == 'linux'
