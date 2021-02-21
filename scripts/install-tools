@@ -1,22 +1,36 @@
 #!/bin.bash
 
 echo Installing Chrome 1 of 7
+set -x
 apt-get update; apt-get install -y gettext-base
+set +x
 
 echo Installing Chrome 2 of 7
+set -x
 echo 'deb http://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/chrome.list;
+set +x
 
 echo Installing Chrome 3 of 7
+set -x
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+set +x
 
 echo Installing Chrome 4 of 7
-set -x && apt-get update && apt-get install -y xvfb google-chrome-stable
+set -x
+apt-get update && apt-get install -y xvfb google-chrome-stable
+set +x
 
 echo Installing Chrome 5 of 7
+set -x
 wget -q -O /usr/bin/xvfb-chrome https://bitbucket.org/atlassian/docker-node-chrome-firefox/raw/ff180e2f16ea8639d4ca4a3abb0017ee23c2836c/scripts/xvfb-chrome
+set +x
 
 echo Installing Chrome 6 of 7
+set -x
 ln -sf /usr/bin/xvfb-chrome /usr/bin/google-chrome
+set +x
 
 echo Installing Chrome 7 of 7
+set -x
 echo chmod 755 /usr/bin/google-chrome
+set +x
