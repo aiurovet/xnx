@@ -29,9 +29,10 @@ jobs:
           echo Step 3
           sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null'
           echo Step 4
-          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
+          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_testing.list > /etc/apt/sources.list.d/dart_testing.list'
           echo Step 5
-          Dart SDK installation finished
+          sudo apt-get update
+          echo Dart installation completed
 
       - name: Print Dart SDK version
         run: dart --version
