@@ -24,13 +24,17 @@ jobs:
         run: |
           sudo apt-get update
 
-      - name: Install Homebrew
+      #- name: Install Homebrew
+      #  run: |
+      #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+      - name: Install Icnsutils
         run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew install icnsutils
 
       - name: Install Dart SDK
         run: |
-          brew install dart-lang/dart/dart-beta icnsutils
+          brew install dart-lang/dart/dart-beta
           sudo ln -s /usr/lib/dart/bin/dart2native /usr/bin/dart2native
 
 #          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null'
