@@ -46,7 +46,7 @@ jobs:
 
       # Extra installation
       - name: Install tools - Chrome, ImageMagick and png2icns
-        run: scripts/install-tools
+        run: bash -c "scripts/install-tools"
 
       # Icons
       - name: Create application icons
