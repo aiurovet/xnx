@@ -29,6 +29,7 @@ jobs:
       #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
       - name: Install Icnsutils on Linux
+        if: runner.os == 'linux'
         run: sudo apt-get install icnsutils
 
       - name: Install Dart SDK
