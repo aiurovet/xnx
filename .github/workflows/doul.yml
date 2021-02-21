@@ -14,8 +14,8 @@ jobs:
     # Docker images for other release channels - like dev and beta - are also
     # available. See https://hub.docker.com/r/google/dart/ for the available
     # images.
-    container:
-      image:  google/dart:beta
+    ##container:
+    ##  image:  google/dart:beta
 
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +46,11 @@ jobs:
 
       # Extra installation
       - name: Install tools - Chrome, ImageMagick and png2icns
-        run: bash -c "scripts/install-tools"
+        run: |
+          sudo apt-get update
+          sudo apt-get install apt-transport-https
+          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_beta.list > /etc/apt/sources.list.d/dart_beta.list'
 
       # Icons
       - name: Create application icons
