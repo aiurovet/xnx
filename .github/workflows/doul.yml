@@ -31,7 +31,7 @@ jobs:
           echo Step 4
           sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
           echo Step 5
-          sudo apt-get install dart
+          Dart SDK installation finished
 
       - name: Print Dart SDK version
         run: dart --version
