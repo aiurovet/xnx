@@ -33,7 +33,7 @@ jobs:
           echo Step 5
           sudo apt-get update
           echo Step 6
-          sudo apt-get install dart
+          sudo apt-get install dart icnsutils
           echo Step 7
           sudo apt-get update
           echo Step 8
