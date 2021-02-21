@@ -39,6 +39,7 @@ jobs:
           echo Step 8
           which dart
           echo Step 9
+          pwd
           ls -l /usr/bin/dart*
           echo Dart installation completed
 
