@@ -31,7 +31,7 @@ jobs:
           echo Step 4
           sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_testing.list > /etc/apt/sources.list.d/dart_testing.list'
           echo Step 5
-          sudo apt-get -t testing install dart
+          sudo apt-get install dart
           sudo apt-get update
           echo Dart installation completed
 
