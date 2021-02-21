@@ -36,8 +36,8 @@ jobs:
         run: |
           choco install dart-sdk --pre
           refreshenv
-          echo %PATH%
-          dir C:\tools
+          $env:path -split ";"
+          dir C:\tools\dart-sdk\bin
 
       - name: Post-Install Dart SDK on Linux
         if: runner.os == 'linux'
