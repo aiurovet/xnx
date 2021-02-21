@@ -20,31 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Refresh packages
-        run: |
-          sudo apt-get update
-
-      #- name: Install Homebrew
-      #  run: |
-      #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
       - name: Install Icnsutils on Linux
         if: runner.os == 'linux'
-        run: sudo apt-get install icnsutils
+        run: |
+          sudo apt-get update
+          sudo apt-get install icnsutils
 
       - name: Install Dart SDK
         run: |
           brew install dart-lang/dart/dart-beta
           sudo ln -s /usr/lib/dart/bin/dart2native /usr/bin/dart2native
-
-#          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null'
-#          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_testing.list > /etc/apt/sources.list.d/dart_testing.list'
-#          sudo apt-get update
-#          sudo apt-get install dart icnsutils
-#          sudo ln -s /usr/lib/dart/bin/dart2native /usr/bin/dart2native
-
-      - name: Refresh packages
-        run: |
           sudo apt-get update
 
       - name: Print Dart SDK version
