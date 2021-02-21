@@ -30,10 +30,11 @@ jobs:
         run: |
           brew install dart-lang/dart/dart-beta
 
+      #    sudo ln -s /usr/lib/dart/bin/dart2native /usr/bin/dart2native
+
       - name: Post-Install Dart SDK on Linux
         if: runner.os == 'linux'
         run: |
-          sudo ln -s /usr/lib/dart/bin/dart2native /usr/bin/dart2native
           sudo apt-get update
 
       - name: Print Dart SDK version
@@ -60,8 +61,7 @@ jobs:
       - name: Compile to native
         run: dart2native bin/main.dart -o bin/linux/doul
 
-      # Extra installation
-      #- name: Install tools - Chrome, ImageMagick and png2icns
       # Icons
-      - name: Create application icons
+      - name: Create application icons on Linux
+        if: runner.os == 'linux'
         run: bin/linux/doul -d scripts/mkicons
