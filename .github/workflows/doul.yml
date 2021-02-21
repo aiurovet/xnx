@@ -20,19 +20,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-        #sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+#          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null'
+#          echo Step 4
+#          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_beta.list > /etc/apt/sources.list.d/dart_beta.list'
+#          echo Step 5
+#         sudo apt-get install dart
       - name: Install Dart SDK
         run: |
           echo Step 1
           sudo apt-get update
           echo Step 2
-          sudo apt-get install apt-transport-https
+          sudo apt-get install apt-transport-https brew
           echo Step 3
-          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null'
-          echo Step 4
-          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_beta.list > /etc/apt/sources.list.d/dart_beta.list'
-          echo Step 5
-          sudo apt-get install dart
+          sudo brew install dart-beta
 
       - name: Print Dart SDK version
         run: dart --version
