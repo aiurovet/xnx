@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest # [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ubuntu-latest # [ ubuntu-latest, windows-latest, macos-latest ]
 
     # Note that this workflow uses the latest stable version of the Dart SDK.
     # Docker images for other release channels - like dev and beta - are also
@@ -22,25 +22,15 @@ jobs:
 
       - name: Install Dart SDK
         run: |
-          echo Step 1
           sudo apt-get update
-          echo Step 2
           sudo apt-get install apt-transport-https
-          echo Step 3
           sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null'
-          echo Step 4
           sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_testing.list > /etc/apt/sources.list.d/dart_testing.list'
-          echo Step 5
           sudo apt-get update
-          echo Step 6
+          sudo apt-get install build-essential curl file
           sudo apt-get install dart icnsutils
-          echo Step 7
           sudo apt-get update
-          echo Step 8
-          which dart
-          echo Step 9
           sudo ln -s /usr/lib/dart/bin/dart2native /usr/bin/dart2native
-          echo Dart installation completed
 
       - name: Print Dart SDK version
         run: dart --version
