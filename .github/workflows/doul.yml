@@ -35,6 +35,7 @@ jobs:
         if: runner.os == 'windows'
         run: |
           choco install dart-sdk --pre
+          refreshenv
 
       - name: Post-Install Dart SDK on Linux
         if: runner.os == 'linux'
