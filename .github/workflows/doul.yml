@@ -14,6 +14,9 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         
+    env:
+      OSTYPE: ${{ runner.os }}
+
     # Note that this workflow uses the latest stable version of the Dart SDK.
     # Docker images for other release channels - like dev and beta - are also
     # available. See https://hub.docker.com/r/google/dart/ for the available

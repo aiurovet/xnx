@@ -6,11 +6,11 @@
     // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
     {
       "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
-        "{{-if-}}": { "~": [ "${OSTYPE}", "^DARWIN" ], "{{-then-}}": { // you need to export OSTYPE
-          "{OsType}": "macos",
-          "{chrome}": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        "{{-if-}}": { "~/i": [ "${OSTYPE}", "^(Darwin|macOS)" ], "{{-then-}}": { // you need to export OSTYPE
+          "{OsType}": "macOS",
+          "{chrome}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\""
         }, "{{-else-}}": {
-          "{OsType}": "linux",
+          "{OsType}": "Linux",
           "{chrome}": "google-chrome"
         } },
         "{copy}": "cp -pr",
@@ -18,7 +18,7 @@
         "{delete}": "rm -rf",
         "{mkdir}": "mkdir -p"
       }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
-        "{OsType}": "windows",
+        "{OsType}": "Windows",
         "{copy}": "copy /Y",
         "{move}": "ren",
         "{delete}": "del /F/Q/S",

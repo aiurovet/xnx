@@ -10,8 +10,8 @@ workflows:
     scripts:
       - scripts/build
     artifacts:
-      - bin/linux/doul
-      - bin/macos/doul
+      - bin/Linux/doul
+      - bin/macOS/doul
     publishing:
       email:
         recipients:
