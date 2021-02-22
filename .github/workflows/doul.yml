@@ -74,3 +74,19 @@ jobs:
       - name: Create application icons on Linux
         if: runner.os == 'linux'
         run: bin/linux/doul -d scripts/mkicons
+
+      # Integration test 1
+      - name: Integration test 1 - flutter_app
+        run: bin/${{ runner.os }}/doul -d examples/flutter_app
+
+      # Integration test 2
+      - name: Integration test 2 - ms_office
+        run: bin/${{ runner.os }}/doul -d examples/ms_office
+
+      # Integration test 3
+      - name: Integration test 3 - multi_conf
+        run: bin/${{ runner.os }}/doul -d examples/multi_conf
+
+      # Integration test 4
+      - name: Integration test 4 - multi_icon
+        run: bin/${{ runner.os }}/doul -d examples/multi_icon
