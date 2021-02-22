@@ -35,11 +35,7 @@ jobs:
         if: runner.os == 'windows'
         run: |
           choco install dart-sdk --pre
-          $env:Path = "C:\tools\dart-sdk\bin;" + $env:Path
-          refreshenv
-          $env:path -split ";"
-          dir C:\tools\dart-sdk\bin\dart*
-          dart --version
+          echo "C:\tools\dart-sdk\bin" | Out-File - Append-FilePath $env:GITHUB_PATH -Encoding utf8
 
       - name: Post-Install Dart SDK on Linux
         if: runner.os == 'linux'
