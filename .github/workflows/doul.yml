@@ -8,8 +8,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
 
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ] #, macos-latest, windows-latest ]
+        
     # Note that this workflow uses the latest stable version of the Dart SDK.
     # Docker images for other release channels - like dev and beta - are also
     # available. See https://hub.docker.com/r/google/dart/ for the available
@@ -20,19 +24,27 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Dart SDK
+      - name: Install Icnsutils on Linux
+        if: runner.os == 'linux'
         run: |
-          echo Step 1
           sudo apt-get update
-          echo Step 2
-          sudo apt-get install apt-transport-https
-          echo Step 3
-          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null'
-          echo Step 4
-          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_testing.list > /etc/apt/sources.list.d/dart_testing.list'
-          echo Step 5
+          sudo apt-get install icnsutils
+
+      - name: Install Dart SDK on Linux and macOS
+        if: runner.os != 'windows'
+        run: |
+          brew install dart-lang/dart/dart-beta
+
+      - name: Install Dart SDK on Windows
+        if: runner.os == 'windows'
+        run: |
+          choco install dart-sdk --version=2.12.0.259-c-014-beta --pre
+          echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+
+      - name: Post-Install Dart SDK on Linux
+        if: runner.os == 'linux'
+        run: |
           sudo apt-get update
-          echo Dart installation completed
 
       - name: Print Dart SDK version
         run: dart --version
@@ -58,8 +70,23 @@ jobs:
       - name: Compile to native
         run: dart2native bin/main.dart -o bin/linux/doul
 
-      # Extra installation
-      #- name: Install tools - Chrome, ImageMagick and png2icns
       # Icons
-      - name: Create application icons
+      - name: Create application icons on Linux
+        if: runner.os == 'linux'
         run: bin/linux/doul -d scripts/mkicons
+
+      # Integration test 1
+      - name: Integration test 1 - flutter_app
+        run: bin/${{ runner.os }}/doul -d examples/flutter_app
+
+      # Integration test 2
+      - name: Integration test 2 - ms_office
+        run: bin/${{ runner.os }}/doul -d examples/ms_office
+
+      # Integration test 3
+      - name: Integration test 3 - multi_conf
+        run: bin/${{ runner.os }}/doul -d examples/multi_conf
+
+      # Integration test 4
+      - name: Integration test 4 - multi_icon
+        run: bin/${{ runner.os }}/doul -d examples/multi_icon
