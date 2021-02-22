@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ ubuntu-latest ] #, macos-latest, windows-latest ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
         
     # Note that this workflow uses the latest stable version of the Dart SDK.
     # Docker images for other release channels - like dev and beta - are also
@@ -22,11 +22,12 @@ jobs:
     ##  image:  google/dart:beta
 
     steps:
+
+      ################################################################################
+
       - uses: actions/checkout@v2
 
-      # Integration test - pre-test
-      - name: Checking environment
-        run: pwd
+      ################################################################################
 
       - name: Install Icnsutils on Linux
         if: runner.os == 'Linux'
@@ -34,10 +35,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install icnsutils
 
+      ################################################################################
+
       - name: Install Dart SDK on non-Windows OS
         if: runner.os != 'windows'
         run: |
           brew install dart-lang/dart/dart-beta
+
+      ################################################################################
 
       - name: Install Dart SDK on Windows
         if: runner.os == 'windows'
@@ -45,16 +50,24 @@ jobs:
           choco install dart-sdk --version=2.12.0.259-c-014-beta --pre
           echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
+      ################################################################################
+
       - name: Post-Install Dart SDK on Linux
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
 
+      ################################################################################
+
       - name: Print Dart SDK version
         run: dart --version
 
+      ################################################################################
+
       - name: Install dependencies
         run: dart pub get
+
+     ################################################################################
 
       # Uncomment this step to verify the use of 'dart format' on each commit.
       # - name: Verify formatting
@@ -70,7 +83,8 @@ jobs:
       ##- name: Run tests
       ##  run: dart test
 
-      # Compilation
+      ################################################################################
+
       - name: Compile to native (non-Windows)
         if: runner.os != 'Windows'
         run: dart2native bin/main.dart -o bin/${{ runner.os }}/doul
@@ -79,23 +93,30 @@ jobs:
         if: runner.os == 'Windows'
         run: dart2native bin/main.dart -o bin/${{ runner.os }}/doul.exe
 
-      # Icons
+      ################################################################################
+
       - name: Create application icons on Linux
         if: runner.os == 'Linux'
         run: bin/${{ runner.os }}/doul -d scripts/mkicons
 
-      # Integration test 1
-      - name: Integration test 1 - flutter_app
+      ################################################################################
+
+      - name: Integration Test 1 - flutter_app
         run: bin/${{ runner.os }}/doul -d examples/flutter_app
 
-      # Integration test 2
-      - name: Integration test 2 - ms_office
+      ################################################################################
+
+      - name: Integration Test 2 - ms_office
         run: bin/${{ runner.os }}/doul -d examples/ms_office
 
-      # Integration test 3
-      - name: Integration test 3 - multi_conf
+      ################################################################################
+
+      - name: Integration Test 3 - multi_conf
         run: bin/${{ runner.os }}/doul -d examples/multi_conf
 
-      # Integration test 4
-      - name: Integration test 4 - multi_icon
+      ################################################################################
+
+      - name: Integration Test 4 - multi_icon
         run: bin/${{ runner.os }}/doul -d examples/multi_icon
+
+      ################################################################################
