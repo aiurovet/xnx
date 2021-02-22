@@ -34,7 +34,7 @@ jobs:
       - name: Install Dart SDK on Windows
         if: runner.os == 'windows'
         run: |
-          choco install dart-sdk --pre
+          choco install dart-sdk --beta
           echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       - name: Post-Install Dart SDK on Linux
