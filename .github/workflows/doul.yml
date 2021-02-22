@@ -25,12 +25,12 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Icnsutils on Linux
-        if: runner.os == 'linux'
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install icnsutils
 
-      - name: Install Dart SDK on Linux and macOS
+      - name: Install Dart SDK on non-Windows OS
         if: runner.os != 'windows'
         run: |
           brew install dart-lang/dart/dart-beta
@@ -42,7 +42,7 @@ jobs:
           echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       - name: Post-Install Dart SDK on Linux
-        if: runner.os == 'linux'
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
 
@@ -67,13 +67,18 @@ jobs:
       ##  run: dart test
 
       # Compilation
-      - name: Compile to native
-        run: dart2native bin/main.dart -o bin/linux/doul
+      - name: Compile to native (non-Windows)
+        if: runner.os != 'Windows'
+        run: dart2native bin/main.dart -o bin/${{ runner.os }}/doul
+
+      - name: Compile to native (Windows)
+        if: runner.os == 'Windows'
+        run: dart2native bin/main.dart -o bin/${{ runner.os }}/doul.exe
 
       # Icons
       - name: Create application icons on Linux
-        if: runner.os == 'linux'
-        run: bin/linux/doul -d scripts/mkicons
+        if: runner.os == 'Linux'
+        run: bin/${{ runner.os }}/doul -d scripts/mkicons
 
       # Integration test 1
       - name: Integration test 1 - flutter_app

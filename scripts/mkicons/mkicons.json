@@ -26,7 +26,7 @@
 
     { "{cmd}": [
       "sub --delete out png svg",
-      "sub --mkdir ../../bin/linux/icons ../../bin/macos/icons ../../bin/windows/icons png svg'"
+      "sub --mkdir ../../bin/Linux/icons ../../bin/macOS/icons ../../bin/Windows/icons png svg'"
     ] },
 
     { "{reset}": null },
@@ -105,9 +105,9 @@
         "convert +antialias \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_32x32.png\" \"{png}_dark_48x48.png\" \"{png}_dark_256x256.png\" \"{out-win}/{prj}_dark.ico\""
       ],
       "{png}": "png/{prj}",
-      "{out-lnx}": "../../bin/linux/icons",
-      "{out-mac}": "../../bin/macos/icons",
-      "{out-win}": "../../bin/windows/icons"
+      "{out-lnx}": "../../bin/Linux/icons",
+      "{out-mac}": "../../bin/macOS/icons",
+      "{out-win}": "../../bin/Windows/icons"
     },
 
     { "{reset}": null },

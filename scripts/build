@@ -32,11 +32,12 @@ function realpath() {
 TOP=$(dirname "${0}") || exitApp 1 "Failed to determine top directory"
 TOP=$(realpath "${TOP}/../") || exitApp 1
 
-OSL=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
-OSL=$(echo "${OSL}" | tr [:upper:] [:lower:]) || exitApp 1 "Failed to lowercase OS kernel name"
-[[ "${OSL}" == "darwin" ]] && OSL="macos"
+OST=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
+OST=$(echo "${OST}" | tr [:upper:] [:lower:]) || exitApp 1 "Failed to lowercase OS kernel name"
 
-BIN="${TOP}/bin/${OSL}"
+[[ "${OST}" == "darwin" ]] && OST="macOS" || OST="Linux"
+
+BIN="${TOP}/bin/${OST}"
 SRC="${BIN}/../main.dart"
 
 mkdir -p "${BIN}" || exitApp 1 "Failed to create directory \"${BIN}\""
