@@ -106,8 +106,8 @@ jobs:
 
       ################################################################################
 
-      - name: Integration Test 2 - ms_office
-        run: bin/${{ runner.os }}/doul -d examples/ms_office
+      #- name: Integration Test 2 - ms_office
+      #  run: bin/${{ runner.os }}/doul -d examples/ms_office
 
       ################################################################################
 
