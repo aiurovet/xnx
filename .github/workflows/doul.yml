@@ -102,7 +102,9 @@ jobs:
       ################################################################################
 
       - name: Integration Test 1 - flutter_app
-        run: bin/${{ runner.os }}/doul -d examples/flutter_app
+        run: |
+          (Get-Command chrome).Path
+          bin/${{ runner.os }}/doul -d examples/flutter_app
 
       ################################################################################
 
