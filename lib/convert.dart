@@ -269,6 +269,7 @@ class Convert {
         mapCurr[_config.paramNameInpName] = Path.basenameWithoutExtension(inpNameExt);
         mapCurr[_config.paramNameInpPath] = inpFilePathEx;
         mapCurr[_config.paramNameInpSubPath] = inpFilePathEx.substring(subStart);
+print("DBG: HERE");
         mapCurr[_config.paramNameThis] = startCmd;
 
         mapCurr.forEach((k, v) {
