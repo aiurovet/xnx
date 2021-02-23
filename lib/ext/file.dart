@@ -21,8 +21,14 @@ extension FileExt on File {
       var args = Platform.executableArguments;
 
       for (var i = 0, n = args.length; i < n; i++) {
+        var arg = args[i];
+
+        if (escapeQuotes ?? false) {
+          arg = arg.escapeEscapeChar();
+        }
+
         cmd += StringExt.SPACE;
-        cmd += args[i].quote();
+        cmd += arg.quote();
       }
 
       cmd += StringExt.SPACE;

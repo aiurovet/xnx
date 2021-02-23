@@ -53,6 +53,12 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  String escapeEscapeChar() {
+    return replaceAll(r'\', r'\\');
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String expandEnvironmentVariables({List<String> args, bool canEscape = false}) {
     if (ENVIRONMENT == null) {
       _initEnvironmentVariables();
@@ -67,10 +73,10 @@ extension StringExt on String {
       .replaceAllMapped(RE_ENV_VAR_NAME, (match) {
         var envVarName = (match.group(1) ?? match.group(2));
 
-        if (argCount > 0) {
+        if (argCount >= 0) {
           var argNo = int.tryParse(envVarName, radix: 10);
 
-          if (argNo != null) {
+          if ((argNo ?? -1) > 0) {
             return args[argNo - 1];
           }
         }
@@ -82,7 +88,7 @@ extension StringExt on String {
         if (ENVIRONMENT.containsKey(envVarName)) {
           var envExp = ENVIRONMENT[envVarName];
 
-          return (canEscape ? envExp.replaceAll(r'\', r'\\') : envExp);
+          return (canEscape ? envExp.escapeEscapeChar() : envExp);
         }
         else {
           return EMPTY;

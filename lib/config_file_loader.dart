@@ -84,7 +84,7 @@ class ConfigFileLoader {
           if ((argNo > 0) && (argNo <= argCount)) {
             return args[argNo - 1];
           }
-          else if (argNo == 0) {
+          else {
             return startCmd;
           }
         }
