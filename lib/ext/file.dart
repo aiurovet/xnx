@@ -14,7 +14,7 @@ extension FileExt on File {
   //////////////////////////////////////////////////////////////////////////////
 
   static String getStartCommand({bool escapeQuotes = false}) {
-    var cmd = Platform.resolvedExecutable.quote();
+    var cmd = Platform.resolvedExecutable.escapeEscapeChar().quote();
     var scr = Platform.script.path;
 
     if (scr.endsWith('.dart')) {
@@ -32,7 +32,7 @@ extension FileExt on File {
       }
 
       cmd += StringExt.SPACE;
-      cmd += scr.quote();
+      cmd += scr.escapeEscapeChar().quote();
     }
 
     if (escapeQuotes ?? false) {
