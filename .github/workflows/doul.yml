@@ -48,7 +48,7 @@ jobs:
         if: runner.os == 'windows'
         run: |
           choco install dart-sdk --version=2.12.0.259-c-014-beta --pre
-          echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+          echo "C:\tools\dart-sdk\bin;C:\Program Files\Google\Chrome\Application" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
 
@@ -102,10 +102,7 @@ jobs:
       ################################################################################
 
       - name: Integration Test 1 - flutter_app
-        run: |
-          dir "C:\Program Files\Google\Chrome\Application\chrome.exe"
-          $env:path -split ";"
-          bin/${{ runner.os }}/doul -d examples/flutter_app
+        run: bin/${{ runner.os }}/doul -d examples/flutter_app
 
       ################################################################################
 
