@@ -75,7 +75,7 @@ extension GlobExt on Glob {
   //////////////////////////////////////////////////////////////////////////////
 
   List<FileSystemEntity> listSync({String root, bool followLinks = true}) {
-    return listFileSystemSync(_fileSystem, root: root, followLinks: followLinks);
+    return listFileSystemSync(_fileSystem, root: root.adjustPath(), followLinks: followLinks);
   }
 
   //////////////////////////////////////////////////////////////////////////////
