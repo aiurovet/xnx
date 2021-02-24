@@ -208,12 +208,7 @@ class Convert {
         inpFilePath = expandInpNames(inpFilePath, mapPrev);
       }
 
-print('DBG: Before: \"${inpFilePath}\"');
       inpFilePath = inpFilePath.getFullPath();
-print('DBG:  After: \"${inpFilePath}\"');
-    }
-    else {
-print('DBG: No input path');
     }
 
     var subStart = (hasInpFile ? (inpFilePath.length - Path.basename(inpFilePath).length) : 0);
