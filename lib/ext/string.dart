@@ -20,6 +20,8 @@ extension StringExt on String {
   static final String EOT = String.fromCharCode(StringExt.EOT_CODE);
   static const String FALSE_STR = 'false';
   static const String NEWLINE = '\n';
+  static const String PATH_SEP_NIX = r'/';
+  static const String PATH_SEP_WIN = r'\';
   static const String QUOTE_1 = "'";
   static const String QUOTE_2 = '"';
   static const String SPACE = ' ';
@@ -29,6 +31,7 @@ extension StringExt on String {
 
   static final String ESC = r'\'; // must be portable
   static final String ESC_ESC = (ESC + ESC);
+  static final String ESC_PATH_SEP_WIN = (ESC + PATH_SEP_WIN);
   static final String ESC_QUOTE_1 = (ESC + QUOTE_1);
   static final String ESC_QUOTE_2 = (ESC + QUOTE_2);
 
@@ -40,22 +43,15 @@ extension StringExt on String {
 
   static final RegExp RE_CMD_LINE = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
   static final RegExp RE_ENV_VAR_NAME = RegExp(r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9]*)[\}]', caseSensitive: false);
-  static final RegExp RE_PATH_SEP = RegExp(r'[\/\\]');
   static final RegExp RE_PROTOCOL = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String adjustPath() {
-    var adjustedPath = trim().replaceAll(RE_PATH_SEP, PATH_SEP);
-
-    return adjustedPath;
-  }
+  String adjustPath() => trim().replaceAll((IS_WINDOWS ? PATH_SEP_WIN : PATH_SEP_NIX), Path.separator);
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String escapeEscapeChar() {
-    return replaceAll(r'\', r'\\');
-  }
+  String escapeEscapeChar() => replaceAll(ESC, ESC_ESC);
 
   //////////////////////////////////////////////////////////////////////////////
 
