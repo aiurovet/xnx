@@ -48,7 +48,7 @@ jobs:
         if: runner.os == 'windows'
         run: |
           choco install dart-sdk --version=2.12.0.259-c-014-beta --pre
-          echo "C:\tools\dart-sdk\bin;%ProgramFiles%\Google\Chrome\Application" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+          echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
 

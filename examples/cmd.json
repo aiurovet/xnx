@@ -23,7 +23,7 @@
         "{move}": "ren",
         "{delete}": "del /F/Q/S",
         "{mkdir}": "mkdir",
-        "{chrome}": "chrome"
+        "{chrome}": "${ProgramFiles}\\Google\\Chrome\\Application\\chrome.exe"
       } } } },
 
       "{this}": "$0",
