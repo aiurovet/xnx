@@ -17,7 +17,7 @@
         "{move}": "mv -f",
         "{delete}": "rm -rf",
         "{mkdir}": "mkdir -p"
-      }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
+      }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
         "{OsType}": "Windows",
         "{copy}": "copy /Y",
         "{move}": "ren",

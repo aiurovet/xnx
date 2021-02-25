@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:doul/ext/directory.dart';
+import 'package:doul/ext/file_system_entity.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 import 'config_file_loader.dart';
@@ -69,7 +68,8 @@ class Config {
 
   String operNameEq = '==';
   String operNameEqi = '==/i';
-  String operNameExists = 'exists';
+  String operNameExists = '-e';
+  String operNameNotExists = '!-e';
   String operNameGe = '>=';
   String operNameGt = '>';
   String operNameLe = '<=';
@@ -394,10 +394,15 @@ class Config {
     var result = <String, Object>{};
 
     var isOperFound = false;
+    String operName;
 
-    var operName = operNameExists;
+    operName = (!isOperFound ? operNameExists : operName);
     var isExists = (!isOperFound && mapIf.containsKey(operName));
     isOperFound = (isOperFound || isExists);
+
+    operName = (!isOperFound ? operNameNotExists : operName);
+    var isNotExists = (!isOperFound && mapIf.containsKey(operName));
+    isOperFound = (isOperFound || isNotExists);
 
     operName = (!isOperFound ? operNameEq : operName);
     var isEq = (!isOperFound && mapIf.containsKey(operName));
@@ -464,11 +469,17 @@ class Config {
 
     var operands = (mapIf[operName] as List);
 
-    if (isExists) {
+    if (isExists || isNotExists) {
       var operandsEx = (operands == null ? [ mapIf[operName] as String ] : operands);
 
       for (var entityName in operandsEx) {
-        if ((entityName == null) || (!File(entityName).existsSync() && !Directory(entityName).existsSync())) {
+        if (entityName == null) {
+          return blockElse;
+        }
+
+        var isFound = FileSystemEntityExt.tryPatternExistsSync(entityName);
+
+        if ((isExists && !isFound) || (!isExists && isFound)) {
           return blockElse;
         }
       }

@@ -5,13 +5,24 @@
 PRJ_NAME="doul"
 ICO_DIR=$( dirname "${0}" )
 SCR_DIR=$( dirname "${ICO_DIR}" )
-PRJ_EXE="${SCR_DIR}/../bin/linux/${PRJ_NAME}"
 
 ################################################################################
+
+OST=$(uname -s | tr [:upper:] [:lower:])
+
+[[ "${OST}" =~ "darwin|macos" ]] && OST="macOS" || OST="Linux"
+
+printf "\nRunning on ${OST}\n\n"
+
+################################################################################
+
+PRJ_EXE="${SCR_DIR}/../bin/${OST}/${PRJ_NAME}"
 
 if [ ! -f "${PRJ_EXE}" ]; then
   "${SCR_DIR}/build" || exit 1
 fi
+
+################################################################################
 
 "${PRJ_EXE}" -d "${ICO_DIR}" ${@}
 

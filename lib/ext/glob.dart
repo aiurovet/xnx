@@ -62,20 +62,22 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool isGlobPattern(String pattern) {
-    return ((pattern != null) && _RE_WILDCARD.hasMatch(pattern));
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   static bool isRecursive(String pattern) {
     return ((pattern != null) && _RE_RECURSIVE.hasMatch(pattern));
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static bool isGlobPattern(String pattern) {
+    return ((pattern != null) && _RE_WILDCARD.hasMatch(pattern));
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   List<FileSystemEntity> listSync({String root, bool followLinks = true}) {
-    return listFileSystemSync(_fileSystem, root: root, followLinks: followLinks);
+    var lst = listFileSystemSync(_fileSystem, root: root, followLinks: followLinks);
+
+    return lst;
   }
 
   //////////////////////////////////////////////////////////////////////////////

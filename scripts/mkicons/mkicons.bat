@@ -3,9 +3,8 @@
 cd "%~dp0\..\.."
 
 set PRJ_NAME=doul
-set PRJ_EXE=bin\windows\%PRJ_NAME%.exe
+set PRJ_EXE=bin\Windows\%PRJ_NAME%.exe
 
-@echo on
 if not exist "%PRJ_EXE%" (
   echo Executable file "%PRJ_EXE%" not found. Performing build.
   call scripts\build.bat

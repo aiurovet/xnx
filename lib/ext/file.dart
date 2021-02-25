@@ -161,7 +161,7 @@ extension FileExt on File {
   void xferSync(String toPath, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
     // Ensuring source file exists
 
-    if (!existsSync()) {
+    if (!tryExistsSync()) {
       throw Exception('Copy failed, as source file "${path}" was not found');
     }
 

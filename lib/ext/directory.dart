@@ -30,7 +30,7 @@ extension DirectoryExt on Directory {
   List<FileSystemEntity> entityListSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
     var lst = <FileSystemEntity>[];
 
-    if (checkExists && !existsSync()) {
+    if (checkExists && !tryExistsSync()) {
       return lst;
     }
 
@@ -79,7 +79,7 @@ extension DirectoryExt on Directory {
   List<String> pathListSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
     var lst = <String>[];
 
-    if (checkExists && !existsSync()) {
+    if (checkExists && !tryExistsSync()) {
       return lst;
     }
 
@@ -105,10 +105,11 @@ extension DirectoryExt on Directory {
   //////////////////////////////////////////////////////////////////////////////
 
   static List<String> pathListExSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
-    var dir = Directory(pattern);
+    var isGlobPattern = GlobExt.isGlobPattern(pattern);
+    var dir = (isGlobPattern ? null : Directory(pattern));
     List<String> lst;
 
-    if (dir.existsSync()) {
+    if (dir?.existsSync() ?? false) {
       lst = dir.pathListSync(null, checkExists: false, takeDirs: takeDirs, takeFiles: takeFiles);
     }
     else {

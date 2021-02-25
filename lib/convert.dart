@@ -541,10 +541,6 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         }
 
         newMap[k] = getValue(newMap, key: k, canReplace: true);
-
-        if (_config.isParamWithPath(k)) {
-          newMap[k] = newMap[k].getFullPath();
-        }
       }
     });
 
