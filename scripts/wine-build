@@ -15,6 +15,9 @@ function exitApp() {
 
 ################################################################################
 
+[[ "${1}" == "-c" ]] && COPY_ONLY=1 || COPY_ONLY=0
+
+APP=$(basename "${0}") || exitApp 1 "Failed to determine application name"
 TOP=$(dirname $(dirname "${0}")) || exitApp 1 "Failed to determine top directory"
 TOP=$(realpath "${TOP}") || exitApp 1 "Failed to get the full path of the top directory \"${TOP}\""
 
@@ -30,10 +33,12 @@ cp -pr "${TOP}" "${WIN_ABV}" || exitApp 1 "Failed to copy project to Windows dir
 
 echo "Copied the latest version to Windows directory"
 
-wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\scripts\\build" 2>&1 | grep -Piv "\\:fixme\\:" || exitApp 1 "Failed to execute Windows build"
+if (( ${COPY_ONLY} == 0 )); then
+  wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\scripts\\build" 2>&1 | grep -Piv "\\:fixme\\:" || exitApp 1 "Failed to execute Windows build"
 
-rm -rf "${TOP}/bin/Windows"
-cp -pr "${WIN_TOP}/bin/Windows" "${TOP}/bin" || exitApp 1 "Failed to copy Windows build output back to the project"
+  rm -rf "${TOP}/bin/Windows"
+  cp -pr "${WIN_TOP}/bin/Windows" "${TOP}/bin" || exitApp 1 "Failed to copy Windows build output back to the project"
+fi
 
-echo "Successfully completed"
+echo "${APP} successfully completed"
 exit 0
