@@ -123,7 +123,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: upload-artifacts
-          path: bin/${{ runner.os }}/**
+          name: bin-${{ runner.os }}
+          path: bin/${{ runner.os }}/
 
       ################################################################################
