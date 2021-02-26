@@ -598,6 +598,9 @@ class Options {
       }
     }
 
+    StringExt.initEnvironmentVariables();
+    Log.information('OS: ' + StringExt.ENVIRONMENT['OSTYPE'] ?? '<unknown>');
+
     if (!StringExt.isNullOrBlank(_startDirName)) {
         Log.information('Setting current directory to: "${_startDirName}"');
         Directory.current = _startDirName;

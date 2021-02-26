@@ -57,7 +57,7 @@ extension StringExt on String {
 
   String expandEnvironmentVariables({List<String> args, bool canEscape = false}) {
     if (ENVIRONMENT == null) {
-      _initEnvironmentVariables();
+      initEnvironmentVariables();
     }
 
     var argCount = (args?.length ?? 0);
@@ -108,7 +108,7 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void _initEnvironmentVariables() {
+  static void initEnvironmentVariables() {
     ENVIRONMENT = {};
 
     if (IS_WINDOWS) {
