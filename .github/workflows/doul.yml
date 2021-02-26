@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      OSTYPE: ${{ runner.os }}
+      OSTYPE: runner.os
 
 
     strategy:
