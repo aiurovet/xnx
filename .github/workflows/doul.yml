@@ -119,3 +119,11 @@ jobs:
         run: bin/${{ runner.os }}/doul -d examples/multi_icon
 
       ################################################################################
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: upload-artifacts
+          path: bin/${{ runner.os }}/**
+
+      ################################################################################
