@@ -273,7 +273,7 @@ And here are the details of the imported file `cmd.json`
     // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
     {
       "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
-        "{{-if-}}": { "~/i": [ "${OSTYPE}", "^(Darwin|macOS)" ], "{{-then-}}": { // you need to export OSTYPE
+        "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
           "{OsType}": "macOS",
           "{chrome}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\""
         }, "{{-else-}}": {
@@ -284,13 +284,13 @@ And here are the details of the imported file `cmd.json`
         "{move}": "mv -f",
         "{delete}": "rm -rf",
         "{mkdir}": "mkdir -p"
-      }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
+      }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
         "{OsType}": "Windows",
         "{copy}": "copy /Y",
         "{move}": "ren",
         "{delete}": "del /F/Q/S",
         "{mkdir}": "mkdir",
-        "{chrome}": "chrome"
+        "{chrome}": "${ProgramFiles}\\Google\\Chrome\\Application\\chrome.exe"
       } } } },
 
       "{this}": "$0",
