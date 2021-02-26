@@ -40,6 +40,7 @@ jobs:
       - name: Install Dart SDK on non-Windows OS
         if: runner.os != 'windows'
         run: |
+          echo "OS Type: ${OSTYPE}"
           brew install dart-lang/dart/dart-beta
 
       ################################################################################
