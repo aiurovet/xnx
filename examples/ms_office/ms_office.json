@@ -37,7 +37,7 @@
       "{early-wildcard-expansion}": true,
 
       // Go through all MS Office input files
-      "{inp}": "inp/sample1.xlsx",
+      "{inp}": "inp/*",
 
       "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.json",
 
