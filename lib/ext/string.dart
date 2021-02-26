@@ -41,6 +41,8 @@ extension StringExt on String {
   static const String STDOUT_DISP = '<stdout>';
   static const String STDOUT_PATH = StringExt.STDIN_PATH;
 
+  static const String UNKNOWN = '<unknown>';
+
   static final RegExp RE_CMD_LINE = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
   static final RegExp RE_ENV_VAR_NAME = RegExp(r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9]*)[\}]', caseSensitive: false);
   static final RegExp RE_PROTOCOL = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
@@ -57,7 +59,7 @@ extension StringExt on String {
 
   String expandEnvironmentVariables({List<String> args, bool canEscape = false}) {
     if (ENVIRONMENT == null) {
-      initEnvironmentVariables();
+      _initEnvironmentVariables();
     }
 
     var argCount = (args?.length ?? 0);
@@ -100,6 +102,18 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static String getEnvironmentVariable(String key, {String defValue = null}) {
+    if (ENVIRONMENT == null) {
+      _initEnvironmentVariables();
+    }
+
+    var hasKey = StringExt.ENVIRONMENT.containsKey(key);
+
+    return (hasKey ? StringExt.ENVIRONMENT[key] ?? defValue : defValue);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String getFullPath() {
     var fullPath = (this == STDIN_PATH ? this : Path.canonicalize(adjustPath()));
 
@@ -108,7 +122,7 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void initEnvironmentVariables() {
+  static void _initEnvironmentVariables() {
     ENVIRONMENT = {};
 
     if (IS_WINDOWS) {

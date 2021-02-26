@@ -598,8 +598,7 @@ class Options {
       }
     }
 
-    StringExt.initEnvironmentVariables();
-    Log.information('OS: ' + StringExt.ENVIRONMENT['OSTYPE'] ?? '<unknown>');
+    printSystemInfo();
 
     if (!StringExt.isNullOrBlank(_startDirName)) {
         Log.information('Setting current directory to: "${_startDirName}"');
@@ -607,6 +606,12 @@ class Options {
     }
 
     unquotePlainArgs();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void printSystemInfo() {
+    Log.information('OS type: ' + StringExt.getEnvironmentVariable('OSTYPE', defValue: StringExt.UNKNOWN));
   }
 
   //////////////////////////////////////////////////////////////////////////////
