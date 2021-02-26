@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      OSTYPE: ${{ matrix.os }}
+      OSTYPE: ${{ runner.os }}
 
 
     strategy:
@@ -45,7 +45,6 @@ jobs:
       - name: Install Dart SDK on non-Windows OS
         if: runner.os != 'windows'
         run: |
-          echo "OS Type: ${OSTYPE}"
           brew install dart-lang/dart/dart-beta
 
       ################################################################################
@@ -103,7 +102,7 @@ jobs:
       ################################################################################
 
       - name: Integration Test 1 - flutter_app
-        run: bin/${{ runner.os }}/doul -d examples/flutter_app -v 5
+        run: bin/${{ runner.os }}/doul -d examples/flutter_app
 
       ################################################################################
 
