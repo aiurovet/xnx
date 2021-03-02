@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:path/path.dart' as Path;
 import 'ext/glob.dart';
 import 'ext/string.dart';
 
@@ -141,7 +141,7 @@ class XferList {
 
     if (_toEntity != null) {
       if (toPathEx != null) {
-        _fromPaths.removeWhere((fromPath) => (fromPath == toPath));
+        _fromPaths.removeWhere((fromPath) => Path.equals(fromPath, toPath));
       }
     }
 
