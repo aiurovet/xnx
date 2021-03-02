@@ -167,7 +167,7 @@ extension FileExt on File {
 
     // Sanity check
 
-    if (isSamePath(toPath)) {
+    if (Path.equals(path, toPath)) {
       throw Exception('Unable to copy: source and target are the same: "${path}"');
     }
 

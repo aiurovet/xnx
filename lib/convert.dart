@@ -357,7 +357,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     String tmpFilePath;
 
-    if (canExpandContent && (!isExpandContentOnly || (hasInpFile && hasOutFile && (inpFilePath == outFilePath)))) {
+    var isSamePath = (hasInpFile && hasOutFile && Path.equals(inpFilePath, outFilePath));
+
+    if (canExpandContent && (!isExpandContentOnly || isSamePath)) {
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
     }
 
@@ -365,7 +367,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
-    if (!_options.isForced && (inpFilePath != outFilePath) && (outFile != null)) {
+    if (!_options.isForced && hasOutFile && !isSamePath) {
       var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
       if (!isChanged) {
@@ -378,7 +380,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
     }
 
-    if (!isStdOut && (inpFilePath != outFilePath) && (outFile != null)) {
+    if (hasOutFile && !isSamePath) {
       outFile.deleteIfExistsSync();
     }
 
@@ -470,15 +472,32 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       return null;
     }
     else {
-      var outDir = Directory(Path.dirname(outFilePath));
+      var inpFilePath = inpFile.path;
+
+      var inpDirName = Path.dirname(inpFilePath);
+      var inpFileName = Path.basename(inpFilePath);
+
+      var outDirName = Path.dirname(outFilePath);
+      var outFileName = Path.basename(outFilePath);
+
+      if (Path.equals(inpFileName, outFileName)) {
+        outFileName = inpFileName;
+      }
+
+      if (Path.equals(inpDirName, outDirName)) {
+        outDirName = inpDirName;
+      }
+
+      outFilePath = Path.join(outDirName, outFileName);
+
+      var outDir = Directory(outDirName);
 
       if (!outDir.existsSync()) {
         outDir.createSync(recursive: true);
       }
 
       if (Directory(outFilePath).existsSync()) {
-        var inpFilePath = inpFile.path;
-        var outFileName = (inpFilePath.startsWith(curDirName) ? inpFilePath.substring(curDirName.length) : Path.basename(inpFilePath));
+        outFileName = (inpFilePath.startsWith(curDirName) ? inpFilePath.substring(curDirName.length) : Path.basename(inpFilePath));
 
         var rootPrefixLen = Path.rootPrefix(outFileName).length;
 
@@ -494,7 +513,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       tmpFile.deleteIfExistsSync();
       tmpFile.writeAsStringSync(text);
 
-      if (inpFile.path == outFilePath) {
+      if (Path.equals(inpFilePath, outFilePath)) {
         tmpFile.renameSync(outFilePath);
       }
 
@@ -550,7 +569,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   String getActualInpFilePath(String inpFilePath, String outFilePath) {
-    if (isStdIn || (isExpandContentOnly && (inpFilePath != outFilePath)) || !canExpandContent) {
+    if (isStdIn || (isExpandContentOnly && !Path.equals(inpFilePath, outFilePath)) || !canExpandContent) {
       return inpFilePath;
     }
     else if (!isStdOut) {

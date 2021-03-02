@@ -135,7 +135,7 @@ class FileOper {
     var entities = <FileSystemEntity>[];
 
     for (var pathNo = 0; pathNo < pathCount; pathNo++) {
-      var currPath = pathsEx[pathNo];
+      var currPath = pathsEx[pathNo].adjustPath();
       var currDir = Directory(currPath);
       var currDirNameLen = 0;
 

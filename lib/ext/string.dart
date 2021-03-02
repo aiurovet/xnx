@@ -49,7 +49,7 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String adjustPath() => trim().replaceAll((IS_WINDOWS ? PATH_SEP_WIN : PATH_SEP_NIX), Path.separator);
+  String adjustPath() => trim().replaceAll((IS_WINDOWS ? PATH_SEP_NIX : PATH_SEP_WIN), Path.separator);
 
   //////////////////////////////////////////////////////////////////////////////
 
