@@ -106,9 +106,15 @@ jobs:
 
       ################################################################################
 
-      - name: Create application icons on Linux
-        if: runner.os == 'Linux'
+      - name: Create application icons (non-Windows)
+        if: runner.os != 'Windows'
         run: bin/${{ runner.os }}/doul -d scripts/mkicons
+
+      ################################################################################
+
+      - name: Create application icons (Windows)
+        if: runner.os == 'Windows'
+        run: bin\${{ runner.os }}\doul.exe -d scripts\mkicons
 
       ################################################################################
 
