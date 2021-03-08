@@ -47,7 +47,7 @@ jobs:
       - name: Install Dart SDK on non-Windows OS
         if: runner.os != 'windows'
         run: |
-          brew tap dart
+          brew tap dart-lang/dart
           brew install dart
 
       ################################################################################
