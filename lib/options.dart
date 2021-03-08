@@ -57,7 +57,7 @@ class Options {
   static final Map<String, Object> QUIET = {
     'name': 'quiet',
     'abbr': 'q',
-    'help': 'quiet mode (no output except when \"${StringExt.STDOUT_PATH}\" is specified as output)',
+    'help': 'quiet mode (no output, same as verbosity 0)',
     'negatable': false,
   };
   static final Map<String, Object> START_DIR = {
@@ -70,9 +70,9 @@ class Options {
   static final Map<String, Object> VERBOSITY = {
     'name': 'verbosity',
     'abbr': 'v',
-    'help': 'how much information to show: 0-3',
+    'help': 'how much information to show (0-6): quiet, errors, stdout, some info, warnings, any info, debug',
     'valueHelp': 'LEVEL',
-    'defaultsTo': '1',
+    'defaultsTo': '3',
   };
   static final Map<String, Object> XARGS = {
     'name': 'xargs',
@@ -330,7 +330,7 @@ class Options {
       })
       ..addOption(VERBOSITY['name'], abbr: VERBOSITY['abbr'], help: VERBOSITY['help'], valueHelp: VERBOSITY['valueHelp'], defaultsTo: VERBOSITY['defaultsTo'], callback: (value) {
         if (!isLogLevelSet) {
-          Log.userLevel = int.parse(value);
+          Log.level = int.parse(value);
         }
       })
       ..addFlag(XARGS['name'], abbr: XARGS['abbr'], help: XARGS['help'], negatable: XARGS['negatable'], callback: (value) {

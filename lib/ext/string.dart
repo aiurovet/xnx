@@ -182,28 +182,29 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<String> splitCommandLine({int skipCharCount = 0}) {
-    var line = ((skipCharCount ?? 0) == 0 ? this : substring(skipCharCount));
+  List<String> splitCommandLine({bool canValidate}) {
     var args = <String>[];
 
-    line.replaceAll(ESC_ESC, '\x01')
-        .replaceAll(ESC_QUOTE_1, '\x02')
-        .replaceAll(ESC_QUOTE_2, '\x03')
-        .replaceAllMapped(RE_CMD_LINE, (match) {
-          var s = match.group(2);
+    this
+      .replaceAll(ESC_ESC, '\x01')
+      .replaceAll(ESC_QUOTE_1, '\x02')
+      .replaceAll(ESC_QUOTE_2, '\x03')
+      .replaceAllMapped(RE_CMD_LINE, (match) {
+        var s = match.group(2);
+
+        if (StringExt.isNullOrBlank(s)) {
+          s = match.group(4);
 
           if (StringExt.isNullOrBlank(s)) {
-            s = match.group(4);
-
-            if (StringExt.isNullOrBlank(s)) {
-              s = match.group(6);
-            }
+            s = match.group(6);
           }
+        }
 
-          args.add(s.trim());
+        s = s.trim();
+        args.add(s);
 
-          return s;
-        })
+        return s;
+      })
     ;
 
     return args;

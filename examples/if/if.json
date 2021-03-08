@@ -1,0 +1,23 @@
+{
+  "rename": {
+    "{{-cmd-}}": "{c}",
+    "{{-inp-}}": "{i}",
+    "{{-out-}}": "{o}"
+  },
+  "action": [
+    {
+      "{OsType}": "?",
+
+      "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
+        "{OsType}": "Linux",
+        "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
+          "{OsType}": "macOS"
+        } }
+      }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
+        "{OsType}": "Windows"
+      } } } }
+    },
+
+    { "{c}": "echo {OsType}" }
+  ]
+}

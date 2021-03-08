@@ -304,9 +304,9 @@ Output dir:  "${outDirName}"
 Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         ''');
 
-      if (isStdOut && !isExpandContentOnly) {
-        throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
-      }
+      // if (isStdOut && !isExpandContentOnly) {
+      //   throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
+      // }
 
       var isOK = execFile(command, inpFilePathEx, outFilePathEx, mapCurr);
 
@@ -385,12 +385,17 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     }
 
     if (canExpandContent) {
+      if (StringExt.isNullOrBlank(inpFilePath)) {
+        throw new Exception("Unable to expand file '${inpFilePath}' for command ${command}");
+      }
       expandInpContent(inpFile, outFilePath, tmpFilePath, map);
     }
 
     command = (getValue(map, value: command, canReplace: true) ?? StringExt.EMPTY);
 
-    if (tmpFilePath != null) {
+    var tmpFile = (tmpFilePath != null ? new File(tmpFilePath) : null);
+
+    if (tmpFile != null) {
       command = command.replaceAll(map[_config.paramNameInp], tmpFilePath);
     }
 
@@ -404,29 +409,61 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       return true;
     }
 
+    var oldCurDir = Directory.current;
+
     try {
-      if (command.startsWith(Config.CMD_SUB + StringExt.SPACE)) {
-        var oldCurDir = Directory.current;
-        Doul.exec(command.splitCommandLine(skipCharCount: Config.CMD_SUB.length));
-        Directory.current = oldCurDir;
+      if (StringExt.isNullOrBlank(command)) {
+        // Shouldn't happen, but just in case
+        return true;
+      }
+
+      var cli = command.splitCommandLine();
+
+      if (cli[0] == Config.CMD_SUB) {
+        Doul.exec(cli.sublist(1));
       }
       else {
-        var exitCodes = waitFor<List<ProcessResult>>(
-            Shell(verbose: isVerbose, runInShell: false).run(command));
+        var results = waitFor<List<ProcessResult>>(
+          Shell(
+            verbose: false,
+            commandVerbose: false,
+            commentVerbose: false,
+            runInShell: false
+          ).run(command)
+        );
 
-        if (exitCodes.any((x) => (x.exitCode != 0))) {
+        var result = (results?.isNotEmpty ?? false ? results[0] : null);
+        var isSuccess = ((result?.exitCode == 0) ?? false);
+
+        if (!isSuccess) {
+          if (result != null) {
+            if (result.stderr.isNotEmpty) {
+              Log.error(result.stderr);
+            }
+            if (result.stdout.isNotEmpty) {
+              Log.out(result.stdout);
+            }
+          }
           throw Exception('Command failed${isVerbose ? StringExt.EMPTY : '\n\n${command}\n\n'}');
+        }
+
+        if (result.stderr.isNotEmpty) {
+          Log.warning(result.stderr);
+        }
+        if (result.stdout.isNotEmpty) {
+          Log.out(result.stdout);
         }
       }
     }
-    catch (e) {
+    on Error catch (e) {
       throw Exception(e.toString());
     }
-
-    if (tmpFilePath != null) {
-      var tmpFile = File(tmpFilePath);
-
-      tmpFile.deleteIfExistsSync();
+    on Exception catch (e) {
+      throw Exception(e.toString());
+    }
+    finally {
+      tmpFile?.deleteIfExistsSync();
+      Directory.current = oldCurDir;
     }
 
     return true;

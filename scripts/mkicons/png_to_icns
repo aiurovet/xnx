@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -d "/Applications" ]; then
+    OUT_PATH="${1}"
+    shift
+    iconutil -c icns "${OUT_PATH}" "${@}"
+else
+    png2icns ${@}
+fi
+
+exit ${?}
+

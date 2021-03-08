@@ -13,7 +13,7 @@ class Doul {
       exec(args);
       isOK = true;
     }
-    on ArgumentError catch (e, stackTrace) {
+    on Error catch (e, stackTrace) {
       isOK = onError(e?.toString(), stackTrace);
     }
     on Exception catch (e, stackTrace) {
@@ -42,7 +42,7 @@ class Doul {
         return false;
       }
 
-      var errDtl = (Log.isDetailed ? '\n\n' + stackTrace?.toString() : StringExt.EMPTY);
+      var errDtl = (Log.level >= Log.LEVEL_DEBUG ? '\n\n' + stackTrace?.toString() : StringExt.EMPTY);
       errMsg = '\n*** ERROR: ${errMsg}${errDtl}\n';
 
       Log.error(errMsg);

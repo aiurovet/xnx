@@ -34,6 +34,8 @@ class Config {
   Options options = Options();
   int runNo = 0;
 
+  Map<String, Object> _straight;
+
   String paramNameCanExpandContent = '{{-can-expand-content-}}';
   String paramNameCmd = '{{-cmd-}}';
   String paramNameCurDir = '{{-cur-dir-}}';
@@ -145,6 +147,7 @@ class Config {
       }
       else {
         cloneMap[k] = v;
+        _straight[k] = v;
       }
     });
 
@@ -186,9 +189,11 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   bool addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map, hasReset) {
-    var isReady = ((map != null) && (hasReset || deepContainsKeys(map, [paramNameInp, paramNameOut]) || deepContainsKeys(map, [StringExt.EMPTY])));
+    var isReady = ((map != null) && (hasReset || deepContainsKeys(map, [paramNameCmd, paramNameInp, paramNameOut])));
 
     if (isReady) {
+      Log.debug('...adding to the list of actions');
+
       addFlatMapsToList(listOfMaps, map);
       map.remove(paramNameOut);
     }
@@ -280,6 +285,7 @@ class Config {
     Log.information('Processing actions for run #$runNo');
 
     var params = <String, Object>{};
+    _straight = {};
 
     var action = (all.containsKey(CFG_ACTION) ? all[CFG_ACTION] : (all is List ? all : [all]));
     assert(action is List);
@@ -288,6 +294,7 @@ class Config {
     var result = <Map<String, String>>[];
 
     var currRunNo = 1;
+    var isParamsAdded = false;
 
     actions.forEach((map) {
       if (currRunNo > runNo) {
@@ -319,9 +326,9 @@ class Config {
       });
 
       if (params.isNotEmpty) {
-        Log.debug('...adding to the list of actions');
+        isParamsAdded = addMapsToList(result, params, hasReset);
 
-        if (addMapsToList(result, params, hasReset) && hasReset) {
+        if (isParamsAdded && hasReset) {
           params = <String, Object>{};
           hasReset = false;
         }
@@ -330,13 +337,31 @@ class Config {
       Log.debug('...completed row processing');
     });
 
-    if ((currRunNo >= runNo) && params.isNotEmpty) {
+    if ((currRunNo >= runNo) && !isParamsAdded && params.isNotEmpty) {
       addMapsToList(result, params, true);
     }
 
     Log.information('\nAdded ${result.length} rules\n');
 
     return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String expandWithStraight(String value) {
+    if (value == null) {
+      return value;
+    }
+
+    for (var oldValue = StringExt.EMPTY; oldValue != value; oldValue = value) {
+      _straight.forEach((k, v) {
+        if (value.contains(k)) {
+          value = value.replaceAll(k, v.toString());
+        }
+      });
+    }
+
+    return value;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -477,7 +502,8 @@ class Config {
           return blockElse;
         }
 
-        var isFound = FileSystemEntityExt.tryPatternExistsSync(entityName);
+        var entityNameEx = expandWithStraight(entityName);
+        var isFound = FileSystemEntityExt.tryPatternExistsSync(entityNameEx);
 
         if ((isExists && !isFound) || (!isExists && isFound)) {
           return blockElse;
@@ -499,8 +525,8 @@ class Config {
     var o2 = operands[1];
 
     if (isStringOper) {
-      o1 = o1.toString();
-      o2 = o2.toString();
+      o1 = expandWithStraight(o1.toString());
+      o2 = expandWithStraight(o2.toString());
 
       if (isIgnoreCase && !isRegExpMatch) {
         o1 = o1.toUpperCase();

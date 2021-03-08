@@ -1,4 +1,4 @@
-name: Doul 
+name: Doul
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
     ##  image:  google/dart:beta
 
     steps:
-    
+
       ################################################################################
 
       - uses: actions/checkout@v2
@@ -45,23 +45,22 @@ jobs:
       - name: Install Dart SDK on non-Windows OS
         if: runner.os != 'windows'
         run: |
-          brew install dart-lang/dart/dart-beta
+          brew install dart
 
       ################################################################################
 
       - name: Install ImageMagick on Windows
         if: runner.os == 'windows'
         run: |
-          choco install imagemagick.app
+          choco --no-progress install imagemagick.app
           echo "%ProgramFiles%\ImageMagick-7.0.11-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-          convert
 
       ################################################################################
 
       - name: Install Dart SDK on Windows
         if: runner.os == 'windows'
         run: |
-          choco install dart-sdk --version=2.12.0.259-c-014-beta --pre
+          choco --no-progress install dart-sdk --version=2.12.0.259-c-014-beta --pre
           echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################

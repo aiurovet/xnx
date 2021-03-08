@@ -31,7 +31,12 @@
 
     { "{cur-dir}": ".", "{img-src-dir}": "{cur-dir}/assets/images" },
 
-    { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
+    {
+      "{mm}": [
+        { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" },
+        { "{m}": "", "{D}": "mipmap" }
+      ]
+    },
 
     { "{i}": "{img-src-dir}/app{m}.svg" },
     { "{ox}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png" },

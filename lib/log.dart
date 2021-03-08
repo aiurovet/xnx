@@ -10,21 +10,15 @@ class Log {
   static const String FORMAT_DEFAULT = null;
   static const String FORMAT_SIMPLE = '[${STUB_TIME}] [${STUB_LEVEL}] ${STUB_MESSAGE}';
 
-  static const int LEVEL_OUT_INFO = -2;
-  static const int LEVEL_OUT = -1;
   static const int LEVEL_SILENT = 0;
-  static const int LEVEL_FATAL = 2;
-  static const int LEVEL_ERROR = 3;
+  static const int LEVEL_ERROR = 1;
+  static const int LEVEL_OUT = 2;
+  static const int LEVEL_OUT_INFO = 3;
   static const int LEVEL_WARNING = 4;
   static const int LEVEL_INFORMATION = 5;
   static const int LEVEL_DEBUG = 6;
 
-  static const int LEVEL_DEFAULT = LEVEL_WARNING;
-
-  static const int USER_LEVEL_SILENT = 0;
-  static const int USER_LEVEL_DEFAULT = 1;
-  static const int USER_LEVEL_DETAILED = 2;
-  static const int USER_LEVEL_ULTIMATE = 3;
+  static const int LEVEL_DEFAULT = LEVEL_OUT_INFO;
 
   static final RegExp RE_PREFIX = RegExp(r'^', multiLine: true);
 
@@ -39,26 +33,12 @@ class Log {
     _level = value < 0 ? LEVEL_WARNING :
              value >= LEVEL_DEBUG ? LEVEL_DEBUG : value;
 
-  static int get userLevel =>
-    _level == LEVEL_SILENT ? USER_LEVEL_SILENT :
-    _level >= LEVEL_DEBUG ? USER_LEVEL_ULTIMATE :
-    _level >= LEVEL_INFORMATION ? USER_LEVEL_DETAILED : USER_LEVEL_DEFAULT;
-
-  static set userLevel(int value) =>
-    _level = value <= USER_LEVEL_SILENT ? LEVEL_SILENT :
-             value >= USER_LEVEL_ULTIMATE ? LEVEL_DEBUG :
-             value == USER_LEVEL_DETAILED ? LEVEL_INFORMATION : LEVEL_WARNING;
-
   static void debug(String data) {
     print(data, LEVEL_DEBUG);
   }
 
   static void error(String data) {
     print(data, LEVEL_ERROR);
-  }
-
-  static void fatal(String data) {
-    print(data, LEVEL_FATAL);
   }
 
   static String formatMessage(String msg) {
@@ -79,9 +59,9 @@ class Log {
     return (_level >= minLevel);
   }
 
-  static bool get isDetailed => (_level >= LEVEL_INFORMATION);
-
   static bool get isDefault => (_level == LEVEL_DEFAULT);
+
+  static bool get isDetailed => (_level >= LEVEL_INFORMATION);
 
   static bool get isSilent => (_level == LEVEL_SILENT);
 
@@ -95,7 +75,6 @@ class Log {
     switch (level) {
       case LEVEL_DEBUG: return 'DBG';
       case LEVEL_ERROR: return 'ERR';
-      case LEVEL_FATAL: return 'FTL';
       case LEVEL_INFORMATION: return 'INF';
       case LEVEL_WARNING: return 'WRN';
       default: return StringExt.EMPTY;
@@ -111,17 +90,14 @@ class Log {
   }
 
   static void print(String msg, int level) {
-    if (((_level == LEVEL_SILENT) && (level != LEVEL_OUT)) || (level == LEVEL_SILENT) || (msg == null)) {
+    if ((level > _level) || (msg == null)) {
       return;
     }
 
     if (level == LEVEL_OUT) {
       stdout.writeln(msg);
     }
-    else if (level == LEVEL_OUT_INFO) {
-      stderr.writeln(msg);
-    }
-    else if (level <= _level) {
+    else {
       stderr.writeln(_format == null ? msg : formatMessage(msg));
     }
   }

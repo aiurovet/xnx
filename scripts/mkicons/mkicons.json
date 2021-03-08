@@ -15,31 +15,37 @@
     "{{-stop-}}": "{stop}" // stop immediately
   },
   "action": [
+//    {
+//      // Application icons creation is currently not supported on MacOS and Windows
+//      "{{-if-}}": { "~/i": [ "${OsType}", "macOS|Windows" ], "{{-then-}}": {
+//        "{stop}": null
+//      } }
+//    },
+
     {
       // Application icons creation is currently not supported on MacOS and Windows
-      "{{-if-}}": { "~/i": [ "${OSTYPE}", "darwin|windows" ], "{{-then-}}": {
+      "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
+        "{cmd}": "echo Creating icons under Wine is not supported",
+        "{inp}": "",
+        "{out}": "",
         "{stop}": null
       } }
     },
 
-    { "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}" }, // regular expression
+    {
+      "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}",
 
-    { "{cmd}": [
-      "sub --delete out png svg",
-      "sub --mkdir ../../bin/Linux/icons ../../bin/macOS/icons ../../bin/Windows/icons png svg'"
-    ] },
-
-    { "{reset}": null },
+      "{cmd}": [
+        "sub --delete out png svg",
+        "sub --mkdir ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark png svg"
+      ]
+    },
 
     {
-      "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
-        // WINE environment variable is set
-        "{svg2png}": "\"C:\\Program Files\\Inkscape\\inkscape.exe\" -z -e \"{out}\" -w {dim} -h {dim} \"{svg-path}\""
-      }, "{{-else-}}": {
-        // WINE environment variable is not set
-        "{svg2png}": "google-chrome --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
-      }
-    } },
+      "{reset}": null,
+      "{{-import-}}": "../../examples/cmd.json",
+      "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
+    },
 
     {
       "{can-expand-content}": true,
@@ -48,7 +54,6 @@
         "{svg2png}"
       ],
       "{dim-name}": "{icon-name}_{dim}x{dim}",
-      "{png-path}": "{cur-dir}/png/{dim-name}.png",
       "{svg-path}": "{cur-dir}/svg/{dim-name}.svg"
     },
 
@@ -56,8 +61,8 @@
       "{prj}": "doul",
       "{inp}": "{prj}.svg",
       "{icon}": [
-        { "{icon-name}": "{prj}",      "{icon-fill}": "white", "{icon-stroke}": "black" },
-        { "{icon-name}": "{prj}_dark", "{icon-fill}": "black", "{icon-stroke}": "white" }
+        { "{icon-name}": "icon_{prj}",      "{icon-fill}": "white", "{icon-stroke}": "black", "{png-path}": "{cur-dir}/png/core/{dim-name}.png"},
+        { "{icon-name}": "icon_{prj}_dark", "{icon-fill}": "black", "{icon-stroke}": "white", "{png-path}": "{cur-dir}/png/dark/{dim-name}.png"}
       ]
     },
 
@@ -90,24 +95,38 @@
       "{reset}": null,
       "{dtp}": "\\{out|\\{png\\}", // repeat after reset
       "{prj}": "doul",
+      "{icon-name}": "icon_{prj}",
+      "{icon-dir}": "../../bin/{OsType}/icons",
+      "{{-import-}}": "../../examples/cmd.json",
 
-      "{cmd}": [
-        // Short delay to ensure all images created
-        "sleep 0.5s",
-        // Copy png icons to Linux icons folder
-        "sub --copy \"{png}_16x16.png\" \"{png}_24x24.png\" \"{png}_48x48.png\" \"{png}_96x96.png\" \"{out-lnx}\"",
-        "sub --copy \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_48x48.png\" \"{png}_dark_96x96.png\" \"{out-lnx}\"",
-        // Generate icns file in the Mac icons folder
-        "png2icns \"{out-mac}/{prj}.icns\" \"{png}_16x16.png\" \"{png}_32x32.png\" \"{png}_128x128.png\" \"{png}_256x256.png\" \"{png}_512x512.png\" \"{png}_1024x1024.png\"",
-        "png2icns \"{out-mac}/{prj}_dark.icns\" \"{png}_dark_16x16.png\" \"{png}_dark_32x32.png\" \"{png}_dark_128x128.png\" \"{png}_dark_256x256.png\" \"{png}_dark_512x512.png\" \"{png}_dark_1024x1024.png\"",
-        // Generate ico file in the Windows icons folder
-        "convert +antialias \"{png}_16x16.png\" \"{png}_24x24.png\" \"{png}_32x32.png\" \"{png}_48x48.png\" \"{png}_256x256.png\" \"{out-win}/{prj}.ico\"",
-        "convert +antialias \"{png}_dark_16x16.png\" \"{png}_dark_24x24.png\" \"{png}_dark_32x32.png\" \"{png}_dark_48x48.png\" \"{png}_dark_256x256.png\" \"{out-win}/{prj}_dark.ico\""
-      ],
-      "{png}": "png/{prj}",
-      "{out-lnx}": "../../bin/Linux/icons",
-      "{out-mac}": "../../bin/macOS/icons",
-      "{out-win}": "../../bin/Windows/icons"
+      "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
+        "{cmd}": [
+          // Short delay to ensure all images created
+          "{sleep_0_5s}",
+          // Copy png icons to Linux icons folder
+          "echo sub --move \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_48x48.png\" \"{png-core}_96x96.png\" \"{icon-dir}/core\"",
+          "echo sub --move \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_48x48.png\" \"{png-dark}_96x96.png\" \"{icon-dir}/dark\""
+        ]
+      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
+        "{cmd}": [
+          // Short delay to ensure all images created
+          "{sleep_0_5s}",
+          // Copy png icons  to Linux icons folder
+          "echo iconutil -c icns \"{icon-dir}/core/{icon-name}.icns\" \"{png-core}\"",
+          "echo iconutil -c icns \"{icon-dir}/dark/{icon-name}_dark.icns\" \"{png-dark}\""
+        ]
+      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
+        "{cmd}": [
+          // Short delay to ensure all images created
+          "{sleep_0_5s}",
+          // Generate ico file in the Windows icons folder
+          "echo {convert} +antialias \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_32x32.png\" \"{png-core}_48x48.png\" \"{png-core}_256x256.png\" \"{icon-dir}/core/{icon-name}.ico\"",
+          "echo {convert} +antialias \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_32x32.png\" \"{png-dark}_48x48.png\" \"{png-dark}_256x256.png\" \"{icon-dir}/dark/{icon-name}_dark.ico\""
+        ]
+      } } } } } },
+
+      "{png-core}": "png/core/{icon-name}",
+      "{png-dark}": "png/dark/{icon-name}"
     },
 
     { "{reset}": null },

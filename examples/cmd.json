@@ -8,22 +8,29 @@
       "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
         "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
           "{OsType}": "macOS",
-          "{chrome}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\""
+          "{chrome}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\"",
+          "{shell}": "zsh -c"
         }, "{{-else-}}": {
           "{OsType}": "Linux",
-          "{chrome}": "google-chrome"
+          "{chrome}": "google-chrome", // you can use chromium too
+          "{shell}": "bash -c"
         } },
+        "{convert}": "convert",
         "{copy}": "cp -pr",
         "{move}": "mv -f",
         "{delete}": "rm -rf",
-        "{mkdir}": "mkdir -p"
+        "{mkdir}": "mkdir -p",
+        "{sleep_0_5s}": "sleep 0.5s"
       }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
         "{OsType}": "Windows",
         "{copy}": "copy /Y",
         "{move}": "ren",
         "{delete}": "del /F/Q/S",
         "{mkdir}": "mkdir",
-        "{chrome}": "${ProgramFiles}\\Google\\Chrome\\Application\\chrome.exe"
+        "{chrome}": "${ProgramFiles}\\Google\\Chrome\\Application\\chrome.exe",
+        "{convert}": "magick convert",
+        "{shell}": "cmd /c",
+        "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500"
       } } } },
 
       "{this}": "$0",
