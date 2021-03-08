@@ -90,9 +90,10 @@
         { "{dim}": 1024, "{scn-transform}":  "scale( 64, 64)", "{out}": "{png-path}" }
       ]
     },
-
     {
-      "{reset}": null,
+      "{reset}": null
+    },
+    {
       "{dtp}": "\\{out|\\{png\\}", // repeat after reset
       "{prj}": "doul",
       "{icon-name}": "icon_{prj}",
@@ -101,32 +102,34 @@
 
       "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
         "{cmd}": [
-          // Short delay to ensure all images created
-          "{sleep_0_5s}",
+          //// Short delay to ensure all images created
+          //"{sleep_0_5s}",
           // Copy png icons to Linux icons folder
-          "echo sub --move \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_48x48.png\" \"{png-core}_96x96.png\" \"{icon-dir}/core\"",
-          "echo sub --move \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_48x48.png\" \"{png-dark}_96x96.png\" \"{icon-dir}/dark\""
+          "sub --move \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_48x48.png\" \"{png-core}_96x96.png\" \"{icon-dir}/core\"",
+          "sub --move \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_48x48.png\" \"{png-dark}_96x96.png\" \"{icon-dir}/dark\""
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
         "{cmd}": [
-          // Short delay to ensure all images created
-          "{sleep_0_5s}",
+          //// Short delay to ensure all images created
+          //"{sleep_0_5s}",
           // Copy png icons  to Linux icons folder
-          "echo iconutil -c icns \"{icon-dir}/core/{icon-name}.icns\" \"{png-core}\"",
-          "echo iconutil -c icns \"{icon-dir}/dark/{icon-name}_dark.icns\" \"{png-dark}\""
+          "iconutil -c icns \"{icon-dir}/core/{icon-name}.icns\" \"{png-core}\"",
+          "iconutil -c icns \"{icon-dir}/dark/{icon-name}_dark.icns\" \"{png-dark}\""
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
         "{cmd}": [
-          // Short delay to ensure all images created
-          "{sleep_0_5s}",
+          //// Short delay to ensure all images created
+          //"{sleep_0_5s}",
           // Generate ico file in the Windows icons folder
-          "echo {convert} +antialias \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_32x32.png\" \"{png-core}_48x48.png\" \"{png-core}_256x256.png\" \"{icon-dir}/core/{icon-name}.ico\"",
-          "echo {convert} +antialias \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_32x32.png\" \"{png-dark}_48x48.png\" \"{png-dark}_256x256.png\" \"{icon-dir}/dark/{icon-name}_dark.ico\""
+          "{convert} +antialias \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_32x32.png\" \"{png-core}_48x48.png\" \"{png-core}_256x256.png\" \"{icon-dir}/core/{icon-name}.ico\"",
+          "{convert} +antialias \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_32x32.png\" \"{png-dark}_48x48.png\" \"{png-dark}_256x256.png\" \"{icon-dir}/dark/{icon-name}_dark.ico\""
         ]
       } } } } } },
 
       "{png-core}": "png/core/{icon-name}",
-      "{png-dark}": "png/dark/{icon-name}"
+      "{png-dark}": "png/dark/{icon-name}_dark",
+      "{inp}": "",
+      "{out}": ""
     },
 
     { "{reset}": null },
