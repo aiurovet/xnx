@@ -38,7 +38,7 @@
 
       "{cmd}": [
         "sub --delete out png svg",
-        "sub --mkdir ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark png svg"
+        "sub --mkdir ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark png/core png/dark svg"
       ]
     },
 
