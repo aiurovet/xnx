@@ -112,7 +112,7 @@ jobs:
       - name: Create application icons (non-Windows)
         if: runner.os != 'Windows'
         run: |
-            bin/${{ runner.os }}/doul -d scripts/mkicons
+            bin/${{ runner.os }}/doul -d scripts/mkicons -v 6
 
       ################################################################################
 
