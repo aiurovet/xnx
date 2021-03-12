@@ -8,7 +8,8 @@
       "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
         "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
           "{OsType}": "macOS",
-          "{chrome}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\"",
+          //"{chrome}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\"",
+          "{chrome}": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome",
           "{shell}": "zsh -c"
         }, "{{-else-}}": {
           "{OsType}": "Linux",
