@@ -47,13 +47,6 @@ jobs:
 
       ################################################################################
 
-      - name: Check Google Chrome
-        if: runner.os == 'macos'
-        run: |
-          ls -l "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-
-      ################################################################################
-
       - name: Install Dart SDK on non-Windows OS 
         if: runner.os != 'windows'
         run: |
