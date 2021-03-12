@@ -45,7 +45,7 @@
     {
       "{reset}": null,
       "{{-import-}}": "../../examples/cmd.json",
-      "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
+      "{svg2png}": "{chrome} --headless --disable-gpu --remote-debugging-port=9222 --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
     },
 
     {
