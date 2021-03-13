@@ -416,7 +416,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       return true;
     }
 
+    var isSuccess = true;
     var oldCurDir = Directory.current;
+    List<ProcessResult> results;
 
     try {
       if (StringExt.isNullOrBlank(command)) {
@@ -428,9 +430,10 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
       if (cli[0] == Config.CMD_SUB) {
         Doul(log: _logger).exec(cli.sublist(1));
+        results = [ ProcessResult(0, 0, null, null) ];
       }
       else {
-        var results = waitFor<List<ProcessResult>>(
+        results = waitFor<List<ProcessResult>>(
           Shell(
             verbose: false,
             commandVerbose: false,
@@ -438,42 +441,6 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
             runInShell: false
           ).run(command)
         );
-
-        var count = results?.length ?? 0;
-        var ending = (count == 1 ? '' : 's');
-
-        _logger.error('Execution ended with ${count} result${ending}');
-
-        _logger.error('Logging level: ${_logger.level}');
-
-        if (count > 0) {
-          _logger.error('Exit code${ending}: ${results.map((x) => x.exitCode).join(', ')}');
-          _logger.error('\n*** Error${ending}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
-          //_logger.debug('Exit code${ending}: ${results.map((x) => x.exitCode).join(', ')}');
-          //_logger.debug('\n*** Error${ending}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
-        }
-
-        var result = (results?.isNotEmpty ?? false ? results[0] : null);
-        var isSuccess = !((results?.any((x) => (x.exitCode != 0))) ?? true);
-
-        if (!isSuccess) {
-          if (result != null) {
-            if (result.stderr.isNotEmpty) {
-              _logger.error(result.stderr);
-            }
-            if (result.stdout.isNotEmpty) {
-              _logger.out(result.stdout);
-            }
-          }
-          throw Exception('Command failed${isVerbose ? StringExt.EMPTY : '\n\n${command}\n\n'}');
-        }
-
-        if (result.stderr.isNotEmpty) {
-          _logger.warning(result.stderr);
-        }
-        if (result.stdout.isNotEmpty) {
-          _logger.out(result.stdout);
-        }
       }
     }
     on Error catch (e) {
@@ -485,6 +452,25 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     finally {
       tmpFile?.deleteIfExistsSync();
       Directory.current = oldCurDir;
+
+      var resultCount = results?.length ?? 0;
+      isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
+
+      if (!isSuccess && (resultCount > 0)) {
+        var unitsEnding = (resultCount == 1 ? '' : 's');
+
+        _logger.debug('Exit code${unitsEnding}: ${results.map((x) => x.exitCode).join(', ')}');
+        _logger.debug('\n*** Error${unitsEnding}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+      }
+
+      var result = (resultCount <= 0 ? null : results[0]);
+
+      if (!isSuccess && result.stderr.isNotEmpty) {
+        _logger.error(result.stderr);
+      }
+      if (result.stdout.isNotEmpty) {
+        _logger.out(result.stdout);
+      }
     }
 
     return true;
