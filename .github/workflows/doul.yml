@@ -105,7 +105,7 @@ jobs:
 
       - name: Build the application on Linux/macOS
         if: runner.os != 'Windows'
-        run: scripts/build "${{ runner.os }}" -v 6
+        run: scripts/build "${{ runner.os }}"
 
       - name: Build the application on Windows
         if: runner.os == 'Windows'
