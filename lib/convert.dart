@@ -416,8 +416,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       return true;
     }
 
-    var isSuccess = true;
+    var isSuccess = false;
     var oldCurDir = Directory.current;
+    var resultCount = 0;
     List<ProcessResult> results;
 
     try {
@@ -430,7 +431,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
       if (cli[0] == Config.CMD_SUB) {
         Doul(log: _logger).exec(cli.sublist(1));
-        results = [ ProcessResult(0, 0, null, null) ];
+        isSuccess = true;
       }
       else {
         results = waitFor<List<ProcessResult>>(
@@ -441,6 +442,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
             runInShell: false
           ).run(command)
         );
+
+        resultCount = results?.length ?? 0;
+        isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
       }
     }
     on Error catch (e) {
@@ -453,21 +457,16 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       tmpFile?.deleteIfExistsSync();
       Directory.current = oldCurDir;
 
-      var resultCount = results?.length ?? 0;
-      isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
-
-      if (!isSuccess && (resultCount > 0)) {
-        var unitsEnding = (resultCount == 1 ? '' : 's');
-
-        _logger.debug('Exit code${unitsEnding}: ${results.map((x) => x.exitCode).join(', ')}');
-        _logger.debug('\n*** Error${unitsEnding}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
-      }
-
       var result = (resultCount <= 0 ? null : results[0]);
 
       if (result != null) {
-        if (!isSuccess && (result.stderr?.isNotEmpty ?? false)) {
-          _logger.error(result.stderr);
+        var unitsEnding = (resultCount == 1 ? '' : 's');
+
+        if (!isSuccess) {
+          _logger.debug('Exit code${unitsEnding}: ${results.map((x) => x.exitCode).join(', ')}');
+          _logger.debug('\n*** Error${unitsEnding}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+
+          _logger.error(result.stderr ?? 'No error or warning message found');
         }
         if (result.stdout?.isNotEmpty ?? false) {
           _logger.out(result.stdout);
