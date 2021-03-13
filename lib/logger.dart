@@ -19,7 +19,7 @@ class Logger {
   static const int LEVEL_INFORMATION = 5;
   static const int LEVEL_DEBUG = 6;
 
-  static const int LEVEL_DEFAULT = LEVEL_UNKNOWN;
+  static const int LEVEL_DEFAULT = LEVEL_OUT_INFO;
 
   static final RegExp RE_PREFIX = RegExp(r'^', multiLine: true);
 
@@ -27,11 +27,11 @@ class Logger {
   String get format => _format;
   set format(String value) => _format = (StringExt.isNullOrEmpty(value) ? null : value);
 
-  int _level = LEVEL_DEFAULT;
+  int _level = LEVEL_UNKNOWN;
   int get level => _level;
 
   set level(int value) =>
-    _level = value < 0 ? LEVEL_WARNING :
+    _level = value < 0 ? LEVEL_UNKNOWN :
              value >= LEVEL_DEBUG ? LEVEL_DEBUG : value;
 
   void debug(String data) {
@@ -56,9 +56,9 @@ class Logger {
     return msgEx;
   }
 
-  bool hasMinLevel(int minLevel) {
-    return (_level >= minLevel);
-  }
+  bool hasMinLevel(int minLevel) => (_level >= minLevel);
+
+  bool get hasLevel => (_level > LEVEL_UNKNOWN);
 
   bool get isDefault => (_level == LEVEL_DEFAULT);
 
@@ -67,6 +67,8 @@ class Logger {
   bool get isSilent => (_level == LEVEL_SILENT);
 
   bool get isUltimate => (_level >= LEVEL_DEBUG);
+
+  bool get isUnknown => !hasLevel;
 
   void information(String data) {
     print(data, LEVEL_INFORMATION);
