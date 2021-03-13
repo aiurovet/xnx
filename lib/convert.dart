@@ -442,11 +442,15 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         var count = results?.length ?? 0;
         var ending = (count == 1 ? '' : 's');
 
-        _logger.debug('Execution ended with ${count} result${ending}');
+        _logger.error('Execution ended with ${count} result${ending}');
+
+        _logger.error('Logging level: ${_logger.level}');
 
         if (count > 0) {
-          _logger.debug('Exit code${ending}: ${results.map((x) => x.exitCode).join(', ')}');
-          _logger.debug('\n*** Error${ending}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+          _logger.error('Exit code${ending}: ${results.map((x) => x.exitCode).join(', ')}');
+          _logger.error('\n*** Error${ending}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+          //_logger.debug('Exit code${ending}: ${results.map((x) => x.exitCode).join(', ')}');
+          //_logger.debug('\n*** Error${ending}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
         }
 
         var result = (results?.isNotEmpty ?? false ? results[0] : null);
