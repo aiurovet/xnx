@@ -3,7 +3,7 @@ import 'package:doul/ext/file_system_entity.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:path/path.dart' as Path;
 import 'config_file_loader.dart';
-import 'log.dart';
+import 'logger.dart';
 import 'options.dart';
 import 'ext/string.dart';
 
@@ -31,9 +31,10 @@ class Config {
   Map all;
   bool isEarlyWildcardExpansionAllowed = false;
   int lastModifiedStamp;
-  Options options = Options();
+  Options options;
   int runNo = 0;
 
+  Logger _logger;
   Map<String, Object> _straight;
 
   String paramNameCanExpandContent = '{{-can-expand-content-}}';
@@ -108,6 +109,13 @@ class Config {
   String cmdNameUnTar = '{{-cmd-${CMD_UNTAR}-}}';
   String cmdNameZip = '{{-cmd-${CMD_ZIP}-}}';
   String cmdNameUnZip = '{{-cmd-${CMD_UNZIP}-}}';
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  Config(Logger log) {
+    _logger = log;
+    options = Options(_logger);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -192,7 +200,7 @@ class Config {
     var isReady = ((map != null) && (hasReset || deepContainsKeys(map, [paramNameCmd, paramNameInp, paramNameOut])));
 
     if (isReady) {
-      Log.debug('...adding to the list of actions');
+      _logger.debug('...adding to the list of actions');
 
       addFlatMapsToList(listOfMaps, map);
       map.remove(paramNameOut);
@@ -257,7 +265,7 @@ class Config {
         return null;
       }
 
-      Log.information('Loading configuration data');
+      _logger.information('Loading configuration data');
 
       var tmpAll = loadConfigSync();
 
@@ -265,24 +273,24 @@ class Config {
         all = tmpAll;
       }
       else {
-        Log.information('Nothing found');
+        _logger.information('Nothing found');
         return null;
       }
     }
 
-    Log.information('Processing configuration data');
+    _logger.information('Processing configuration data');
 
     if (isFirstRun) {
       var rename = all[CFG_RENAME];
 
-      Log.information('Processing renames');
+      _logger.information('Processing renames');
 
       if (rename is Map) {
         setActualParamNames(rename);
       }
     }
 
-    Log.information('Processing actions for run #$runNo');
+    _logger.information('Processing actions for run #$runNo');
 
     var params = <String, Object>{};
     _straight = {};
@@ -303,7 +311,7 @@ class Config {
 
       assert(map is Map);
 
-      Log.debug('');
+      _logger.debug('');
 
       var hasReset = false;
 
@@ -312,7 +320,7 @@ class Config {
           return;
         }
 
-        Log.debug('...${key}: ${value}');
+        _logger.debug('...${key}: ${value}');
 
         var valueEx = (value == null ? StringExt.EMPTY : value);
 
@@ -334,14 +342,14 @@ class Config {
         }
       }
 
-      Log.debug('...completed row processing');
+      _logger.debug('...completed row processing');
     });
 
     if ((currRunNo >= runNo) && !isParamsAdded && params.isNotEmpty) {
       addMapsToList(result, params, true);
     }
 
-    Log.information('\nAdded ${result.length} rules\n');
+    _logger.information('\nAdded ${result.length} rules\n');
 
     return result;
   }
@@ -398,7 +406,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   Map<String, Object> loadConfigSync() {
-    var lf = ConfigFileLoader();
+    var lf = ConfigFileLoader(log: _logger);
     lf.loadJsonSync(options.configFileInfo, paramNameImport: paramNameImport, appPlainArgs: options.plainArgs);
 
     lastModifiedStamp = lf.lastModifiedStamp;

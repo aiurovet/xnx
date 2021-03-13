@@ -9,7 +9,7 @@ import 'package:path/path.dart' as Path;
 
 import 'package:doul/ext/string.dart';
 import 'pack_oper.dart';
-import 'log.dart';
+import 'logger.dart';
 import 'ext/stdin.dart';
 
 class Options {
@@ -245,6 +245,8 @@ class Options {
   bool _isListOnly;
   bool get isListOnly => _isListOnly;
 
+  Logger _logger;
+
   List<String> _plainArgs;
   List<String> get plainArgs => _plainArgs;
 
@@ -286,6 +288,12 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  Options(Logger log) {
+    _logger = log;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String getConfigFullPath(List<String> args) {
     for (var arg in args) {
       if (RE_OPT_CONFIG.hasMatch(arg)) {
@@ -302,8 +310,6 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   void parseArgs(List<String> args) {
-    Log.level = Log.LEVEL_DEFAULT;
-
     var errMsg = StringExt.EMPTY;
     var isHelp = false;
 
@@ -318,19 +324,19 @@ class Options {
     _isCmdMoveNewer = false;
     _isCmdDelete = false;
 
-
-    var isLogLevelSet = false;
+    var isLogLevelSet = (_logger.level != Logger.LEVEL_UNKNOWN);
 
     final parser = ArgParser()
       ..addFlag(QUIET['name'], abbr: QUIET['abbr'], help: QUIET['help'], negatable: QUIET['negatable'], callback: (value) {
         if (value) {
-          Log.level = Log.LEVEL_SILENT;
+          _logger.level = Logger.LEVEL_SILENT;
           isLogLevelSet = true;
         }
       })
       ..addOption(VERBOSITY['name'], abbr: VERBOSITY['abbr'], help: VERBOSITY['help'], valueHelp: VERBOSITY['valueHelp'], defaultsTo: VERBOSITY['defaultsTo'], callback: (value) {
         if (!isLogLevelSet) {
-          Log.level = int.parse(value);
+          _logger.level = int.parse(value);
+          isLogLevelSet = true;
         }
       })
       ..addFlag(XARGS['name'], abbr: XARGS['abbr'], help: XARGS['help'], negatable: XARGS['negatable'], callback: (value) {
@@ -601,7 +607,7 @@ class Options {
     printSystemInfo();
 
     if (!StringExt.isNullOrBlank(_startDirName)) {
-        Log.information('Setting current directory to: "${_startDirName}"');
+        _logger.information('Setting current directory to: "${_startDirName}"');
         Directory.current = _startDirName;
     }
 
@@ -610,8 +616,8 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void printSystemInfo() {
-    Log.information('OS type: ' + StringExt.getEnvironmentVariable('OSTYPE', defValue: StringExt.UNKNOWN));
+  void printSystemInfo() {
+    _logger.information('OS type: ' + StringExt.getEnvironmentVariable('OSTYPE', defValue: StringExt.UNKNOWN));
   }
 
   //////////////////////////////////////////////////////////////////////////////

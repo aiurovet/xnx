@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:doul/config_file_info.dart';
 import 'package:json_path/json_path.dart';
 
-import 'package:doul/log.dart';
+import 'package:doul/logger.dart';
 import 'package:doul/ext/file.dart';
 import 'package:doul/ext/stdin.dart';
 import 'package:doul/ext/string.dart';
@@ -27,6 +27,8 @@ class ConfigFileLoader {
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
+  Logger _logger;
+
   Object _data;
   Object get data => _data;
 
@@ -46,11 +48,12 @@ class ConfigFileLoader {
   // Construction
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader({bool isStdIn, File file, String text}) {
+  ConfigFileLoader({bool isStdIn, File file, String text, Logger log}) {
     _file = file;
     _isStdIn = (isStdIn ?? false);
     _lastModifiedStamp = (file?.lastModifiedStampSync() ?? 0);
     _text = text;
+    _logger = log;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -172,7 +175,7 @@ class ConfigFileLoader {
       return this;
     }
 
-    var lf = ConfigFileLoader();
+    var lf = ConfigFileLoader(log: _logger);
 
     _text = _text
       .replaceAll(r'\\', '\x01')
@@ -229,7 +232,7 @@ class ConfigFileLoader {
     _isStdIn = (StringExt.isNullOrBlank(filePath) || (filePath == StringExt.STDIN_PATH));
     var displayName = (_isStdIn ? filePath : '"' + filePath + '"');
 
-    Log.information('Loading ${displayName}');
+    _logger?.information('Loading ${displayName}');
 
     _file = (_isStdIn ? null : File(filePath));
 

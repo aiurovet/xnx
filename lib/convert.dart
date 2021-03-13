@@ -1,14 +1,13 @@
 import 'dart:cli';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:doul/config_file_loader.dart';
 import 'package:doul/config.dart';
 import 'package:doul/doul.dart';
 import 'package:doul/ext/glob.dart';
 import 'package:doul/file_oper.dart';
-import 'package:doul/log.dart';
+import 'package:doul/logger.dart';
 import 'package:doul/options.dart';
 import 'package:doul/pack_oper.dart';
 import 'package:doul/ext/directory.dart';
@@ -44,14 +43,21 @@ class Convert {
 
   Config _config;
   List<String> _inpParamNames;
+  Logger _logger;
   Options _options;
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  Convert(Logger log) {
+    _logger = log;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
   void exec(List<String> args) {
     startCmd = FileExt.getStartCommand();
 
-    _config = Config();
+    _config = Config(_logger);
     var maps = _config.exec(args);
     _options = _config.options;
     PackOper.compression = _options.compression;
@@ -88,13 +94,13 @@ class Convert {
       }
 
       if ((isStdOut != null) && !isStdOut && !isProcessed) {
-        Log.outInfo('All output files are up to date.');
+        _logger.outInfo('All output files are up to date.');
       }
 
       maps = _config.exec();
 
       if (maps?.isNotEmpty ?? false) {
-        Log.debug('\nRun #${_config.runNo} found\n');
+        _logger.debug('\nRun #${_config.runNo} found\n');
       }
     }
   }
@@ -104,7 +110,7 @@ class Convert {
   void execBuiltin(List<String> args, {bool isSilent}) {
     var argCount = (args?.length ?? 0);
 
-    isSilent ??= Log.isSilent;
+    isSilent ??= _logger.isSilent;
 
     if (argCount <= 0) {
       throw Exception('No argument specified for the built-in command');
@@ -240,13 +246,13 @@ class Convert {
       canExpandContent = (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
 
       if (!StringExt.isNullOrBlank(curDirName)) {
-        Log.debug('Setting current directory to: "${curDirName}"');
+        _logger.debug('Setting current directory to: "${curDirName}"');
         Directory.current = curDirName;
       }
 
       if (StringExt.isNullOrBlank(command)) {
         if (_config.options.isListOnly) {
-          Log.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.RECORD_SEP : StringExt.EMPTY));
+          _logger.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.RECORD_SEP : StringExt.EMPTY));
         }
         return true;
       }
@@ -285,7 +291,7 @@ class Convert {
 
         outFilePathEx = outFilePathEx.adjustPath();
 
-        Log.debug('''
+        _logger.debug('''
 
 Input dir:       "${mapCurr[_config.paramNameInpDir]}"
 Input sub-dir:   "${mapCurr[_config.paramNameInpSubDir]}"
@@ -299,7 +305,7 @@ Input sub-path:  "${mapCurr[_config.paramNameInpSubPath]}"
 
       outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
 
-      Log.debug('''
+      _logger.debug('''
 
 Output dir:  "${outDirName}"
 Output path: "${outFilePathEx ?? StringExt.EMPTY}"
@@ -364,7 +370,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
     }
 
-    Log.debug('Temp file path: "${tmpFilePath ?? StringExt.EMPTY}"');
+    _logger.debug('Temp file path: "${tmpFilePath ?? StringExt.EMPTY}"');
 
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
@@ -376,7 +382,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
 
       if (!isChanged) {
-        Log.information('Unchanged: "${outFilePath}"');
+        _logger.information('Unchanged: "${outFilePath}"');
         return false;
       }
     }
@@ -400,10 +406,10 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       command = command.replaceAll(map[_config.paramNameInp], tmpFilePath);
     }
 
-    var isVerbose = Log.isDetailed;
+    var isVerbose = _logger.isDetailed;
 
     if (_options.isListOnly || isExpandContentOnly || !isVerbose) {
-      Log.outInfo(command);
+      _logger.outInfo(command);
     }
 
     if (_options.isListOnly || isExpandContentOnly) {
@@ -421,7 +427,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       var cli = command.splitCommandLine();
 
       if (cli[0] == Config.CMD_SUB) {
-        Doul.exec(cli.sublist(1));
+        Doul(log: _logger).exec(cli.sublist(1));
       }
       else {
         var results = waitFor<List<ProcessResult>>(
@@ -436,11 +442,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         var count = results?.length ?? 0;
         var ending = (count == 1 ? '' : 's');
 
-        Log.debug('Execution ended with ${count} result${ending}');
+        _logger.debug('Execution ended with ${count} result${ending}');
 
         if (count > 0) {
-          Log.debug('Exit code${ending}: ${results.map((x) => x.exitCode).join(', ')}');
-          Log.debug('\n*** Error${ending}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+          _logger.debug('Exit code${ending}: ${results.map((x) => x.exitCode).join(', ')}');
+          _logger.debug('\n*** Error${ending}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
         }
 
         var result = (results?.isNotEmpty ?? false ? results[0] : null);
@@ -449,20 +455,20 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         if (!isSuccess) {
           if (result != null) {
             if (result.stderr.isNotEmpty) {
-              Log.error(result.stderr);
+              _logger.error(result.stderr);
             }
             if (result.stdout.isNotEmpty) {
-              Log.out(result.stdout);
+              _logger.out(result.stdout);
             }
           }
           throw Exception('Command failed${isVerbose ? StringExt.EMPTY : '\n\n${command}\n\n'}');
         }
 
         if (result.stderr.isNotEmpty) {
-          Log.warning(result.stderr);
+          _logger.warning(result.stderr);
         }
         if (result.stdout.isNotEmpty) {
-          Log.out(result.stdout);
+          _logger.out(result.stdout);
         }
       }
     }
@@ -510,13 +516,13 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
     }
 
-    if (Log.isUltimate) {
-      Log.debug('\n...content of expanded "${inpFile.path}":\n');
-      Log.debug(text);
+    if (_logger.isUltimate) {
+      _logger.debug('\n...content of expanded "${inpFile.path}":\n');
+      _logger.debug(text);
     }
 
     if (isStdOut) {
-      Log.out(text);
+      _logger.out(text);
       return null;
     }
     else {

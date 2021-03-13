@@ -2,32 +2,39 @@ import 'dart:io';
 
 import 'convert.dart';
 import 'ext/string.dart';
-import 'log.dart';
+import 'logger.dart';
 import 'options.dart';
 
 class Doul {
+  Logger _logger;
+
+  Doul({Logger log = null}) {
+    _logger = log ?? Logger();
+  }
+
   static void main(List<String> args) {
     var isOK = false;
+    var app = Doul();
 
     try {
-      exec(args);
+      app.exec(args);
       isOK = true;
     }
     on Error catch (e, stackTrace) {
-      isOK = onError(e?.toString(), stackTrace);
+      isOK = app.onError(e?.toString(), stackTrace);
     }
     on Exception catch (e, stackTrace) {
-      isOK = onError(e?.toString(), stackTrace);
+      isOK = app.onError(e?.toString(), stackTrace);
     }
 
     exit(isOK ? 0 : 1);
   }
 
-  static void exec(List<String> args) {
-    Convert().exec(args);
+  void exec(List<String> args) {
+    Convert(_logger).exec(args);
   }
 
-  static bool onError(String errMsg, StackTrace stackTrace) {
+  bool onError(String errMsg, StackTrace stackTrace) {
     if (StringExt.isNullOrBlank(errMsg)) {
       return false;
     }
@@ -38,14 +45,14 @@ class Doul {
       if (errMsg == Options.HELP['name']) {
         return true;
       }
-      else if (Log.isSilent) {
+      else if (_logger.isSilent) {
         return false;
       }
 
-      var errDtl = (Log.level >= Log.LEVEL_DEBUG ? '\n\n' + stackTrace?.toString() : StringExt.EMPTY);
+      var errDtl = (_logger.level >= Logger.LEVEL_DEBUG ? '\n\n' + stackTrace?.toString() : StringExt.EMPTY);
       errMsg = '\n*** ERROR: ${errMsg}${errDtl}\n';
 
-      Log.error(errMsg);
+      _logger.error(errMsg);
 
       return false;
     }
