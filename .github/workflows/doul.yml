@@ -41,8 +41,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           mkdir -p "${HOME}/Library/Application Support/Google/Chrome"
-          ls -l ${HOME}/Library/Application\ Support/Google
-          /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless --crash-dumps-dir=/tmp --default-background-color=0 --window-size=16,16 --screenshot="/Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.png" "file:///Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.svg"
+          /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless --crash-dumps-dir=/tmp --user-data-dir=/tmp --default-background-color=0 --window-size=16,16 --screenshot="/Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.png" "file:///Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.svg"
 
       ################################################################################
 
