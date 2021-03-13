@@ -121,6 +121,11 @@ jobs:
 
       ################################################################################
 
+      - name: Check build result
+        run: find "bin/${{ runner.os }}" -type f | grep -Piv "examples\/"
+      
+      ################################################################################
+
       - name: Integration Test 1 - flutter_app
         run: bin/${{ runner.os }}/doul -d examples/flutter_app
 
@@ -145,6 +150,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: bin-${{ runner.os }}
-          path: bin/${{ runner.os }}/**/*
-
-      ################################################################################
+          path: bin/${{ runner.os }}/
+      
