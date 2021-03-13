@@ -145,6 +145,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: bin-${{ runner.os }}
-          path: bin/${{ runner.os }}/**
+          path: bin/${{ runner.os }}/**/*
 
       ################################################################################
