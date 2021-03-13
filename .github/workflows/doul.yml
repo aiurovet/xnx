@@ -39,10 +39,10 @@ jobs:
 
       ################################################################################
 
-      - name: Installing the latest Google Chrome on macOS
+      - name: Re-installing the latest Google Chrome on macOS
         if: runner.os == 'macOS'
         run: |
-          brew install --cask google-chrome
+          brew reinstall --cask google-chrome
 
       ################################################################################
 
