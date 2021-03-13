@@ -122,9 +122,7 @@ jobs:
       ################################################################################
 
       - name: Check build result
-        run: |
-          ls -l bin/${{ runner.os }}
-          ls -l bin/${{ runner.os }}/icons
+        run: ls -l bin/${{ runner.os }}/icons/core bin/${{ runner.os }}/icons/dark
       
       ################################################################################
 
