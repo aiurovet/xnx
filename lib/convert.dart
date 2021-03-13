@@ -433,7 +433,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         );
 
         var result = (results?.isNotEmpty ?? false ? results[0] : null);
-        var isSuccess = ((result?.exitCode == 0) ?? false);
+        var isSuccess = ((results?.any((x) => (x.exitCode != 0))) ?? false);
 
         if (!isSuccess) {
           if (result != null) {

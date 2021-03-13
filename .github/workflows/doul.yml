@@ -101,7 +101,7 @@ jobs:
 
       - name: Build the application (non-Windows)
         if: runner.os != 'Windows'
-        run: scripts/build "${{ runner.os }}"
+        run: scripts/build "${{ runner.os }}" -v 6
 
       - name: Build the application (Windows)
         if: runner.os == 'Windows'

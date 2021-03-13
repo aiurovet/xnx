@@ -18,7 +18,7 @@ call dart2native "%BIN%\main.dart" -o "%BIN_OST%\%PRJ%.exe"
 if errorlevel 1 exit /B 1
 
 set OSTYPE=%OST%
-call scripts\mkicons\mkicons
+call scripts\mkicons\mkicons %*
 if errorlevel 1 exit /B 1
 
 copy /Y "README.md" "%BIN_OST%"
