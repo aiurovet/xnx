@@ -39,10 +39,9 @@ jobs:
 
       ################################################################################
 
-      - name: Re-installing the latest Google Chrome on macOS
+      - name: Re-installing the latest Google Chrome on macOS due to issues
         if: runner.os == 'macOS'
-        run: |
-          brew reinstall --cask google-chrome
+        run: brew reinstall --cask google-chrome
 
       ################################################################################
 
@@ -146,6 +145,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: bin-${{ runner.os }}
-          path: bin/${{ runner.os }}/
+          path: bin/${{ runner.os }}/**
 
       ################################################################################
