@@ -1,6 +1,7 @@
 import 'dart:cli';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:doul/config_file_loader.dart';
 import 'package:doul/config.dart';
@@ -432,8 +433,18 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
           ).run(command)
         );
 
+        var count = results?.length ?? 0;
+        var ending = (count == 1 ? '' : 's');
+
+        Log.debug('Execution ended with ${count} result${ending}');
+
+        if (count > 0) {
+          Log.debug('Exit code${ending}: ${results.map((x) => x.exitCode).join(', ')}');
+          Log.debug('\n*** Error${ending}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+        }
+
         var result = (results?.isNotEmpty ?? false ? results[0] : null);
-        var isSuccess = ((results?.any((x) => (x.exitCode != 0))) ?? false);
+        var isSuccess = !((results?.any((x) => (x.exitCode != 0))) ?? true);
 
         if (!isSuccess) {
           if (result != null) {
