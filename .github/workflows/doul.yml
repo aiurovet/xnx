@@ -39,9 +39,10 @@ jobs:
 
       ################################################################################
 
-      - name: Geting Chrome version on macOS
+      - name: Installing the latest Google Chrome on macOS
         if: runner.os == 'macOS'
-        run: /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version
+        run: |
+          brew install --cask google-chrome
 
       ################################################################################
 
