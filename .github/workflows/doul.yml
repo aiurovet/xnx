@@ -47,7 +47,7 @@ jobs:
 
       ################################################################################
 
-      - name: Install Dart SDK on non-Windows OS 
+      - name: Install Dart SDK on Linux/macOS
         if: runner.os != 'windows'
         run: |
           brew tap dart-lang/dart
@@ -99,11 +99,15 @@ jobs:
 
       ################################################################################
 
-      - name: Build the application (non-Windows)
+      - name: Testing Chrome on macOS
+        if: runner.os == 'macOS'
+        run: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --default-background-color=0 --window-size=16,16 --screenshot="/Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.png" "file:///Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.svg"
+
+      - name: Build the application on Linux/macOS
         if: runner.os != 'Windows'
         run: scripts/build "${{ runner.os }}" -v 6
 
-      - name: Build the application (Windows)
+      - name: Build the application on Windows
         if: runner.os == 'Windows'
         run: scripts\build
 

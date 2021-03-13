@@ -416,6 +416,8 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       return true;
     }
 
+    _logger.information(command);
+
     var isSuccess = false;
     var oldCurDir = Directory.current;
     var resultCount = 0;
@@ -463,8 +465,8 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         var unitsEnding = (resultCount == 1 ? '' : 's');
 
         if (!isSuccess) {
-          _logger.debug('Exit code${unitsEnding}: ${results.map((x) => x.exitCode).join(', ')}');
-          _logger.debug('\n*** Error${unitsEnding}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+          _logger.information('Exit code${unitsEnding}: ${results.map((x) => x.exitCode).join(', ')}');
+          _logger.information('\n*** Error${unitsEnding}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
 
           _logger.error(result.stderr ?? 'No error or warning message found');
         }
