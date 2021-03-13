@@ -99,25 +99,13 @@ jobs:
 
       ################################################################################
 
-      - name: Compile to native (non-Windows)
+      - name: Build the application
         if: runner.os != 'Windows'
-        run: dart2native bin/main.dart -o bin/${{ runner.os }}/doul
+        run: scripts/build
 
       - name: Compile to native (Windows)
         if: runner.os == 'Windows'
-        run: dart2native bin/main.dart -o bin/${{ runner.os }}/doul.exe
-
-      ################################################################################
-
-      - name: Create application icons (non-Windows)
-        if: runner.os != 'Windows'
-        run: bin/${{ runner.os }}/doul -d scripts/mkicons
-
-      ################################################################################
-
-      - name: Create application icons (Windows)
-        if: runner.os == 'Windows'
-        run: bin\${{ runner.os }}\doul.exe -d scripts\mkicons
+        run: scripts\build
 
       ################################################################################
 
