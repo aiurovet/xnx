@@ -3,6 +3,7 @@
 ################################################################################
 
 PRJ="doul"
+OST="${1}" # OS type: Linux, macOS or Windows (default: will be calculated)
 
 ################################################################################
 
@@ -33,10 +34,15 @@ APP=$(basename "${0}") || exitApp 1 "Failed to determine application name"
 TOP=$(dirname "${0}") || exitApp 1 "Failed to determine top directory"
 TOP=$(realpath "${TOP}/../") || exitApp 1
 
-OST=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
-OST=$(echo "${OST}" | tr [:upper:] [:lower:]) || exitApp 1 "Failed to lowercase OS kernel name"
+################################################################################
 
-[[ "${OST}" == "darwin" ]] && OST="macOS" || OST="Linux"
+if [[ "${OST}" == "" ]]; then
+    OST=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
+fi
+
+[[ "${OST}" == "darwin" ]] && OST="macOS"
+
+################################################################################
 
 BIN="${TOP}/bin/${OST}"
 SRC="${BIN}/../main.dart"

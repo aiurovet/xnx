@@ -99,11 +99,11 @@ jobs:
 
       ################################################################################
 
-      - name: Build the application
+      - name: Build the application (non-Windows)
         if: runner.os != 'Windows'
-        run: scripts/build
+        run: scripts/build "${{ runner.os }}"
 
-      - name: Compile to native (Windows)
+      - name: Build the application (Windows)
         if: runner.os == 'Windows'
         run: scripts\build
 
