@@ -39,9 +39,7 @@ jobs:
 
       - name: Testing Chrome on macOS
         if: runner.os == 'macOS'
-        run: |
-          mkdir -p "${HOME}/Library/Application Support/Google/Chrome"
-          /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless --crash-dumps-dir=/tmp --user-data-dir=/tmp --default-background-color=0 --window-size=16,16 --screenshot="/Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.png" "file:///Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.svg"
+        run: /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless --crash-dumps-dir=/tmp --disk-cache-dir=/tmp --user-data-dir=/tmp --default-background-color=0 --window-size=16,16 --screenshot="/Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.png" "file:///Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.svg"
 
       ################################################################################
 
