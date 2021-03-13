@@ -122,7 +122,7 @@ jobs:
       ################################################################################
 
       - name: Check build result
-        run: find "bin/${{ runner.os }}" -type f | grep -Piv "examples\/"
+        run: find "bin/${{ runner.os }}" -type f | grep -iv "examples\/"
       
       ################################################################################
 
