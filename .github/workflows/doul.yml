@@ -122,7 +122,9 @@ jobs:
       ################################################################################
 
       - name: Check build result
-        run: find "bin/${{ runner.os }}" -type f | grep -iv "examples\/"
+        run: |
+          ls -l bin/${{ runner.os }}
+          ls -l bin/${{ runner.os }}/icons
       
       ################################################################################
 
