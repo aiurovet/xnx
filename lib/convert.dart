@@ -465,11 +465,13 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
       var result = (resultCount <= 0 ? null : results[0]);
 
-      if (!isSuccess && result.stderr.isNotEmpty) {
-        _logger.error(result.stderr);
-      }
-      if (result.stdout.isNotEmpty) {
-        _logger.out(result.stdout);
+      if (result != null) {
+        if (!isSuccess && (result.stderr?.isNotEmpty ?? false)) {
+          _logger.error(result.stderr);
+        }
+        if (result.stdout?.isNotEmpty ?? false) {
+          _logger.out(result.stdout);
+        }
       }
     }
 
