@@ -3,12 +3,13 @@
 {
   "rename": {
     "{{-cmd-}}": "{c}",
+    "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}"
   },
   "action": [
     {
-      "{c}": "expand-content \"{i}\" \"{o}\""
+      "{c}": "{expand-content} \"{i}\" \"{o}\""
     },
 
     {

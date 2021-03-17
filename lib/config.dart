@@ -16,12 +16,8 @@ class Config {
   static final String CFG_ACTION = 'action';
   static final String CFG_RENAME = 'rename';
 
-  static final String CMD_EXPAND = 'expand-content'; // plain text expansion
-  static final String CMD_SUB = 'sub'; // run another internal instance
-
   //static final int MAX_EXPANSION_ITERATIONS = 10;
 
-  static final RegExp RE_CMD_EXPAND = RegExp(r'^' + CMD_EXPAND + r'([\s]|$)', caseSensitive: false);
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -56,6 +52,13 @@ class Config {
   String paramNameReset = '{{-reset-}}';
   String paramNameStop = '{{-stop-}}';
   String paramNameThis = '{{-this-}}';
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Pre-defined commands
+  //////////////////////////////////////////////////////////////////////////////
+
+  String cmdNameExpand = '{{-expand-content-}}';
+  String cmdNameSub = '{{-sub-}}';
 
   //////////////////////////////////////////////////////////////////////////////
   // Native conditional operators
@@ -99,17 +102,6 @@ class Config {
   static final String CMD_ZIP = 'zip';
   static final String CMD_UNZIP = 'unzip';
 
-  String cmdNameBz2 = '{{-cmd-${CMD_BZ2}-}}';
-  String cmdNameUnBz2 = '{{-cmd-${CMD_UNBZ2}-}}';
-  String cmdNameGz = '{{-cmd-${CMD_GZ}-}}';
-  String cmdNameUnGz = '{{-cmd-${CMD_UNGZ}-}}';
-  String cmdNamePack = '{{-cmd-${CMD_PACK}-}}'; // based on input file extension
-  String cmdNameUnPack = '{{-cmd-${CMD_UNPACK}-}}'; // based on input file extension
-  String cmdNameTar = '{{-cmd-${CMD_TAR}-}}';
-  String cmdNameUnTar = '{{-cmd-${CMD_UNTAR}-}}';
-  String cmdNameZip = '{{-cmd-${CMD_ZIP}-}}';
-  String cmdNameUnZip = '{{-cmd-${CMD_UNZIP}-}}';
-
   //////////////////////////////////////////////////////////////////////////////
 
   Config(Logger log) {
@@ -130,28 +122,30 @@ class Config {
         return;
       }
 
+      if (k == condNameIf) {
+        v = resolveMapForIf(v);
+
+        if (v == null) {
+          return;
+        }
+      }
+      else if (k == paramNameEarlyWildcardExpansion) {
+        isEarlyWildcardExpansionAllowed = v;
+        return;
+      }
+      else if (isEarlyWildcardExpansionAllowed && (k == paramNameInp) && (GlobExt.isGlobPattern(v))) {
+        isMapFlat = false;
+        addFlatMapsToList_addList(listOfMaps, cloneMap, k, DirectoryExt.pathListExSync(v));
+        return;
+      }
+
       if (v is List) {
         isMapFlat = false;
         addFlatMapsToList_addList(listOfMaps, cloneMap, k, v);
       }
       else if (v is Map) {
-        if (k == condNameIf) {
-          v = resolveMapForIf(v);
-
-          if (v == null) {
-            return;
-          }
-        }
-
         isMapFlat = false;
         addFlatMapsToList_addMap(listOfMaps, cloneMap, k, v);
-      }
-      else if (k == paramNameEarlyWildcardExpansion) {
-        isEarlyWildcardExpansionAllowed = v;
-      }
-      else if (isEarlyWildcardExpansionAllowed && (k == paramNameInp) && (GlobExt.isGlobPattern(v))) {
-        isMapFlat = false;
-        addFlatMapsToList_addList(listOfMaps, cloneMap, k, DirectoryExt.pathListExSync(v));
       }
       else {
         cloneMap[k] = v;
@@ -267,7 +261,7 @@ class Config {
 
       _logger.information('Loading configuration data');
 
-      var tmpAll = loadConfigSync();
+      var tmpAll = loadSync();
 
       if (tmpAll is Map) {
         all = tmpAll;
@@ -405,7 +399,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Map<String, Object> loadConfigSync() {
+  Map<String, Object> loadSync() {
     var lf = ConfigFileLoader(log: _logger);
     lf.loadJsonSync(options.configFileInfo, paramNameImport: paramNameImport, appPlainArgs: options.plainArgs);
 
@@ -423,9 +417,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Map<String, Object> resolveMapForIf(Map<String, Object> mapIf) {
-    var result = <String, Object>{};
-
+  Object resolveMapForIf(Map<String, Object> mapIf) {
     var isOperFound = false;
     String operName;
 
@@ -521,85 +513,73 @@ class Config {
       return blockThen;
     }
 
-    var isIgnoreCase = (isEqi || isNei || isRxi || isNri);
-    var isRegExpMatch = (isRx || isRxi || isNr || isNri);
-    var isStringOper = (isIgnoreCase || isRegExpMatch);
-
     if (operands.length != 2) {
       throw Exception('Two operands precisely required for "${operName}": ${operands}');
     }
 
-    var o1 = operands[0];
-    var o2 = operands[1];
+    var isIgnoreCase  = (isEqi || isNei || isRxi || isNri);
+    var isRegExpMatch = (isRx || isRxi || isNr || isNri);
 
-    if (isStringOper) {
-      o1 = expandWithStraight(o1.toString());
-      o2 = expandWithStraight(o2.toString());
+    var o1 = expandWithStraight(operands[0]?.toString());
+    var o2 = expandWithStraight(operands[1]?.toString());
 
+    var n1 = (o1 == null ? null : (int.tryParse(o1) ?? double.tryParse(o1)));
+    var n2 = (o2 == null ? null : (int.tryParse(o2) ?? double.tryParse(o2)));
+
+    var isThen = (null as bool);
+
+    if ((n1 != null) && (n2 != null)) {
+      if (isGe) {
+        isThen = (n1 >= n2);
+      }
+      else if (isGt) {
+        isThen = (n1 > n2);
+      }
+      else if (isLe) {
+        isThen = (n1 <= n2);
+      }
+      else if (isLt) {
+        isThen = (n1 < n2);
+      }
+      else if (isEq) {
+        isThen = (n1 == n2);
+      }
+      else if (isNe) {
+        isThen = (n1 == n2);
+      }
+    }
+
+    if (isThen == null) {
       if (isIgnoreCase && !isRegExpMatch) {
-        o1 = o1.toUpperCase();
-        o2 = o2.toUpperCase();
-      }
-    }
-    else {
-      var isNum1 = ((o1 is int) || (o1 is double));
-      var isNum2 = ((o2 is int) || (o2 is double));
-
-      if (isNum1 && !isNum2) {
-        o2 = o2.toString();
-        o2 = (int.tryParse(o2) ?? double.tryParse(o2));
-      }
-      else if (!isNum1 && isNum2) {
-        o1 = o1.toString();
-        o1 = (int.tryParse(o1) ?? double.tryParse(o1));
-      }
-      else if (!isNum1 && !isNum2) {
-        o1 = o1.toString();
-        o1 = (int.tryParse(o1) ?? double.tryParse(o1));
-        o2 = o2.toString();
-        o2 = (int.tryParse(o2) ?? double.tryParse(o2));
+        o1 = o1?.toUpperCase();
+        o2 = o2?.toUpperCase();
       }
 
-      if ((o1 == null) || (o2 == null)) {
-        if (isGe || isGt || isLe || isLt) {
-          throw Exception('Two numbers expected in "${operName}": ${operands}');
-        }
-
-        o1 = operands[0].toString();
-        o2 = operands[1].toString();
+      if (isEq || isEqi) {
+        isThen = (o1 == o2);
+      }
+      else if (isNe || isNei) {
+        isThen = (o1 != o2);
+      }
+      else if (isGe) {
+        isThen = ((o1?.compareTo(o2) >= 0) ?? false);
+      }
+      else if (isGt) {
+        isThen = ((o1?.compareTo(o2) > 0) ?? false);
+      }
+      else if (isLe) {
+        isThen = ((o1?.compareTo(o2) <= 0) ?? false);
+      }
+      else if (isLt) {
+        isThen = ((o1?.compareTo(o2) < 0) ?? false);
+      }
+      else {
+        var hasMatch = RegExp(o2, caseSensitive: !isIgnoreCase).hasMatch(o1);
+        isThen = (isRx || isRxi ? hasMatch : (isNr || isNri ? !hasMatch : false));
       }
     }
 
-    if (isEq || isEqi) {
-      result = (o1 == o2 ? blockThen : blockElse);
-    }
-    else if (isNe || isNei) {
-      result = (o1 != o2 ? blockThen : blockElse);
-    }
-    else if (isGe) {
-      result = (o1 >= o2 ? blockThen : blockElse);
-    }
-    else if (isGt) {
-      result = (o1 > o2 ? blockThen : blockElse);
-    }
-    else if (isLe) {
-      result = (o1 <= o2 ? blockThen : blockElse);
-    }
-    else if (isLt) {
-      result = (o1 < o2 ? blockThen : blockElse);
-    }
-    else {
-      var hasMatch = RegExp(o2, caseSensitive: !isIgnoreCase).hasMatch(o1);
-
-      if (isRx || isRxi) {
-        result = (hasMatch ? blockThen : blockElse);
-      }
-      else if (isNr || isNri) {
-        result = (!hasMatch ? blockThen : blockElse);
-      }
-    }
-
-    return result;
+    return (isThen ?? false ? blockThen : blockElse);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -664,37 +644,13 @@ class Config {
         paramNameEarlyWildcardExpansion = v;
       }
 
-      // Native commands: archiving - NOT IMPLEMENTED YET
+      // Pre-defined commands
 
-      else if (k == cmdNameBz2) {
-        cmdNameBz2 = v;
+      else if (k == cmdNameExpand) {
+        cmdNameExpand = v;
       }
-      else if (k == cmdNameUnBz2) {
-        cmdNameUnBz2 = v;
-      }
-      else if (k == cmdNameGz) {
-        cmdNameGz = v;
-      }
-      else if (k == cmdNameUnGz) {
-        cmdNameUnGz= v;
-      }
-      else if (k == cmdNamePack) {
-        cmdNamePack = v;
-      }
-      else if (k == cmdNameUnPack) {
-        cmdNameUnPack = v;
-      }
-      else if (k == cmdNameTar) {
-        cmdNameTar = v;
-      }
-      else if (k == cmdNameUnTar) {
-        cmdNameUnTar= v;
-      }
-      else if (k == cmdNameZip) {
-        cmdNameZip = v;
-      }
-      else if (k == cmdNameUnZip) {
-        cmdNameUnZip = v;
+      else if (k == cmdNameSub) {
+        cmdNameSub = v;
       }
     });
   }

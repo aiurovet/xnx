@@ -3,6 +3,7 @@
     "{{-can-expand-content-}}": "{CEC}",
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{CD}",
+    "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{i}",
     "{{-inp-dir-}}": "{id}",
     "{{-inp-ext-}}": "{ix}",
@@ -11,7 +12,7 @@
   },
   "action": [
     { "{CEC}": true },
-    { "{c}": "expand-content \"{i}\" \"{o}\"" },
+    { "{c}": "{expand-content} \"{i}\" \"{o}\"" },
 
     { "{i}": "{CD}/template/*settings.json" },
 

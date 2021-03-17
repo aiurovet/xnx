@@ -242,7 +242,7 @@ class Convert {
 
       var command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
 
-      isExpandContentOnly = Config.RE_CMD_EXPAND.hasMatch(command);
+      isExpandContentOnly = command.startsWith(_config.cmdNameExpand);
       canExpandContent = (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
 
       if (!StringExt.isNullOrBlank(curDirName)) {
@@ -351,7 +351,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath));
 
     if (isExpandContentOnly && !hasInpFile) {
-      throw Exception('Input file is undefined for ${Config.CMD_EXPAND} operation');
+      throw Exception('Input file is undefined for ${_config.cmdNameExpand} operation');
     }
 
     var inpFile = (hasInpFile ? File(inpFilePath) : null);
@@ -431,7 +431,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
       var cli = command.splitCommandLine();
 
-      if (cli[0] == Config.CMD_SUB) {
+      if (cli[0] == _config.cmdNameSub) {
         Doul(log: _logger).exec(cli.sublist(1));
         isSuccess = true;
       }

@@ -8,11 +8,13 @@
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-detect-paths-}}": "{dtp}",
+    "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{inp}",
     "{{-next-}}": "{next}", // go to the next flattened top-level action map
     "{{-out-}}": "{out}",
     "{{-reset-}}": "{reset}",
-    "{{-stop-}}": "{stop}" // stop immediately
+    "{{-stop-}}": "{stop}", // stop immediately
+    "{{-sub-}}": "{sub}"
   },
   "action": [
 //    {
@@ -37,8 +39,8 @@
       "{{-import-}}": "../../examples/cmd.json",
 
       "{cmd}": [
-        "sub --delete out png svg",
-        "sub --mkdir ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark png/core png/dark svg"
+        "{sub} --delete out png svg",
+        "{sub} --mkdir ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark png/core png/dark svg"
       ]
     },
 
@@ -51,7 +53,7 @@
     {
       "{can-expand-content}": true,
       "{cmd}": [
-        "expand-content \"{inp}\" \"{svg-path}\"",
+        "{expand-content} \"{inp}\" \"{svg-path}\"",
         "{svg2png}"
       ],
       "{dim-name}": "{icon-name}_{dim}x{dim}",
@@ -101,21 +103,21 @@
       "{icon-dir}": "../../bin/{OsType}/icons",
       "{{-import-}}": "../../examples/cmd.json",
 
-      "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
+      "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
         "{cmd}": [
           //// Short delay to ensure all images created
           //"{sleep_0_5s}",
           // Copy png icons to Linux icons folder
-          "sub --move \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_48x48.png\" \"{png-core}_96x96.png\" \"{icon-dir}/core\"",
-          "sub --move \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_48x48.png\" \"{png-dark}_96x96.png\" \"{icon-dir}/dark\""
+          "{sub} --move \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_48x48.png\" \"{png-core}_96x96.png\" \"{icon-dir}/core\"",
+          "{sub} --move \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_48x48.png\" \"{png-dark}_96x96.png\" \"{icon-dir}/dark\""
         ]
-      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
+      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
         "{cmd}": [
           //// Short delay to ensure all images created
           //"{sleep_0_5s}",
-          // Copy png icons  to Linux icons folder
-          "iconutil -c icns \"{icon-dir}/core/{icon-name}.icns\" \"{png-core}\"",
-          "iconutil -c icns \"{icon-dir}/dark/{icon-name}_dark.icns\" \"{png-dark}\""
+          // Generate icns file in the macOS icons folder
+          "iconutil -c icns -o \"{icon-dir}/core/{icon-name}.icns\" \"png/core",
+          "iconutil -c icns -o \"{icon-dir}/dark/{icon-name}_dark.icns\" \"png/dark\""
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
         "{cmd}": [
@@ -135,6 +137,6 @@
 
     { "{reset}": null },
 
-    { "{cmd}": "sub --delete png svg" }
+    { "{cmd}": "{sub} --delete png svg" }
   ]
 }

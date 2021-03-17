@@ -4,6 +4,7 @@
     "{{-cmd-}}": "{cmd}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
+    "{{-expand-content-}}": "{expand-content}",
 
     // Allows to get list of files before command, hence a file will
     // be processed by every command before taking on the next file
@@ -19,6 +20,7 @@
     "{{-inp-sub-path-}}": "{inp-sub-path}",
     "{{-out-}}": "{out}",
     "{{-reset-}}": "{reset}",
+    "{{-sub-}}": "{sub}",
     "{{-this-}}": "{this}"
   },
   "action": [
@@ -43,19 +45,19 @@
 
       "{cmd}": [
         // Expand template config file
-        "expand-content \"{cur-dir}/ms_office_tmpl.json\" \"{cfg-curr}\"",
+        "{expand-content} \"{cur-dir}/ms_office_tmpl.json\" \"{cfg-curr}\"",
 
         // Decompress file
-        "sub --unzip \"{inp}\" \"{unz-dir}\"",
+        "{sub} --unzip \"{inp}\" \"{unz-dir}\"",
 
         // Expand placeholders in every decompressed file
-        "sub --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
+        "{sub} --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
 
         // Compress back to a single file
-        "sub -p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",
+        "{sub} -p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",
 
         // Delete temp expanded config file
-        "sub --delete \"{cfg-curr}\""
+        "{sub} --delete \"{cfg-curr}\""
       ],
 
       // Make a signal to start processing (command, input and output files are all defined)
@@ -63,6 +65,6 @@
     },
 
     // Stop branching array elements and execute a single command
-    { "{reset}": null, "{cmd}": "sub --delete \"{cur-dir}/unz\"" }
+    { "{reset}": null, "{cmd}": "{sub} --delete \"{cur-dir}/unz\"" }
   ]
 }

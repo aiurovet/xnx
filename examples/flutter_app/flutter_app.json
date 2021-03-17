@@ -7,7 +7,8 @@
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
-    "{{-reset-}}": "{x}"
+    "{{-reset-}}": "{x}",
+    "{{-sub-}}": "{sub}"
   },
   "action": [
     { "{{-import-}}": "../cmd.json" },
