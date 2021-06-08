@@ -82,7 +82,7 @@ class ConfigFeed {
     for (var i = listOfLists.length - 1; ; --i) {
       var curr = listOfLists[i];
 
-      if (!curr.isActive) {
+      if (!curr.isEnabled) {
         continue;
       }
 

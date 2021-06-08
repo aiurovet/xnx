@@ -6,7 +6,7 @@ import 'package:doul/config_event.dart';
 class ConfigValue {
   bool hasData;
   String key;
-  bool isActive;
+  bool isEnabled;
   List<ConfigValue> list;
   Map<String, ConfigValue> map;
   final List<ConfigValue> listOfLists;
@@ -22,7 +22,7 @@ class ConfigValue {
 
   ConfigValue({Object key, @required Object data, this.parent, @required this.listOfLists, @required this.valueParsed}) {
     this.key = key.toString();
-    isActive = true;
+    isEnabled = true;
     valueParsed = valueParsed ?? parent?.valueParsed;
 
     if (valueParsed != null) {
@@ -55,6 +55,43 @@ class ConfigValue {
       else {
         text = data?.toString();
       }
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void disable() {
+    isEnabled = false;
+
+    if (list != null) {
+      for (var v in list) {
+        if (!v.isPlain) {
+          v.disable();
+        }
+      }
+    }
+    if (map != null) {
+      map.forEach((k, v) {
+        if (!v.isPlain) {
+          v.disable();
+        }
+      });
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void disableListsByKey(String key, ConfigValue value) {
+    if (value?.parent?.key == key) {
+      return;
+    }
+
+    var valuesToClear = listOfLists.where((x) =>
+    x.isEnabled && (x.key == key) && ((value == null) || (x != value))
+    ).toList();
+
+    for (var x in valuesToClear) {
+      x.disable();
     }
   }
 
@@ -96,13 +133,13 @@ class ConfigValue {
   ConfigEventResult getPlainValues(Map<String, String> plainValues) {
     var result = ConfigEventResult.ok;
 
-    if (!isActive) {
+    if (!isEnabled) {
       return result;
     }
 
     if (list?.isNotEmpty ?? false) {
       var isAdded = listOfLists.any((x) =>
-        isActive && (x.key == key) && (x == this)
+        isEnabled && (x.key == key) && (x == this)
       );
 
       if (!isAdded) {
@@ -140,47 +177,6 @@ class ConfigValue {
     }
 
     return result;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  @override void clear() {
-    isActive = false;
-    offset = 0;
-
-    if (list != null) {
-      for (var v in list) {
-        v.clear();
-      }
-
-      list.clear();
-    }
-    if (map != null) {
-      map.forEach((k, v) {
-        v.clear();
-      });
-
-      map.clear();
-    }
-    if (text != null) {
-      text = null;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void disableListsByKey(String key, ConfigValue value) {
-    if (value?.parent?.key == key) {
-      return;
-    }
-
-    var valuesToClear = listOfLists.where((x) =>
-      x.isActive && (x.key == key) && ((value == null) || (x != value))
-    ).toList();
-
-    for (var x in valuesToClear) {
-      x.clear();
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
