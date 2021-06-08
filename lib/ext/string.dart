@@ -1,6 +1,6 @@
 import 'dart:core';
 import 'dart:io';
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as pathx;
 
 extension StringExt on String {
 
@@ -49,7 +49,7 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String adjustPath() => trim().replaceAll((IS_WINDOWS ? PATH_SEP_NIX : PATH_SEP_WIN), Path.separator);
+  String adjustPath() => trim().replaceAll((IS_WINDOWS ? PATH_SEP_NIX : PATH_SEP_WIN), pathx.separator);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -102,7 +102,7 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getEnvironmentVariable(String key, {String defValue = null}) {
+  static String getEnvironmentVariable(String key, {String defValue}) {
     if (ENVIRONMENT == null) {
       _initEnvironmentVariables();
     }
@@ -115,7 +115,7 @@ extension StringExt on String {
   //////////////////////////////////////////////////////////////////////////////
 
   String getFullPath() {
-    var fullPath = (this == STDIN_PATH ? this : Path.canonicalize(adjustPath()));
+    var fullPath = (this == STDIN_PATH ? this : pathx.canonicalize(adjustPath()));
 
     return fullPath;
   }
@@ -185,29 +185,38 @@ extension StringExt on String {
   List<String> splitCommandLine({bool canValidate}) {
     var args = <String>[];
 
-    this
-      .replaceAll(ESC_ESC, '\x01')
-      .replaceAll(ESC_QUOTE_1, '\x02')
-      .replaceAll(ESC_QUOTE_2, '\x03')
-      .replaceAllMapped(RE_CMD_LINE, (match) {
-        var s = match.group(2);
+    replaceAll(ESC_ESC, '\x01')
+    .replaceAll(ESC_QUOTE_1, '\x02')
+    .replaceAll(ESC_QUOTE_2, '\x03')
+    .replaceAllMapped(RE_CMD_LINE, (match) {
+      var s = match.group(2);
+
+      if (StringExt.isNullOrBlank(s)) {
+        s = match.group(4);
 
         if (StringExt.isNullOrBlank(s)) {
-          s = match.group(4);
-
-          if (StringExt.isNullOrBlank(s)) {
-            s = match.group(6);
-          }
+          s = match.group(6);
         }
+      }
 
-        s = s.trim();
-        args.add(s);
+      s = s.trim();
+      args.add(s);
 
-        return s;
-      })
-    ;
+      return s;
+    });
 
     return args;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String quote({bool isSingle = false}) {
+    var plainQuote = (isSingle ? QUOTE_1 : QUOTE_2);
+    var escapedQuote = ESC + plainQuote;
+
+    var result = plainQuote + replaceAll(plainQuote, escapedQuote) + plainQuote;
+
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -234,17 +243,6 @@ extension StringExt on String {
 
       return tokCount;
     }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  String quote({bool isSingle = false}) {
-    var plainQuote = (isSingle ? QUOTE_1 : QUOTE_2);
-    var escapedQuote = ESC + plainQuote;
-
-    var result = plainQuote + replaceAll(plainQuote, escapedQuote) + plainQuote;
-
-    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////

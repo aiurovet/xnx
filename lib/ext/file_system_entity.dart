@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:doul/ext/glob.dart';
-import 'package:path/path.dart' as Path;
+// ignore: library_prefixes
+import 'package:path/path.dart' as pathx;
 
 extension FileSystemEntityExt on FileSystemEntity {
 
@@ -19,6 +20,7 @@ extension FileSystemEntityExt on FileSystemEntity {
       return existsSync();
     }
     catch (e) {
+      // Suppressed
     }
 
     return false;
@@ -28,14 +30,15 @@ extension FileSystemEntityExt on FileSystemEntity {
 
   static bool tryPatternExistsSync(String entityName, {recursive = false}) {
     try {
-      var parentName = Path.dirname(entityName);
-      var filter = GlobExt.toGlob(Path.basename(entityName));
+      var parentName = pathx.dirname(entityName);
+      var filter = GlobExt.toGlob(pathx.basename(entityName));
       var lst = filter.listSync(root: parentName);
       var isFound = lst.any((x) => true);
 
       return isFound;
     }
     catch (e) {
+      // Suppressed
     }
 
     return false;

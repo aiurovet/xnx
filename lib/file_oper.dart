@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:doul/ext/string.dart';
-import 'package:path/path.dart' as Path;
-
+import 'package:path/path.dart' as pathx;
 import 'ext/directory.dart';
 import 'ext/file.dart';
 import 'ext/glob.dart';
@@ -35,11 +34,11 @@ class FileOper {
 
     dirNamesEx.forEach((currDirName) {
       if (File(currDirName).existsSync()) {
-        throw Exception('Can\'t create dir "${currDirName}", as this is an existing file');
+        throw Exception('Can\'t create dir "$currDirName", as this is an existing file');
       }
 
       if (!isSilent) {
-        print('Creating dir "${currDirName}"');
+        print('Creating dir "$currDirName"');
       }
 
       Directory(currDirName).createSync(recursive: true);
@@ -156,7 +155,7 @@ class FileOper {
         var file = File(currPath);
 
         if (file.existsSync()) {
-          currDirNameLen = (currPath.length - Path.basename(currPath).length);
+          currDirNameLen = (currPath.length - pathx.basename(currPath).length);
           entities.add(file);
         }
         else {
@@ -289,9 +288,9 @@ class FileOper {
 
     for (var i = 0, n = entities.length; i < n; i++) {
       var entity = entities[i];
-      final path = entities[i].path;
+      final entityPath = entities[i].path;
 
-      if (path.startsWith(prefix)) {
+      if (entityPath.startsWith(prefix)) {
         if (entity is Directory) {
           entity = Directory(entity.path.substring(prefixLen));
         }
@@ -377,7 +376,7 @@ class FileOper {
         var entity = entities[entityNo];
 
         if (entity is Directory) {
-          entity.xferSync(Path.join(toDirName, subPath), isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+          entity.xferSync(pathx.join(toDirName, subPath), isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
         }
         else if (entity is File) {
           entity.xferSync(toDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);

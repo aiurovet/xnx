@@ -128,7 +128,7 @@ class ConfigFileLoader {
       else {
         fullText += '{';
 
-        var jsonData = jsonDecode('{"${paramNameImport}": ${impPathsSerialized}}');
+        var jsonData = jsonDecode('{"$paramNameImport": $impPathsSerialized}');
         var jsonText = StringExt.EMPTY;
         var impPaths = jsonData[paramNameImport];
 
@@ -152,12 +152,12 @@ class ConfigFileLoader {
 
       clear();
 
-      var result = '"${getImportFileKey(keyPrefix, impPath: impPath)}": ${fullText}';
+      var result = '"${getImportFileKey(keyPrefix, impPath: impPath)}": $fullText';
 
       return result;
     }
     catch (e) {
-      throw Exception('Failed to parse file: "${impPath}"\n\n${e.toString()}');
+      throw Exception('Failed to parse file: "$impPath"\n\n${e.toString()}');
     }
   }
 
@@ -232,7 +232,7 @@ class ConfigFileLoader {
     _isStdIn = (StringExt.isNullOrBlank(filePath) || (filePath == StringExt.STDIN_PATH));
     var displayName = (_isStdIn ? filePath : '"' + filePath + '"');
 
-    _logger?.information('Loading ${displayName}');
+    _logger?.information('Loading $displayName');
 
     _file = (_isStdIn ? null : File(filePath));
 
@@ -241,7 +241,7 @@ class ConfigFileLoader {
     }
     else {
       if (!_file.existsSync()) {
-        throw Exception('File not found: ${displayName}');
+        throw Exception('File not found: $displayName');
       }
 
       _text = (_file.readAsStringSync() ?? StringExt.EMPTY);

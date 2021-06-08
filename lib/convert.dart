@@ -16,7 +16,7 @@ import 'package:doul/ext/file_system_entity.dart';
 import 'package:doul/ext/stdin.dart';
 import 'package:doul/ext/string.dart';
 
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as path;
 import 'package:process_run/shell_run.dart';
 
 class Convert {
@@ -58,19 +58,25 @@ class Convert {
     startCmd = FileExt.getStartCommand();
 
     _config = Config(_logger);
-    var maps = _config.exec(args);
+    var maps = _config.exec(args: args);
     _options = _config.options;
     PackOper.compression = _options.compression;
     var plainArgs = _options.plainArgs;
 
-    if ((maps?.isEmpty ?? true) && _options.isCmd) {
+    var hasMaps = (maps?.any((x) => x.isNotEmpty) ?? false);
+
+    if (!hasMaps && _options.isCmd) {
       execBuiltin(_options.plainArgs);
       return;
     }
 
     _inpParamNames = _config.getInpParamNames();
 
-    for (; (maps?.isNotEmpty ?? false);) {
+    for (; hasMaps; maps = _config.exec(), hasMaps = (maps?.any((x) => x.isNotEmpty) ?? false)) {
+      if (_config.runNo > 1) {
+        _logger.debug('\nRun #${_config.runNo} found\n');
+      }
+
       var isProcessed = false;
 
       if ((plainArgs?.length ?? 0) <= 0) {
@@ -95,12 +101,6 @@ class Convert {
 
       if ((isStdOut != null) && !isStdOut && !isProcessed) {
         _logger.outInfo('All output files are up to date.');
-      }
-
-      maps = _config.exec();
-
-      if (maps?.isNotEmpty ?? false) {
-        _logger.debug('\nRun #${_config.runNo} found\n');
       }
     }
   }
@@ -165,11 +165,11 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   bool execMap(String plainArg, Map<String, String> mapOrig, Map<String, String> mapPrev) {
+    if (mapOrig?.isEmpty ?? true) {
+      return false;
+    }
     if (mapOrig.containsKey(_config.paramNameStop)) {
       hasStop = true;
-      return true;
-    }
-    if (mapOrig.containsKey(_config.paramNameNext)) {
       return true;
     }
 
@@ -199,8 +199,8 @@ class Convert {
     var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
 
     if (hasInpFile) {
-      if (!Path.isAbsolute(inpFilePath)) {
-        inpFilePath = Path.join(curDirName, inpFilePath);
+      if (!path.isAbsolute(inpFilePath)) {
+        inpFilePath = path.join(curDirName, inpFilePath);
       }
 
       if (inpFilePath.contains(_config.paramNameInp) ||
@@ -218,7 +218,7 @@ class Convert {
       inpFilePath = inpFilePath.getFullPath();
     }
 
-    var subStart = (hasInpFile ? (inpFilePath.length - Path.basename(inpFilePath).length) : 0);
+    var subStart = (hasInpFile ? (inpFilePath.length - path.basename(inpFilePath).length) : 0);
     var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
     for (var inpFilePathEx in inpFilePaths) {
@@ -246,7 +246,7 @@ class Convert {
       canExpandContent = (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
 
       if (!StringExt.isNullOrBlank(curDirName)) {
-        _logger.debug('Setting current directory to: "${curDirName}"');
+        _logger.debug('Setting current directory to: "$curDirName"');
         Directory.current = curDirName;
       }
 
@@ -266,14 +266,14 @@ class Convert {
       var outFilePathEx = (hasOutFile ? outFilePath : inpFilePathEx);
 
       if (hasInpFile) {
-        var dirName = Path.dirname(inpFilePathEx);
-        var inpNameExt = Path.basename(inpFilePathEx);
+        var dirName = path.dirname(inpFilePathEx);
+        var inpNameExt = path.basename(inpFilePathEx);
 
         mapCurr[_config.paramNameInpDir] = dirName;
         mapCurr[_config.paramNameInpSubDir] = (dirName.length <= subStart ? StringExt.EMPTY : dirName.substring(subStart));
         mapCurr[_config.paramNameInpNameExt] = inpNameExt;
-        mapCurr[_config.paramNameInpExt] = Path.extension(inpNameExt);
-        mapCurr[_config.paramNameInpName] = Path.basenameWithoutExtension(inpNameExt);
+        mapCurr[_config.paramNameInpExt] = path.extension(inpNameExt);
+        mapCurr[_config.paramNameInpName] = path.basenameWithoutExtension(inpNameExt);
         mapCurr[_config.paramNameInpPath] = inpFilePathEx;
         mapCurr[_config.paramNameInpSubPath] = inpFilePathEx.substring(subStart);
         mapCurr[_config.paramNameThis] = startCmd;
@@ -286,7 +286,7 @@ class Convert {
 
         if (hasOutFile) {
           outFilePathEx = expandInpNames(outFilePathEx, mapCurr);
-          outFilePathEx = Path.join(curDirName, outFilePathEx).getFullPath();
+          outFilePathEx = path.join(curDirName, outFilePathEx).getFullPath();
         }
 
         outFilePathEx = outFilePathEx.adjustPath();
@@ -303,11 +303,11 @@ Input sub-path:  "${mapCurr[_config.paramNameInpSubPath]}"
         ''');
       }
 
-      outDirName = (isStdOut ? StringExt.EMPTY : Path.dirname(outFilePathEx));
+      outDirName = (isStdOut ? StringExt.EMPTY : path.dirname(outFilePathEx));
 
       _logger.debug('''
 
-Output dir:  "${outDirName}"
+Output dir:  "$outDirName"
 Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         ''');
 
@@ -357,14 +357,14 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     var inpFile = (hasInpFile ? File(inpFilePath) : null);
 
     if ((inpFile != null) && !inpFile.existsSync()) {
-      throw Exception('Input file is not found: "${inpFilePath}"');
+      throw Exception('Input file is not found: "$inpFilePath"');
     }
 
     var hasOutFile = (!isStdOut && !StringExt.isNullOrBlank(outFilePath) && !Directory(outFilePath).existsSync());
 
     String tmpFilePath;
 
-    var isSamePath = (hasInpFile && hasOutFile && Path.equals(inpFilePath, outFilePath));
+    var isSamePath = (hasInpFile && hasOutFile && path.equals(inpFilePath, outFilePath));
 
     if (canExpandContent && (!isExpandContentOnly || isSamePath)) {
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
@@ -382,7 +382,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
 
       if (!isChanged) {
-        _logger.information('Unchanged: "${outFilePath}"');
+        _logger.information('Unchanged: "$outFilePath"');
         return false;
       }
     }
@@ -393,14 +393,14 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     if (canExpandContent) {
       if (StringExt.isNullOrBlank(inpFilePath)) {
-        throw new Exception("Unable to expand file '${inpFilePath}' for command ${command}");
+        throw Exception("Unable to expand file '$inpFilePath' for command $command");
       }
       expandInpContent(inpFile, outFilePath, tmpFilePath, map);
     }
 
     command = (getValue(map, value: command, canReplace: true) ?? StringExt.EMPTY);
 
-    var tmpFile = (tmpFilePath != null ? new File(tmpFilePath) : null);
+    var tmpFile = (tmpFilePath != null ? File(tmpFilePath) : null);
 
     if (tmpFile != null) {
       command = command.replaceAll(map[_config.paramNameInp], tmpFilePath);
@@ -465,8 +465,8 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         var unitsEnding = (resultCount == 1 ? '' : 's');
 
         if (!isSuccess) {
-          _logger.information('Exit code${unitsEnding}: ${results.map((x) => x.exitCode).join(', ')}');
-          _logger.information('\n*** Error${unitsEnding}:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+          _logger.information('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
+          _logger.information('\n*** Error$unitsEnding:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
 
           _logger.error(result.stderr ?? 'No error or warning message found');
         }
@@ -521,21 +521,21 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     else {
       var inpFilePath = inpFile.path;
 
-      var inpDirName = Path.dirname(inpFilePath);
-      var inpFileName = Path.basename(inpFilePath);
+      var inpDirName = path.dirname(inpFilePath);
+      var inpFileName = path.basename(inpFilePath);
 
-      var outDirName = Path.dirname(outFilePath);
-      var outFileName = Path.basename(outFilePath);
+      var outDirName = path.dirname(outFilePath);
+      var outFileName = path.basename(outFilePath);
 
-      if (Path.equals(inpFileName, outFileName)) {
+      if (path.equals(inpFileName, outFileName)) {
         outFileName = inpFileName;
       }
 
-      if (Path.equals(inpDirName, outDirName)) {
+      if (path.equals(inpDirName, outDirName)) {
         outDirName = inpDirName;
       }
 
-      outFilePath = Path.join(outDirName, outFileName);
+      outFilePath = path.join(outDirName, outFileName);
 
       var outDir = Directory(outDirName);
 
@@ -544,15 +544,15 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
 
       if (Directory(outFilePath).existsSync()) {
-        outFileName = (inpFilePath.startsWith(curDirName) ? inpFilePath.substring(curDirName.length) : Path.basename(inpFilePath));
+        outFileName = (inpFilePath.startsWith(curDirName) ? inpFilePath.substring(curDirName.length) : path.basename(inpFilePath));
 
-        var rootPrefixLen = Path.rootPrefix(outFileName).length;
+        var rootPrefixLen = path.rootPrefix(outFileName).length;
 
         if (rootPrefixLen > 0) {
           outFileName = outFileName.substring(rootPrefixLen);
         }
 
-        outFilePath = Path.join(outFilePath, outFileName);
+        outFilePath = path.join(outFilePath, outFileName);
       }
 
       var tmpFile = File(tmpFilePath ?? outFilePath);
@@ -560,7 +560,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       tmpFile.deleteIfExistsSync();
       tmpFile.writeAsStringSync(text);
 
-      if (Path.equals(inpFilePath, outFilePath)) {
+      if (path.equals(inpFilePath, outFilePath)) {
         tmpFile.renameSync(outFilePath);
       }
 
@@ -616,7 +616,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   String getActualInpFilePath(String inpFilePath, String outFilePath) {
-    if (isStdIn || (isExpandContentOnly && !Path.equals(inpFilePath, outFilePath)) || !canExpandContent) {
+    if (isStdIn || (isExpandContentOnly && !path.equals(inpFilePath, outFilePath)) || !canExpandContent) {
       return inpFilePath;
     }
     else if (!isStdOut) {
@@ -624,11 +624,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         return StringExt.EMPTY;
       }
       else {
-        var tmpFileName = (Path.basenameWithoutExtension(outFilePath) +
-            FILE_TYPE_TMP + Path.extension(inpFilePath));
-        var tmpDirName = Path.dirname(outFilePath);
+        var tmpFileName = (path.basenameWithoutExtension(outFilePath) +
+            FILE_TYPE_TMP + path.extension(inpFilePath));
+        var tmpDirName = path.dirname(outFilePath);
 
-        return Path.join(tmpDirName, tmpFileName);
+        return path.join(tmpDirName, tmpFileName);
       }
     }
     else {
@@ -664,15 +664,15 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       lst.add(filePath);
     }
     else {
-      if (!Path.isAbsolute(filePathTrim)) {
-        filePathTrim = Path.join(curDirName, filePathTrim).getFullPath();
+      if (!path.isAbsolute(filePathTrim)) {
+        filePathTrim = path.join(curDirName, filePathTrim).getFullPath();
       }
 
       lst = getDirList(filePathTrim);
     }
 
     if (lst.isEmpty) {
-      throw Exception('No input found for: ${filePath}');
+      throw Exception('No input found for: $filePath');
     }
 
     return lst;

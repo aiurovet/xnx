@@ -6,10 +6,6 @@
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-expand-content-}}": "{expand-content}",
 
-    // Allows to get list of files before command, hence a file will
-    // be processed by every command before taking on the next file
-    "{{-early-wildcard-expansion-}}": "{early-wildcard-expansion}",
-
     "{{-inp-}}": "{inp}",
     "{{-inp-dir-}}": "{inp-dir}",
     "{{-inp-ext-}}": "{inp-ext}",
@@ -35,8 +31,6 @@
     {
       "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
       "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
-
-      "{early-wildcard-expansion}": true,
 
       // Go through all MS Office input files
       "{inp}": "inp/*",

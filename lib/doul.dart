@@ -8,7 +8,7 @@ import 'options.dart';
 class Doul {
   Logger _logger;
 
-  Doul({Logger log = null}) {
+  Doul({Logger log}) {
     _logger = log ?? Logger();
   }
 
@@ -50,7 +50,7 @@ class Doul {
       }
 
       var errDtl = (_logger.level >= Logger.LEVEL_DEBUG ? '\n\n' + stackTrace?.toString() : StringExt.EMPTY);
-      errMsg = '\n*** ERROR: ${errMsg}${errDtl}\n';
+      errMsg = '\n*** ERROR: $errMsg$errDtl\n';
 
       _logger.error(errMsg);
 

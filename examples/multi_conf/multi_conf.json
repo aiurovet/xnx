@@ -23,7 +23,5 @@
     ] },
 
     { "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envLC}{ix}" },
-
-    { "": null }
   ]
 }

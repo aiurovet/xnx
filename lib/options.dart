@@ -5,7 +5,8 @@ import 'package:doul/config_file_info.dart';
 import 'package:doul/config_file_loader.dart';
 import 'package:doul/ext/directory.dart';
 import 'package:doul/ext/glob.dart';
-import 'package:path/path.dart' as Path;
+// ignore: library_prefixes
+import 'package:path/path.dart' as pathx;
 
 import 'package:doul/ext/string.dart';
 import 'pack_oper.dart';
@@ -219,7 +220,7 @@ class Options {
 
   static final String APP_NAME = 'doul';
   static final String FILE_TYPE_CFG = '.json';
-  static final String FILE_MASK_CFG = '${GlobExt.ALL}${FILE_TYPE_CFG}';
+  static final String FILE_MASK_CFG = '${GlobExt.ALL}$FILE_TYPE_CFG';
 
   static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-]${CONFIG['name']}|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
   static final RegExp RE_OPT_START_DIR = RegExp('^[\\-]([\\-]${START_DIR['name']}|${START_DIR['abbr']})([\\=]|\$)', caseSensitive: true);
@@ -303,7 +304,7 @@ class Options {
       }
     }
 
-    return Path.join(startDirName, configFileInfo.filePath).getFullPath();
+    return pathx.join(startDirName, configFileInfo.filePath).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -355,7 +356,7 @@ class Options {
         isHelp = value;
       })
       ..addOption(START_DIR['name'], abbr: START_DIR['abbr'], help: START_DIR['help'], valueHelp: START_DIR['valueHelp'], defaultsTo: START_DIR['defaultsTo'], callback: (value) {
-        _startDirName = (value == null ? StringExt.EMPTY : (value as String).getFullPath());
+        _startDirName = (value == null ? StringExt.EMPTY : value.getFullPath());
       })
       ..addOption(COMPRESSION['name'], abbr: COMPRESSION['abbr'], help: COMPRESSION['help'], valueHelp: COMPRESSION['valueHelp'], defaultsTo: COMPRESSION['defaultsTo'], callback: (value) {
         _compression = int.parse(value);
@@ -564,40 +565,40 @@ class Options {
       _startDirName = null;
     }
 
-    _startDirName = Path.canonicalize(_startDirName ?? '');
+    _startDirName = pathx.canonicalize(_startDirName ?? '');
 
     if (!isCmd) {
       var filePath = _configFileInfo.filePath;
 
       if (filePath != StringExt.STDIN_PATH) {
         if (filePath.isEmpty) {
-          filePath = Path.join(_startDirName, Path.basename(_startDirName) + FILE_TYPE_CFG);
+          filePath = pathx.join(_startDirName, pathx.basename(_startDirName) + FILE_TYPE_CFG);
 
           if (!File(filePath).existsSync()) {
-            var lst = DirectoryExt.pathListExSync(Path.join(_startDirName, FILE_MASK_CFG));
-            filePath = ((lst.length <= 0 ? null : lst.first) ?? StringExt.EMPTY);
+            var lst = DirectoryExt.pathListExSync(pathx.join(_startDirName, FILE_MASK_CFG));
+            filePath = ((lst.isEmpty ? null : lst.first) ?? StringExt.EMPTY);
           }
         }
         else {
-          if (StringExt.isNullOrBlank(Path.extension(filePath))) {
-            filePath = Path.setExtension(filePath, FILE_TYPE_CFG);
+          if (StringExt.isNullOrBlank(pathx.extension(filePath))) {
+            filePath = pathx.setExtension(filePath, FILE_TYPE_CFG);
           }
 
           if (StringExt.isNullOrBlank(filePath)) {
             printUsage(parser, error: 'Configuration file is not found');
           }
 
-          if (!Path.isAbsolute(filePath)) {
+          if (!pathx.isAbsolute(filePath)) {
             filePath = getConfigFullPath(args);
           }
 
           var configFile = File(filePath);
 
           if (!configFile.existsSync()) {
-            var dirName = Path.dirname(filePath);
-            var fileName = Path.basename(dirName) + FILE_TYPE_CFG;
+            var dirName = pathx.dirname(filePath);
+            var fileName = pathx.basename(dirName) + FILE_TYPE_CFG;
 
-            filePath = Path.join(dirName, fileName);
+            filePath = pathx.join(dirName, fileName);
           }
         }
 
@@ -608,7 +609,7 @@ class Options {
     printSystemInfo();
 
     if (!StringExt.isNullOrBlank(_startDirName)) {
-        _logger.information('Setting current directory to: "${_startDirName}"');
+        _logger.information('Setting current directory to: "$_startDirName"');
         Directory.current = _startDirName;
     }
 
@@ -630,7 +631,7 @@ class Options {
 
 USAGE:
 
-${APP_NAME} [OPTIONS]
+$APP_NAME [OPTIONS]
 
 ${parser.usage}
 

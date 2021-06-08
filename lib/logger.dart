@@ -8,7 +8,7 @@ class Logger {
   static const String STUB_TIME = '{T}';
 
   static const String FORMAT_DEFAULT = null;
-  static const String FORMAT_SIMPLE = '[${STUB_TIME}] [${STUB_LEVEL}] ${STUB_MESSAGE}';
+  static const String FORMAT_SIMPLE = '[$STUB_TIME] [$STUB_LEVEL] $STUB_MESSAGE';
 
   static const int LEVEL_UNKNOWN = -1;
   static const int LEVEL_SILENT = 0;

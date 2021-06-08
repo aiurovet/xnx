@@ -10,7 +10,6 @@
     "{{-detect-paths-}}": "{dtp}",
     "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{inp}",
-    "{{-next-}}": "{next}", // go to the next flattened top-level action map
     "{{-out-}}": "{out}",
     "{{-reset-}}": "{reset}",
     "{{-stop-}}": "{stop}", // stop immediately
@@ -47,15 +46,16 @@
     {
       "{reset}": null,
       "{{-import-}}": "../../examples/cmd.json",
-      "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{svg-path}\""
+      "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\""
     },
 
     {
       "{can-expand-content}": true,
-      "{cmd}": [
-        "{expand-content} \"{inp}\" \"{svg-path}\"",
-        "{svg2png}"
-      ],
+      "{cmd}": "{svg2png}",
+//      "{cmd}": [
+//        "{expand-content} \"{inp}\" \"{svg-path}\"",
+//        "{svg2png}"
+//      ],
       "{dim-name}": "{icon-name}_{dim}x{dim}",
       "{svg-path}": "{cur-dir}/svg/{dim-name}.svg"
     },
@@ -116,7 +116,7 @@
           //// Short delay to ensure all images created
           //"{sleep_0_5s}",
           // Generate icns file in the macOS icons folder
-          "iconutil -c icns -o \"{icon-dir}/core/{icon-name}.icns\" \"png/core",
+          "iconutil -c icns -o \"{icon-dir}/core/{icon-name}.icns\" \"png/core\"",
           "iconutil -c icns -o \"{icon-dir}/dark/{icon-name}_dark.icns\" \"png/dark\""
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {

@@ -10,12 +10,18 @@
     {
       "{{-import-}}": "../cmd.json",
 
-      "{can-expand-content}": true, "{img-src-dir}":  "{cur-dir}/svg", "{icons}": [ "edit", "find", "save" ],
+      "{can-expand-content}": true,
+      "{img-src-dir}": "{cur-dir}/svg",
+
+      "{icons}": [
+        "edit", "find", "save"
+      ],
+
       "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\""
     },
 
-    { "{i}": "{cur-dir}/resizer.svg" },
+    { "{i}": "{cur-dir}/resizer.svg", "{ox}": "png/icon-{action}-{d}x{d}.png" },
 
-    { "{d}": [ 20, 40, 80, 160 ], "{action}": "{icons}", "{o}": "png/icon-{action}-{d}x{d}.png" }
+    { "{d}": [ 20, 40, 80, 160 ], "{action}": "{icons}", "{o}": "{ox}" }
   ]
 }

@@ -1,11 +1,13 @@
+import 'package:doul/config_event.dart';
+import 'package:doul/config_feed.dart';
+import 'package:doul/config_file_loader.dart';
 import 'package:doul/ext/directory.dart';
 import 'package:doul/ext/file_system_entity.dart';
 import 'package:doul/ext/glob.dart';
-import 'package:path/path.dart' as Path;
-import 'config_file_loader.dart';
-import 'logger.dart';
-import 'options.dart';
-import 'ext/string.dart';
+import 'package:doul/ext/string.dart';
+import 'package:doul/logger.dart';
+import 'package:doul/options.dart';
+import 'package:path/path.dart' as path;
 
 class Config {
 
@@ -16,28 +18,17 @@ class Config {
   static final String CFG_ACTION = 'action';
   static final String CFG_RENAME = 'rename';
 
-  //static final int MAX_EXPANSION_ITERATIONS = 10;
-
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
-  // Properties
+  // Pre-defined parameters names
   //////////////////////////////////////////////////////////////////////////////
-
-  Map all;
-  bool isEarlyWildcardExpansionAllowed = false;
-  int lastModifiedStamp;
-  Options options;
-  int runNo = 0;
-
-  Logger _logger;
-  Map<String, Object> _straight;
 
   String paramNameCanExpandContent = '{{-can-expand-content-}}';
   String paramNameCmd = '{{-cmd-}}';
   String paramNameCurDir = '{{-cur-dir-}}';
   String paramNameDetectPaths = '{{-detect-paths-}}';
-  String paramNameEarlyWildcardExpansion = '{{-early-wildcard-expansion-}}';
+  String paramNameExec = '{{-exec-}}';
   String paramNameInp = '{{-inp-}}';
   String paramNameInpDir = '{{-inp-dir-}}';
   String paramNameInpExt = '{{-inp-ext-}}';
@@ -47,11 +38,19 @@ class Config {
   String paramNameInpSubDir = '{{-inp-sub-dir-}}';
   String paramNameInpSubPath = '{{-inp-sub-path-}}';
   String paramNameImport = '{{-import-}}';
-  String paramNameNext = '{{-next-}}';
   String paramNameOut = '{{-out-}}';
-  String paramNameReset = '{{-reset-}}';
+  String paramNameNext = '{{-next-}}';
   String paramNameStop = '{{-stop-}}';
   String paramNameThis = '{{-this-}}';
+
+  List<String> paramNamesForGlob;
+  List<String> paramNamesForPath;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Dependencies
+  //////////////////////////////////////////////////////////////////////////////
+
+  String paramNameResolvedIf; // to be calculated from condName*
 
   //////////////////////////////////////////////////////////////////////////////
   // Pre-defined commands
@@ -61,7 +60,7 @@ class Config {
   String cmdNameSub = '{{-sub-}}';
 
   //////////////////////////////////////////////////////////////////////////////
-  // Native conditional operators
+  // Pre-defined conditional operators
   //////////////////////////////////////////////////////////////////////////////
 
   String condNameIf = '{{-if-}}';
@@ -69,7 +68,7 @@ class Config {
   String condNameElse = '{{-else-}}';
 
   //////////////////////////////////////////////////////////////////////////////
-  // Native comparison operators
+  // Pre-defined comparison operators
   //////////////////////////////////////////////////////////////////////////////
 
   String operNameEq = '==';
@@ -88,19 +87,18 @@ class Config {
   String operNameRxi = '~/i';
 
   //////////////////////////////////////////////////////////////////////////////
-  // Built-in archiving - NOT IMPLEMENTED YET
+  // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  static final String CMD_BZ2 = 'bz2';
-  static final String CMD_UNBZ2 = 'unbz2';
-  static final String CMD_GZ = 'gz';
-  static final String CMD_UNGZ = 'ungz';
-  static final String CMD_PACK = 'pack';
-  static final String CMD_UNPACK = 'unpack';
-  static final String CMD_TAR = 'tar';
-  static final String CMD_UNTAR = 'untar';
-  static final String CMD_ZIP = 'zip';
-  static final String CMD_UNZIP = 'unzip';
+  Map all;
+  RegExp detectPathsRE;
+  var lastModifiedStamp = 0;
+  Options options;
+  var runNo = 0;
+
+  Map<String, String> growMap;
+
+  Logger _logger;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -111,148 +109,14 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void addFlatMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map) {
-    var cloneMap = <String, Object>{};
-    cloneMap.addAll(map);
-
-    var isMapFlat = true;
-
-    map.forEach((k, v) {
-      if ((v == null) || !isMapFlat /* only one List or Map per call */) {
-        return;
-      }
-
-      if (k == condNameIf) {
-        v = resolveMapForIf(v);
-
-        if (v == null) {
-          return;
-        }
-      }
-      else if (k == paramNameEarlyWildcardExpansion) {
-        isEarlyWildcardExpansionAllowed = v;
-        return;
-      }
-      else if (isEarlyWildcardExpansionAllowed && (k == paramNameInp) && (GlobExt.isGlobPattern(v))) {
-        isMapFlat = false;
-        addFlatMapsToList_addList(listOfMaps, cloneMap, k, DirectoryExt.pathListExSync(v));
-        return;
-      }
-
-      if (v is List) {
-        isMapFlat = false;
-        addFlatMapsToList_addList(listOfMaps, cloneMap, k, v);
-      }
-      else if (v is Map) {
-        isMapFlat = false;
-        addFlatMapsToList_addMap(listOfMaps, cloneMap, k, v);
-      }
-      else {
-        cloneMap[k] = v;
-        _straight[k] = v;
-      }
-    });
-
-    if (isMapFlat) {
-      var strStrMap = <String, String>{};
-
-      cloneMap.forEach((k, v) {
-        strStrMap[k] = v.toString();
-      });
-
-      listOfMaps.add(strStrMap);
+  List<Map<String, String>> exec({List<String> args, ConfigMapReady mapReady}) {
+    if (runNo < 0) {
+      return null;
     }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void addFlatMapsToList_addList(List<Map<String, String>> listOfMaps, Map<String, Object> map, String key, List<Object> argList) {
-    var cloneMap = <String, Object>{};
-    cloneMap.addAll(map);
-
-    for (var i = 0, n = argList.length; i < n; i++) {
-      cloneMap[key] = argList[i];
-      addFlatMapsToList(listOfMaps, cloneMap);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void addFlatMapsToList_addMap(List<Map<String, String>> listOfMaps, Map<String, Object> map, String key, Map<String, Object> argMap) {
-    var cloneMap = <String, Object>{};
-
-    cloneMap.addAll(map);
-    cloneMap.remove(key);
-    cloneMap.addAll(argMap);
-
-    addFlatMapsToList(listOfMaps, cloneMap);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  bool addMapsToList(List<Map<String, String>> listOfMaps, Map<String, Object> map, hasReset) {
-    var isReady = ((map != null) && (hasReset || deepContainsKeys(map, [paramNameCmd, paramNameInp, paramNameOut])));
-
-    if (isReady) {
-      _logger.debug('...adding to the list of actions');
-
-      addFlatMapsToList(listOfMaps, map);
-      map.remove(paramNameOut);
-    }
-
-    return isReady;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  bool deepContainsKeys(Map<String, Object> map, List<String> keys, {Map<String, bool> isFound}) {
-    if ((map == null) || (keys == null)) {
-      return false;
-    }
-
-    var isFoundAll = false;
-
-    if (isFound == null) {
-      isFound = {};
-
-      for (var i = 0, n = keys.length; i < n; i++) {
-        isFound[keys[i]] = false;
-      }
-    }
-
-    map.forEach((k, v) {
-      if (!isFoundAll) {
-        if (keys.contains(k)) {
-          isFound[k] = true;
-        }
-        else if (v is List) {
-          for (var i = 0, n = v.length; i < n; i++) {
-            var vv = v[i];
-
-            if (vv is Map) {
-              isFoundAll = deepContainsKeys(vv, keys, isFound: isFound);
-            }
-          }
-        }
-        else if (v is Map) {
-          isFoundAll = deepContainsKeys(v, keys, isFound: isFound);
-        }
-      }
-    });
-
-    isFoundAll = !isFound.containsValue(false);
-
-    return isFoundAll;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  List<Map<String, String>> exec([List<String> args]) {
-    var isFirstRun = (runNo == 0);
 
     ++runNo;
 
-    if (isFirstRun) {
+    if (runNo == 1) {
       options.parseArgs(args);
 
       if (options.isCmd) {
@@ -274,7 +138,7 @@ class Config {
 
     _logger.information('Processing configuration data');
 
-    if (isFirstRun) {
+    if (runNo == 1) {
       var rename = all[CFG_RENAME];
 
       _logger.information('Processing renames');
@@ -286,77 +150,119 @@ class Config {
 
     _logger.information('Processing actions for run #$runNo');
 
-    var params = <String, Object>{};
-    _straight = {};
-
+    growMap = {};
     var action = (all.containsKey(CFG_ACTION) ? all[CFG_ACTION] : (all is List ? all : [all]));
-    assert(action is List);
+    execFeed(action);
 
-    var actions = (action as List);
-    var result = <Map<String, String>>[];
-
-    var currRunNo = 1;
-    var isParamsAdded = false;
-
-    actions.forEach((map) {
-      if (currRunNo > runNo) {
-        return;
-      }
-
-      assert(map is Map);
-
-      _logger.debug('');
-
-      var hasReset = false;
-
-      map.forEach((key, value) {
-        if ((currRunNo > runNo) || StringExt.isNullOrBlank(key)) {
-          return;
-        }
-
-        _logger.debug('...${key}: ${value}');
-
-        var valueEx = (value == null ? StringExt.EMPTY : value);
-
-        if (key == paramNameReset) { // value is ignored
-          ++currRunNo;
-          hasReset = (currRunNo > runNo);
-        }
-        else if (currRunNo == runNo) {
-          params[key] = valueEx;
-        }
-      });
-
-      if (params.isNotEmpty) {
-        isParamsAdded = addMapsToList(result, params, hasReset);
-
-        if (isParamsAdded && hasReset) {
-          params = <String, Object>{};
-          hasReset = false;
-        }
-      }
-
-      _logger.debug('...completed row processing');
-    });
-
-    if ((currRunNo >= runNo) && !isParamsAdded && params.isNotEmpty) {
-      addMapsToList(result, params, true);
-    }
-
-    _logger.information('\nAdded ${result.length} rules\n');
-
-    return result;
+    return null;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String expandWithStraight(String value) {
+  void execFeed(Map actions) {
+    var hasCmd = false;
+    var hasInp = false;
+    var hasOut = false;
+    var isReady = false;
+
+    var feed = ConfigFeed(
+      dataParsed: (ConfigData data) {
+        var key = data.key;
+        var value = data?.data;
+
+        if (key == paramNameDetectPaths) {
+          detectPathsRE = (value == null ? null : RegExp(value.toString()));
+          return ConfigEventResult.ok;
+        }
+
+        // if (key == paramNameNext) {
+        //   hasCmd = false;
+        //   hasInp = false;
+        //   hasOut = false;
+        //   isReady = false;
+        //
+        //   return ConfigEventResult.next;
+        // }
+
+        if (value == null) {
+          return ConfigEventResult.ok;
+        }
+
+        if (key == condNameIf) {
+          data.data = resolveIfDeep(value, true);
+          data.key = paramNameResolvedIf;
+
+          return ConfigEventResult.ok;
+        }
+
+        if (data.type != ConfigDataType.plain) {
+          return ConfigEventResult.ok;
+        }
+
+        var strValue = value.toString();
+        growMap[key] = strValue;
+
+        var canHaveWildcards = (
+          paramNamesForGlob.contains(key) ||
+          (detectPathsRE?.hasMatch(key) ?? false)
+        );
+
+        if (canHaveWildcards) {
+          if (GlobExt.isGlobPattern(strValue)) {
+            try {
+              data.data = DirectoryExt.pathListExSync(strValue);
+              return ConfigEventResult.ok;
+            }
+            catch (e) {
+              // suppress
+            }
+          }
+        }
+
+        if (key == paramNameCmd) {
+          hasCmd = true;
+        }
+        else if (key == paramNameInp) {
+          hasInp = true;
+        }
+        else if (key == paramNameOut) {
+          hasOut = true;
+        }
+        else if (key == paramNameExec) {
+          isReady = true;
+        }
+
+        if (isReady || (hasCmd && hasInp && hasOut)) {
+          isReady = false;
+          hasOut = false;
+          return ConfigEventResult.exec;
+        }
+
+        return ConfigEventResult.ok;
+      },
+
+      mapReady: (Map<String, String> flatMap) {
+        if (_logger.isUltimate) {
+          _logger.debug('...$flatMap');
+        }
+
+        return ConfigEventResult.ok;
+      }
+    );
+
+    feed.exec(actions);
+    growMap.clear();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String expandStraight(String value) {
     if (value == null) {
       return value;
     }
 
     for (var oldValue = StringExt.EMPTY; oldValue != value; oldValue = value) {
-      _straight.forEach((k, v) {
+      growMap.forEach((k, v) {
         if (value.contains(k)) {
           value = value.replaceAll(k, v.toString());
         }
@@ -369,17 +275,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String getFullCurDirName(String curDirName) {
-    return Path.join(options.startDirName, curDirName).getFullPath();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  bool isParamWithPath(String paramName) {
-    return (
-        (paramName == paramNameCurDir) ||
-        (paramName == paramNameInp) ||
-        (paramName == paramNameOut)
-    );
+    return path.join(options.startDirName, curDirName).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -408,7 +304,7 @@ class Config {
     var data = lf.data;
 
     if (data is Map) {
-      return data; // .values.toList()[0];
+      return data;
     }
     else {
       return <String, Object>{ '+': data };
@@ -417,7 +313,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Object resolveMapForIf(Map<String, Object> mapIf) {
+  Object resolveIf(Map<String, Object> mapIf) {
     var isOperFound = false;
     String operName;
 
@@ -478,115 +374,169 @@ class Config {
     isOperFound = (isOperFound || isNri);
 
     if (!isOperFound) {
-      throw Exception('Unknown conditional operation in "${condNameIf}": "${mapIf}"');
+      throw Exception('Unknown conditional operation in "$condNameIf": "$mapIf"');
     }
 
     if (!mapIf.containsKey(condNameThen)) {
-      throw Exception('Then-block not found in "${condNameIf}": "${mapIf}"');
+      throw Exception('Then-block not found in "$condNameIf": "$mapIf"');
     }
 
     var blockThen = mapIf[condNameThen];
     var blockElse = (mapIf.containsKey(condNameElse) ? mapIf[condNameElse] : null);
 
     if ((blockThen == null) && (blockElse == null)) {
-      throw Exception('Incomplete IF operation: "${condNameIf}": "${mapIf}"');
+      throw Exception('Incomplete IF operation: "$condNameIf": "$mapIf"');
     }
 
-    var operands = (mapIf[operName] as List);
+    var operValue = mapIf[operName];
+    var operands = (operValue is List ? operValue : [ operValue as String ]);
+
+    var isThen = true;
 
     if (isExists || isNotExists) {
-      var operandsEx = (operands == null ? [ mapIf[operName] as String ] : operands);
-
-      for (var entityName in operandsEx) {
+      for (var entityName in operands) {
         if (entityName == null) {
-          return blockElse;
+          isThen = false;
+          break;
         }
 
-        var entityNameEx = expandWithStraight(entityName);
+        var entityNameEx = expandStraight(entityName);
         var isFound = FileSystemEntityExt.tryPatternExistsSync(entityNameEx);
 
         if ((isExists && !isFound) || (!isExists && isFound)) {
-          return blockElse;
+          isThen = false;
+          break;
+        }
+      }
+    }
+    else {
+      if (operands.length != 2) {
+        throw Exception('Two operands precisely required for "$operName": $operands');
+      }
+
+      var isIgnoreCase  = (isEqi || isNei || isRxi || isNri);
+      var isRegExpMatch = (isRx || isRxi || isNr || isNri);
+
+      var o1 = expandStraight(operands[0]?.toString());
+      var o2 = expandStraight(operands[1]?.toString());
+
+      var n1 = (o1 == null ? null : (int.tryParse(o1) ?? double.tryParse(o1)));
+      var n2 = (o2 == null ? null : (int.tryParse(o2) ?? double.tryParse(o2)));
+
+      if ((n1 != null) && (n2 != null)) {
+        if (isGe) {
+          isThen = (n1 >= n2);
+        }
+        else if (isGt) {
+          isThen = (n1 > n2);
+        }
+        else if (isLe) {
+          isThen = (n1 <= n2);
+        }
+        else if (isLt) {
+          isThen = (n1 < n2);
+        }
+        else if (isEq) {
+          isThen = (n1 == n2);
+        }
+        else if (isNe) {
+          isThen = (n1 == n2);
+        }
+        else {
+          isThen = null;
+        }
+      }
+      else {
+        isThen = null;
+      }
+
+      if (isThen == null) {
+        if (isIgnoreCase && !isRegExpMatch) {
+          o1 = o1?.toUpperCase();
+          o2 = o2?.toUpperCase();
+        }
+
+        if (isEq || isEqi) {
+          isThen = (o1 == o2);
+        }
+        else if (isNe || isNei) {
+          isThen = (o1 != o2);
+        }
+        else if (isGe) {
+          isThen = ((o1?.compareTo(o2) ?? -1) >= 0);
+        }
+        else if (isGt) {
+          isThen = ((o1?.compareTo(o2) ?? -1) > 0);
+        }
+        else if (isLe) {
+          isThen = ((o1?.compareTo(o2) ?? 1) <= 0);
+        }
+        else if (isLt) {
+          isThen = ((o1?.compareTo(o2) ?? 1) < 0);
+        }
+        else {
+          var hasMatch = RegExp(o2, caseSensitive: !isIgnoreCase).hasMatch(o1);
+          isThen = (isRx || isRxi ? hasMatch : (isNr || isNri ? !hasMatch : false));
+        }
+      }
+    }
+
+    return (isThen ? blockThen : blockElse);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  Object resolveIfDeep(Object data, bool isMapIf) {
+    if (isMapIf ?? false) {
+      data = resolveIfDeep(resolveIf(data), false);
+    }
+    else if (data is List) {
+      for (var i = 0, n = data.length; i < n; i++) {
+        data[i] = resolveIfDeep(data[i], false);
+      }
+    }
+    else if (data is Map) {
+      var map = (data as Map);
+
+      if (map.length == 1) {
+        var mapIf = map[condNameIf];
+
+        if (mapIf != null) {
+          return resolveIfDeep(resolveIf(mapIf), false);
         }
       }
 
-      return blockThen;
+      var newData = <String, Object>{};
+
+      map.forEach((childKey, childValue) {
+        var childKeyStr = childKey.toString();
+
+        if (childKeyStr == condNameIf) {
+          newData[paramNameResolvedIf] = resolveIfDeep(resolveIf(childValue), false);
+        }
+        else if ((childValue is List) || (childValue is Map)) {
+          newData[childKeyStr] = resolveIfDeep(childValue, false);
+        }
+        else {
+          newData[childKeyStr] = childValue;
+        }
+      });
+
+      map.clear();
+      data = newData;
     }
 
-    if (operands.length != 2) {
-      throw Exception('Two operands precisely required for "${operName}": ${operands}');
-    }
-
-    var isIgnoreCase  = (isEqi || isNei || isRxi || isNri);
-    var isRegExpMatch = (isRx || isRxi || isNr || isNri);
-
-    var o1 = expandWithStraight(operands[0]?.toString());
-    var o2 = expandWithStraight(operands[1]?.toString());
-
-    var n1 = (o1 == null ? null : (int.tryParse(o1) ?? double.tryParse(o1)));
-    var n2 = (o2 == null ? null : (int.tryParse(o2) ?? double.tryParse(o2)));
-
-    var isThen = (null as bool);
-
-    if ((n1 != null) && (n2 != null)) {
-      if (isGe) {
-        isThen = (n1 >= n2);
-      }
-      else if (isGt) {
-        isThen = (n1 > n2);
-      }
-      else if (isLe) {
-        isThen = (n1 <= n2);
-      }
-      else if (isLt) {
-        isThen = (n1 < n2);
-      }
-      else if (isEq) {
-        isThen = (n1 == n2);
-      }
-      else if (isNe) {
-        isThen = (n1 == n2);
-      }
-    }
-
-    if (isThen == null) {
-      if (isIgnoreCase && !isRegExpMatch) {
-        o1 = o1?.toUpperCase();
-        o2 = o2?.toUpperCase();
-      }
-
-      if (isEq || isEqi) {
-        isThen = (o1 == o2);
-      }
-      else if (isNe || isNei) {
-        isThen = (o1 != o2);
-      }
-      else if (isGe) {
-        isThen = ((o1?.compareTo(o2) >= 0) ?? false);
-      }
-      else if (isGt) {
-        isThen = ((o1?.compareTo(o2) > 0) ?? false);
-      }
-      else if (isLe) {
-        isThen = ((o1?.compareTo(o2) <= 0) ?? false);
-      }
-      else if (isLt) {
-        isThen = ((o1?.compareTo(o2) < 0) ?? false);
-      }
-      else {
-        var hasMatch = RegExp(o2, caseSensitive: !isIgnoreCase).hasMatch(o1);
-        isThen = (isRx || isRxi ? hasMatch : (isNr || isNri ? !hasMatch : false));
-      }
-    }
-
-    return (isThen ?? false ? blockThen : blockElse);
+    return data;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   void setActualParamNames(Map<String, Object> renames) {
     renames.forEach((k, v) {
-      if (k == paramNameCmd) {
+      if (k == paramNameCanExpandContent) {
+        paramNameCanExpandContent = v;
+      }
+      else if (k == paramNameCmd) {
         paramNameCmd = v;
       }
       else if (k == paramNameCurDir) {
@@ -622,14 +572,11 @@ class Config {
       else if (k == paramNameImport) {
         paramNameImport = v;
       }
-      else if (k == paramNameNext) {
-        paramNameNext = v;
-      }
       else if (k == paramNameOut) {
         paramNameOut = v;
       }
-      else if (k == paramNameReset) {
-        paramNameReset = v;
+      else if (k == paramNameNext) {
+        paramNameNext = v;
       }
       else if (k == paramNameStop) {
         paramNameStop = v;
@@ -637,11 +584,17 @@ class Config {
       else if (k == paramNameThis) {
         paramNameThis = v;
       }
-      else if (k == paramNameCanExpandContent) {
-        paramNameCanExpandContent = v;
+
+      // Pre-defined conditions
+
+      else if (k == condNameIf) {
+        condNameIf = v;
       }
-      else if (k == paramNameEarlyWildcardExpansion) {
-        paramNameEarlyWildcardExpansion = v;
+      else if (k == condNameThen) {
+        condNameThen = v;
+      }
+      else if (k == condNameElse) {
+        condNameElse = v;
       }
 
       // Pre-defined commands
@@ -653,6 +606,35 @@ class Config {
         cmdNameSub = v;
       }
     });
+
+    // Resolve dependencies - paths
+
+    paramNamesForGlob = [
+      paramNameInp,
+      paramNameInpDir,
+      paramNameInpName,
+      paramNameInpNameExt,
+      paramNameInpPath,
+      paramNameInpSubDir,
+      paramNameInpSubPath,
+    ];
+
+    paramNamesForPath = [];
+    paramNamesForPath.addAll(paramNamesForGlob);
+    paramNamesForPath.add(paramNameOut);
+
+    // Resolve dependencies - If
+
+    if ((condNameIf == null) || ((condNameThen == null) && (condNameElse == null))) {
+      condNameThen = null;
+      condNameElse = null;
+      paramNameResolvedIf = null;
+    }
+    else {
+      paramNameResolvedIf = condNameIf +
+        (condNameThen ?? StringExt.EMPTY) +
+        (condNameElse ?? StringExt.EMPTY);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

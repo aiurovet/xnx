@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as pathx;
 import 'file_system_entity.dart';
 import 'string.dart';
 
@@ -81,7 +81,7 @@ extension FileExt on File {
       if (canThrow ?? false) {
         var descEx = (description == null ? 'File' : description + ' file');
         var pathEx = (file == null ? StringExt.EMPTY : path);
-        throw Exception('${descEx} was not found: "${pathEx}"');
+        throw Exception('$descEx was not found: "$pathEx"');
       }
       else {
         return null;
@@ -142,7 +142,7 @@ extension FileExt on File {
     if (file == null) {
       if (canThrow ?? false) {
         var descEx = (description == null ? 'File' : description + ' file');
-        throw Exception('${descEx} path is empty');
+        throw Exception('$descEx path is empty');
       }
       else {
         return null;
@@ -162,21 +162,21 @@ extension FileExt on File {
     // Ensuring source file exists
 
     if (!tryExistsSync()) {
-      throw Exception('Copy failed, as source file "${path}" was not found');
+      throw Exception('Copy failed, as source file "$path" was not found');
     }
 
     // Sanity check
 
-    if (Path.equals(path, toPath)) {
-      throw Exception('Unable to copy: source and target are the same: "${path}"');
+    if (pathx.equals(path, toPath)) {
+      throw Exception('Unable to copy: source and target are the same: "$path"');
     }
 
     // Getting destination path and directory, as well as checking what's newer
 
     var isToDir = Directory(toPath).existsSync();
     var isToDirValid = isToDir;
-    var toPathEx = (isToDir ? Path.join(toPath, Path.basename(path)) : toPath);
-    var toDirName = (isToDir ? toPath : Path.dirname(toPath));
+    var toPathEx = (isToDir ? pathx.join(toPath, pathx.basename(path)) : toPath);
+    var toDirName = (isToDir ? toPath : pathx.dirname(toPath));
     var canDo = (!isNewerOnly || isNewerThanSync(File(toPathEx)));
 
     // Setting operation flag depending on whether the destination is newer or not
@@ -188,20 +188,20 @@ extension FileExt on File {
     if (isMove) {
       if (canDo) {
         if (!isSilent) {
-          print('Moving file "${path}"');
+          print('Moving file "$path"');
         }
         renameSync(toPathEx);
       }
       else {
         if (!isSilent) {
-          print('Deleting file "${path}"');
+          print('Deleting file "$path"');
         }
         deleteSync();
       }
     }
     else if (canDo) {
       if (!isSilent) {
-        print('Copying file "${path}"');
+        print('Copying file "$path"');
       }
 
       var fromStat = statSync();

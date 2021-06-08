@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:doul/ext/string.dart';
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as pathx;
 
 import 'file_oper.dart';
 import 'ext/file.dart';
@@ -72,9 +72,9 @@ class PackOper {
     }
 
     var toFile = File(toPathExEx);
-    print('Creating archive "${toPathExEx}"');
+    print('Creating archive "$toPathExEx"');
 
-    var toDir = Directory(Path.dirname(toPathExEx));
+    var toDir = Directory(pathx.dirname(toPathExEx));
     var hadToDir = toDir.existsSync();
 
     if (!hadToDir) {
@@ -249,7 +249,7 @@ class PackOper {
       return packType;
     }
 
-    var fileName = Path.basename(path).toLowerCase();
+    var fileName = pathx.basename(path).toLowerCase();
 
     PackType packTypeByExt;
 
@@ -311,7 +311,7 @@ class PackOper {
 
     if (hasToPath) {
       if (Directory(toPath).existsSync()) {
-        return Path.join(toPath, Path.basenameWithoutExtension(fromPath));
+        return pathx.join(toPath, pathx.basenameWithoutExtension(fromPath));
       }
       else {
         return toPath;
@@ -319,7 +319,7 @@ class PackOper {
     }
     else if (isPackTypeTar(packType) && (packType != PackType.Tar)) {
       var defExt = DEFAULT_EXTENSIONS[PackType.Tar][0];
-      var result = Path.join(Path.dirname(fromPath), Path.basenameWithoutExtension(fromPath));
+      var result = pathx.join(pathx.dirname(fromPath), pathx.basenameWithoutExtension(fromPath));
 
       if (!result.endsWith(defExt)) {
         result += defExt;
@@ -375,7 +375,7 @@ class PackOper {
     final isZip = (packType == PackType.Zip);
 
     if (!isTar && !isZip) {
-      throw Exception('Archive type is not supported: "${packType}"');
+      throw Exception('Archive type is not supported: "$packType"');
     }
 
     final isTarPack = (isTar && (packType != PackType.Tar));
@@ -390,11 +390,11 @@ class PackOper {
 
     final fromFileEx = FileExt.getIfExists(fromPathEx, description: 'Archive');
 
-    toDirName ??= Path.dirname(fromPathEx);
+    toDirName ??= pathx.dirname(fromPathEx);
     final toDir = Directory(toDirName);
 
     if (!isSilent) {
-      print('Extracting from archive "${fromPathEx}" to "${toDirName}"');
+      print('Extracting from archive "$fromPathEx" to "$toDirName"');
     }
 
     final toDirExisted = toDir.existsSync();
@@ -406,7 +406,7 @@ class PackOper {
       }
 
       for (final entity in archive) {
-        final toPath = Path.join(toDirName, entity.name);
+        final toPath = pathx.join(toDirName, entity.name);
         final isFile = entity.isFile;
 
         if (!isSilent) {
@@ -419,14 +419,14 @@ class PackOper {
             ..writeAsBytesSync(entity.content);
         } else {
           Directory(toPath)
-            ..createSync(recursive: true);
+            .createSync(recursive: true);
         }
       }
 
       if (isMove || isTarPack) {
         if (isTarPack) {
           if (!isSilent) {
-            print('Deleting archive "${fromPathEx}"'); // current path
+            print('Deleting archive "$fromPathEx"'); // current path
           }
 
           fromFileEx.deleteSync();
@@ -434,7 +434,7 @@ class PackOper {
 
         if (!isTarPack || isMove) {
           if (!isSilent) {
-            print('Deleting archive "${fromPath}"'); // original path
+            print('Deleting archive "$fromPath"'); // original path
           }
 
           File(fromPath).deleteIfExistsSync();
