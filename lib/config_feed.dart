@@ -47,16 +47,16 @@ class ConfigFeed {
         break;
       }
       else if (result == ConfigEventResult.exec) {
-        if (plainValues.isNotEmpty) {
-          var dbgMap = <String, String>{};
-
-          dbgMap.addAll(plainValues);
-
-          if (dbgMap.isNotEmpty) {
-            dbgMap.removeWhere((key, value) => !'{d}{D}{r}{m}{k}'.contains(key));
-            print(dbgMap.toString());
-          }
-        }
+        // if (plainValues.isNotEmpty) {
+        //   var dbgMap = <String, String>{};
+        //
+        //   dbgMap.addAll(plainValues);
+        //
+        //   if (dbgMap.isNotEmpty) {
+        //     dbgMap.removeWhere((key, value) => !'{d}{D}{r}{m}{k}'.contains(key));
+        //     print(dbgMap.toString());
+        //   }
+        // }
 
         result = mapReady(plainValues);
 
