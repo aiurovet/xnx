@@ -35,17 +35,20 @@
     "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}",
     "{{-import-}}": "../../examples/cmd.json",
 
-    "{cmd}": [
-      "{sub} --delete out png svg",
-      "{sub} --mkdir ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark png/core png/dark svg"
-    ],
-
-    "{reset}": null,
-    "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\"",
-
-    "{can-expand-content}": true,
-
     "{R}": [
+      {
+        "{cmd}": [
+          "{sub} --delete out png svg",
+          "{sub} --mkdir ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark png/core png/dark svg"
+        ],
+
+        "{run}": null,
+        "{reset}": null
+      },
+      {
+        "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\"",
+        "{can-expand-content}": true
+      },
       {
         "{cmd}": "{svg2png}",
         //      "{cmd}": [
@@ -85,10 +88,12 @@
           { "{dim}": 1024, "{scn-transform}":  "scale( 64, 64)" }
         ],
 
-        "{out}": "{png-path}"
+        "{out}": "{png-path}",
+
+        "{{-reset-}}": null
       },
       {
-        "{icon}": null, "{param}": null,
+        //"{icon}": null, "{param}": null,
 
         "{dtp}": "\\{out|\\{png\\}", // repeat after reset
         "{prj}": "doul",

@@ -176,7 +176,7 @@ class ConfigValue {
       result = parseResult;
 
       if (result == ConfigEventResult.reset) {
-        resetAllLists();
+        resetSiblingLists();
         result = ConfigEventResult.ok;
       }
     }
@@ -186,14 +186,13 @@ class ConfigValue {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void resetAllLists() {
+  void resetSiblingLists() {
     for (var x in listOfLists) {
-      if (x.isEnabled) {
+      if (x.isEnabled && (x.parent == parent)) {
+        x.resetSiblingLists();
         x.disable();
       }
     }
-
-    listOfLists.clear();
   }
 
   //////////////////////////////////////////////////////////////////////////////
