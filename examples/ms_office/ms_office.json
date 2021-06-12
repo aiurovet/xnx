@@ -19,46 +19,47 @@
     "{{-sub-}}": "{sub}",
     "{{-this-}}": "{this}"
   },
-  "action": [
-    {
-      "{can-expand-content}": false,
-      "{compression}": 6 // just to show the capability; 6 is the default
-    },
+  "action": {
+    "{can-expand-content}": false,
+    "{compression}": 6, // just to show the capability; 6 is the default
 
     // import data
-    { "{{-import-}}": "ms_office_data.json?path=$.data.*" },
+    "{{-import-}}": "ms_office_data.json?path=$.data.*",
 
-    {
-      "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
-      "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
+    "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
+    "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
 
-      // Go through all MS Office input files
-      "{inp}": "inp/*",
+    // Go through all MS Office input files
+    "{inp}": "inp/*",
 
-      "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.json",
+    "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.json",
 
-      "{cmd}": [
-        // Expand template config file
-        "{expand-content} \"{cur-dir}/ms_office_tmpl.json\" \"{cfg-curr}\"",
+    "{R}": [
+      {
+        "{cmd}": [
+          // Expand template config file
+          "{expand-content} \"{cur-dir}/ms_office_tmpl.json\" \"{cfg-curr}\"",
 
-        // Decompress file
-        "{sub} --unzip \"{inp}\" \"{unz-dir}\"",
+          // Decompress file
+          "{sub} --unzip \"{inp}\" \"{unz-dir}\"",
 
-        // Expand placeholders in every decompressed file
-        "{sub} --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
+          // Expand placeholders in every decompressed file
+          "{sub} --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
 
-        // Compress back to a single file
-        "{sub} -p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",
+          // Compress back to a single file
+          "{sub} -p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",
 
-        // Delete temp expanded config file
-        "{sub} --delete \"{cfg-curr}\""
-      ],
+          // Delete temp expanded config file
+          "{sub} --delete \"{cfg-curr}\""
+        ],
 
-      // Make a signal to start processing (command, input and output files are all defined)
-      "{out}": ""
-    },
-
-    // Stop branching array elements and execute a single command
-    { "{reset}": null, "{cmd}": "{sub} --delete \"{cur-dir}/unz\"" }
-  ]
+        // Make a signal to start processing (command, input and output files are all defined)
+        "{out}": "",
+      },
+      {
+        // Remove all possible temporary files
+        "{cmd}": "{sub} --delete \"{cur-dir}/unz\""
+      }
+    ],
+  }
 }

@@ -87,7 +87,7 @@ class ConfigValue {
     }
 
     var valuesToClear = listOfLists.where((x) =>
-    x.isEnabled && (x.key == key) && ((value == null) || (x != value))
+      x.isEnabled && (x.key == key) && ((value == null) || (x != value))
     ).toList();
 
     for (var x in valuesToClear) {
@@ -174,9 +174,26 @@ class ConfigValue {
       }
 
       result = parseResult;
+
+      if (result == ConfigEventResult.reset) {
+        resetAllLists();
+        result = ConfigEventResult.ok;
+      }
     }
 
     return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void resetAllLists() {
+    for (var x in listOfLists) {
+      if (x.isEnabled) {
+        x.disable();
+      }
+    }
+
+    listOfLists.clear();
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -10,18 +10,18 @@
     "{{-inp-name-}}": "{in}",
     "{{-out-}}": "{o}"
   },
-  "action": [
-    { "{CEC}": true },
-    { "{c}": "{expand-content} \"{i}\" \"{o}\"" },
+  "action": {
+    "{CEC}": true,
+    "{c}": "{expand-content} \"{i}\" \"{o}\"",
 
-    { "{i}": "{CD}/template/*settings.json" },
+    "{i}": "{CD}/template/*settings.json",
 
-    { "{env}": [
-        { "{envTC}": "Dev",  "{envLC}": "dev"  },
-        { "{envTC}": "Test", "{envLC}": "test" },
-        { "{envTC}": "Prod", "{envLC}": "prod" }
-    ] },
+    "{env}": [
+      { "{envTC}": "Dev",  "{envLC}": "dev"  },
+      { "{envTC}": "Test", "{envLC}": "test" },
+      { "{envTC}": "Prod", "{envLC}": "prod" }
+    ],
 
-    { "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envLC}{ix}" },
-  ]
+    "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envTC}{ix}"
+  }
 }

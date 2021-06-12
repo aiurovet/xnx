@@ -1,5 +1,4 @@
 import 'package:doul/config_event.dart';
-//import 'package:doul/config_offset_list.dart';
 import 'package:doul/config_value.dart';
 import 'package:meta/meta.dart';
 
@@ -9,24 +8,24 @@ class ConfigFeed {
   final List<ConfigValue> listOfLists = [];
   ConfigValue topValue;
   final ConfigDataParsed dataParsed;
-  final ConfigMapReady mapReady;
+  final ConfigMapExec mapExec;
 
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigFeed({
     @required this.dataParsed,
-    @required this.mapReady
+    @required this.mapExec
   }) {
     assert(dataParsed != null);
-    assert(mapReady != null);
+    assert(mapExec != null);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigEventResult exec(Object topData) {
-    if ((topData is Map) && (topData.length == 1)) {
-      return exec(topData.values.elementAt(0));
-    }
+    // if ((topData is Map) && (topData.length == 1)) {
+    //   return exec(topData.values.elementAt(0));
+    // }
 
     var result = ConfigEventResult.ok;
 
@@ -47,18 +46,7 @@ class ConfigFeed {
         break;
       }
       else if (result == ConfigEventResult.exec) {
-        // if (plainValues.isNotEmpty) {
-        //   var dbgMap = <String, String>{};
-        //
-        //   dbgMap.addAll(plainValues);
-        //
-        //   if (dbgMap.isNotEmpty) {
-        //     dbgMap.removeWhere((key, value) => !'{d}{D}{r}{m}{k}'.contains(key));
-        //     print(dbgMap.toString());
-        //   }
-        // }
-
-        result = mapReady(plainValues);
+        result = mapExec(plainValues);
 
         if (result == ConfigEventResult.stop) {
           break;
@@ -79,7 +67,7 @@ class ConfigFeed {
   //////////////////////////////////////////////////////////////////////////////
 
   bool shift() {
-    for (var i = listOfLists.length - 1; ; --i) {
+    for (var i = listOfLists.length - 1; (i >= 0); --i) {
       var curr = listOfLists[i];
 
       if (!curr.isEnabled) {
@@ -93,6 +81,8 @@ class ConfigFeed {
         return false;
       }
     }
+
+    return false;
   }
 
   //////////////////////////////////////////////////////////////////////////////

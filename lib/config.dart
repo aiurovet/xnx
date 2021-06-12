@@ -40,6 +40,7 @@ class Config {
   String paramNameImport = '{{-import-}}';
   String paramNameOut = '{{-out-}}';
   String paramNameNext = '{{-next-}}';
+  String paramNameReset = '{{-reset-}}';
   String paramNameStop = '{{-stop-}}';
   String paramNameThis = '{{-this-}}';
 
@@ -109,7 +110,22 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<Map<String, String>> exec({List<String> args, ConfigMapReady mapReady}) {
+  ConfigEventResult defaultMapExec(Map<String, String> flatMap) {
+    growMap = flatMap;
+
+    /*if (_logger.isUltimate)*/ {
+      _logger.outInfo(expandStraight(
+        flatMap[paramNameOut] ?? flatMap[paramNameCmd] ??
+        flatMap[paramNameExec] ?? flatMap[paramNameInp] ??
+        StringExt.EMPTY
+      ));
+    }
+
+    return ConfigEventResult.ok;
+  }
+  //////////////////////////////////////////////////////////////////////////////
+
+  List<Map<String, String>> exec({List<String> args, ConfigMapExec mapExec}) {
     if (runNo < 0) {
       return null;
     }
@@ -151,15 +167,16 @@ class Config {
     _logger.information('Processing actions for run #$runNo');
 
     growMap = {};
-    var action = (all.containsKey(CFG_ACTION) ? all[CFG_ACTION] : (all is List ? all : [all]));
-    execFeed(action);
+
+    var actions = (all.containsKey(CFG_ACTION) ? all[CFG_ACTION] : all);
+    execFeed(actions is List ? actions : [actions], mapExec);
 
     return null;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void execFeed(Map actions) {
+  void execFeed(List actions, [ConfigMapExec mapExec]) {
     var hasCmd = false;
     var hasInp = false;
     var hasOut = false;
@@ -168,29 +185,26 @@ class Config {
     var feed = ConfigFeed(
       dataParsed: (ConfigData data) {
         var key = data.key;
-        var value = data?.data;
 
-        if (key == paramNameDetectPaths) {
-          detectPathsRE = (value == null ? null : RegExp(value.toString()));
-          return ConfigEventResult.ok;
+        if (key == paramNameReset) {
+          return ConfigEventResult.reset;
         }
 
-        // if (key == paramNameNext) {
-        //   hasCmd = false;
-        //   hasInp = false;
-        //   hasOut = false;
-        //   isReady = false;
-        //
-        //   return ConfigEventResult.next;
-        // }
+        var value = data.data;
+        var strValue = value?.toString()?.trim();
+        var isBlank = StringExt.isNullOrBlank(strValue);
+        var isNull = (value == null);
 
-        if (value == null) {
+        if (key == paramNameDetectPaths) {
+          detectPathsRE = (isBlank ? null : RegExp(strValue));
           return ConfigEventResult.ok;
         }
 
         if (key == condNameIf) {
-          data.data = resolveIfDeep(value, true);
-          data.key = paramNameResolvedIf;
+          if (!isBlank) {
+            data.data = resolveIfDeep(value, true);
+            data.key = paramNameResolvedIf;
+          }
 
           return ConfigEventResult.ok;
         }
@@ -199,10 +213,14 @@ class Config {
           return ConfigEventResult.ok;
         }
 
-        var strValue = value.toString();
-        growMap[key] = strValue;
+        if (isNull) {
+          growMap.remove(key);
+        }
+        else {
+          growMap[key] = strValue;
+        }
 
-        var canHaveWildcards = (
+        var canHaveWildcards = !isBlank && (
           paramNamesForGlob.contains(key) ||
           (detectPathsRE?.hasMatch(key) ?? false)
         );
@@ -220,16 +238,19 @@ class Config {
         }
 
         if (key == paramNameCmd) {
-          hasCmd = true;
+          hasCmd = !isNull;
         }
         else if (key == paramNameInp) {
-          hasInp = true;
+          hasInp = !isNull;
         }
         else if (key == paramNameOut) {
-          hasOut = true;
+          hasOut = !isNull;
         }
         else if (key == paramNameExec) {
           isReady = true;
+          if (isBlank && !isNull) {
+            data.data = null;
+          }
         }
 
         if (isReady || (hasCmd && hasInp && hasOut)) {
@@ -241,13 +262,7 @@ class Config {
         return ConfigEventResult.ok;
       },
 
-      mapReady: (Map<String, String> flatMap) {
-        if (_logger.isUltimate) {
-          _logger.debug('...$flatMap');
-        }
-
-        return ConfigEventResult.ok;
-      }
+      mapExec: mapExec ?? defaultMapExec
     );
 
     feed.exec(actions);
@@ -545,6 +560,9 @@ class Config {
       else if (k == paramNameDetectPaths) {
         paramNameDetectPaths = v;
       }
+      else if (k == paramNameExec) {
+        paramNameExec = v;
+      }
       else if (k == paramNameInp) {
         paramNameInp = v;
       }
@@ -577,6 +595,9 @@ class Config {
       }
       else if (k == paramNameNext) {
         paramNameNext = v;
+      }
+      else if (k == paramNameReset) {
+        paramNameReset = v;
       }
       else if (k == paramNameStop) {
         paramNameStop = v;

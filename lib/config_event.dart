@@ -1,23 +1,22 @@
 enum ConfigDataType {
   list,
   map,
-  none,
   plain
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 enum ConfigEventResult {
-  exec, // ready to run command and to go to the next list item
-  next, // drop this list item and go to the next one
+  exec, // ready to execute command
   ok, // continue as normal
+  reset, // drop all current lists to avoid old loops
   stop, // stop immediately
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef ConfigDataParsed = ConfigEventResult Function(ConfigData data);
-typedef ConfigMapReady = ConfigEventResult Function(Map<String, String> map);
+typedef ConfigMapExec = ConfigEventResult Function(Map<String, String> map);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -34,9 +33,6 @@ class ConfigData {
     }
     else if (data is Map) {
       type = ConfigDataType.map;
-    }
-    else if (data == null) {
-      type = ConfigDataType.none;
     }
     else {
       type = ConfigDataType.plain;

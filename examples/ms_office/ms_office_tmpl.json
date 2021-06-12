@@ -7,29 +7,24 @@
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}"
   },
-  "action": [
-    {
-      "{c}": "{expand-content} \"{i}\" \"{o}\""
-    },
-
-    {
-      "data": [
-        {
-          "{last-name}": "<last-name>",
-          "{given-names}": "<given-names>",
-          "{full-name}": "<given-names> <last-name>",
-          "{dob}": "<dob>",
-          "{spouse-given-names}": "<spouse-given-names>",
-          "{spouse-full-name}": "<spouse-given-names> <last-name>",
-          "{spouse-dob}": "<spouse-dob>",
-          "{pronoun}": "<pronoun>",
-          "{pronoun-att}": "<pronoun-att>",
-          "{disease}": "<disease>",
-          "{dr-full-name}": "<dr-full-name>",
-
-          "{i}": "**", "{o}": "{i}"
-        }
-      ]
-    }
-  ]
+  "action": {
+    "{c}": "{expand-content} \"{i}\" \"{o}\"",
+    "data": [
+      {
+        "{last-name}": "<last-name>",
+        "{given-names}": "<given-names>",
+        "{full-name}": "<given-names> <last-name>",
+        "{dob}": "<dob>",
+        "{spouse-given-names}": "<spouse-given-names>",
+        "{spouse-full-name}": "<spouse-given-names> <last-name>",
+        "{spouse-dob}": "<spouse-dob>",
+        "{pronoun}": "<pronoun>",
+        "{pronoun-att}": "<pronoun-att>",
+        "{disease}": "<disease>",
+        "{dr-full-name}": "<dr-full-name>",
+        "{i}": "**",
+        "{o}": "{i}"
+      }
+    ]
+  }
 }
