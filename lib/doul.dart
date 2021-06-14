@@ -8,8 +8,8 @@ import 'options.dart';
 class Doul {
   Logger _logger;
 
-  Doul({Logger log}) {
-    _logger = log ?? Logger();
+  Doul({Logger logger}) {
+    _logger = logger ?? Logger();
   }
 
   static void main(List<String> args) {

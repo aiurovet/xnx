@@ -5,6 +5,7 @@
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-expand-content-}}": "{expand-content}",
+    "{{-exec-}}": "{run}",
 
     "{{-inp-}}": "{inp}",
     "{{-inp-dir-}}": "{inp-dir}",
@@ -23,22 +24,22 @@
     "{can-expand-content}": false,
     "{compression}": 6, // just to show the capability; 6 is the default
 
-    // import data
-    "{{-import-}}": "ms_office_data.json?path=$.data.*",
-
     "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
     "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
-
-    // Go through all MS Office input files
-    "{inp}": "inp/*",
 
     "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.json",
 
     "{R}": [
       {
+        // Go through all MS Office input files
+        "{inp}": "{cur-dir}/inp/*",
+
+        // Import data
+        "{{-import-}}": "ms_office_data.json?path=$.data.*",
+
         "{cmd}": [
           // Expand template config file
-          "{expand-content} \"{cur-dir}/ms_office_tmpl.json\" \"{cfg-curr}\"",
+          "{expand-content} \"ms_office_tmpl.json\" \"{cfg-curr}\"",
 
           // Decompress file
           "{sub} --unzip \"{inp}\" \"{unz-dir}\"",
@@ -53,13 +54,16 @@
           "{sub} --delete \"{cfg-curr}\""
         ],
 
-        // Make a signal to start processing (command, input and output files are all defined)
-        "{out}": "",
+        // Force execution
+        "{run}": null
       },
       {
         // Remove all possible temporary files
-        "{cmd}": "{sub} --delete \"{cur-dir}/unz\""
+        "{cmd}": "{sub} --delete \"unz\"",
+
+        // Force execution
+        "{run}": null
       }
-    ],
+    ]
   }
 }

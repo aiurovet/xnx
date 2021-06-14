@@ -5,13 +5,14 @@
     "{{-cur-dir-}}": "{CD}",
     "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{i}",
-    "{{-inp-dir-}}": "{id}",
-    "{{-inp-ext-}}": "{ix}",
-    "{{-inp-name-}}": "{in}",
+    "{{-inp-dir-}}": "{i-dir}",
+    "{{-inp-ext-}}": "{i-ext}",
+    "{{-inp-name-}}": "{i-name}",
     "{{-out-}}": "{o}"
   },
   "action": {
     "{CEC}": true,
+
     "{c}": "{expand-content} \"{i}\" \"{o}\"",
 
     "{i}": "{CD}/template/*settings.json",
@@ -22,6 +23,6 @@
       { "{envTC}": "Prod", "{envLC}": "prod" }
     ],
 
-    "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{id}/../out/{in}-{envTC}{ix}"
+    "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{i-dir}/../out/{i-name}-{envTC}{i-ext}"
   }
 }

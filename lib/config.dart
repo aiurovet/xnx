@@ -7,7 +7,7 @@ import 'package:doul/ext/glob.dart';
 import 'package:doul/ext/string.dart';
 import 'package:doul/logger.dart';
 import 'package:doul/options.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathx;
 
 class Config {
 
@@ -95,7 +95,6 @@ class Config {
   RegExp detectPathsRE;
   var lastModifiedStamp = 0;
   Options options;
-  var runNo = 0;
 
   Map<String, String> growMap;
 
@@ -113,70 +112,60 @@ class Config {
   ConfigEventResult defaultMapExec(Map<String, String> flatMap) {
     growMap = flatMap;
 
-    /*if (_logger.isUltimate)*/ {
-      _logger.outInfo(expandStraight(
+    _logger.outInfo(flatMap.toString() + "\n");
+
+    if (_logger.isUltimate) {
+      _logger.outInfo(expandStraight(flatMap, (
         flatMap[paramNameOut] ?? flatMap[paramNameCmd] ??
         flatMap[paramNameExec] ?? flatMap[paramNameInp] ??
         StringExt.EMPTY
-      ));
+      )));
     }
 
     return ConfigEventResult.ok;
   }
   //////////////////////////////////////////////////////////////////////////////
 
-  List<Map<String, String>> exec({List<String> args, ConfigMapExec mapExec}) {
-    if (runNo < 0) {
-      return null;
+  bool exec({List<String> args, ConfigMapExec mapExec}) {
+    options.parseArgs(args);
+
+    if (options.isCmd) {
+      return false;
     }
 
-    ++runNo;
+    _logger.information('Loading configuration data');
 
-    if (runNo == 1) {
-      options.parseArgs(args);
+    var tmpAll = loadSync();
 
-      if (options.isCmd) {
-        return null;
-      }
-
-      _logger.information('Loading configuration data');
-
-      var tmpAll = loadSync();
-
-      if (tmpAll is Map) {
-        all = tmpAll;
-      }
-      else {
-        _logger.information('Nothing found');
-        return null;
-      }
+    if (tmpAll is Map) {
+      all = tmpAll;
+    }
+    else {
+      _logger.information('Nothing found');
+      return null;
     }
 
     _logger.information('Processing configuration data');
 
-    if (runNo == 1) {
-      var rename = all[CFG_RENAME];
+    var action = (all.containsKey(CFG_ACTION) ? all[CFG_ACTION] : all);
+    var rename = (action == all ? null : (all.containsKey(CFG_RENAME) ? all[CFG_RENAME] : null));
 
-      _logger.information('Processing renames');
+    _logger.information('Processing renames');
+    setActualParamNames(rename);
 
-      if (rename is Map) {
-        setActualParamNames(rename);
-      }
+    if (action != null) {
+      _logger.information('Processing actions');
+
+      growMap = {};
+      execFeed(action, mapExec);
     }
 
-    _logger.information('Processing actions for run #$runNo');
-
-    growMap = {};
-
-    var actions = (all.containsKey(CFG_ACTION) ? all[CFG_ACTION] : all);
-    execFeed(actions is List ? actions : [actions], mapExec);
-
-    return null;
+    return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void execFeed(List actions, [ConfigMapExec mapExec]) {
+  void execFeed(Object actions, [ConfigMapExec mapExec]) {
     var hasCmd = false;
     var hasInp = false;
     var hasOut = false;
@@ -248,7 +237,8 @@ class Config {
         }
         else if (key == paramNameExec) {
           isReady = true;
-          if (isBlank && !isNull) {
+
+          if (isBlank) {
             data.data = null;
           }
         }
@@ -271,13 +261,15 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String expandStraight(String value) {
-    if (value == null) {
+  String expandStraight(Map<String, String> map, String value) {
+    if ((value == null) || (map == null)) {
       return value;
     }
 
-    for (var oldValue = StringExt.EMPTY; oldValue != value; oldValue = value) {
-      growMap.forEach((k, v) {
+    for (var oldValue = StringExt.EMPTY; oldValue != value;) {
+      oldValue = value;
+
+      map.forEach((k, v) {
         if (value.contains(k)) {
           value = value.replaceAll(k, v.toString());
         }
@@ -290,7 +282,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String getFullCurDirName(String curDirName) {
-    return path.join(options.startDirName, curDirName).getFullPath();
+    return pathx.join(options.startDirName, curDirName).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -415,7 +407,7 @@ class Config {
           break;
         }
 
-        var entityNameEx = expandStraight(entityName);
+        var entityNameEx = expandStraight(growMap, entityName);
         var isFound = FileSystemEntityExt.tryPatternExistsSync(entityNameEx);
 
         if ((isExists && !isFound) || (!isExists && isFound)) {
@@ -432,8 +424,8 @@ class Config {
       var isIgnoreCase  = (isEqi || isNei || isRxi || isNri);
       var isRegExpMatch = (isRx || isRxi || isNr || isNri);
 
-      var o1 = expandStraight(operands[0]?.toString());
-      var o2 = expandStraight(operands[1]?.toString());
+      var o1 = expandStraight(growMap, operands[0]?.toString());
+      var o2 = expandStraight(growMap, operands[1]?.toString());
 
       var n1 = (o1 == null ? null : (int.tryParse(o1) ?? double.tryParse(o1)));
       var n2 = (o2 == null ? null : (int.tryParse(o2) ?? double.tryParse(o2)));
@@ -547,7 +539,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   void setActualParamNames(Map<String, Object> renames) {
-    renames.forEach((k, v) {
+    renames?.forEach((k, v) {
       if (k == paramNameCanExpandContent) {
         paramNameCanExpandContent = v;
       }

@@ -17,14 +17,6 @@
     "{{-sub-}}": "{sub}"
   },
   "action": {
-//    {
-//      // Application icons creation is currently not supported on MacOS and Windows
-//      "{{-if-}}": { "~/i": [ "${OsType}", "macOS|Windows" ], "{{-then-}}": {
-//        "{stop}": null
-//      } }
-//    },
-
-    // Application icons creation is currently not supported on MacOS and Windows
     "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
       "{cmd}": "echo Creating icons under Wine is not supported",
       "{inp}": "",
@@ -33,51 +25,42 @@
     } },
 
     "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}",
+    "{prj}": "doul",
+
     "{{-import-}}": "../../examples/cmd.json",
 
     "{R}": [
+      // Ensure directory structure matches expectations
       {
         "{cmd}": [
+          // Remove possible remnants from the previous run
           "{sub} --delete out png svg",
-          "{sub} --mkdir ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark png/core png/dark svg"
+          // Ensure temporary and the OS-specific output and icon directories are created
+          "{sub} --mkdir png/core png/dark svg ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark"
         ],
 
         "{run}": null,
         "{reset}": null
       },
       {
-        "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\"",
-        "{can-expand-content}": true
-      },
-      {
-        "{cmd}": "{svg2png}",
-        //      "{cmd}": [
-        //        "{expand-content} \"{inp}\" \"{svg-path}\"",
-        //        "{svg2png}"
-        //      ],
+        "{cmd}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\"",
+        "{can-expand-content}": true,
         "{dim-name}": "{icon-name}_{dim}x{dim}",
         "{svg-path}": "{cur-dir}/svg/{dim-name}.svg",
 
-        "{prj}": "doul",
         "{inp}": "{prj}.svg",
 
-        "{icon}": [
-          { "{icon-name}": "icon_{prj}",      "{icon-fill}": "white", "{icon-stroke}": "black", "{png-path}": "{cur-dir}/png/core/{dim-name}.png"},
-          { "{icon-name}": "icon_{prj}_dark", "{icon-fill}": "black", "{icon-stroke}": "white", "{png-path}": "{cur-dir}/png/dark/{dim-name}.png"}
+        "{icon-data}": [
+          { "{icon-fill}": "white", "{icon-stroke}": "black", "{look}": "core" },
+          { "{icon-name}": "icon_{prj}", "{icon-fill}": "black", "{icon-stroke}": "white", "{look}": "dark" }
         ],
 
-        "{param}": [
-          {
-            "{dim}": 16,
-            "{scn-transform}":  "",
-            "{drw-transform}":   "translate(1,1)", "{stroke-width}": "1",
-            "{chr-d-transform}": "translate(0,0)", "{chr-d-path}":  "M5,0 L5,6 L0,6 L0,2 L5,2",
-            "{chr-o-transform}": "translate(3,4)", "{chr-o-path}":  "M0,0 L0,4 L5,4 L5,0 L0,0",
-            "{chr-u-transform}": "translate(6,6)", "{chr-u-path}":  "M0,0 L0,4 L5,4 L5,0",
-            "{chr-l-transform}": "translate(9,8)", "{chr-l-path}":  "M0,0 L0,5 L4,5"
-          },
+        "{icon-name}": "icon_{prj}_{look}",
+        "{png-path}": "{cur-dir}/png/{look}/{dim-name}.png",
 
-          { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{stroke-width}": "1.5", "{drw-transform}":  "translate(1.5,1.5)" },
+        "{param}": [
+          { "{dim}":   16, "{scn-transform}":  "",               "{stroke-width}": "1",   "{drw-transform}": "translate(1,1)" },
+          { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{stroke-width}": "1.5", "{drw-transform}": "translate(1.5,1.5)" },
           { "{dim}":   32, "{scn-transform}":  "scale(  2,  2)", "{stroke-width}": "1" },
           { "{dim}":   48, "{scn-transform}":  "scale(  3,  3)" },
           { "{dim}":   64, "{scn-transform}":  "scale(  4,  4)" },
@@ -93,41 +76,20 @@
         "{{-reset-}}": null
       },
       {
-        //"{icon}": null, "{param}": null,
-
-        "{dtp}": "\\{out|\\{png\\}", // repeat after reset
-        "{prj}": "doul",
-        "{icon-name}": "icon_{prj}",
+        "{from-dir}": "{cur-dir}/png",
         "{icon-dir}": "../../bin/{OsType}/icons",
+        "{icon-name}": "icon_{prj}_{look}",
+        "{icon-pthp}": "{from-dir}/{look}/{icon-name}",
 
-        "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
-          "{cmd}": [
-            //// Short delay to ensure all images created
-            //"{sleep_0_5s}",
-            // Copy png icons to Linux icons folder
-            "{sub} --move \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_48x48.png\" \"{png-core}_96x96.png\" \"{icon-dir}/core\"",
-            "{sub} --move \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_48x48.png\" \"{png-dark}_96x96.png\" \"{icon-dir}/dark\""
-          ]
-        }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
-          "{cmd}": [
-            //// Short delay to ensure all images created
-            //"{sleep_0_5s}",
-            // Generate icns file in the macOS icons folder
-            "iconutil -c icns -o \"{icon-dir}/core/{icon-name}.icns\" \"png/core\"",
-            "iconutil -c icns -o \"{icon-dir}/dark/{icon-name}_dark.icns\" \"png/dark\""
-          ]
+        "{look}": [ "core", "dark" ],
+
+        "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
+          "{cmd}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
+        }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
+          "{cmd}": "iconutil -c icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{from-dir}/{look}\""
         }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
-          "{cmd}": [
-            //// Short delay to ensure all images created
-            //"{sleep_0_5s}",
-            // Generate ico file in the Windows icons folder
-            "{convert} +antialias \"{png-core}_16x16.png\" \"{png-core}_24x24.png\" \"{png-core}_32x32.png\" \"{png-core}_48x48.png\" \"{png-core}_256x256.png\" \"{icon-dir}/core/{icon-name}.ico\"",
-            "{convert} +antialias \"{png-dark}_16x16.png\" \"{png-dark}_24x24.png\" \"{png-dark}_32x32.png\" \"{png-dark}_48x48.png\" \"{png-dark}_256x256.png\" \"{icon-dir}/dark/{icon-name}_dark.ico\""
-          ]
+          "{cmd}": "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{icon-dir}/{look}/{icon-name}.ico\""
         } } } } } },
-
-        "{png-core}": "png/core/{icon-name}",
-        "{png-dark}": "png/dark/{icon-name}_dark",
 
         "{run}": null
       },

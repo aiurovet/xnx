@@ -23,10 +23,6 @@ class ConfigFeed {
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigEventResult exec(Object topData) {
-    // if ((topData is Map) && (topData.length == 1)) {
-    //   return exec(topData.values.elementAt(0));
-    // }
-
     var result = ConfigEventResult.ok;
 
     topValue = ConfigValue(
@@ -45,19 +41,17 @@ class ConfigFeed {
       if (result == ConfigEventResult.stop) {
         break;
       }
-      else if (result == ConfigEventResult.exec) {
-        result = mapExec(plainValues);
 
-        if (result == ConfigEventResult.stop) {
-          break;
-        }
-
-        if (!shift()) {
+      if (result == ConfigEventResult.exec) {
+        if (mapExec(plainValues) == ConfigEventResult.stop) {
           break;
         }
       }
-      else {
-        break;
+
+      if (result != ConfigEventResult.ok) {
+        if (!shift()) {
+          break;
+        }
       }
     }
 

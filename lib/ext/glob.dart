@@ -4,6 +4,7 @@ import 'package:file/local.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as pathx;
 
+import 'file_system_entity.dart';
 import 'string.dart';
 
 extension GlobExt on Glob {
@@ -12,9 +13,10 @@ extension GlobExt on Glob {
 
   static const String ALL = '*';
 
-  static final RegExp _RE_RECURSIVE = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
-  static final RegExp _RE_WILDCARD = RegExp(r'\*|\?|\[[^\]]*\]|\{[^\}]*\}', caseSensitive: false);
+  static final RegExp _RE_GLOB = RegExp(r'\*|\?|\[[^\]]*\]|\{[^\}]*\}', caseSensitive: false);
   static final RegExp _RE_PATH = RegExp(r'[\/\\]', caseSensitive: false);
+  static final RegExp _RE_RECURSIVE = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
+  static final RegExp _RE_WILDCARD = RegExp(r'[\*\?]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -27,7 +29,7 @@ extension GlobExt on Glob {
       return pattern;
     }
     else {
-      var m = _RE_WILDCARD.firstMatch(pattern);
+      var m = _RE_GLOB.firstMatch(pattern);
 
       if (m != null) {
         if (m.start > 0) {
@@ -69,7 +71,27 @@ extension GlobExt on Glob {
   //////////////////////////////////////////////////////////////////////////////
 
   static bool isGlobPattern(String pattern) {
-    return ((pattern != null) && _RE_WILDCARD.hasMatch(pattern));
+    if (pattern == null) {
+      return false;
+    }
+
+    if (_RE_WILDCARD.hasMatch(pattern)) {
+      return true;
+    }
+
+    if (!_RE_GLOB.hasMatch(pattern)) {
+      return false;
+    }
+
+    if (File(pattern).tryExistsSync()) {
+      return false;
+    }
+
+    if (Directory(pattern).tryExistsSync()) {
+      return false;
+    }
+
+    return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////

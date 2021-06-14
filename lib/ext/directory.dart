@@ -113,12 +113,15 @@ extension DirectoryExt on Directory {
     if (dir?.existsSync() ?? false) {
       lst = dir.pathListSync(null, checkExists: false, takeDirs: takeDirs, takeFiles: takeFiles);
     }
-    else {
+    else if (isGlobPattern) {
       var dirName = GlobExt.getDirectoryName(pattern);
       var subPattern = ((dirName == null) || (dirName.length <= 1) ? pattern : pattern.substring(dirName.length + 1));
 
       dir = (StringExt.isNullOrBlank(dirName) ? Directory.current : Directory(dirName));
       lst = dir.pathListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
+    }
+    else {
+      lst = [pattern];
     }
 
     return lst;

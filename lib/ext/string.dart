@@ -197,6 +197,10 @@ extension StringExt on String {
         if (StringExt.isNullOrBlank(s)) {
           s = match.group(6);
         }
+
+        if (StringExt.isNullOrBlank(s)) {
+          return s;
+        }
       }
 
       s = s.trim();
