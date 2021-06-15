@@ -78,7 +78,8 @@ jobs:
       - name: Install Dart SDK on Windows
         if: runner.os == 'windows'
         run: |
-          choco install dart-sdk --version=2.12.0.259-c-014-beta --pre # --no-progress does not work
+          #choco install dart-sdk --version=2.12.0.259-c-014-beta --pre # --no-progress does not work
+          choco install dart-sdk
           echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
