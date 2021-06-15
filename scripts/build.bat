@@ -11,10 +11,13 @@ if errorlevel 1 exit /B 1
 cd %~dp0..
 if errorlevel 1 exit /B 1
 
+mkdir "%BIN_OST%"
+if errorlevel 1 exit /B 1
+
 call pub get
 if errorlevel 1 exit /B 1
 
-call dart2native "%BIN%\main.dart" -o "%BIN_OST%\%PRJ%.exe"
+dart compile exe "%BIN%\main.dart" -o "%BIN_OST%\%PRJ%.exe"
 if errorlevel 1 exit /B 1
 
 set OSTYPE=%OST%
