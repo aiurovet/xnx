@@ -296,7 +296,16 @@ class Config {
       paramNameInpNameExt,
       paramNameInpPath,
       paramNameInpSubDir,
-      paramNameInpSubPath
+      paramNameInpSubPath,
+    ];
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  List<String> getRunParamNames() {
+    return [
+      paramNameCmd,
+      paramNameExec,
     ];
   }
 

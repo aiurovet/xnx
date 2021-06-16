@@ -45,6 +45,7 @@ class Convert {
 
   Config _config;
   List<String> _inpParamNames;
+  List<String> _runParamNames;
   Logger _logger;
   Options _options;
 
@@ -190,7 +191,11 @@ class Convert {
         detectPathsRE = RegExp(detectPathsPattern, caseSensitive: false);
       }
 
-      var command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
+      var command = getValue(mapCurr, key: _config.paramNameExec, canReplace: false);
+
+      if (StringExt.isNullOrBlank(command)) {
+        command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
+      }
 
       isExpandContentOnly = command.startsWith(_config.cmdNameExpand);
       canExpandContent = (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
@@ -229,7 +234,7 @@ class Convert {
         mapCurr[_config.paramNameThis] = startCmd;
 
         mapCurr.forEach((k, v) {
-          if ((v != null) && (k != _config.paramNameCmd) && !_inpParamNames.contains(k)) {
+          if ((v != null) && !_runParamNames.contains(k) && !_inpParamNames.contains(k)) {
             mapCurr[k] = expandInpNames(v, mapCurr);
           }
         });
@@ -675,6 +680,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     var plainArgs = _options.plainArgs;
 
     _inpParamNames = _config.getInpParamNames();
+    _runParamNames = _config.getRunParamNames();
 
     if ((plainArgs?.length ?? 0) <= 0) {
       plainArgs = [ null ];
