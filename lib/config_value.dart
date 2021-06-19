@@ -4,6 +4,8 @@ import 'package:doul/config_event.dart';
 //////////////////////////////////////////////////////////////////////////////
 
 class ConfigValue {
+  static const errMsgDrop = "Drop key should have either string value or an array of string values";
+
   bool hasData;
   String key;
   bool isEnabled;
@@ -16,7 +18,7 @@ class ConfigValue {
   ConfigDataParsed valueParsed;
 
   bool get isPlain => ((list == null) && (map == null));
-  bool get isResettable => (parent != null) && (parseResult == ConfigEventResult.ok);
+  bool get isResettable => (this != listOfLists?.first);
 
   var offset = 0;
 
@@ -81,10 +83,14 @@ class ConfigValue {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void disableListsByKey(String key, ConfigValue value) {
-    if (value?.parent?.key == key) {
-      return;
+  void disableByKey(String key, ConfigValue value, {Map<String, String> plainValues, bool isParentKeyChecked = true}) {
+    if (isParentKeyChecked ?? true) {
+      if (value?.parent?.key == key) {
+        return;
+      }
     }
+
+    plainValues?.remove(key);
 
     var valuesToClear = listOfLists.where((x) =>
       x.isEnabled && (x.key == key) && ((value == null) || (x != value))
@@ -131,6 +137,7 @@ class ConfigValue {
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigEventResult getPlainValues(Map<String, String> plainValues) {
+    var isDrop = (parseResult == ConfigEventResult.drop);
     var result = ConfigEventResult.ok;
 
     if (!isEnabled) {
@@ -138,61 +145,75 @@ class ConfigValue {
     }
 
     if (list?.isNotEmpty ?? false) {
-      var isAdded = listOfLists.any((x) =>
-        isEnabled && (x.key == key) && (x == this)
-      );
+      if (isDrop) {
+        for (var x in list) {
+          if (x.isPlain) {
+            disableByKey(x.text, null, plainValues: plainValues, isParentKeyChecked: false);
+          }
+          else {
+            throw Exception(errMsgDrop);
+          }
+        }
 
-      if (!isAdded) {
-        listOfLists.add(this);
+        result = ConfigEventResult.ok;
       }
+      else {
+        var isAdded = listOfLists.any((x) => (x.key == key) && (x == this));
 
-      if (offset >= list.length) {
-        offset = 0;
+        if (!isAdded) {
+          listOfLists.add(this);
+        }
+
+        if ((offset >= list.length) && isResettable) {
+          offset = 0;
+        }
+
+        if (offset < list.length) {
+          var childValue = list[offset];
+          result = childValue.getPlainValues(plainValues);
+        }
+        else if (!isResettable) {
+          result = ConfigEventResult.stop;
+        }
       }
-
-      var childValue = list[offset];
-      result = childValue.getPlainValues(plainValues);
     }
     else if (map != null) {
+      if (isDrop) {
+        throw Exception(errMsgDrop);
+      }
+
       map.forEach((childKey, childValue) {
         if (result != ConfigEventResult.ok) {
           return;
         }
 
-        disableListsByKey(childKey, childValue);
-
         result = childValue.getPlainValues(plainValues);
       });
     }
     else {
-      if (text != null) {
-        plainValues[key] = text;
+      if (isDrop) {
+        if (isPlain) {
+          disableByKey(text, null, plainValues: plainValues, isParentKeyChecked: false);
+        }
+        else {
+          throw Exception(errMsgDrop);
+        }
+
+        result = ConfigEventResult.ok;
       }
       else {
-        plainValues.remove(key);
-        disableListsByKey(key, null);
-      }
+        if (text != null) {
+          plainValues[key] = text;
+        }
+        else {
+          disableByKey(key, null, plainValues: plainValues, isParentKeyChecked: true);
+        }
 
-      result = parseResult;
-
-      if (result == ConfigEventResult.reset) {
-        resetSiblingLists();
-        result = ConfigEventResult.ok;
+        result = parseResult;
       }
     }
 
     return result;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void resetSiblingLists() {
-    for (var x in listOfLists) {
-      if (x.isEnabled && (x.parent == parent)) {
-        x.resetSiblingLists();
-        x.disable();
-      }
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

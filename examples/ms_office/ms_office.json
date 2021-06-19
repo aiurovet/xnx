@@ -4,6 +4,7 @@
     "{{-cmd-}}": "{cmd}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
+    "{{-drop-}}": "{drop}",
     "{{-expand-content-}}": "{expand-content}",
     "{{-exec-}}": "{run}",
 
@@ -16,7 +17,6 @@
     "{{-inp-sub-dir-}}": "{inp-sub-dir}",
     "{{-inp-sub-path-}}": "{inp-sub-path}",
     "{{-out-}}": "{out}",
-    "{{-reset-}}": "{reset}",
     "{{-sub-}}": "{sub}",
     "{{-this-}}": "{this}"
   },
@@ -37,7 +37,7 @@
         // Import data
         "{{-import-}}": "ms_office_data.json?path=$.data.*",
 
-        "{cmd}": [
+        "{run}": [
           // Expand template config file
           "{expand-content} \"ms_office_tmpl.json\" \"{cfg-curr}\"",
 
@@ -52,17 +52,11 @@
 
           // Delete temp expanded config file
           "{sub} --delete \"{cfg-curr}\""
-        ],
-
-        // Force execution
-        "{run}": null
+        ]
       },
       {
         // Remove all possible temporary files
-        "{cmd}": "{sub} --delete \"unz\"",
-
-        // Force execution
-        "{run}": null
+        "{run}": "{sub} --delete \"unz\""
       }
     ]
   }

@@ -11,8 +11,10 @@ if errorlevel 1 exit /B 1
 cd %~dp0..
 if errorlevel 1 exit /B 1
 
-mkdir "%BIN_OST%"
-if errorlevel 1 exit /B 1
+if not exist "%BIN_OST%" (
+    mkdir "%BIN_OST%"
+    if errorlevel 1 exit /B 1
+)
 
 call pub get
 if errorlevel 1 exit /B 1

@@ -6,7 +6,6 @@ import 'package:doul/config_event.dart';
 import 'package:doul/config_file_loader.dart';
 import 'package:doul/config.dart';
 import 'package:doul/doul.dart';
-import 'package:doul/ext/glob.dart';
 import 'package:doul/file_oper.dart';
 import 'package:doul/logger.dart';
 import 'package:doul/options.dart';
@@ -168,7 +167,6 @@ class Convert {
           inpFilePath.contains(_config.paramNameInpPath) ||
           inpFilePath.contains(_config.paramNameInpSubDir) ||
           inpFilePath.contains(_config.paramNameInpSubPath)) {
-        //throw Exception('Circular reference is not allowed: input file path is "${inpFilePath}"');
         inpFilePath = expandInpNames(inpFilePath, map);
       }
 
@@ -270,7 +268,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       //   throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
       // }
 
-      var isOK = execFile(command, inpFilePathEx, outFilePathEx, mapCurr);
+      var isOK = execFile(command.replaceAll(inpFilePath, inpFilePathEx), inpFilePathEx, outFilePathEx, mapCurr);
 
       if (isOK) {
         isProcessed = true;
@@ -642,11 +640,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
         map.forEach((k, v) {
           if ((k != key) && !StringExt.isNullOrBlank(k)) {
-            if ((k == _config.paramNameInp) || (k == _config.paramNameOut)) {
-              if (GlobExt.isGlobPattern(v)) {
-                return;
-              }
-            }
+            // if ((k == _config.paramNameInp) || (k == _config.paramNameOut)) {
+            //   if (GlobExt.isGlobPattern(v)) {
+            //     return;
+            //   }
+            // }
 
             value = value.replaceAll(k, v);
 
@@ -695,7 +693,17 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     }
 
     if ((isStdOut != null) && !isStdOut && !isProcessed) {
-      _logger.outInfo('All output files are up to date.');
+      var key = _config.paramNameExec;
+      var cmd = map[key];
+
+      if (StringExt.isNullOrBlank(cmd)) {
+        key = _config.paramNameCmd;
+        cmd = map[key];
+      }
+
+      cmd = getValue(map, key: key, value: cmd, canReplace: true);
+
+      _logger.outInfo('Output is up to date for\n\t$cmd\n');
     }
 
     return ConfigEventResult.ok;

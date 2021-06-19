@@ -12,6 +12,9 @@ if not exist "%PRJ_EXE%" (
 
 if not exist "%PRJ_EXE%" goto FAILURE
 
+reg query HKLM\Software\Wine >nul
+if not errorlevel 1 set WINE=1
+
 "%PRJ_EXE%" -d "scripts\\mkicons" %*
 
 @echo off

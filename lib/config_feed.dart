@@ -48,10 +48,8 @@ class ConfigFeed {
         }
       }
 
-      if (result != ConfigEventResult.ok) {
-        if (!shift()) {
-          break;
-        }
+      if (!shift()) {
+        break;
       }
     }
 
@@ -68,11 +66,12 @@ class ConfigFeed {
         continue;
       }
 
-      if ((++curr.offset) < curr.list.length) {
-        return true;
-      }
-      else if (i == 0) {
-        return false;
+      var list = curr.list;
+
+      if (curr.offset < list.length) {
+        if ((++curr.offset) < list.length) {
+          return true;
+        }
       }
     }
 

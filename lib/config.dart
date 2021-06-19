@@ -28,6 +28,7 @@ class Config {
   String paramNameCmd = '{{-cmd-}}';
   String paramNameCurDir = '{{-cur-dir-}}';
   String paramNameDetectPaths = '{{-detect-paths-}}';
+  String paramNameDrop = '{{-drop-}}';
   String paramNameExec = '{{-exec-}}';
   String paramNameInp = '{{-inp-}}';
   String paramNameInpDir = '{{-inp-dir-}}';
@@ -40,7 +41,6 @@ class Config {
   String paramNameImport = '{{-import-}}';
   String paramNameOut = '{{-out-}}';
   String paramNameNext = '{{-next-}}';
-  String paramNameReset = '{{-reset-}}';
   String paramNameStop = '{{-stop-}}';
   String paramNameThis = '{{-this-}}';
 
@@ -112,9 +112,10 @@ class Config {
   ConfigEventResult defaultMapExec(Map<String, String> flatMap) {
     growMap = flatMap;
 
-    _logger.outInfo(flatMap.toString() + "\n");
-
     if (_logger.isUltimate) {
+      _logger.debug(flatMap.toString() + "\n");
+    }
+    else {
       _logger.outInfo(expandStraight(flatMap, (
         flatMap[paramNameOut] ?? flatMap[paramNameCmd] ??
         flatMap[paramNameExec] ?? flatMap[paramNameInp] ??
@@ -175,8 +176,8 @@ class Config {
       dataParsed: (ConfigData data) {
         var key = data.key;
 
-        if (key == paramNameReset) {
-          return ConfigEventResult.reset;
+        if (key == paramNameDrop) {
+          return ConfigEventResult.drop;
         }
 
         var value = data.data;
@@ -597,8 +598,8 @@ class Config {
       else if (k == paramNameNext) {
         paramNameNext = v;
       }
-      else if (k == paramNameReset) {
-        paramNameReset = v;
+      else if (k == paramNameDrop) {
+        paramNameDrop = v;
       }
       else if (k == paramNameStop) {
         paramNameStop = v;

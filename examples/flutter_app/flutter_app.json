@@ -49,12 +49,12 @@
           { "{d}":  192, "{r}": "xxxh" }
         ],
 
-        "{o}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png",
-
-        "{{-reset-}}": null // discard lists under this parent to avoid irrelevant loops
+        "{o}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
       },
 
       {
+        "{{-drop-}}": "{suf}",
+
         "{dim}": [
           { "{d}": 1024, "{r}": 1024, "{k}": 1 },
           { "{d}":   20, "{r}":   20, "{k}": 1 },

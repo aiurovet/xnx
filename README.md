@@ -194,7 +194,7 @@ See the details of the imported file `cmd.json` beyond this configuration
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
-    "{{-reset-}}": "{x}"
+    "{{-drop-}}": "{x}"
   },
   "action": [
     { "{{-import-}}": "../cmd.json" },

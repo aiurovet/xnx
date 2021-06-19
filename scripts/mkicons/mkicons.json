@@ -8,19 +8,17 @@
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-detect-paths-}}": "{dtp}",
+    "{{-drop-}}": "{drop}",
     "{{-expand-content-}}": "{expand-content}",
     "{{-exec-}}": "{run}",
     "{{-inp-}}": "{inp}",
     "{{-out-}}": "{out}",
-    "{{-reset-}}": "{reset}",
     "{{-stop-}}": "{stop}", // stop immediately
     "{{-sub-}}": "{sub}"
   },
   "action": {
     "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
-      "{cmd}": "echo Creating icons under Wine is not supported",
-      "{inp}": "",
-      "{out}": "",
+      "{run}": "echo Creating icons under Wine is not supported",
       "{stop}": null
     } },
 
@@ -32,31 +30,23 @@
     "{R}": [
       // Ensure directory structure matches expectations
       {
-        "{cmd}": [
+        "{run}": [
           // Remove possible remnants from the previous run
           "{sub} --delete out png svg",
           // Ensure temporary and the OS-specific output and icon directories are created
           "{sub} --mkdir png/core png/dark svg ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark"
-        ],
-
-        "{run}": null,
-        "{reset}": null
+        ]
       },
-      {
-        "{cmd}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\"",
-        "{can-expand-content}": true,
-        "{dim-name}": "{icon-name}_{dim}x{dim}",
-        "{svg-path}": "{cur-dir}/svg/{dim-name}.svg",
 
-        "{inp}": "{prj}.svg",
+      {
+        "{drop}": "{run}",
+
+        "{can-expand-content}": true,
 
         "{icon-data}": [
           { "{icon-fill}": "white", "{icon-stroke}": "black", "{look}": "core" },
           { "{icon-name}": "icon_{prj}", "{icon-fill}": "black", "{icon-stroke}": "white", "{look}": "dark" }
         ],
-
-        "{icon-name}": "icon_{prj}_{look}",
-        "{png-path}": "{cur-dir}/png/{look}/{dim-name}.png",
 
         "{param}": [
           { "{dim}":   16, "{scn-transform}":  "",               "{stroke-width}": "1",   "{drw-transform}": "translate(1,1)" },
@@ -71,11 +61,14 @@
           { "{dim}": 1024, "{scn-transform}":  "scale( 64, 64)" }
         ],
 
-        "{out}": "{png-path}",
-
-        "{{-reset-}}": null
+        "{inp}": "{prj}.svg",
+        "{out}": "{cur-dir}/png/{look}/icon_{prj}_{look}_{dim}x{dim}.png",
+        "{cmd}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\""
       },
+
       {
+        "{drop}": [ "{icon-data}", "{param}" ],
+
         "{from-dir}": "{cur-dir}/png",
         "{icon-dir}": "../../bin/{OsType}/icons",
         "{icon-name}": "icon_{prj}_{look}",
@@ -84,17 +77,17 @@
         "{look}": [ "core", "dark" ],
 
         "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
-          "{cmd}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
+          "{run}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
         }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
-          "{cmd}": "iconutil -c icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{from-dir}/{look}\""
+          "{run}": "iconutil -c icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{from-dir}/{look}\""
         }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
-          "{cmd}": "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{icon-dir}/{look}/{icon-name}.ico\""
-        } } } } } },
-
-        "{run}": "echo OS type: {OsType}, pwd: {cur-dir}, cmd: {cmd}"
+          "{run}": "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{icon-dir}/{look}/{icon-name}.ico\""
+        } } } } } }
       },
 
       {
+        "{drop}": "{look}",
+
         "{run}": "{sub} --delete png svg"
       }
     ]

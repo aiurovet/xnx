@@ -9,7 +9,7 @@ enum ConfigDataType {
 enum ConfigEventResult {
   exec, // ready to execute command
   ok, // continue as normal
-  reset, // drop all current lists to avoid old loops
+  drop, // drop all current lists to avoid old loops
   stop, // stop immediately
 }
 
