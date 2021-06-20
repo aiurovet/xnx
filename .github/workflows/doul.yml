@@ -60,27 +60,11 @@ jobs:
 
       ################################################################################
 
-#      - name: Install Dart SDK on a Unix-like OS
-#        if: runner.os != 'windows'
-#        run: |
-#          brew tap dart-lang/dart
-#          brew install dart
-
-      ################################################################################
-
       - name: Install ImageMagick on Windows
         if: runner.os == 'windows'
         run: |
           choco install imagemagick.app --no-progress # --no-progress does not work
           echo "%ProgramFiles%\ImageMagick-7.0.11-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-
-      ################################################################################
-
-#      - name: Install Dart SDK on Windows
-#        if: runner.os == 'windows'
-#        run: |
-#          choco install dart-sdk --no-progress --no-progress does not work
-#          echo "C:\tools\dart-sdk\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
 
