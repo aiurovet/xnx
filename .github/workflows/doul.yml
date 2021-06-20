@@ -60,9 +60,8 @@ jobs:
         run: |
           choco install -y imagemagick.app --no-progress
           refreshenv
-          echo "%ProgramFiles%\ImageMagick-7.1.0-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-          where.exe magick
-          dir /B "%ProgramFiles%\ImageMagick-7.1.0-Q16-HDRI"
+          Write-Output "${env:Path}"
+          Write-Output "${env:Path}" | Out-File -Force -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
 
