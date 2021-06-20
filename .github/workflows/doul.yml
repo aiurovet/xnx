@@ -121,9 +121,22 @@ jobs:
 
       ################################################################################
 
-      - name: Check build result
-        run: ls -l bin/${{ runner.os }}/icons/core bin/${{ runner.os }}/icons/dark
-      
+      - name: Check build result on a Unix-like OS
+        if: runner.os != 'Windows'
+        run: |
+          ls -1 bin/${{ runner.os }}/doul
+          ls -1 bin/${{ runner.os }}/icons/core/*doul*
+          ls -1 bin/${{ runner.os }}/icons/dark/*doul*
+
+      ################################################################################
+
+      - name: Check build result on Windows
+        if: runner.os == 'Windows'
+        run: |
+          dir /S /B bin\${{ runner.os }}\doul.exe
+          dir /S /B bin\${{ runner.os }}\icons\core\*doul*
+          dir /S /B bin\${{ runner.os }}\icons\dark\*doul*
+
       ################################################################################
 
       - name: Integration Test 1 - flutter_app
@@ -146,20 +159,10 @@ jobs:
 
       ################################################################################
 
-      - name: Checking output files on a Unix-like OS
-        if: runner.os != 'Windows'
-        run: find bin/${{ runner.os }}
-
-      ################################################################################
-
-      - name: Checking output files on Windows
-        if: runner.os == 'Windows'
-        run: dir /S /B bin\${{ runner.os }}
-
-      ################################################################################
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: bin-${{ runner.os }}
-          path: bin/${{ runner.os }}/**
+          path: bin/${{ runner.os }}
+
+      ################################################################################

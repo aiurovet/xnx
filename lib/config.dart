@@ -113,7 +113,7 @@ class Config {
     growMap = flatMap;
 
     if (_logger.isUltimate) {
-      _logger.debug(flatMap.toString() + "\n");
+      _logger.debug(flatMap.toString() + '\n');
     }
     else {
       _logger.outInfo(expandStraight(flatMap, (

@@ -41,10 +41,10 @@
           // Expand template config file
           "{expand-content} \"ms_office_tmpl.json\" \"{cfg-curr}\"",
 
-          // Decompress file
+          // Decompress the input file (the archive)
           "{sub} --unzip \"{inp}\" \"{unz-dir}\"",
 
-          // Expand placeholders in every decompressed file
+          // Expand placeholders in every file extracted from the archive
           "{sub} --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
 
           // Compress back to a single file
@@ -55,6 +55,9 @@
         ]
       },
       {
+        // Discard the input file array to avoid unnecessary repetitions
+        "{inp}": null,
+
         // Remove all possible temporary files
         "{run}": "{sub} --delete \"unz\""
       }

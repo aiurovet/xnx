@@ -297,7 +297,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
     }
 
-    var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath));
+    var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath) && command.contains(inpFilePath));
 
     if (isExpandContentOnly && !hasInpFile) {
       throw Exception('Input file is undefined for ${_config.cmdNameExpand} operation');
@@ -323,7 +323,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
-    if (!_options.isForced && hasOutFile && !isSamePath) {
+    if (!_options.isForced && hasInpFile && hasOutFile && !isSamePath) {
       var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
       if (!isChanged) {
@@ -336,14 +336,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
     }
 
-    if (hasOutFile && !isSamePath) {
+    if (hasInpFile && hasOutFile && !isSamePath) {
       outFile.deleteIfExistsSync();
     }
 
-    if (canExpandContent) {
-      if (StringExt.isNullOrBlank(inpFilePath)) {
-        throw Exception("Unable to expand file '$inpFilePath' for command $command");
-      }
+    if (canExpandContent && hasInpFile) {
       expandInpContent(inpFile, outFilePath, tmpFilePath, map);
     }
 
@@ -355,12 +352,6 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
-var canDebug = command.startsWith('{sub} --move');
-
-if (canDebug) {
-  print('\n*** DBG: 1');
-}
-
     var isVerbose = _logger.isDetailed;
 
     if (_options.isListOnly || isExpandContentOnly || !isVerbose) {
@@ -371,21 +362,12 @@ if (canDebug) {
       return true;
     }
 
-if (canDebug) {
-  print('\n*** DBG: 2');
-}
-
     _logger.information(command);
 
     var isSuccess = false;
     var oldCurDir = Directory.current;
     var resultCount = 0;
     List<ProcessResult> results;
-
-
-if (canDebug) {
-  print('\n*** DBG: 3');
-}
 
     try {
       if (StringExt.isNullOrBlank(command)) {
@@ -395,25 +377,11 @@ if (canDebug) {
 
       var cli = command.splitCommandLine();
 
-if (canDebug) {
-  print('\n*** DBG: 4, cli: $cli');
-}
-
       if (cli[0] == _config.cmdNameSub) {
-
-if (canDebug) {
-  print('\n*** DBG: 5a');
-}
-
         Doul(logger: _logger).exec(cli.sublist(1));
         isSuccess = true;
       }
       else {
-
-if (canDebug) {
-  print('\n*** DBG: 5b');
-}
-
         results = waitFor<List<ProcessResult>>(
           Shell(
             verbose: false,

@@ -546,7 +546,7 @@ class Options {
         var inpArgs = stdin.readAsStringSync().split('\n');
 
         for (var i = 0, n = inpArgs.length; i < n; i++) {
-          if (inpArgs[i]?.trim().isNotEmpty ?? false) {
+          if (inpArgs[i]?.trim()?.isNotEmpty ?? false) {
             _plainArgs.add(inpArgs[i]);
           }
         }

@@ -4,7 +4,7 @@ import 'package:doul/config_event.dart';
 //////////////////////////////////////////////////////////////////////////////
 
 class ConfigValue {
-  static const errMsgDrop = "Drop key should have either string value or an array of string values";
+  static const errMsgDrop = 'Drop key should have either string value or an array of string values';
 
   bool hasData;
   String key;
