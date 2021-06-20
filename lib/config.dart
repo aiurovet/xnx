@@ -173,7 +173,6 @@ class Config {
     var isReady = false;
 
     var feed = ConfigFeed(
-      logger: _logger,
       dataParsed: (ConfigData data) {
         var key = data.key;
 

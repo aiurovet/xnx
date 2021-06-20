@@ -1,7 +1,5 @@
 import 'package:doul/config_event.dart';
 import 'package:doul/config_value.dart';
-import 'package:doul/ext/string.dart';
-import 'package:doul/logger.dart';
 import 'package:meta/meta.dart';
 
 //////////////////////////////////////////////////////////////////////////////
@@ -12,19 +10,14 @@ class ConfigFeed {
   final ConfigDataParsed dataParsed;
   final ConfigMapExec mapExec;
 
-  Logger _logger;
-
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigFeed({
     @required this.dataParsed,
-    @required this.mapExec,
-    @required Logger logger
+    @required this.mapExec
   }) {
     assert(dataParsed != null);
     assert(mapExec != null);
-
-    _logger = logger;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -48,14 +41,6 @@ class ConfigFeed {
       if (result == ConfigEventResult.stop) {
         break;
       }
-
-var exe = plainValues['{run}'];
-
-if (StringExt.isNullOrBlank(exe)) {
-  exe = plainValues['{cmd}'];
-}
-
-_logger.outInfo('\n*** Command: ***\n$exe\n');
 
       if (result == ConfigEventResult.run) {
         if (mapExec(plainValues) == ConfigEventResult.stop) {
