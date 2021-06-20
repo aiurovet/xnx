@@ -36,7 +36,6 @@ jobs:
       ################################################################################
 
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
       - uses: browser-actions/setup-chrome@latest
       - uses: dart-lang/setup-dart@v1
 
@@ -62,10 +61,6 @@ jobs:
           choco install -y imagemagick.app --no-progress # --no-progress does not work
           refreshenv
           where magick
-          for /f "delims=" %%G in ('where magick') do (
-            echo ::set-env name=MAGICKPATH::%%~fG
-            echo ::set-output name=magick::%%~fG
-          )
 #          echo ::set-env name=PATH::%PATH%
 #          echo "%ProgramFiles%\ImageMagick-7.0.11-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
