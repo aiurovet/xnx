@@ -113,9 +113,9 @@ jobs:
       - name: Check build result on Windows
         if: runner.os == 'Windows'
         run: |
-          dir /S /B bin\${{ runner.os }}\doul.exe
-          dir /S /B bin\${{ runner.os }}\icons\core\*doul*
-          dir /S /B bin\${{ runner.os }}\icons\dark\*doul*
+          Get-ChildItem -Name -Path bin\${{ runner.os }}\doul.exe
+          Get-ChildItem -Name -Path bin\${{ runner.os }}\icons\core\*doul*
+          Get-ChildItem -Name -Path bin\${{ runner.os }}\icons\dark\*doul*
 
       ################################################################################
 
