@@ -20,8 +20,8 @@ jobs:
         #os: [ ubuntu-latest, macos-latest ]
         #os: [ ubuntu-latest, windows-latest ]
         #os: [ macos-latest, windows-latest ]
-        #os: [ ubuntu-latest ]
-        os: [ macos-latest ]
+        os: [ ubuntu-latest ]
+        #os: [ macos-latest ]
         #os: [ windows-latest ]
 
     # Note that this workflow uses the latest stable version of the Dart SDK.
@@ -149,13 +149,13 @@ jobs:
 
       - name: Checking output files on Linux/macOS
         if: runner.os != 'Windows'
-        run: find bin/${{ runner.os }}/
+        run: find bin/${{ runner.os }}
 
       ################################################################################
 
       - name: Checking output files on Windows
         if: runner.os == 'Windows'
-        run: dir /S /B bin\${{ runner.os }}\
+        run: dir /S /B bin\${{ runner.os }}
 
       ################################################################################
 

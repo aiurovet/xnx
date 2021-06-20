@@ -21,6 +21,7 @@ doc/api/
 .DS_Store
 
 # Application-related
+*.zip
 bin/**/README*
 examples/flutter_app/android/
 examples/flutter_app/ios/

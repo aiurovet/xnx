@@ -352,7 +352,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     var tmpFile = (tmpFilePath != null ? File(tmpFilePath) : null);
 
     if (tmpFile != null) {
-      command = command.replaceAll(map[_config.paramNameInp], tmpFilePath);
+      command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
     var isVerbose = _logger.isDetailed;
