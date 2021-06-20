@@ -60,7 +60,7 @@ jobs:
         run: |
           choco install -y imagemagick.app --no-progress
           refreshenv
-#         echo ::set-env name=PATH::%PATH%
+#        echo ::set-env name=PATH::%PATH%
           Get-Command magick
           magick -version
 #          Write-Output "${env:Path}"
