@@ -74,7 +74,7 @@
         "{icon-name}": "icon_{prj}_{look}",
         "{icon-pthp}": "{from-dir}/{look}/{icon-name}",
 
-        "{look}": [ "core", "dark" ],
+        "{look}": "core", //[ "core", "dark" ],
 
 //        "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
 //          "{run}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
