@@ -26,10 +26,11 @@
       "{move}": "ren",
       "{delete}": "del /F/Q/S",
       "{mkdir}": "mkdir",
-      "{chrome}": "\"${ProgramFiles}\\Google\\Chrome\\Application\\chrome.exe\"",
-      "{{-if-}}": { "!-e": [ "{chrome}" ], "{{-then-}}": {
-        "{chrome}": "\"${ProgramFiles(x86)}\\Google\\Chrome\\Application\\chrome.exe\""
-      } },
+      "{chrome}": "chrome",
+//      "{chrome}": "\"${ProgramFiles}\\Google\\Chrome\\Application\\chrome.exe\"",
+//      "{{-if-}}": { "!-e": [ "{chrome}" ], "{{-then-}}": {
+//        "{chrome}": "\"${ProgramFiles(x86)}\\Google\\Chrome\\Application\\chrome.exe\""
+//      } },
       "{convert}": "magick convert",
       "{shell}": "cmd /c",
       "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500"

@@ -8,14 +8,16 @@ set PRJ_EXE=bin\Windows\%PRJ_NAME%.exe
 if not exist "%PRJ_EXE%" (
   echo Executable file "%PRJ_EXE%" not found. Performing build.
   call scripts\build.bat
+  if errorlevel 1 goto FAILURE
 )
 
 if not exist "%PRJ_EXE%" goto FAILURE
 
-reg query HKLM\Software\Wine >nul
+reg query HKLM\Software\Wine > nul
 if not errorlevel 1 set WINE=1
 
 "%PRJ_EXE%" -d "scripts\\mkicons" %*
+if errorlevel 1 goto FAILURE
 
 @echo off
 
