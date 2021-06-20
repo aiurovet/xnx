@@ -1,5 +1,6 @@
 import 'package:doul/config_event.dart';
 import 'package:doul/config_value.dart';
+import 'package:doul/ext/string.dart';
 import 'package:meta/meta.dart';
 
 //////////////////////////////////////////////////////////////////////////////
@@ -37,6 +38,13 @@ class ConfigFeed {
 
     for (var plainValues = <String, String>{}; ;) {
       result = topValue.getPlainValues(plainValues);
+
+var key = '{run}';
+var run = (plainValues.containsKey(key) ? plainValues[key] : null) ?? StringExt.EMPTY;
+
+if (run.startsWith('{sub} --move')) {
+  print('\n*** Result: $result\n*** Run: $run\n');
+}
 
       if (result == ConfigEventResult.stop) {
         break;
