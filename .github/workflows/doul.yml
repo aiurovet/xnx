@@ -147,8 +147,20 @@ jobs:
 
       ################################################################################
 
+      - name: Checking output files on Linux/macOS
+        if: runner.os != 'Windows'
+        run: find bin/${{ runner.os }}/
+
+      ################################################################################
+
+      - name: Checking output files on Windows
+        if: runner.os == 'Windows'
+        run: dir /S /B bin\${{ runner.os }}\
+
+      ################################################################################
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: bin-${{ runner.os }}
-          path: bin/${{ runner.os }}/**/*doul*
+          path: bin/${{ runner.os }}/**
