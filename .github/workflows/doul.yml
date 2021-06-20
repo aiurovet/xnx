@@ -59,7 +59,7 @@ jobs:
         if: runner.os == 'windows'
         run: |
           choco install -y imagemagick.app --no-progress # --no-progress does not work
-          call refreshenv
+          refreshenv
           echo ::set-env name=PATH::%PATH%
 #          echo "%ProgramFiles%\ImageMagick-7.0.11-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
