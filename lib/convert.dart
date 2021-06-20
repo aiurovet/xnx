@@ -140,14 +140,6 @@ class Convert {
       }
     });
 
-var key = '{run}';
-var run = (map.containsKey(key) ? map[key] : null) ?? StringExt.EMPTY;
-var canDebug = run.startsWith('{sub} --move');
-
-if (canDebug) {
-  print('\n*** DBG: 1');
-}
-
     if (StringExt.isNullOrBlank(plainArg)) {
       if (isKeyAllArgsFound) {
         return false;
@@ -157,18 +149,10 @@ if (canDebug) {
       map[ConfigFileLoader.ALL_ARGS] = plainArg;
     }
 
-if (canDebug) {
-  print('\n*** DBG: 2');
-}
-
     curDirName = getCurDirName(map);
 
     var inpFilePath = (getValue(map, key: _config.paramNameInp, canReplace: true) ?? StringExt.EMPTY);
     var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
-
-if (canDebug) {
-  print('\n*** DBG: 3');
-}
 
     if (hasInpFile) {
       if (!pathx.isAbsolute(inpFilePath)) {
@@ -189,24 +173,12 @@ if (canDebug) {
       inpFilePath = inpFilePath.getFullPath();
     }
 
-if (canDebug) {
-  print('\n*** DBG: 4');
-}
-
     var subStart = (hasInpFile ? (inpFilePath.length - pathx.basename(inpFilePath).length) : 0);
     var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
-
-if (canDebug) {
-  print('\n*** DBG: 5, inpFilePaths: $inpFilePaths');
-}
 
     for (var inpFilePathEx in inpFilePaths) {
       inpFilePathEx = inpFilePathEx.adjustPath();
       mapCurr = expandMap(map, curDirName, inpFilePathEx);
-
-if (canDebug) {
-  print('\n*** DBG: 6, inpFilePathEx: $inpFilePathEx');
-}
 
       var detectPathsPattern = getValue(mapCurr, key: _config.paramNameDetectPaths, canReplace: true);
 
@@ -223,10 +195,6 @@ if (canDebug) {
         command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
       }
 
-if (canDebug) {
-  print('\n*** DBG: 7, command: $command');
-}
-
       isExpandContentOnly = command.startsWith(_config.cmdNameExpand);
       canExpandContent = (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
 
@@ -234,10 +202,6 @@ if (canDebug) {
         _logger.debug('Setting current directory to: "$curDirName"');
         Directory.current = curDirName;
       }
-
-if (canDebug) {
-  print('\n*** DBG: 8, curDir: $curDirName');
-}
 
       if (StringExt.isNullOrBlank(command)) {
         if (_config.options.isListOnly) {
@@ -253,10 +217,6 @@ if (canDebug) {
       isStdOut = (outFilePath == StringExt.STDOUT_PATH);
 
       var outFilePathEx = (hasOutFile ? outFilePath : inpFilePathEx);
-
-if (canDebug) {
-  print('\n*** DBG: 9, outFilePathEx: $outFilePathEx');
-}
 
       if (hasInpFile) {
         var dirName = pathx.dirname(inpFilePathEx);
@@ -308,10 +268,6 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       //   throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISP}. Use pipe and a separate configuration file per each output.');
       // }
 
-if (canDebug) {
-  print('\n*** DBG: 10');
-}
-
       var isOK = execFile(command.replaceAll(inpFilePath, inpFilePathEx), inpFilePathEx, outFilePathEx, mapCurr);
 
       if (isOK) {
@@ -326,7 +282,7 @@ if (canDebug) {
 
   bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) {
     var command = expandInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map)
-        .replaceAll(_config.paramNameCurDir, curDirName);
+      .replaceAll(_config.paramNameCurDir, curDirName);
 
     if (isExpandContentOnly) {
       var cmdParts = command.splitCommandLine();
@@ -399,6 +355,12 @@ if (canDebug) {
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
+var canDebug = command.startsWith('{sub} --move');
+
+if (canDebug) {
+  print('\n*** DBG: 1');
+}
+
     var isVerbose = _logger.isDetailed;
 
     if (_options.isListOnly || isExpandContentOnly || !isVerbose) {
@@ -409,12 +371,21 @@ if (canDebug) {
       return true;
     }
 
+if (canDebug) {
+  print('\n*** DBG: 2');
+}
+
     _logger.information(command);
 
     var isSuccess = false;
     var oldCurDir = Directory.current;
     var resultCount = 0;
     List<ProcessResult> results;
+
+
+if (canDebug) {
+  print('\n*** DBG: 3');
+}
 
     try {
       if (StringExt.isNullOrBlank(command)) {
@@ -424,11 +395,25 @@ if (canDebug) {
 
       var cli = command.splitCommandLine();
 
+if (canDebug) {
+  print('\n*** DBG: 4, cli: $cli');
+}
+
       if (cli[0] == _config.cmdNameSub) {
+
+if (canDebug) {
+  print('\n*** DBG: 5a');
+}
+
         Doul(logger: _logger).exec(cli.sublist(1));
         isSuccess = true;
       }
       else {
+
+if (canDebug) {
+  print('\n*** DBG: 5b');
+}
+
         results = waitFor<List<ProcessResult>>(
           Shell(
             verbose: false,
