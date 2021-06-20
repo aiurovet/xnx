@@ -687,6 +687,12 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     for (var i = 0, n = plainArgs.length; i < n; i++) {
       var plainArg = plainArgs[i];
 
+var key = '{run}';
+var run = (map.containsKey(key) ? map[key] : null) ?? StringExt.EMPTY;
+
+if (run.startsWith('{sub} --move')) {
+  print('\n*** Run: $run, PlainArg: ${plainArg ?? '-'}\n');
+}
       if (execMap(plainArg, map)) {
         isProcessed = true;
       }
