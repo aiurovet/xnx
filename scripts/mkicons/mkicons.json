@@ -80,11 +80,16 @@
           "{run}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
         }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
           "{run}": [
-            "cp -p \"{icon-pthp}_32x32.png\" \"{icon-pthp}_16x16@2x.png\"",
-            "mv -f \"{icon-pthp}_64x64.png\" \"{icon-pthp}_32x32@2x.png\"",
-            "cp -p \"{icon-pthp}_256x256.png\" \"{icon-pthp}_128x128@2x.png\"",
-            "cp -p \"{icon-pthp}_512x512.png\" \"{icon-pthp}_256x256@2x.png\"",
-            "mv -f \"{icon-pthp}_1024x1024.png\" \"{icon-pthp}_512x512@2x.png\"",
+            "cp -p \"{icon-pthp}_32x32.png\" \"{look-dir}/icon_16x16@2x.png\"",
+            "mv -f \"{icon-pthp}_64x64.png\" \"{look-dir}/icon_32x32@2x.png\"",
+            "cp -p \"{icon-pthp}_256x256.png\" \"{look-dir}/icon_128x128@2x.png\"",
+            "cp -p \"{icon-pthp}_512x512.png\" \"{look-dir}/icon_256x256@2x.png\"",
+            "mv -f \"{icon-pthp}_1024x1024.png\" \"{look-dir}/icon_512x512@2x.png\"",
+            "mv -f \"{icon-pthp}_16x16.png\" \"{look-dir}/icon_16x16.png\"",
+            "mv -f \"{icon-pthp}_32x32.png\" \"{look-dir}/icon_32x32.png\"",
+            "mv -f \"{icon-pthp}_128x128.png\" \"{look-dir}/icon_128x128.png\"",
+            "mv -f \"{icon-pthp}_256x256.png\" \"{look-dir}/icon_256x256.png\"",
+            "mv -f \"{icon-pthp}_512x512.png\" \"{look-dir}/icon_512x512.png\"",
             "rm -f \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\"",
             "ls -1 {look-dir}",
             "iconutil --convert icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{look-dir}\""
