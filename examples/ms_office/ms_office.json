@@ -6,7 +6,6 @@
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-drop-}}": "{drop}",
     "{{-expand-content-}}": "{expand-content}",
-    "{{-exec-}}": "{run}",
 
     "{{-inp-}}": "{inp}",
     "{{-inp-dir-}}": "{inp-dir}",
@@ -17,6 +16,7 @@
     "{{-inp-sub-dir-}}": "{inp-sub-dir}",
     "{{-inp-sub-path-}}": "{inp-sub-path}",
     "{{-out-}}": "{out}",
+    "{{-run-}}": "{run}",
     "{{-sub-}}": "{sub}",
     "{{-this-}}": "{this}"
   },

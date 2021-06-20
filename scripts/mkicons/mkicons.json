@@ -10,9 +10,9 @@
     "{{-detect-paths-}}": "{dtp}",
     "{{-drop-}}": "{drop}",
     "{{-expand-content-}}": "{expand-content}",
-    "{{-exec-}}": "{run}",
     "{{-inp-}}": "{inp}",
     "{{-out-}}": "{out}",
+    "{{-run-}}": "{run}",
     "{{-stop-}}": "{stop}", // stop immediately
     "{{-sub-}}": "{sub}"
   },
@@ -77,20 +77,18 @@
         "{look}": [ "core", "dark" ],
 
         "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
-          "{x}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
+          "{run}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
         }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
-          "{x}": "iconutil -c icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{from-dir}/{look}\""
+          "{run}": "iconutil -c icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{from-dir}/{look}\""
         }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
-          "{x}": "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{icon-dir}/{look}/{icon-name}.ico\""
-        } } } } } },
-
-        "{run}": "{x}"
+          "{run}": "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{icon-dir}/{look}/{icon-name}.ico\""
+        } } } } } }
       },
 
       {
         "{drop}": "{look}",
 
-        "{run}": [ "echo OS: {OsType}, run: {x}", "{sub} --delete png svg" ]
+        "{run}": "{sub} --delete png svg"
       }
     ]
   }

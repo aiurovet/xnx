@@ -1,5 +1,7 @@
 import 'package:doul/config_event.dart';
 import 'package:doul/config_value.dart';
+import 'package:doul/ext/string.dart';
+import 'package:doul/logger.dart';
 import 'package:meta/meta.dart';
 
 //////////////////////////////////////////////////////////////////////////////
@@ -10,14 +12,19 @@ class ConfigFeed {
   final ConfigDataParsed dataParsed;
   final ConfigMapExec mapExec;
 
+  Logger _logger;
+
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigFeed({
     @required this.dataParsed,
-    @required this.mapExec
+    @required this.mapExec,
+    @required Logger logger
   }) {
     assert(dataParsed != null);
     assert(mapExec != null);
+
+    _logger = logger;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -42,13 +49,21 @@ class ConfigFeed {
         break;
       }
 
-      if (result == ConfigEventResult.exec) {
+var exe = plainValues['{run}'];
+
+if (StringExt.isNullOrBlank(exe)) {
+  exe = plainValues['{cmd}'];
+}
+
+_logger.outInfo('\n*** Command: ***\n$exe\n');
+
+      if (result == ConfigEventResult.run) {
         if (mapExec(plainValues) == ConfigEventResult.stop) {
           break;
         }
       }
 
-      if (!shift()) {
+      if (!next()) {
         break;
       }
     }
@@ -58,7 +73,7 @@ class ConfigFeed {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool shift() {
+  bool next() {
     for (var i = listOfLists.length - 1; (i >= 0); --i) {
       var curr = listOfLists[i];
 

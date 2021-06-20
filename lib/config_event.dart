@@ -7,9 +7,10 @@ enum ConfigDataType {
 ////////////////////////////////////////////////////////////////////////////////
 
 enum ConfigEventResult {
-  exec, // ready to execute command
-  ok, // continue as normal
   drop, // drop all current lists to avoid old loops
+  next, // move lists to the next combination of values
+  ok, // continue as normal
+  run, // ready to run command
   stop, // stop immediately
 }
 

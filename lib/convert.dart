@@ -44,7 +44,7 @@ class Convert {
 
   Config _config;
   List<String> _inpParamNames;
-  List<String> _runParamNames;
+  List<String> _exeParamNames;
   Logger _logger;
   Options _options;
 
@@ -189,7 +189,7 @@ class Convert {
         detectPathsRE = RegExp(detectPathsPattern, caseSensitive: false);
       }
 
-      var command = getValue(mapCurr, key: _config.paramNameExec, canReplace: false);
+      var command = getValue(mapCurr, key: _config.paramNameRun, canReplace: false);
 
       if (StringExt.isNullOrBlank(command)) {
         command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
@@ -232,7 +232,7 @@ class Convert {
         mapCurr[_config.paramNameThis] = startCmd;
 
         mapCurr.forEach((k, v) {
-          if ((v != null) && !_runParamNames.contains(k) && !_inpParamNames.contains(k)) {
+          if ((v != null) && !_exeParamNames.contains(k) && !_inpParamNames.contains(k)) {
             mapCurr[k] = expandInpNames(v, mapCurr);
           }
         });
@@ -677,8 +677,8 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   ConfigEventResult mapExec(Map<String, String> map) {
     var plainArgs = _options.plainArgs;
 
+    _exeParamNames = _config.getExeParamNames();
     _inpParamNames = _config.getInpParamNames();
-    _runParamNames = _config.getRunParamNames();
 
     if ((plainArgs?.length ?? 0) <= 0) {
       plainArgs = [ null ];
@@ -693,7 +693,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     }
 
     if ((isStdOut != null) && !isStdOut && !isProcessed) {
-      var key = _config.paramNameExec;
+      var key = _config.paramNameRun;
       var cmd = map[key];
 
       if (StringExt.isNullOrBlank(cmd)) {

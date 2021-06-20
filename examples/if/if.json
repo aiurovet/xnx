@@ -3,7 +3,7 @@
     "{{-cmd-}}": "{c}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
-    "{{-exec-}}": "{x}"
+    "{{-run-}}": "{r}"
   },
   "action": {
     "{OsType}": "?",
@@ -17,6 +17,6 @@
       "{OsType}": "Windows"
     } } } },
 
-    "{c}": "echo {OsType}", "{x}": null
+    "{r}": "echo OS type: {OsType}"
   }
 }

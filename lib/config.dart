@@ -29,7 +29,6 @@ class Config {
   String paramNameCurDir = '{{-cur-dir-}}';
   String paramNameDetectPaths = '{{-detect-paths-}}';
   String paramNameDrop = '{{-drop-}}';
-  String paramNameExec = '{{-exec-}}';
   String paramNameInp = '{{-inp-}}';
   String paramNameInpDir = '{{-inp-dir-}}';
   String paramNameInpExt = '{{-inp-ext-}}';
@@ -41,6 +40,7 @@ class Config {
   String paramNameImport = '{{-import-}}';
   String paramNameOut = '{{-out-}}';
   String paramNameNext = '{{-next-}}';
+  String paramNameRun = '{{-run-}}';
   String paramNameStop = '{{-stop-}}';
   String paramNameThis = '{{-this-}}';
 
@@ -118,7 +118,7 @@ class Config {
     else {
       _logger.outInfo(expandStraight(flatMap, (
         flatMap[paramNameOut] ?? flatMap[paramNameCmd] ??
-        flatMap[paramNameExec] ?? flatMap[paramNameInp] ??
+        flatMap[paramNameRun] ?? flatMap[paramNameInp] ??
         StringExt.EMPTY
       )));
     }
@@ -173,11 +173,16 @@ class Config {
     var isReady = false;
 
     var feed = ConfigFeed(
+      logger: _logger,
       dataParsed: (ConfigData data) {
         var key = data.key;
 
         if (key == paramNameDrop) {
           return ConfigEventResult.drop;
+        }
+
+        if (key == paramNameNext) {
+          return ConfigEventResult.next;
         }
 
         var value = data.data;
@@ -236,7 +241,7 @@ class Config {
         else if (key == paramNameOut) {
           hasOut = !isNull;
         }
-        else if (key == paramNameExec) {
+        else if (key == paramNameRun) {
           isReady = true;
 
           if (isBlank) {
@@ -247,7 +252,7 @@ class Config {
         if (isReady || (hasCmd && hasInp && hasOut)) {
           isReady = false;
           hasOut = false;
-          return ConfigEventResult.exec;
+          return ConfigEventResult.run;
         }
 
         return ConfigEventResult.ok;
@@ -303,10 +308,10 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<String> getRunParamNames() {
+  List<String> getExeParamNames() {
     return [
       paramNameCmd,
-      paramNameExec,
+      paramNameRun,
     ];
   }
 
@@ -562,8 +567,8 @@ class Config {
       else if (k == paramNameDetectPaths) {
         paramNameDetectPaths = v;
       }
-      else if (k == paramNameExec) {
-        paramNameExec = v;
+      else if (k == paramNameRun) {
+        paramNameRun = v;
       }
       else if (k == paramNameInp) {
         paramNameInp = v;
