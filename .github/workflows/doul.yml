@@ -60,9 +60,9 @@ jobs:
         run: |
           choco install -y imagemagick.app --no-progress
           refreshenv
-          echo ::set-env name=PATH::%PATH%
-      - run: Get-Command magick
-      - run: magick -version
+          #echo ::set-env name=PATH::%PATH%
+          Get-Command magick
+          magick -version
 #          Write-Output "${env:Path}"
 #          Write-Output "${env:Path}" | Out-File -Force -FilePath $env:GITHUB_PATH -Encoding utf8
 
