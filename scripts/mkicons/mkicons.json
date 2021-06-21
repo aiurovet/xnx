@@ -38,7 +38,7 @@
     {
       "{run}": [
         "cmd /c echo Path: %PATH%",
-        "magick -version",
+        "magick.exe -version",
         // Remove possible remnants from the previous run
         "{sub} --delete out png svg",
         // Ensure temporary and the OS-specific output and icon directories are created
