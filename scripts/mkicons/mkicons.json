@@ -38,7 +38,7 @@
     {
       "{run}": [
         "cmd /c echo Getting magick command",
-        "pwsh -Command Get-Command magick",
+        "powershell -Command Get-Command magick",
         "cmd /c echo Getting magick version",
         "magick -version",
         // Remove possible remnants from the previous run
