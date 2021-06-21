@@ -129,7 +129,6 @@ extension StringExt on String {
       Platform.environment.forEach((k, v) {
         ENVIRONMENT[k.toUpperCase()] = v;
       });
-print('\n*** Path: ***\n\n${ENVIRONMENT['PATH']}\n');
     }
     else {
       ENVIRONMENT = Map.from(Platform.environment);

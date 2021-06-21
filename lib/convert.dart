@@ -384,6 +384,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       else {
         results = waitFor<List<ProcessResult>>(
           Shell(
+            environment: Platform.environment,
             verbose: _logger.isDetailed,
             commandVerbose: false,
             commentVerbose: false,
