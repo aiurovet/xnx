@@ -37,8 +37,8 @@
     // Ensure directory structure matches expectations
     {
       "{run}": [
-        "dir /B \"C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI\"",
-        "dir /B \"C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI\\magick.exe\"",
+        "cmd /c dir /B \"C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI\"",
+        "cmd /c dir /B \"C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI\\magick.exe\"",
         // Remove possible remnants from the previous run
         "{sub} --delete out png svg",
         // Ensure temporary and the OS-specific output and icon directories are created
