@@ -132,6 +132,7 @@ extension StringExt on String {
     }
     else {
       ENVIRONMENT = Map.from(Platform.environment);
+print('\n*** Path: ***\n\n${ENVIRONMENT['PATH']}\n');
     }
   }
 
