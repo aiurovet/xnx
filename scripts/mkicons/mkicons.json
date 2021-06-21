@@ -37,9 +37,7 @@
     // Ensure directory structure matches expectations
     {
       "{run}": [
-        "cmd /c echo Getting magick command",
-        "powershell -Command Get-Command magick",
-        "cmd /c echo Getting magick version",
+        "cmd /c echo Path: %PATH%",
         "magick -version",
         // Remove possible remnants from the previous run
         "{sub} --delete out png svg",
