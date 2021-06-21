@@ -36,8 +36,8 @@ jobs:
       ################################################################################
 
       - uses: actions/checkout@v2
-      #- uses: browser-actions/setup-chrome@latest
-      #- uses: dart-lang/setup-dart@v1
+      - uses: browser-actions/setup-chrome@latest
+      - uses: dart-lang/setup-dart@v1
 
       ################################################################################
 
@@ -45,10 +45,8 @@ jobs:
         if: runner.os == 'windows'
         run: |
           choco install -y imagemagick.app --no-progress
-          Write-Output "Checking installation directory"
-          Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick"
           Write-Output "Adding installation directory to PATH"
-          Write-Output "${env:ProgramFiles}\ImageMagick-7.1.0-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+          Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
 
