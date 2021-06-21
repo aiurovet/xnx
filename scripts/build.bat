@@ -5,7 +5,7 @@ set BIN=bin
 set OST=Windows
 set BIN_OST=%BIN%\%OST%
 
-echo DBG in build.bat: PATH: ${env:PATH}"
+echo DBG in build.bat: PATH: %PATH%
 magick -version
 
 %~d0
