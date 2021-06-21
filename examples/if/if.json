@@ -1,22 +1,21 @@
 {
-  "rename": {
+  "{{-aliases-}}": {
     "{{-cmd-}}": "{c}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
     "{{-run-}}": "{r}"
   },
-  "action": {
-    "{OsType}": "?",
 
-    "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
-      "{OsType}": "Linux",
-      "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
-        "{OsType}": "macOS"
-      } }
-    }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
-      "{OsType}": "Windows"
-    } } } },
+  "{OsType}": "?",
 
-    "{r}": "echo OS type: {OsType}"
-  }
+  "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
+    "{OsType}": "Linux",
+    "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
+      "{OsType}": "macOS"
+    } }
+  }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
+    "{OsType}": "Windows"
+  } } } },
+
+  "{r}": "echo OS type: {OsType}"
 }

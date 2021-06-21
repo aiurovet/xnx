@@ -18,10 +18,10 @@ jobs:
       matrix:
         #os: [ ubuntu-latest, macos-latest, windows-latest ]
         #os: [ ubuntu-latest, macos-latest ]
-        #os: [ ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
         #os: [ macos-latest, windows-latest ]
         #os: [ ubuntu-latest ]
-        os: [ macos-latest ]
+        #os: [ macos-latest ]
         #os: [ windows-latest ]
 
     # Note that this workflow uses the latest stable version of the Dart SDK.
@@ -59,6 +59,7 @@ jobs:
         if: runner.os == 'windows'
         run: |
           choco install -y imagemagick.app --no-progress
+          Get-ChildItem -Name -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "\/ImageMagick"
           Write-Output "${env:ProgramFiles}\ImageMagick-7.1.0-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
@@ -93,7 +94,7 @@ jobs:
 
       - name: Build the application on a Unix-like OS
         if: runner.os != 'Windows'
-        run: scripts/build "${{ runner.os }}" -v 6
+        run: scripts/build "${{ runner.os }}"
 
       - name: Build the application on Windows
         if: runner.os == 'Windows'

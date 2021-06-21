@@ -15,8 +15,7 @@ class Config {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final String CFG_ACTION = 'action';
-  static final String CFG_RENAME = 'rename';
+  static final String CFG_ALIASES = '{{-aliases-}}';
 
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
@@ -148,11 +147,28 @@ class Config {
 
     _logger.information('Processing configuration data');
 
-    var action = (all.containsKey(CFG_ACTION) ? all[CFG_ACTION] : all);
-    var rename = (action == all ? null : (all.containsKey(CFG_RENAME) ? all[CFG_RENAME] : null));
+    Map<String, Object> aliases;
+
+    if (all.containsKey(CFG_ALIASES)) {
+      var map = all[CFG_ALIASES];
+
+      if (map is Map<String, Object>) {
+        aliases = {};
+        aliases.addAll(map);
+        all.remove(CFG_ALIASES);
+      }
+    }
+
+    String actionKey;
+
+    if (all.length == 1) {
+      actionKey = all.keys.first;
+    }
+
+    var action = (actionKey == null ? all : all[actionKey]);
 
     _logger.information('Processing renames');
-    setActualParamNames(rename);
+    setActualParamNames(aliases);
 
     if (action != null) {
       _logger.information('Processing actions');
@@ -211,6 +227,11 @@ class Config {
           growMap.remove(key);
         }
         else {
+          if (paramNamesForPath.contains(key)) {
+            strValue = strValue.adjustPath();
+            data.data = strValue;
+          }
+
           growMap[key] = strValue;
         }
 
@@ -634,7 +655,7 @@ class Config {
       }
     });
 
-    // Resolve dependencies - paths
+    // Resolve dependencies - file names and paths
 
     paramNamesForGlob = [
       paramNameInp,
@@ -646,9 +667,15 @@ class Config {
       paramNameInpSubPath,
     ];
 
-    paramNamesForPath = [];
-    paramNamesForPath.addAll(paramNamesForGlob);
-    paramNamesForPath.add(paramNameOut);
+    paramNamesForPath = [
+      paramNameInp,
+      paramNameInpDir,
+      paramNameInpPath,
+      paramNameInpSubDir,
+      paramNameInpSubPath,
+      paramNameOut,
+      paramNameCurDir,
+    ];
 
     // Resolve dependencies - If
 

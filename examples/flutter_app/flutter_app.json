@@ -1,7 +1,7 @@
 {
   // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
 
-  "rename": {
+  "{{-aliases-}}": {
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
@@ -10,83 +10,82 @@
     "{{-next-}}": "{next}",
     "{{-sub-}}": "{sub}"
   },
-  "action": {
-    "{{-import-}}": "../cmd.json",
 
-    "{can-expand-content}": true,
+  "{{-import-}}": "../cmd.json",
 
-    // Terribly slow
-    // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+  "{can-expand-content}": true,
 
-    // Sometimes fails to display svg properly,
-    // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
+  // Terribly slow
+  // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-    // Not the best quality
-    // { "{c}": "convert \"{i}\" \"{o}\"" },
+  // Sometimes fails to display svg properly,
+  // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
 
-    // Not the best quality
-    // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+  // Not the best quality
+  // { "{c}": "convert \"{i}\" \"{o}\"" },
 
-    // The most accurate
-    "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"",
+  // Not the best quality
+  // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
-    "{cur-dir}": ".", "{img-src-dir}": "{cur-dir}/assets/images",
+  // The most accurate
+  "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"",
 
-    "{i}": "{img-src-dir}/app{m}.svg",
+  "{img-src-dir}": "{cur-dir}/assets/images",
 
-    "{R}": [
-      {
-        "{suf}": [
-          { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" },
-          { "{m}": "", "{D}": "mipmap" }
-        ],
+  "{i}": "{img-src-dir}/app{m}.svg",
 
-        "{dim}": [
-          { "{d}":   48, "{r}": "m" },
-          { "{d}":   72, "{r}": "h" },
-          { "{d}":   96, "{r}": "xh" },
-          { "{d}":  144, "{r}": "xxh" },
-          { "{d}":  192, "{r}": "xxxh" }
-        ],
+  "{R}": [
+    {
+      "{suf}": [
+        { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" },
+        { "{m}": "", "{D}": "mipmap" }
+      ],
 
-        "{o}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
-      },
+      "{dim}": [
+        { "{d}":   48, "{r}": "m" },
+        { "{d}":   72, "{r}": "h" },
+        { "{d}":   96, "{r}": "xh" },
+        { "{d}":  144, "{r}": "xxh" },
+        { "{d}":  192, "{r}": "xxxh" }
+      ],
 
-      {
-        "{{-drop-}}": "{suf}",
+      "{o}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
+    },
 
-        "{dim}": [
-          { "{d}": 1024, "{r}": 1024, "{k}": 1 },
-          { "{d}":   20, "{r}":   20, "{k}": 1 },
-          { "{d}":   40, "{r}":   20, "{k}": 2 },
-          { "{d}":   60, "{r}":   20, "{k}": 3 },
-          { "{d}":   29, "{r}":   29, "{k}": 1 },
-          { "{d}":   58, "{r}":   29, "{k}": 2 },
-          { "{d}":   87, "{r}":   29, "{k}": 3 },
-          { "{d}":   40, "{r}":   40, "{k}": 1 },
-          { "{d}":   80, "{r}":   40, "{k}": 2 },
-          { "{d}":  120, "{r}":   40, "{k}": 3 },
-          { "{d}":   50, "{r}":   50, "{k}": 1 },
-          { "{d}":  100, "{r}":   50, "{k}": 2 },
-          { "{d}":   57, "{r}":   57, "{k}": 1 },
-          { "{d}":  114, "{r}":   57, "{k}": 2 },
-          { "{d}":   60, "{r}":   60, "{k}": 1 },
-          { "{d}":  120, "{r}":   60, "{k}": 2 },
-          { "{d}":  180, "{r}":   60, "{k}": 3 },
-          { "{d}":   72, "{r}":   72, "{k}": 1 },
-          { "{d}":  144, "{r}":   72, "{k}": 2 },
-          { "{d}":   76, "{r}":   76, "{k}": 1 },
-          { "{d}":  152, "{r}":   76, "{k}": 2 },
-          { "{d}":  167, "{r}": 83.5, "{k}": 2 }
-        ],
+    {
+      "{{-drop-}}": "{suf}",
 
-        "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
-      },
+      "{dim}": [
+        { "{d}": 1024, "{r}": 1024, "{k}": 1 },
+        { "{d}":   20, "{r}":   20, "{k}": 1 },
+        { "{d}":   40, "{r}":   20, "{k}": 2 },
+        { "{d}":   60, "{r}":   20, "{k}": 3 },
+        { "{d}":   29, "{r}":   29, "{k}": 1 },
+        { "{d}":   58, "{r}":   29, "{k}": 2 },
+        { "{d}":   87, "{r}":   29, "{k}": 3 },
+        { "{d}":   40, "{r}":   40, "{k}": 1 },
+        { "{d}":   80, "{r}":   40, "{k}": 2 },
+        { "{d}":  120, "{r}":   40, "{k}": 3 },
+        { "{d}":   50, "{r}":   50, "{k}": 1 },
+        { "{d}":  100, "{r}":   50, "{k}": 2 },
+        { "{d}":   57, "{r}":   57, "{k}": 1 },
+        { "{d}":  114, "{r}":   57, "{k}": 2 },
+        { "{d}":   60, "{r}":   60, "{k}": 1 },
+        { "{d}":  120, "{r}":   60, "{k}": 2 },
+        { "{d}":  180, "{r}":   60, "{k}": 3 },
+        { "{d}":   72, "{r}":   72, "{k}": 1 },
+        { "{d}":  144, "{r}":   72, "{k}": 2 },
+        { "{d}":   76, "{r}":   76, "{k}": 1 },
+        { "{d}":  152, "{r}":   76, "{k}": 2 },
+        { "{d}":  167, "{r}": 83.5, "{k}": 2 }
+      ],
 
-      {
-        "{d}": [ 192, 512 ],
-        "{o}":  "web/icons/Icon-{d}.png"
-      }
-    ]
-  }
+      "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
+    },
+
+    {
+      "{d}": [ 192, 512 ],
+      "{o}":  "web/icons/Icon-{d}.png"
+    }
+  ]
 }

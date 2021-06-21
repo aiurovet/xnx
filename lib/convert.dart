@@ -297,7 +297,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
     }
 
-    var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath) && command.contains(inpFilePath));
+    var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath) && command.adjustPath().contains(inpFilePath));
 
     if (isExpandContentOnly && !hasInpFile) {
       throw Exception('Input file is undefined for ${_config.cmdNameExpand} operation');
@@ -629,6 +629,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   String getValue(Map<String, String> map, {String key, String value, bool canReplace}) {
     if ((value == null) && (key != null) && map.containsKey(key)) {
       value = map[key];
+
+      if (key == _config.paramNameCurDir) {
+        value = value.getFullPath();
+        map[key] = value;
+      }
     }
 
     if ((canReplace ?? false) && !StringExt.isNullOrBlank(value)) {
@@ -637,26 +642,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
         map.forEach((k, v) {
           if ((k != key) && !StringExt.isNullOrBlank(k)) {
-            // if ((k == _config.paramNameInp) || (k == _config.paramNameOut)) {
-            //   if (GlobExt.isGlobPattern(v)) {
-            //     return;
-            //   }
-            // }
-
             value = value.replaceAll(k, v);
-
-            var hasPath = false;
-
-            if (value.contains(_config.paramNameCurDir)) {
-              value = value.replaceAll(_config.paramNameCurDir, curDirName);
-            }
-            else {
-              hasPath = (detectPathsRE != null) && detectPathsRE.hasMatch(k) && (k != _config.paramNameDetectPaths);
-            }
-
-            if (hasPath) {
-              value = value.adjustPath();
-            }
           }
         });
       }
@@ -664,6 +650,10 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       if ((key != null) && value.contains(key) && (map != null) && map.containsKey(key)) {
         value = value.replaceAll(key, map[key]);
       }
+    }
+
+    if (value?.contains(_config.paramNameCurDir) ?? false) {
+      value = value.replaceAll(_config.paramNameCurDir, curDirName);
     }
 
     return (value ?? StringExt.EMPTY);

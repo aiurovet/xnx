@@ -1,5 +1,5 @@
 {
-  "rename": {
+  "{{-aliases-}}": {
     "{{-can-expand-content-}}": "{CEC}",
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{CD}",
@@ -10,19 +10,18 @@
     "{{-inp-name-}}": "{i-name}",
     "{{-out-}}": "{o}"
   },
-  "action": {
-    "{CEC}": true,
 
-    "{c}": "{expand-content} \"{i}\" \"{o}\"",
+  "{CEC}": true,
 
-    "{i}": "{CD}/template/*settings.json",
+  "{c}": "{expand-content} \"{i}\" \"{o}\"",
 
-    "{env}": [
-      { "{envTC}": "Dev",  "{envLC}": "dev"  },
-      { "{envTC}": "Test", "{envLC}": "test" },
-      { "{envTC}": "Prod", "{envLC}": "prod" }
-    ],
+  "{i}": "{CD}/template/*settings.json",
 
-    "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{i-dir}/../out/{i-name}-{envTC}{i-ext}"
-  }
+  "{env}": [
+    { "{envTC}": "Dev",  "{envLC}": "dev"  },
+    { "{envTC}": "Test", "{envLC}": "test" },
+    { "{envTC}": "Prod", "{envLC}": "prod" }
+  ],
+
+  "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{i-dir}/../out/{i-name}-{envTC}{i-ext}"
 }

@@ -3,7 +3,7 @@
 // Requires: Google Chrome, ImageMagick's convert, png2icns as well as InkScape for Wine
 
 {
-  "rename": {
+  "{{-aliases-}}": {
     "{{-cmd-}}": "{cmd}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
@@ -11,100 +11,104 @@
     "{{-drop-}}": "{drop}",
     "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{inp}",
+    "{{-next-}}": "{next}",
     "{{-out-}}": "{out}",
     "{{-run-}}": "{run}",
     "{{-stop-}}": "{stop}", // stop immediately
     "{{-sub-}}": "{sub}"
   },
-  "action": {
-    "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
-      "{run}": "echo Creating icons under Wine is not supported",
-      "{stop}": null
-    } },
 
-    "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}",
-    "{prj}": "doul",
+  "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
+    // Chrome under Wine is out of date, ImageMagick and Inkscape are unable to process
+    "{run}": "cmd /c echo Creating app icons under Wine is disabled",
+    "{next}": null
+    //"{svg2png}": "inkscape -z -o \\\"{out}\\\" -w {dim} -h {dim} \\\"{inp}\\\""
+    //"{svg2png}": "{convert} \"{inp}\" \"{out}\""
+  }, "{{-else-}}": {
+    "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\""
+  } },
 
-    "{{-import-}}": "../../examples/cmd.json",
+  "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}",
+  "{prj}": "doul",
 
-    "{R}": [
-      // Ensure directory structure matches expectations
-      {
+  "{{-import-}}": "../../examples/cmd.json",
+
+  "{R}": [
+    // Ensure directory structure matches expectations
+    {
+      "{run}": [
+        // Remove possible remnants from the previous run
+        "{sub} --delete out png svg",
+        // Ensure temporary and the OS-specific output and icon directories are created
+        "{sub} --mkdir png/core png/dark svg ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark"
+      ]
+    },
+
+    {
+      "{drop}": "{run}",
+
+      "{can-expand-content}": true,
+
+      "{icon-data}": [
+        { "{icon-fill}": "white", "{icon-stroke}": "black", "{look}": "core" },
+        { "{icon-name}": "icon_{prj}", "{icon-fill}": "black", "{icon-stroke}": "white", "{look}": "dark" }
+      ],
+
+      "{param}": [
+        { "{dim}":   16, "{scn-transform}":  "",               "{stroke-width}": "1",   "{drw-transform}": "translate(1,1)" },
+        { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{stroke-width}": "1.5", "{drw-transform}": "translate(1.5,1.5)" },
+        { "{dim}":   32, "{scn-transform}":  "scale(  2,  2)", "{stroke-width}": "1" },
+        { "{dim}":   48, "{scn-transform}":  "scale(  3,  3)" },
+        { "{dim}":   64, "{scn-transform}":  "scale(  4,  4)" },
+        { "{dim}":   96, "{scn-transform}":  "scale(  6,  6)" },
+        { "{dim}":  128, "{scn-transform}":  "scale(  8,  8)" },
+        { "{dim}":  256, "{scn-transform}":  "scale( 16, 16)" },
+        { "{dim}":  512, "{scn-transform}":  "scale( 32, 32)" },
+        { "{dim}": 1024, "{scn-transform}":  "scale( 64, 64)" }
+      ],
+
+      "{inp}": "{cur-dir}/{prj}.svg",
+      "{out}": "{cur-dir}/png/{look}/icon_{prj}_{look}_{dim}x{dim}.png",
+      "{cmd}": "{svg2png}"
+    },
+
+    {
+      "{drop}": [ "{icon-data}", "{param}" ],
+
+      "{look-dir}": "{cur-dir}/png/{look}",
+      "{icon-dir}": "../../bin/{OsType}/icons",
+      "{icon-name}": "icon_{prj}_{look}",
+      "{icon-pthp}": "{look-dir}/{icon-name}",
+
+      "{look}": [ "core", "dark" ],
+
+      "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
+        "{run}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
+      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
         "{run}": [
-          // Remove possible remnants from the previous run
-          "{sub} --delete out png svg",
-          // Ensure temporary and the OS-specific output and icon directories are created
-          "{sub} --mkdir png/core png/dark svg ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark"
+          "cp -p \"{icon-pthp}_32x32.png\" \"{look-dir}/icon_16x16@2x.png\"",
+          "mv -f \"{icon-pthp}_64x64.png\" \"{look-dir}/icon_32x32@2x.png\"",
+          "cp -p \"{icon-pthp}_256x256.png\" \"{look-dir}/icon_128x128@2x.png\"",
+          "cp -p \"{icon-pthp}_512x512.png\" \"{look-dir}/icon_256x256@2x.png\"",
+          "mv -f \"{icon-pthp}_1024x1024.png\" \"{look-dir}/icon_512x512@2x.png\"",
+          "mv -f \"{icon-pthp}_16x16.png\" \"{look-dir}/icon_16x16.png\"",
+          "mv -f \"{icon-pthp}_32x32.png\" \"{look-dir}/icon_32x32.png\"",
+          "mv -f \"{icon-pthp}_128x128.png\" \"{look-dir}/icon_128x128.png\"",
+          "mv -f \"{icon-pthp}_256x256.png\" \"{look-dir}/icon_256x256.png\"",
+          "mv -f \"{icon-pthp}_512x512.png\" \"{look-dir}/icon_512x512.png\"",
+          "rm -f \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\"",
+          //"ls -1 {look-dir}",
+          "iconutil --convert icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{look-dir}\""
         ]
-      },
+      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
+        "{run}": "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{icon-dir}/{look}/{icon-name}.ico\""
+      } } } } } }
+    },
 
-      {
-        "{drop}": "{run}",
+    {
+      "{drop}": "{look}",
 
-        "{can-expand-content}": true,
-
-        "{icon-data}": [
-          { "{icon-fill}": "white", "{icon-stroke}": "black", "{look}": "core" },
-          { "{icon-name}": "icon_{prj}", "{icon-fill}": "black", "{icon-stroke}": "white", "{look}": "dark" }
-        ],
-
-        "{param}": [
-          { "{dim}":   16, "{scn-transform}":  "",               "{stroke-width}": "1",   "{drw-transform}": "translate(1,1)" },
-          { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{stroke-width}": "1.5", "{drw-transform}": "translate(1.5,1.5)" },
-          { "{dim}":   32, "{scn-transform}":  "scale(  2,  2)", "{stroke-width}": "1" },
-          { "{dim}":   48, "{scn-transform}":  "scale(  3,  3)" },
-          { "{dim}":   64, "{scn-transform}":  "scale(  4,  4)" },
-          { "{dim}":   96, "{scn-transform}":  "scale(  6,  6)" },
-          { "{dim}":  128, "{scn-transform}":  "scale(  8,  8)" },
-          { "{dim}":  256, "{scn-transform}":  "scale( 16, 16)" },
-          { "{dim}":  512, "{scn-transform}":  "scale( 32, 32)" },
-          { "{dim}": 1024, "{scn-transform}":  "scale( 64, 64)" }
-        ],
-
-        "{inp}": "{prj}.svg",
-        "{out}": "{cur-dir}/png/{look}/icon_{prj}_{look}_{dim}x{dim}.png",
-        "{cmd}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\""
-      },
-
-      {
-        "{drop}": [ "{icon-data}", "{param}" ],
-
-        "{look-dir}": "{cur-dir}/png/{look}",
-        "{icon-dir}": "../../bin/{OsType}/icons",
-        "{icon-name}": "icon_{prj}_{look}",
-        "{icon-pthp}": "{look-dir}/{icon-name}",
-
-        "{look}": [ "core", "dark" ],
-
-        "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
-          "{run}": "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
-        }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
-          "{run}": [
-            "cp -p \"{icon-pthp}_32x32.png\" \"{look-dir}/icon_16x16@2x.png\"",
-            "mv -f \"{icon-pthp}_64x64.png\" \"{look-dir}/icon_32x32@2x.png\"",
-            "cp -p \"{icon-pthp}_256x256.png\" \"{look-dir}/icon_128x128@2x.png\"",
-            "cp -p \"{icon-pthp}_512x512.png\" \"{look-dir}/icon_256x256@2x.png\"",
-            "mv -f \"{icon-pthp}_1024x1024.png\" \"{look-dir}/icon_512x512@2x.png\"",
-            "mv -f \"{icon-pthp}_16x16.png\" \"{look-dir}/icon_16x16.png\"",
-            "mv -f \"{icon-pthp}_32x32.png\" \"{look-dir}/icon_32x32.png\"",
-            "mv -f \"{icon-pthp}_128x128.png\" \"{look-dir}/icon_128x128.png\"",
-            "mv -f \"{icon-pthp}_256x256.png\" \"{look-dir}/icon_256x256.png\"",
-            "mv -f \"{icon-pthp}_512x512.png\" \"{look-dir}/icon_512x512.png\"",
-            "rm -f \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\"",
-            "ls -1 {look-dir}",
-            "iconutil --convert icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{look-dir}\"" //,
-            //"png2icns \"{icon-dir}/{look}/{icon-name}.icns\" \"{look-dir}/icon_16x16.png\" \"{look-dir}/icon_16x16@2x.png\" \"{look-dir}/icon_32x32.png\" \"{look-dir}/icon_32x32@2x.png\" \"{look-dir}/icon_128x128.png\" \"{look-dir}/icon_128x128@2x.png\" \"{look-dir}/icon_256x256.png\" \"{look-dir}/icon_256x256@2x.png\" \"{look-dir}/icon_512x512.png\" \"{look-dir}/icon_512x512@2x.png\""
-          ]
-        }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
-          "{run}": "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{icon-dir}/{look}/{icon-name}.ico\""
-        } } } } } }
-      },
-
-      {
-        "{drop}": "{look}",
-
-        "{run}": "" //, "{sub} --delete png svg"
-      }
-    ]
-  }
+      "{run}": "{sub} --delete png svg"
+    }
+  ]
 }

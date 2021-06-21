@@ -1,5 +1,5 @@
 {
-  "rename": {
+  "{{-aliases-}}": {
     // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
     "{{-cmd-}}": "{cmd}",
     "{{-cur-dir-}}": "{cur-dir}",
@@ -20,47 +20,46 @@
     "{{-sub-}}": "{sub}",
     "{{-this-}}": "{this}"
   },
-  "action": {
-    "{can-expand-content}": false,
-    "{compression}": 6, // just to show the capability; 6 is the default
 
-    "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
-    "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
+  "{can-expand-content}": false,
+  "{compression}": 6, // just to show the capability; 6 is the default
 
-    "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.json",
+  "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
+  "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
 
-    "{R}": [
-      {
-        // Go through all MS Office input files
-        "{inp}": "{cur-dir}/inp/*",
+  "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.json",
 
-        // Import data
-        "{{-import-}}": "ms_office_data.json?path=$.data.*",
+  "{R}": [
+    {
+      // Go through all MS Office input files
+      "{inp}": "{cur-dir}/inp/*",
 
-        "{run}": [
-          // Expand template config file
-          "{expand-content} \"ms_office_tmpl.json\" \"{cfg-curr}\"",
+      // Import data
+      "{{-import-}}": "ms_office_data.json?path=$.data.*",
 
-          // Decompress the input file (the archive)
-          "{sub} --unzip \"{inp}\" \"{unz-dir}\"",
+      "{run}": [
+        // Expand template config file
+        "{expand-content} \"ms_office_tmpl.json\" \"{cfg-curr}\"",
 
-          // Expand placeholders in every file extracted from the archive
-          "{sub} --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
+        // Decompress the input file (the archive)
+        "{sub} --unzip \"{inp}\" \"{unz-dir}\"",
 
-          // Compress back to a single file
-          "{sub} -p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",
+        // Expand placeholders in every file extracted from the archive
+        "{sub} --dir \"{unz-dir}\" --config \"{cfg-curr}\"",
 
-          // Delete temp expanded config file
-          "{sub} --delete \"{cfg-curr}\""
-        ]
-      },
-      {
-        // Discard the input file array to avoid unnecessary repetitions
-        "{inp}": null,
+        // Compress back to a single file
+        "{sub} -p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",
 
-        // Remove all possible temporary files
-        "{run}": "{sub} --delete \"unz\""
-      }
-    ]
-  }
+        // Delete temp expanded config file
+        "{sub} --delete \"{cfg-curr}\""
+      ]
+    },
+    {
+      // Discard the input file array to avoid unnecessary repetitions
+      "{inp}": null,
+
+      // Remove all possible temporary files
+      "{run}": "{sub} --delete \"unz\""
+    }
+  ]
 }

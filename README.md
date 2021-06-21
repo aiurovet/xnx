@@ -188,121 +188,91 @@ See the details of the imported file `cmd.json` beyond this configuration
 {
   // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
 
-  "rename": {
+  "{{-aliases-}}": {
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
-    "{{-drop-}}": "{x}"
+    "{{-next-}}": "{next}",
+    "{{-sub-}}": "{sub}"
   },
-  "action": [
-    { "{{-import-}}": "../cmd.json" },
 
-    { "{can-expand-content}": true },
+  "{{-import-}}": "../cmd.json",
 
-    // Terribly slow
-    // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+  "{can-expand-content}": true,
 
-    // Sometimes fails to display svg properly,
-    // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
+  // Terribly slow
+  // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
 
-    // Not the best quality
-    // { "{c}": "convert \"{i}\" \"{o}\"" },
+  // Sometimes fails to display svg properly,
+  // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
 
-    // Not the best quality
-    // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+  // Not the best quality
+  // { "{c}": "convert \"{i}\" \"{o}\"" },
 
-    // The most accurate
-    { "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+  // Not the best quality
+  // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
-    { "{cur-dir}": ".", "{img-src-dir}": "{cur-dir}/assets/images" },
+  // The most accurate
+  "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"",
 
-    { "{mm}": [ { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" }, { "{m}": "", "{D}": "mipmap" } ] },
+  "{img-src-dir}": "{cur-dir}/assets/images",
 
-    { "{i}": "{img-src-dir}/app{m}.svg" },
-    { "{ox}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png" },
+  "{i}": "{img-src-dir}/app{m}.svg",
 
-    { "{d}":   48, "{r}": "m",    "{o}": "{ox}" },
-    { "{d}":   72, "{r}": "h",    "{o}": "{ox}" },
-    { "{d}":   96, "{r}": "xh",   "{o}": "{ox}" },
-    { "{d}":  144, "{r}": "xxh",  "{o}": "{ox}" },
-    { "{d}":  192, "{r}": "xxxh", "{o}": "{ox}" },
-
-    { "{mm}": null, "{m}": null, "{D}": null }, // discard arrays to avoid repetitions onwards
-
-    { "{ox}":  "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png" },
-
-    { "{d}": 1024, "{r}": 1024, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":   20, "{r}":   20, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":   40, "{r}":   20, "{k}": 2, "{o}": "{ox}" },
-    { "{d}":   60, "{r}":   20, "{k}": 3, "{o}": "{ox}" },
-    { "{d}":   29, "{r}":   29, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":   58, "{r}":   29, "{k}": 2, "{o}": "{ox}" },
-    { "{d}":   87, "{r}":   29, "{k}": 3, "{o}": "{ox}" },
-    { "{d}":   40, "{r}":   40, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":   80, "{r}":   40, "{k}": 2, "{o}": "{ox}" },
-    { "{d}":  120, "{r}":   40, "{k}": 3, "{o}": "{ox}" },
-    { "{d}":   50, "{r}":   50, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":  100, "{r}":   50, "{k}": 2, "{o}": "{ox}" },
-    { "{d}":   57, "{r}":   57, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":  114, "{r}":   57, "{k}": 2, "{o}": "{ox}" },
-    { "{d}":   60, "{r}":   60, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":  120, "{r}":   60, "{k}": 2, "{o}": "{ox}" },
-    { "{d}":  180, "{r}":   60, "{k}": 3, "{o}": "{ox}" },
-    { "{d}":   72, "{r}":   72, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":  144, "{r}":   72, "{k}": 2, "{o}": "{ox}" },
-    { "{d}":   76, "{r}":   76, "{k}": 1, "{o}": "{ox}" },
-    { "{d}":  152, "{r}":   76, "{k}": 2, "{o}": "{ox}" },
-    { "{d}":  167, "{r}": 83.5, "{k}": 2, "{o}": "{ox}" },
-
-    { "{ox}":  "web/icons/Icon-{d}.png" },
-
-    { "{d}":  192, "{o}": "{ox}" },
-    { "{d}":  512, "{o}": "{ox}" }
-  ]
-}
-```
-And here are the details of the imported file `cmd.json`
-```
-// Portable way to define OS-specific commands
-// Used via {{-import-}} (see in sub-folders)
-{
-  "cmd": [
-    // You can specify either just command names, or command names with options, or command names with options and
-    // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
+  "{R}": [
     {
-      "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
-        "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
-          "{OsType}": "macOS",
-          "{chrome}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\""
-        }, "{{-else-}}": {
-          "{OsType}": "Linux",
-          "{chrome}": "google-chrome"
-        } },
-        "{copy}": "cp -pr",
-        "{move}": "mv -f",
-        "{delete}": "rm -rf",
-        "{mkdir}": "mkdir -p"
-      }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
-        "{OsType}": "Windows",
-        "{copy}": "copy /Y",
-        "{move}": "ren",
-        "{delete}": "del /F/Q/S",
-        "{mkdir}": "mkdir",
-        "{chrome}": "${ProgramFiles}\\Google\\Chrome\\Application\\chrome.exe"
-      } } } },
+      "{suf}": [
+        { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" },
+        { "{m}": "", "{D}": "mipmap" }
+      ],
 
-      "{this}": "$0",
+      "{dim}": [
+        { "{d}":   48, "{r}": "m" },
+        { "{d}":   72, "{r}": "h" },
+        { "{d}":   96, "{r}": "xh" },
+        { "{d}":  144, "{r}": "xxh" },
+        { "{d}":  192, "{r}": "xxxh" }
+      ],
 
-      "{copy-newer}": "sub --copy-newer",
-      "{move-newer}": "sub --move-newer",
-      "{zip}": "sub --zip",
-      "{unzip}": "sub --unzip",
+      "{o}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
+    },
 
-      "{rename}": "{move}",
-      "{rename-newer}": "{move-newer}",
-      "{remove}": "{delete}"
+    {
+      "{{-drop-}}": "{suf}",
+
+      "{dim}": [
+        { "{d}": 1024, "{r}": 1024, "{k}": 1 },
+        { "{d}":   20, "{r}":   20, "{k}": 1 },
+        { "{d}":   40, "{r}":   20, "{k}": 2 },
+        { "{d}":   60, "{r}":   20, "{k}": 3 },
+        { "{d}":   29, "{r}":   29, "{k}": 1 },
+        { "{d}":   58, "{r}":   29, "{k}": 2 },
+        { "{d}":   87, "{r}":   29, "{k}": 3 },
+        { "{d}":   40, "{r}":   40, "{k}": 1 },
+        { "{d}":   80, "{r}":   40, "{k}": 2 },
+        { "{d}":  120, "{r}":   40, "{k}": 3 },
+        { "{d}":   50, "{r}":   50, "{k}": 1 },
+        { "{d}":  100, "{r}":   50, "{k}": 2 },
+        { "{d}":   57, "{r}":   57, "{k}": 1 },
+        { "{d}":  114, "{r}":   57, "{k}": 2 },
+        { "{d}":   60, "{r}":   60, "{k}": 1 },
+        { "{d}":  120, "{r}":   60, "{k}": 2 },
+        { "{d}":  180, "{r}":   60, "{k}": 3 },
+        { "{d}":   72, "{r}":   72, "{k}": 1 },
+        { "{d}":  144, "{r}":   72, "{k}": 2 },
+        { "{d}":   76, "{r}":   76, "{k}": 1 },
+        { "{d}":  152, "{r}":   76, "{k}": 2 },
+        { "{d}":  167, "{r}": 83.5, "{k}": 2 }
+      ],
+
+      "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
+    },
+
+    {
+      "{d}": [ 192, 512 ],
+      "{o}":  "web/icons/Icon-{d}.png"
     }
   ]
 }

@@ -1,22 +1,21 @@
 {
-  "rename": {
+  "{{-aliases-}}": {
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}"
   },
-  "action": {
-    "{{-import-}}": "../cmd.json",
 
-    "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"",
+  "{{-import-}}": "../cmd.json",
 
-    "{can-expand-content}": true,
-    "{img-src-dir}": "{cur-dir}/svg",
+  "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"",
 
-    "{i}": "{cur-dir}/resizer.svg",
-    "{t}": [ "edit", "find", "save" ],
-    "{d}": [ 20, 40, 80, 160 ],
-    "{o}": "png/icon-{t}-{d}x{d}.png"
-  }
+  "{can-expand-content}": true,
+  "{img-src-dir}": "{cur-dir}/svg",
+
+  "{i}": "{cur-dir}/resizer.svg",
+  "{t}": [ "edit", "find", "save" ],
+  "{d}": [ 20, 40, 80, 160 ],
+  "{o}": "png/icon-{t}-{d}x{d}.png"
 }
