@@ -41,25 +41,13 @@ jobs:
 
       ################################################################################
 
-      #- name: Testing Chrome on macOS
-      #  if: runner.os == 'macOS'
-      #  run: /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless --crash-dumps-dir=/tmp --disk-cache-dir=/tmp --user-data-dir=/tmp --default-background-color=0 --window-size=16,16 --screenshot="/Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.png" "file:///Users/runner/work/doul/doul/scripts/mkicons/icon_doul_16x16.svg"
-
-      ################################################################################
-
-      - name: Install icnsutils on Linux
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install icnsutils
-
-      ################################################################################
-
       - name: Install ImageMagick on Windows
         if: runner.os == 'windows'
         run: |
           choco install -y imagemagick.app --no-progress
+          Write-Output "Checking installation directory"
           Get-ChildItem -Name -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "\/ImageMagick"
+          Write-Output "Adding installation directory to PATH"
           Write-Output "${env:ProgramFiles}\ImageMagick-7.1.0-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
