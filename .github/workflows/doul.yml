@@ -45,7 +45,7 @@ jobs:
         if: runner.os == 'windows'
         run: |
           choco install -y imagemagick.app --no-progress
-          Write-Output "Checking installation directory"
+          Write-Output  "Checking installation directory"
           Get-ChildItem -Name -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "\/ImageMagick"
           Write-Output "Adding installation directory to PATH"
           Write-Output "${env:ProgramFiles}\ImageMagick-7.1.0-Q16-HDRI" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
