@@ -16,7 +16,6 @@ import 'package:doul/ext/stdin.dart';
 import 'package:doul/ext/string.dart';
 
 import 'package:path/path.dart' as pathx;
-import 'package:process_run/shell_run.dart';
 
 class Convert {
 
@@ -418,7 +417,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
           //_logger.information('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
           //_logger.information('\n*** Error$unitsEnding:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
           _logger.information('Exit code: ${result.exitCode}');
-          _logger.information('\n*** Error:\n\n${result.errLines}\n*** Output:\n\n${result.outLines}');
+          _logger.information('\n*** Error:\n\n${result.stderr}\n*** Output:\n\n${result.stdout}');
 
           _logger.error(result.stderr ?? 'No error or warning message found');
         }
