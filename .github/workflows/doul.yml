@@ -83,10 +83,8 @@ jobs:
         run: |
           Write-Output "Installing ImageMagick"
           PowerShell -Command { choco install -y imagemagick.app --no-progress }
-          cmd /c echo "%PATH%"
           refreshenv
-          cmd /c echo "%PATH%"
-          cmd /c "C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI\\magick.exe" -version
+      - run: |
           magick -version
           scripts\build
 
