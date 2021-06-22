@@ -1,3 +1,4 @@
+import 'dart:cli';
 import 'dart:convert';
 import 'dart:io';
 
@@ -14,8 +15,8 @@ import 'package:doul/ext/file.dart';
 import 'package:doul/ext/file_system_entity.dart';
 import 'package:doul/ext/stdin.dart';
 import 'package:doul/ext/string.dart';
-
 import 'package:path/path.dart' as pathx;
+import 'package:process_run/shell.dart';
 
 class Convert {
 
@@ -366,11 +367,13 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     _logger.information(command);
 
+    const isProcessRunSyncUsed = true;
+
     var isSuccess = false;
     var oldCurDir = Directory.current;
-    //var resultCount = 0;
+    var resultCount = 0;
     ProcessResult result;
-    //List<ProcessResult> results;
+    List<ProcessResult> results;
 
     try {
       if (StringExt.isNullOrBlank(command)) {
@@ -387,42 +390,51 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         isSuccess = true;
       }
       else {
-        result = Process.runSync(exe, args, workingDirectory: curDirName);
-        isSuccess = (result.exitCode == 0);
+        if (isProcessRunSyncUsed) {
+          result = Process.runSync(exe, args, workingDirectory: curDirName);
+          isSuccess = (result.exitCode == 0);
+        }
+        else {
+          results = waitFor<List<ProcessResult>>(
+            Shell(
+              environment: Platform.environment,
+              verbose: _logger.isDetailed,
+              commandVerbose: false,
+              commentVerbose: false,
+              runInShell: false
+            ).run(command)
+          );
 
-        // results = waitFor<List<ProcessResult>>(
-        //   Shell(
-        //     environment: Platform.environment,
-        //     verbose: _logger.isDetailed,
-        //     commandVerbose: false,
-        //     commentVerbose: false,
-        //     runInShell: false
-        //   ).run(command)
-        // );
-
-        //resultCount = results?.length ?? 0;
-        //isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
+          resultCount = results?.length ?? 0;
+          result = (resultCount <= 0 ? null : results[0]);
+          isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
+        }
       }
     }
     finally {
       tmpFile?.deleteIfExistsSync();
       Directory.current = oldCurDir;
 
-      //var result = (resultCount <= 0 ? null : results[0]);
-
       if (result != null) {
-        //var unitsEnding = (resultCount == 1 ? '' : 's');
+        var unitsEnding = (resultCount == 1 ? '' : 's');
 
         if (!isSuccess) {
-          //_logger.information('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
-          //_logger.information('\n*** Error$unitsEnding:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
-          _logger.information('Exit code: ${result.exitCode}');
-          _logger.information('\n*** Error:\n\n${result.stderr}\n*** Output:\n\n${result.stdout}');
+          if (isProcessRunSyncUsed) {
+            _logger.error('Exit code: ${result.exitCode}');
+            _logger.error('\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
 
-          _logger.error(result.stderr ?? 'No error or warning message found');
-        }
-        if (result.stdout?.isNotEmpty ?? false) {
-          _logger.out(result.stdout);
+            if (result.stdout?.isNotEmpty ?? false) {
+              _logger.out(result.stdout);
+            }
+          }
+          else {
+            _logger.error('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
+            _logger.error('\n*** Error$unitsEnding:\n\n${results.errLines}');
+
+            if (results.outLines?.isNotEmpty ?? false) {
+              _logger.out(results.outLines.toString());
+            }
+          }
         }
       }
     }

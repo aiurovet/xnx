@@ -25,7 +25,7 @@
     //"{svg2png}": "inkscape -z -o \\\"{out}\\\" -w {dim} -h {dim} \\\"{inp}\\\""
     //"{svg2png}": "{convert} \"{inp}\" \"{out}\""
   }, "{{-else-}}": {
-    // Do not enclose the output path in quotes - this will not work, hence avoid spaces (existing bug)
+    // Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
     "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot={out} \"file://{inp}\""
   } },
 
@@ -38,7 +38,6 @@
     // Ensure directory structure matches expectations
     {
       "{run}": [
-        "{shell} echo %PATH%",
         // Remove possible remnants from the previous run
         "{sub} --delete out png svg",
         // Ensure temporary and the OS-specific output and icon directories are created

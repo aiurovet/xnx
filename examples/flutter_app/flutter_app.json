@@ -27,7 +27,7 @@
   // Not the best quality
   // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
-  // The most accurate. Do not enclose the output path in quotes - this will not work, hence avoid spaces (existing bug)
+  // The most accurate. Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
   "{c}": "{chrome} --headless --disable-gpu --default-background-color=0 --window-size={d},{d} --screenshot={o} \"file://{i}\"",
 
   "{img-src-dir}": "{cur-dir}/assets/images",

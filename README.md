@@ -203,7 +203,7 @@ See the details of the imported file `cmd.json` beyond this configuration
   "{can-expand-content}": true,
 
   // Terribly slow
-  // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"" },
+  // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={o} \"file://{i}\"" },
 
   // Sometimes fails to display svg properly,
   // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
@@ -214,8 +214,8 @@ See the details of the imported file `cmd.json` beyond this configuration
   // Not the best quality
   // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
-  // The most accurate
-  "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"",
+  // The most accurate. Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
+  "{c}": "{chrome} --headless --disable-gpu --default-background-color=0 --window-size={d},{d} --screenshot={o} \"file://{i}\"",
 
   "{img-src-dir}": "{cur-dir}/assets/images",
 

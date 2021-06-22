@@ -9,7 +9,7 @@
 
   "{{-import-}}": "../cmd.json",
 
-  // Do not enclose the output path in quotes - this will not work, hence avoid spaces (existing bug)
+  // Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
   "{c}": "{chrome} --headless --disable-gpu --default-background-color=0 --window-size={d},{d} --screenshot={o} \"file://{i}\"",
 
   "{can-expand-content}": true,
