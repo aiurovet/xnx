@@ -9,7 +9,8 @@
 
   "{{-import-}}": "../cmd.json",
 
-  "{c}": "{chrome} --headless --default-background-color=0 --window-size={d},{d} --screenshot=\"{o}\" \"file://{i}\"",
+  // Do not enclose the output path in quotes - this will not work, hence avoid spaces (existing bug)
+  "{c}": "{chrome} --headless --disable-gpu --default-background-color=0 --window-size={d},{d} --screenshot={o} \"file://{i}\"",
 
   "{can-expand-content}": true,
   "{img-src-dir}": "{cur-dir}/svg",

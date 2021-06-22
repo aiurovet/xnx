@@ -42,7 +42,10 @@ class Doul {
       var errDecorRE = RegExp(r'^Exception[\:\s]*', caseSensitive: false);
       errMsg = errMsg.replaceFirst(errDecorRE, StringExt.EMPTY);
 
-      if (errMsg == Options.HELP['name']) {
+      if (StringExt.isNullOrBlank(errMsg)) {
+        return false;
+      }
+      else if (errMsg == Options.HELP['name']) {
         return true;
       }
       else if (_logger.isSilent) {

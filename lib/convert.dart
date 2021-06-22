@@ -272,6 +272,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       if (isOK) {
         isProcessed = true;
       }
+      else {
+        break;
+      }
     }
 
     return isProcessed;
@@ -402,12 +405,6 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         //isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
       }
     }
-    on Error catch (e) {
-      throw Exception(e.toString());
-    }
-    on Exception catch (e) {
-      throw Exception(e.toString());
-    }
     finally {
       tmpFile?.deleteIfExistsSync();
       Directory.current = oldCurDir;
@@ -429,6 +426,10 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
           _logger.out(result.stdout);
         }
       }
+    }
+
+    if (!isSuccess) {
+      throw Exception();
     }
 
     return true;

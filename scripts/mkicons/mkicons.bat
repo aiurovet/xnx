@@ -17,8 +17,8 @@ reg query HKLM\Software\Wine > nul
 if not errorlevel 1 set WINE=1
 
 echo Path: %PATH%
-echo Testing: mkicons -version
-mkicons -version
+echo Testing: magick -version
+magick -version
 
 "%PRJ_EXE%" -d "scripts\\mkicons" %*
 if errorlevel 1 goto FAILURE

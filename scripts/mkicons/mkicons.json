@@ -25,7 +25,8 @@
     //"{svg2png}": "inkscape -z -o \\\"{out}\\\" -w {dim} -h {dim} \\\"{inp}\\\""
     //"{svg2png}": "{convert} \"{inp}\" \"{out}\""
   }, "{{-else-}}": {
-    "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot=\"{out}\" \"file://{inp}\""
+    // Do not enclose the output path in quotes - this will not work, hence avoid spaces (existing bug)
+    "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot={out} \"file://{inp}\""
   } },
 
   "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}",

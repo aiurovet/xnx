@@ -6,6 +6,8 @@
     "{{-run-}}": "{r}"
   },
 
+  "{{-import-}}": "../cmd.json",
+
   "{OsType}": "?",
 
   "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
@@ -17,5 +19,5 @@
     "{OsType}": "Windows"
   } } } },
 
-  "{r}": "echo OS type: {OsType}"
+  "{r}": "{shell} \"echo OS type: {OsType}\""
 }
