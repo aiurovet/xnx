@@ -24,7 +24,7 @@ if errorlevel 1 exit /B 1
 
 echo Path: %PATH%
 echo Testing: magick -version
-magick -version
+"magick.exe" -version
 
 set OSTYPE=%OST%
 call scripts\mkicons\mkicons %*
