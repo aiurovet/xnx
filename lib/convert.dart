@@ -369,6 +369,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     const isProcessRunSyncUsed = true;
 
+    String errMsg;
     var isSuccess = false;
     var oldCurDir = Directory.current;
     var resultCount = 0;
@@ -411,36 +412,44 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         }
       }
     }
-    finally {
-      tmpFile?.deleteIfExistsSync();
-      Directory.current = oldCurDir;
+    on Error catch (e) {
+      errMsg = e.toString();
+    }
+    on Exception catch (e) {
+      errMsg = e.toString();
+    }
 
-      if (result != null) {
-        var unitsEnding = (resultCount == 1 ? '' : 's');
+    tmpFile?.deleteIfExistsSync();
+    Directory.current = oldCurDir;
 
-        if (!isSuccess) {
-          if (isProcessRunSyncUsed) {
-            _logger.error('Exit code: ${result.exitCode}');
-            _logger.error('\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
+    if (result != null) {
+      if (isProcessRunSyncUsed) {
+        if (result.stdout?.isNotEmpty ?? false) {
+          _logger.out(result.stdout);
+        }
+      }
+      else {
+        if (results.outLines?.isNotEmpty ?? false) {
+          _logger.out(results.outLines.toString());
+        }
+      }
 
-            if (result.stdout?.isNotEmpty ?? false) {
-              _logger.out(result.stdout);
-            }
-          }
-          else {
-            _logger.error('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
-            _logger.error('\n*** Error$unitsEnding:\n\n${results.errLines}');
+      if (!isSuccess) {
+        if (isProcessRunSyncUsed) {
+          _logger.error('Exit code: ${result.exitCode}');
+          _logger.error('\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
+        }
+        else {
+          var unitsEnding = (resultCount == 1 ? '' : 's');
 
-            if (results.outLines?.isNotEmpty ?? false) {
-              _logger.out(results.outLines.toString());
-            }
-          }
+          _logger.error('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
+          _logger.error('\n*** Error$unitsEnding:\n\n${results.errLines}');
         }
       }
     }
 
     if (!isSuccess) {
-      throw Exception();
+      throw Exception(errMsg);
     }
 
     return true;
