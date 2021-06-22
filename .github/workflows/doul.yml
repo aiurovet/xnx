@@ -83,6 +83,9 @@ jobs:
         with:
           args: install -y imagemagick.app --no-progress
         if: runner.os == 'windows'
+        run: |
+          Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+          refreshenv
 
       - run: magick -version
       - run: scripts\build
