@@ -16,10 +16,6 @@ if not exist "%PRJ_EXE%" goto FAILURE
 reg query HKLM\Software\Wine > nul
 if not errorlevel 1 set WINE=1
 
-echo Path: %PATH%
-echo Testing: magick -version
-magick -version
-
 "%PRJ_EXE%" -d "scripts\\mkicons" %*
 if errorlevel 1 goto FAILURE
 
