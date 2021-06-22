@@ -86,8 +86,8 @@ jobs:
           Write-Output "Adding installation directory to PATH"
           Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
           refreshenv
-          magick -version
-          scripts\build
+      - run: magick -version
+      - run: scripts\build
 
       ################################################################################
 
