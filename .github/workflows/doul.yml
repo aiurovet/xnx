@@ -79,12 +79,13 @@ jobs:
       ################################################################################
 
       - name: Install ImageMagick on Windows
+        uses: crazy-max/ghaction-chocolatey@v1
+        with:
+          args: install -y imagemagick.app --no-progress
         if: runner.os == 'windows'
-        run: |
-          Write-Output "Installing GraphicsMagick"
-          choco install graphicsmagick --no-progress
-          refreshenv
-          scripts\build
+
+      - run: magick -version
+      - run: scripts\build
 
       ################################################################################
 
