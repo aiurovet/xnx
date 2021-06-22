@@ -81,13 +81,10 @@ jobs:
       - name: Install ImageMagick on Windows
         if: runner.os == 'windows'
         run: |
-          Write-Output "Installing ImageMagick"
-          choco install -y imagemagick.app --no-progress
-          Write-Output "Adding installation directory to PATH"
-          Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+          Write-Output "Installing GraphicsMagick"
+          choco install graphicsmagick --no-progress
           refreshenv
-      - run: magick -version
-      - run: scripts\build
+          scripts\build
 
       ################################################################################
 
