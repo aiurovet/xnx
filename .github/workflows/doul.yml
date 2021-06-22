@@ -82,9 +82,7 @@ jobs:
         if: runner.os == 'windows'
         run: |
           Write-Output "Installing ImageMagick"
-          choco install -y imagemagick.app --no-progress
-          Write-Output "Adding installation directory to PATH"
-          Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+          PowerShell -Command { choco install -y imagemagick.app --no-progress }
           cmd /c echo "%PATH%"
           refreshenv
           cmd /c echo "%PATH%"
