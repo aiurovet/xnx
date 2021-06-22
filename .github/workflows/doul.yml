@@ -85,7 +85,10 @@ jobs:
           choco install -y imagemagick.app --no-progress
           Write-Output "Adding installation directory to PATH"
           Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+          cmd /c echo "%PATH%"
           refreshenv
+          cmd /c echo "%PATH%"
+          "C:\Program Files\ImageMagick-7.1.0-Q16-HDRI\magick.exe" -version
           magick -version
           scripts\build
 
