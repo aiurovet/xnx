@@ -79,16 +79,15 @@ jobs:
       ################################################################################
 
       - name: Install ImageMagick on Windows
-        uses: crazy-max/ghaction-chocolatey@v1
-        with:
-          args: install -y imagemagick.app --no-progress
         if: runner.os == 'windows'
         run: |
+          Write-Output "Installing ImageMagick"
+          choco install -y imagemagick.app --no-progress
+          Write-Output "Adding installation directory to PATH"
           Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
           refreshenv
-
-      - run: magick -version
-      - run: scripts\build
+          magick -version
+          scripts\build
 
       ################################################################################
 
