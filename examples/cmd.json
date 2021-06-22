@@ -11,7 +11,7 @@
         "{shell}": "zsh -c"
       }, "{{-else-}}": {
         "{OsType}": "Linux",
-        "{chrome}": "google-chrome", // you can use chromium too
+        "{chrome}": "google-chrome --log-level=2", // you can use chromium too
         "{shell}": "bash -c"
       } },
       "{convert}": "convert",
@@ -26,7 +26,7 @@
       "{move}": "ren",
       "{delete}": "del /F/Q/S",
       "{mkdir}": "mkdir",
-      "{chrome}": "chrome",
+      "{chrome}": "chrome --log-level 2",
       "{convert}": "magick convert",
       "{shell}": "cmd /c",
       "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500"

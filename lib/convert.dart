@@ -1,4 +1,3 @@
-import 'dart:cli';
 import 'dart:convert';
 import 'dart:io';
 
@@ -285,15 +284,16 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       .replaceAll(_config.paramNameCurDir, curDirName);
 
     if (isExpandContentOnly) {
-      var cmdParts = command.splitCommandLine();
-      var argCount = cmdParts.length - 1;
+      var cli = command.splitCommandLine();
+      var args = cli[1];
+      var argc = args.length;
 
-      if (argCount > 0) {
-        outFilePath = cmdParts[argCount];
-      }
+      if (argc > 0) {
+        outFilePath = args[argc - 1];
 
-      if (argCount > 1) {
-        inpFilePath = cmdParts[1];
+        if (argc > 1) {
+          inpFilePath = args[0];
+        }
       }
     }
 
@@ -366,8 +366,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     var isSuccess = false;
     var oldCurDir = Directory.current;
-    var resultCount = 0;
-    List<ProcessResult> results;
+    //var resultCount = 0;
+    ProcessResult result;
+    //List<ProcessResult> results;
 
     try {
       if (StringExt.isNullOrBlank(command)) {
@@ -376,24 +377,29 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       }
 
       var cli = command.splitCommandLine();
+      var exe = cli[0][0];
+      var args = cli[1];
 
-      if (cli[0] == _config.cmdNameSub) {
-        Doul(logger: _logger).exec(cli.sublist(1));
+      if (exe == _config.cmdNameSub) {
+        Doul(logger: _logger).exec(args);
         isSuccess = true;
       }
       else {
-        results = waitFor<List<ProcessResult>>(
-          Shell(
-            environment: Platform.environment,
-            verbose: _logger.isDetailed,
-            commandVerbose: false,
-            commentVerbose: false,
-            runInShell: false
-          ).run(command)
-        );
+        result = Process.runSync(exe, args, workingDirectory: curDirName);
+        isSuccess = (result.exitCode == 0);
 
-        resultCount = results?.length ?? 0;
-        isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
+        // results = waitFor<List<ProcessResult>>(
+        //   Shell(
+        //     environment: Platform.environment,
+        //     verbose: _logger.isDetailed,
+        //     commandVerbose: false,
+        //     commentVerbose: false,
+        //     runInShell: false
+        //   ).run(command)
+        // );
+
+        //resultCount = results?.length ?? 0;
+        //isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
       }
     }
     on Error catch (e) {
@@ -406,14 +412,16 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       tmpFile?.deleteIfExistsSync();
       Directory.current = oldCurDir;
 
-      var result = (resultCount <= 0 ? null : results[0]);
+      //var result = (resultCount <= 0 ? null : results[0]);
 
       if (result != null) {
-        var unitsEnding = (resultCount == 1 ? '' : 's');
+        //var unitsEnding = (resultCount == 1 ? '' : 's');
 
         if (!isSuccess) {
-          _logger.information('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
-          _logger.information('\n*** Error$unitsEnding:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+          //_logger.information('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
+          //_logger.information('\n*** Error$unitsEnding:\n\n${results.errLines}\n*** Output:\n\n${results.outLines}');
+          _logger.information('Exit code: ${result.exitCode}');
+          _logger.information('\n*** Error:\n\n${result.errLines}\n*** Output:\n\n${result.outLines}');
 
           _logger.error(result.stderr ?? 'No error or warning message found');
         }

@@ -182,7 +182,8 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<String> splitCommandLine({bool canValidate}) {
+  Map<int, List<String>> splitCommandLine() {
+    String cmd;
     var args = <String>[];
 
     replaceAll(ESC_ESC, '\x01')
@@ -204,12 +205,18 @@ extension StringExt on String {
       }
 
       s = s.trim();
-      args.add(s);
+
+      if (cmd == null) {
+        cmd = s;
+      }
+      else {
+        args.add(s);
+      }
 
       return s;
     });
 
-    return args;
+    return <int, List<String>>{ 0: [ cmd ?? this ], 1: args };
   }
 
   //////////////////////////////////////////////////////////////////////////////
