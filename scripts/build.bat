@@ -22,10 +22,6 @@ if errorlevel 1 exit /B 1
 dart compile exe "%BIN%\main.dart" -o "%BIN_OST%\%PRJ%.exe"
 if errorlevel 1 exit /B 1
 
-echo Path: %PATH%
-echo Testing: magick -version
-"magick.exe" -version
-
 set OSTYPE=%OST%
 call scripts\mkicons\mkicons %*
 if errorlevel 1 exit /B 1
