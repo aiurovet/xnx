@@ -461,7 +461,6 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     var text = StringExt.EMPTY;
 
     if (inpFile == null) {
-print('\n*** DBG: inpFile: EMPTY, outFilePath = "${outFilePath ?? StringExt.EMPTY}", tmpFilePath: "${tmpFilePath ?? StringExt.EMPTY}"\n');
       text = stdin.readAsStringSync();
     }
     else {
