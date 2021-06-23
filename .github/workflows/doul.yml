@@ -47,6 +47,20 @@ jobs:
 
       ################################################################################
 
+      - name: Install ImageMagick on Windows
+        if: runner.os == 'windows'
+        run: |
+          choco install -y imagemagick.app --no-progress
+          Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+
+      - name Test ImageMagick on Windows
+        if: runner.os == 'windows'
+        run: |
+          cmd /c "echo %PATH%"
+          magick -version
+ 
+      ################################################################################
+
       - name: Install dependencies
         run: dart pub get
 
@@ -74,21 +88,7 @@ jobs:
 
       - name: Build the application on Windows
         if: runner.os == 'Windows'
-        run: |
-
-      ################################################################################
-
-      - name: Install ImageMagick on Windows
-        if: runner.os == 'windows'
-        run: |
-          Write-Output "Installing ImageMagick"
-          PowerShell -Command { choco install -y imagemagick.app --no-progress }
-          Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-
-      - run: |
-          cmd /c "echo %PATH%"
-          magick -version
-          scripts\build
+        run: scripts\build
 
       ################################################################################
 
