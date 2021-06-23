@@ -58,7 +58,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cmd /c "echo %PATH%"
-          cmd /c "magick -version"
+          magick -version
  
       ################################################################################
 
