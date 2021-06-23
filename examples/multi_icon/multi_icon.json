@@ -18,5 +18,5 @@
   "{i}": "{cur-dir}/resizer.svg",
   "{t}": [ "edit", "find", "save" ],
   "{d}": [ 20, 40, 80, 160 ],
-  "{o}": "png/icon-{t}-{d}x{d}.png"
+  "{o}": "{cur-dir}/png/icon-{t}-{d}x{d}.png"
 }
