@@ -84,7 +84,7 @@ jobs:
           Write-Output "Installing ImageMagick"
           PowerShell -Command { choco install -y imagemagick.app --no-progress }
           Get-ChildItem -Path "${env:ProgramFiles}" | % { $_.FullName } | Select-String -Pattern "[\/\\]ImageMagick[^\/\\]*$" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-          refreshenv
+
       - run: |
           cmd /c "echo %PATH%"
           magick -version
