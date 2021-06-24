@@ -83,8 +83,6 @@
 
       "{look}": [ "core", "dark" ],
 
-"{OsType}": "macOS",
-
       "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
         "{run}": [
           //"png2icns \"{icon-dir}/{look}/{icon-name}.icns\" \"{look-dir}/{icon-name}_16x16.png\" \"{look-dir}/{icon-name}_32x32.png\" \"{look-dir}/{icon-name}_128x128.png\" \"{look-dir}/{icon-name}_256x256.png\" \"{look-dir}/{icon-name}_512x512.png\" \"{look-dir}/{icon-name}_1024x1024.png\"",
