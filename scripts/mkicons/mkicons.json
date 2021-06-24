@@ -102,7 +102,7 @@
           "mv -f \"{icon-pthp}_512x512.png\" \"{look-dir}/icon_512x512.png\"",
           "rm -f \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\"",
 
-          //"ls -1 {look-dir}",
+          "ls -1 {look-dir}",
           "iconutil --convert icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{look-dir}\""
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
