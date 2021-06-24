@@ -39,7 +39,9 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           npm install rcedit
-          npm-exec rcedit
+          Get-ChildItem -Path "node_modules\.bin"
+          Get-ChildItem -Path "node_modules\.bin\rcedit"
+          node_modules\.bin\rcedit
           xyz
 
       ################################################################################
