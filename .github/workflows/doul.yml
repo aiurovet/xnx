@@ -39,7 +39,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           npm install rcedit
-          rcedit
+          npm-exec rcedit
           xyz
 
       ################################################################################
