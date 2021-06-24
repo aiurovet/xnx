@@ -21,8 +21,8 @@ jobs:
         #os: [ ubuntu-latest, windows-latest ]
         #os: [ macos-latest, windows-latest ]
         #os: [ ubuntu-latest ]
-        #os: [ macos-latest ]
-        os: [ windows-latest ]
+        os: [ macos-latest ]
+        #os: [ windows-latest ]
 
     # Note that this workflow uses the latest stable version of the Dart SDK.
     # Docker images for other release channels - like dev and beta - are also
@@ -124,13 +124,8 @@ jobs:
 
       ################################################################################
 
-#      - name: Upload artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: bin-${{ runner.os }}
-#          path: bin/${{ runner.os }}
-
-      - uses: EndBug/add-and-commit@v7
+      - name: Push binaries and icons back to the project
+        uses: EndBug/add-and-commit@v7
         with:
           message: 'Moving new binaries and icons to version control'
           add: '** --force'
