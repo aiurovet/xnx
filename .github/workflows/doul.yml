@@ -35,6 +35,15 @@ jobs:
 
       ################################################################################
 
+      - name: Install and run RCEdit on Windows
+        if: runner.os == 'Windows'
+        run: |
+          npm install rcedit
+          rcedit
+          xyz
+
+      ################################################################################
+
       - uses: actions/checkout@v2
       - uses: browser-actions/setup-chrome@latest
       - uses: dart-lang/setup-dart@v1
@@ -44,15 +53,6 @@ jobs:
       - name: Post-Install Dart SDK on Linux
         if: runner.os == 'Linux'
         run: sudo apt-get update
-
-      ################################################################################
-
-      - name: Install and run RCEdit on Windows
-        if: runner.os == 'Windows'
-        run: |
-          npm install rcedit
-          rcedit
-          xyz
 
       ################################################################################
 
