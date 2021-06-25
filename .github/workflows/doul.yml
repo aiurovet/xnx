@@ -90,10 +90,7 @@ jobs:
 
       - name: Build the application on Windows
         if: runner.os == 'Windows'
-        run: |
-          Get-Command -Path "npm.cmd"
-          Get-Command -Path "npm"
-          scripts\build
+        run: scripts\build
 
       ################################################################################
 
