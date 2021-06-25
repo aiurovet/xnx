@@ -34,6 +34,15 @@
 
   "{{-import-}}": "../../examples/cmd.json",
 
+  "{bin-os-dir}": "../../bin/{OsType}",
+  "{icon-dir}": "{bin-os-dir}",
+
+  "if2": [{
+    "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
+      "{icon-dir}": "{bin-os-dir}/icons"
+    } }
+  }],
+
   "{R}": [
     // Ensure directory structure matches expectations
     {
@@ -41,7 +50,7 @@
         // Remove possible remnants from the previous run
         "{sub} --delete out png svg",
         // Ensure temporary and the OS-specific output and icon directories are created
-        "{sub} --mkdir png/core png/dark svg ../../bin/{OsType}/icons/core ../../bin/{OsType}/icons/dark"
+        "{sub} --mkdir png/lite png/dark svg \"{icon-dir}\""
       ]
     },
 
@@ -51,7 +60,7 @@
       "{can-expand-content}": true,
 
       "{icon-data}": [
-        { "{icon-fill}": "white", "{icon-stroke}": "black", "{look}": "core" },
+        { "{icon-fill}": "white", "{icon-stroke}": "black", "{look}": "lite" },
         { "{icon-fill}": "black", "{icon-stroke}": "white", "{look}": "dark" }
       ],
 
@@ -69,7 +78,7 @@
       ],
 
       "{inp}": "{cur-dir}/{prj}.svg",
-      "{out}": "{cur-dir}/png/{look}/icon_{prj}_{look}_{dim}x{dim}.png",
+      "{out}": "{cur-dir}/png/{look}/{prj}_{look}_{dim}x{dim}.png",
       "{cmd}": "{svg2png}"
     },
 
@@ -77,16 +86,15 @@
       "{drop}": [ "{icon-data}", "{param}" ],
 
       "{look-dir}": "{cur-dir}/png/{look}",
-      "{icon-dir}": "../../bin/{OsType}/icons",
-      "{icon-name}": "icon_{prj}_{look}",
+      "{icon-name}": "{prj}_{look}",
       "{icon-pthp}": "{look-dir}/{icon-name}",
 
-      "{look}": [ "core", "dark" ],
+      "{look}": [ "lite", "dark" ],
 
       "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
         "{run}": [
           //"png2icns \"{icon-dir}/{look}/{icon-name}.icns\" \"{look-dir}/{icon-name}_16x16.png\" \"{look-dir}/{icon-name}_32x32.png\" \"{look-dir}/{icon-name}_128x128.png\" \"{look-dir}/{icon-name}_256x256.png\" \"{look-dir}/{icon-name}_512x512.png\" \"{look-dir}/{icon-name}_1024x1024.png\"",
-          "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}/{look}\""
+          "{sub} --move \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_96x96.png\" \"{icon-dir}\""
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
         "{look-dir-mac}": "{look-dir}.iconset",
@@ -106,7 +114,12 @@
           "{shell} 'mv -f \"{look-dir}\" \"{look-dir-mac}\" && iconutil --convert icns -o \"{icon-dir}/{look}/{icon-name}.icns\" \"{look-dir-mac}\"'"
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
-        "{run}": "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{icon-dir}/{look}/{icon-name}.ico\""
+        "{run}": [
+          "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{bin-os-dir}\\{icon-name}.ico\"",
+          "npm install rcedit",
+          "{cur-dir}\\node_modules\\rcedit\\bin\\rcedit-x64.exe \"{bin-os-dir}\\{prj}.exe\" --set-icon \"{bin-os-dir}\\{icon-name}.ico\"",
+          "{shell} '{delete} \"{bin-os-dir}\\{icon-name}.ico\"  '"
+        ]
       } } } } } }
     },
 
