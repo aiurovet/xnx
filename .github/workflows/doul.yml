@@ -51,8 +51,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           choco install -y nodejs --no-progress
-          Get-ChildItem -Path "${env:ProgramFiles}"
-          Get-ChildItem -Path "${env:ProgramFiles}" | Where-Object {($_.Name -Like '*node*')} | %{$_.FullName}
+          Get-ChildItem -Path "${env:ProgramFiles}" | Where-Object {($_.Name -Like 'nodejs*')} | %{$_.FullName} | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       ################################################################################
 
