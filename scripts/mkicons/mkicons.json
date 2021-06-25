@@ -118,7 +118,7 @@
         "{run}": [
           "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{bin-os-dir}\\{icon-name}.ico\"",
           "\"${ProgramFiles}\\nodejs\\npm.cmd\" install rcedit",
-          "{cur-dir}\\node_modules\\rcedit\\bin\\rcedit-x64.exe \"{exe-pthp}.exe\" --set-icon \"{exe-pthp}.ico\"",
+          "{cur-dir}\\node_modules\\rcedit\\bin\\rcedit-x64.exe \"{exe-pthp}.exe\" --set-icon \"{exe-pthp}_{look}.ico\"",
           "{shell} '{delete} \"{exe-pthp}.ico\"'"
         ]
       } } } } } }
