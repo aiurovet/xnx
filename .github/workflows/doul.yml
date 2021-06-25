@@ -49,7 +49,10 @@ jobs:
 
       - name: Install Node.js on Windows
         if: runner.os == 'Windows'
-        run: choco install -y nodejs --no-progress
+        run: |
+          choco install -y nodejs --no-progress
+          Get-ChildItem -Path "${env:ProgramFiles}"
+          Get-ChildItem -Path "${env:ProgramFiles}" | Where-Object {($_.Name -Like '*node*')} | %{$_.FullName}
 
       ################################################################################
 
