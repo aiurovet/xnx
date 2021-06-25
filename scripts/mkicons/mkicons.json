@@ -116,7 +116,7 @@
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
         "{run}": [
           "{convert} +antialias \"{icon-pthp}_16x16.png\" \"{icon-pthp}_24x24.png\" \"{icon-pthp}_32x32.png\" \"{icon-pthp}_48x48.png\" \"{icon-pthp}_256x256.png\" \"{bin-os-dir}\\{icon-name}.ico\"",
-          "${ProgramFiles}\\nodejs\\npm install rcedit",
+          "\"${ProgramFiles}\\nodejs\\npm\" install rcedit",
           "{cur-dir}\\node_modules\\rcedit\\bin\\rcedit-x64.exe \"{bin-os-dir}\\{prj}.exe\" --set-icon \"{bin-os-dir}\\{icon-name}.ico\"",
           "{shell} '{delete} \"{bin-os-dir}\\{icon-name}.ico\"  '"
         ]
