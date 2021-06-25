@@ -275,6 +275,10 @@ class Config {
           return ConfigEventResult.run;
         }
 
+        if (detectPathsRE?.hasMatch(key) ?? false) {
+          data.data = strValue.adjustPath();
+        }
+
         return ConfigEventResult.ok;
       },
 
