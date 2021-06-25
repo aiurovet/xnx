@@ -29,7 +29,7 @@
     "{svg2png}": "{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot={out} \"file://{inp}\""
   } },
 
-  "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path)\\}",
+  "{dtp}": "\\{[^\\{\\}\\-]+\\-(dir|path|pthp)\\}",
   "{prj}": "doul",
 
   "{{-import-}}": "../../examples/cmd.json",
