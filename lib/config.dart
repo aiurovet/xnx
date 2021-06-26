@@ -227,7 +227,7 @@ class Config {
           growMap.remove(key);
         }
         else {
-          if (paramNamesForPath.contains(key)) {
+          if (paramNamesForPath.contains(key) || (detectPathsRE?.hasMatch(key) ?? false)) {
             strValue = strValue.adjustPath();
             data.data = strValue;
           }
@@ -273,10 +273,6 @@ class Config {
           isReady = false;
           hasOut = false;
           return ConfigEventResult.run;
-        }
-
-        if (detectPathsRE?.hasMatch(key) ?? false) {
-          data.data = strValue.adjustPath();
         }
 
         return ConfigEventResult.ok;

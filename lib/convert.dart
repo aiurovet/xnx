@@ -177,6 +177,9 @@ class Convert {
 
     for (var inpFilePathEx in inpFilePaths) {
       inpFilePathEx = inpFilePathEx.adjustPath();
+
+      //mapCurr.clear();
+      //mapCurr.addAll(map);
       mapCurr = expandMap(map, curDirName, inpFilePathEx);
 
       var detectPathsPattern = getValue(mapCurr, key: _config.paramNameDetectPaths, canReplace: true);
