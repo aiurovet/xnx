@@ -47,17 +47,9 @@ jobs:
 
       ################################################################################
 
-      - name: Install Node.js on Windows
+      - name: Install ResourceHacker on Windows
         if: runner.os == 'Windows'
-        run: |
-          choco install -y nodejs --no-progress
-          Get-ChildItem -Path "${env:ProgramFiles}" | Where-Object {($_.Name -Like 'nodejs*')} | %{$_.FullName} | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-
-      ################################################################################
-
-      - name: Install RCEdit on Windows
-        if: runner.os == 'Windows'
-        run: npm.cmd install rcedit
+        run: choco install -y reshack --no-progress
 
       ################################################################################
 
