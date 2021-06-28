@@ -34,7 +34,7 @@
 
   "{{-import-}}": "../../examples/cmd.json",
 
-  "{bin-os-dir}": "../../bin/{OsType}",
+  "{bin-os-dir}": "{cur-dir}/../../bin/{OsType}",
   "{out-dir}": "{bin-os-dir}",
 
   "{R}": [
@@ -56,7 +56,7 @@
       "{param}": [
         { "{dim}":   16, "{scn-transform}":  "",               "{stroke-width}": "1",   "{drw-transform-main}": "translate(1,1)",     "{drw-transform-glow}": "translate(2,2)" },
         { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{stroke-width}": "1.5", "{drw-transform-main}": "translate(1.5,1.5)" },
-        { "{dim}":   32, "{scn-transform}":  "scale(  2,  2)", "{stroke-width}": "1", },
+        { "{dim}":   32, "{scn-transform}":  "scale(  2,  2)", "{stroke-width}": "1" },
         { "{dim}":   48, "{scn-transform}":  "scale(  3,  3)" },
         { "{dim}":   64, "{scn-transform}":  "scale(  4,  4)" },
         { "{dim}":   96, "{scn-transform}":  "scale(  6,  6)" },
@@ -107,7 +107,6 @@
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
         "{run}": [
           '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
-          '"${ProgramFiles}\\nodejs\\npm.cmd" install rcedit',
           '"{cur-dir}\\node_modules\\rcedit\\bin\\rcedit-x64.exe" "{exe-pthp}.exe" --set-icon "{exe-pthp}.ico"',
           '{sub} --delete "{exe-pthp}.ico"'
         ]

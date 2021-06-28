@@ -5,6 +5,9 @@ set BIN=bin
 set OST=Windows
 set BIN_OST=%BIN%\%OST%
 
+rem Reset errorlevel
+ver > nul
+
 %~d0
 if errorlevel 1 exit /B 1
 

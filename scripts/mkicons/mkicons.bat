@@ -1,6 +1,13 @@
 @echo off
 
-cd "%~dp0\..\.."
+rem Reset errorlevel
+ver > nul
+
+%~d0
+if errorlevel 1 exit /B 1
+
+cd %~dp0..\..
+if errorlevel 1 exit /B 1
 
 set PRJ_NAME=doul
 set PRJ_EXE=bin\Windows\%PRJ_NAME%.exe
@@ -13,10 +20,7 @@ if not exist "%PRJ_EXE%" (
 
 if not exist "%PRJ_EXE%" goto FAILURE
 
-reg query HKLM\Software\Wine > nul
-if not errorlevel 1 set WINE=1
-
-"%PRJ_EXE%" -d "scripts\\mkicons" %*
+"%PRJ_EXE%" -d scripts\mkicons %*
 if errorlevel 1 goto FAILURE
 
 @echo off
