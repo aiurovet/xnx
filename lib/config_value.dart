@@ -54,6 +54,9 @@ class ConfigValue {
           map[ccv.key] = ccv;
         });
       }
+      else if ((data is num) && ((data % 1) == 0)) {
+        text = data.toStringAsFixed(0);
+      }
       else {
         text = data?.toString();
       }

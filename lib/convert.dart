@@ -85,11 +85,15 @@ class Convert {
     var arg1 = (end >= 0 ? args[0] : null);
     var arg2 = (end >= 1 ? args[1] : null);
 
+    final isEcho = _options.isCmdEcho;
     final isCompress = _options.isCmdCompress;
     final isDecompress = _options.isCmdDecompress;
     final isMove = _options.isCmdMove;
 
-    if (isCompress || isDecompress) {
+    if (isEcho) {
+      _logger.out(_options.plainArgs?.join(StringExt.SPACE) ?? StringExt.EMPTY);
+    }
+    else if (isCompress || isDecompress) {
       final archPath = (isDecompress ? arg1 : (end >= 0 ? args[end] : 0));
       final archType = PackOper.getPackType(_options.archType, archPath);
       final isTar = PackOper.isPackTypeTar(archType);
@@ -286,8 +290,8 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) {
-    var command = expandInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map)
-      .replaceAll(_config.paramNameCurDir, curDirName);
+    var command = expandInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map);
+    command = command.replaceAll(_config.paramNameCurDir, curDirName);
 
     if (isExpandContentOnly) {
       var cli = command.splitCommandLine();

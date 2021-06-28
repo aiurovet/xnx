@@ -44,6 +44,8 @@ extension StringExt on String {
   static const String UNKNOWN = '<unknown>';
 
   static final RegExp RE_CMD_LINE = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
+  //static final RegExp RE_JSON_COMMAS = RegExp(r'(\"[^\"]*\")|[,][\s\x01]*([\}\]])', multiLine: false);
+  //static final RegExp RE_JSON_COMMENTS = RegExp(r'(\"[^\"]*\")|\/\/[^\x01]*\x01|\/\*((?!\*\/).)*\*\/', multiLine: false);
   static final RegExp RE_ENV_VAR_NAME = RegExp(r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]', caseSensitive: false);
   static final RegExp RE_PROTOCOL = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
 
@@ -64,38 +66,36 @@ extension StringExt on String {
 
     var argCount = (args?.length ?? 0);
 
-    var result =
-       replaceAll(r'\\', '\x01')
-      .replaceAll(r'\$', '\x02')
-      .replaceAll(r'$$', '\x03')
-      .replaceAllMapped(RE_ENV_VAR_NAME, (match) {
-        var envVarName = (match.group(1) ?? match.group(2));
+    var result = replaceAll(r'\\', '\x01');
+    result = result.replaceAll(r'\$', '\x02');
+    result = result.replaceAll(r'$$', '\x03');
+    result = result.replaceAllMapped(RE_ENV_VAR_NAME, (match) {
+      var envVarName = (match.group(1) ?? match.group(2));
 
-        if (argCount >= 0) {
-          var argNo = int.tryParse(envVarName, radix: 10);
+      if (argCount >= 0) {
+        var argNo = int.tryParse(envVarName, radix: 10);
 
-          if ((argNo ?? -1) > 0) {
-            return args[argNo - 1];
-          }
+        if ((argNo ?? -1) > 0) {
+          return args[argNo - 1];
         }
+      }
 
-        if (IS_WINDOWS) {
-          envVarName = envVarName.toUpperCase();
-        }
+      if (IS_WINDOWS) {
+        envVarName = envVarName.toUpperCase();
+      }
 
-        if (ENVIRONMENT.containsKey(envVarName)) {
-          var envExp = ENVIRONMENT[envVarName];
+      if (ENVIRONMENT.containsKey(envVarName)) {
+        var envExp = ENVIRONMENT[envVarName];
 
-          return (canEscape ? envExp.escapeEscapeChar() : envExp);
-        }
-        else {
-          return EMPTY;
-        }
-      })
-      .replaceAll('\x03', r'$')
-      .replaceAll('\x02', r'\$')
-      .replaceAll('\x01', r'\\')
-    ;
+        return (canEscape ? envExp.escapeEscapeChar() : envExp);
+      }
+      else {
+        return EMPTY;
+      }
+    });
+    result = result.replaceAll('\x03', r'$');
+    result = result.replaceAll('\x02', r'\$');
+    result = result.replaceAll('\x01', r'\\');
 
     return result;
   }
@@ -154,31 +154,33 @@ extension StringExt on String {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // N.B. Single quotes are not supported by JSON standard, only double quotes
-  //////////////////////////////////////////////////////////////////////////////
 
-  String removeJsComments() {
-    var jsCommentsRE = RegExp(r'(\"[^\"]*\")|\/\/[^\x01]*\x01|\/\*((?!\*\/).)*\*\/', multiLine: false);
-
-    var result =
-      replaceAll('\r\n', '\x01')
-     .replaceAll('\r',   '\x01')
-     .replaceAll('\n',   '\x01')
-     .replaceAll('\\\\', '\x02')
-     .replaceAll('\\\"', '\x03')
-     .replaceAllMapped(jsCommentsRE, (Match match) {
-       var literalString = match.group(1);
-       var isCommented = isNullOrBlank(literalString);
-
-       return (isCommented ? EMPTY : literalString);
-     })
-     .replaceAll('\x03', '\\\"')
-     .replaceAll('\x02', '\\\\')
-     .replaceAll('\x01', '\n')
-    ;
-
-    return result;
-  }
+  // String purifyJson() {
+  //   var result = replaceAll('\r\n', '\x01');
+  //   result = result.replaceAll('\r',   '\x01');
+  //   result = result.replaceAll('\n',   '\x01');
+  //   result = result.replaceAll('\\\\', '\x02');
+  //   result = result.replaceAll('\\\"', '\x03');
+  //   result = result.replaceAllMapped(RE_JSON_COMMENTS, (match) {
+  //      var literal = match.group(1);
+  //      if (!isNullOrBlank(literal)) {
+  //        return literal;
+  //      }
+  //      return EMPTY;
+  //   });
+  //   result = result.replaceAllMapped(RE_JSON_COMMAS, (match) {
+  //     var literal = match.group(1);
+  //     if (!isNullOrBlank(literal)) {
+  //       return literal;
+  //     }
+  //     return match.group(2);
+  //   });
+  //   result = result.replaceAll('\x03', '\\\"');
+  //   result = result.replaceAll('\x02', '\\\\');
+  //   result = result.replaceAll('\x01', '\n');
+  //
+  //   return result;
+  // }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -186,10 +188,10 @@ extension StringExt on String {
     String cmd;
     var args = <String>[];
 
-    replaceAll(ESC_ESC, '\x01')
-    .replaceAll(ESC_QUOTE_1, '\x02')
-    .replaceAll(ESC_QUOTE_2, '\x03')
-    .replaceAllMapped(RE_CMD_LINE, (match) {
+    var result = replaceAll(ESC_ESC, '\x01');
+    result = result.replaceAll(ESC_QUOTE_1, '\x02');
+    result = result.replaceAll(ESC_QUOTE_2, '\x03');
+    result = result.replaceAllMapped(RE_CMD_LINE, (match) {
       var s = match.group(2);
 
       if (StringExt.isNullOrBlank(s)) {

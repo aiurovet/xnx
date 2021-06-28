@@ -3,7 +3,8 @@
     "{{-cmd-}}": "{c}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
-    "{{-run-}}": "{r}"
+    "{{-run-}}": "{r}",
+    "{{-sub-}}": "{s}"
   },
 
   "{{-import-}}": "../cmd.json",
@@ -13,11 +14,11 @@
   "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
     "{OsType}": "Linux",
     "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
-      "{OsType}": "macOS"
+      "{OsType}": "macOS",
     } }
   }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
     "{OsType}": "Windows"
   } } } },
 
-  "{r}": "{shell} \"echo OS type: {OsType}\""
+  "{r}": '{s} --echo "OS type: {OsType}"'
 }

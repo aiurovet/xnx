@@ -553,10 +553,7 @@ class Config {
       map.forEach((childKey, childValue) {
         var childKeyStr = childKey.toString();
 
-        if (childKeyStr == condNameIf) {
-          newData[paramNameResolvedIf] = resolveIfDeep(resolveIf(childValue), false);
-        }
-        else if ((childValue is List) || (childValue is Map)) {
+        if ((childKeyStr == condNameIf) || (childValue is List) || (childValue is Map)) {
           newData[childKeyStr] = resolveIfDeep(childValue, false);
         }
         else {

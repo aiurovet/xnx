@@ -80,6 +80,11 @@ class Options {
     'help': 'treat each plain argument independently (e.g. can pass multiple filenames as arguments)',
     'negatable': false,
   };
+  static final Map<String, Object> CMD_ECHO = {
+    'name': 'echo',
+    'help': 'print arguments to stdout',
+    'negatable': false,
+  };
   static final Map<String, Object> CMD_COPY = {
     'name': 'copy',
     'help': 'just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
@@ -255,7 +260,13 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool get isCmd => (_isCmdCopy || _isCmdCopyNewer || _isCmdDelete || _isCmdCreate || _isCmdMove || _isCmdMoveNewer ||  isCmdCompress || isCmdDecompress);
+  bool get isCmd => (
+    _isCmdEcho ||
+    _isCmdCopy || _isCmdCopyNewer ||
+    _isCmdDelete || _isCmdCreate ||
+    _isCmdMove || _isCmdMoveNewer ||
+    _isCmdCompress || isCmdDecompress
+  );
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -276,6 +287,9 @@ class Options {
 
   bool _isCmdDelete;
   bool get isCmdDelete => _isCmdDelete;
+
+  bool _isCmdEcho;
+  bool get isCmdEcho => _isCmdEcho;
 
   bool _isCmdCreate;
   bool get isCmdCreateDir => _isCmdCreate;
@@ -318,6 +332,7 @@ class Options {
     _isAppendSep = false;
     _isListOnly = false;
 
+    _isCmdEcho = false;
     _isCmdCompress = false;
     _isCmdDecompress = false;
     _isCmdMove = false;
@@ -360,6 +375,9 @@ class Options {
       })
       ..addOption(COMPRESSION['name'], abbr: COMPRESSION['abbr'], help: COMPRESSION['help'], valueHelp: COMPRESSION['valueHelp'], defaultsTo: COMPRESSION['defaultsTo'], callback: (value) {
         _compression = int.parse(value);
+      })
+      ..addFlag(CMD_ECHO['name'], help: CMD_ECHO['help'], negatable: CMD_ECHO['negatable'], callback: (value) {
+        _isCmdEcho = value;
       })
       ..addFlag(CMD_COPY['name'], help: CMD_COPY['help'], negatable: CMD_COPY['negatable'], callback: (value) {
         _isCmdCopy = value;
@@ -609,8 +627,8 @@ class Options {
     printSystemInfo();
 
     if (!StringExt.isNullOrBlank(_startDirName)) {
-        _logger.information('Setting current directory to: "$_startDirName"');
-        Directory.current = _startDirName;
+      _logger.information('Setting current directory to: "$_startDirName"');
+      Directory.current = _startDirName;
     }
 
     unquotePlainArgs();

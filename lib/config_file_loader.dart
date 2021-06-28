@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:doul/config_file_info.dart';
+import 'package:json5/json5.dart';
 import 'package:json_path/json_path.dart';
 
 import 'package:doul/logger.dart';
@@ -72,29 +73,28 @@ class ConfigFileLoader {
     var argCount = (args?.length ?? 0);
     var startCmd = FileExt.getStartCommand(escapeQuotes: true);
 
-    _text = _text
-      .replaceAll('\$\$', '\x01')
-      .replaceAllMapped(RE_CMD_LINE_ARG, (match) {
-        if (match.group(1) != null) {
-          return ALL_ARGS; // will be expanded later
+    _text = _text.replaceAll('\$\$', '\x01');
+    _text = _text.replaceAllMapped(RE_CMD_LINE_ARG, (match) {
+      if (match.group(1) != null) {
+        return ALL_ARGS; // will be expanded later
+      }
+
+      var envArgNo = (match.group(3) ?? match.group(5));
+
+      if (envArgNo != null) {
+        var argNo = (int.tryParse(envArgNo) ?? -1);
+
+        if ((argNo > 0) && (argNo <= argCount)) {
+          return args[argNo - 1];
         }
-
-        var envArgNo = (match.group(3) ?? match.group(5));
-
-        if (envArgNo != null) {
-          var argNo = (int.tryParse(envArgNo) ?? -1);
-
-          if ((argNo > 0) && (argNo <= argCount)) {
-            return args[argNo - 1];
-          }
-          else {
-            return startCmd;
-          }
+        else {
+          return startCmd;
         }
+      }
 
-        return StringExt.EMPTY;
-      })
-      .replaceAll('\x01', '\$');
+      return StringExt.EMPTY;
+    });
+    _text = _text.replaceAll('\x01', '\$');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ class ConfigFileLoader {
       else {
         fullText += '{';
 
-        var jsonData = jsonDecode('{"$paramNameImport": $impPathsSerialized}');
+        var jsonData = json5Decode('{"$paramNameImport": $impPathsSerialized}');
         var jsonText = StringExt.EMPTY;
         var impPaths = jsonData[paramNameImport];
 
@@ -139,7 +139,7 @@ class ConfigFileLoader {
             fullText += RECORD_SEP;
           }
 
-          jsonData = jsonDecode(text);
+          jsonData = json5Decode(text);
           var map = <String, Object>{};
           map[getImportFileKey(keyPrefix, impPath: impPath)] = jsonData.values.toList()[0];
 
@@ -177,24 +177,22 @@ class ConfigFileLoader {
 
     var lf = ConfigFileLoader(log: _logger);
 
-    _text = _text
-      .replaceAll(r'\\', '\x01')
-      .replaceAll('\'', '\x02')
-      .replaceAll(r'\"', '\x03')
-      .replaceAllMapped(regExp, (match) {
-        var impPath = match.group(4);
-        var impPathsSerialized = match.group(5);
+    _text = _text.replaceAll(r'\\', '\x01');
+    _text = _text.replaceAll('\'', '\x02');
+    _text = _text.replaceAll(r'\"', '\x03');
+    _text = _text.replaceAllMapped(regExp, (match) {
+      var impPath = match.group(4);
+      var impPathsSerialized = match.group(5);
 
-        var openChar = match.group(1);
-        var closeChar = match.group(6);
-        var result = openChar + lf.importFiles(paramNameImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + closeChar;
+      var openChar = match.group(1);
+      var closeChar = match.group(6);
+      var result = openChar + lf.importFiles(paramNameImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + closeChar;
 
-        return result;
-      })
-      .replaceAll('\x03', r'\"')
-      .replaceAll('\x02', '\'')
-      .replaceAll('\x01', r'\\')
-    ;
+      return result;
+    });
+    _text = _text.replaceAll('\x03', r'\"');
+    _text = _text.replaceAll('\x02', '\'');
+    _text = _text.replaceAll('\x01', r'\\');
 
     return this;
   }
@@ -212,7 +210,7 @@ class ConfigFileLoader {
 
     expandCmdLineArgs(appPlainArgs);
     _text = _text.expandEnvironmentVariables(canEscape: true);
-    _data = jsonDecode(_text);
+    _data = json5Decode(_text);
     _text = null;
 
     return this;
@@ -247,16 +245,16 @@ class ConfigFileLoader {
       _text = (_file.readAsStringSync() ?? StringExt.EMPTY);
     }
 
-    _text = _text.removeJsComments();
+    //_text = _text.purifyJson();
 
     if (fileInfo.jsonPath.isEmpty) {
-      _data = jsonDecode(_text);
+      _data = json5Decode(_text);
     }
     else {
       var data = <Object>[];
 
       var jsonPath = JsonPath(fileInfo.jsonPath);
-      var decoded = jsonDecode(_text);
+      var decoded = json5Decode(_text);
 
       if ((jsonPath != null) && (decoded != null)) {
         data.addAll(jsonPath.read(decoded).map((x) => x.value));
