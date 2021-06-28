@@ -97,18 +97,14 @@ jobs:
       - name: Check build result on a Unix-like OS
         if: runner.os != 'Windows'
         run: |
-          ls -1 bin/${{ runner.os }}/doul
-          ls -1 bin/${{ runner.os }}/icons/core/*doul*
-          ls -1 bin/${{ runner.os }}/icons/dark/*doul*
+          ls -1 bin/${{ runner.os }}/*doul*
 
       ################################################################################
 
       - name: Check build result on Windows
         if: runner.os == 'Windows'
         run: |
-          Get-ChildItem -Name -Path bin\${{ runner.os }}\doul.exe
-          Get-ChildItem -Name -Path bin\${{ runner.os }}\icons\core\*doul*
-          Get-ChildItem -Name -Path bin\${{ runner.os }}\icons\dark\*doul*
+          Get-ChildItem -Name -Path bin\${{ runner.os }}\*doul*
 
       ################################################################################
 
