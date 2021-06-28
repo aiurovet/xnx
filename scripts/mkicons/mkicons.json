@@ -35,13 +35,7 @@
   "{{-import-}}": "../../examples/cmd.json",
 
   "{bin-os-dir}": "../../bin/{OsType}",
-  "{icon-dir}": "{bin-os-dir}",
-
-  "if2": [{
-    "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
-      "{icon-dir}": "{bin-os-dir}/icons"
-    } }
-  }],
+  "{out-dir}": "{bin-os-dir}",
 
   "{R}": [
     // Ensure directory structure matches expectations
@@ -50,7 +44,7 @@
         // Remove possible remnants from the previous run
         "{sub} --delete out png svg",
         // Ensure temporary and the OS-specific output and icon directories are created
-        '{sub} --mkdir png/main png/glow svg "{icon-dir}"'
+        '{sub} --mkdir png svg "{out-dir}"'
       ]
     },
 
@@ -59,15 +53,10 @@
 
       "{can-expand-content}": true,
 
-      "{icon-data}": [
-        { "{icon-fill}": "none", "{icon-stroke}": "black", "{look}": "main" },
-        { "{icon-fill}": "none", "{icon-stroke}": "white", "{look}": "glow" }
-      ],
-
       "{param}": [
-        { "{dim}":   16, "{scn-transform}":  "",               "{stroke-width}": "1",   "{drw-transform}": "translate(1,1)" },
-        { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{stroke-width}": "1.5", "{drw-transform}": "translate(1.5,1.5)" },
-        { "{dim}":   32, "{scn-transform}":  "scale(  2,  2)", "{stroke-width}": "1" },
+        { "{dim}":   16, "{scn-transform}":  "",               "{stroke-width}": "1",   "{drw-transform-main}": "translate(1,1)",     "{drw-transform-glow}": "translate(2,2)" },
+        { "{dim}":   24, "{scn-transform}":  "scale(1.5,1.5)", "{stroke-width}": "1.5", "{drw-transform-main}": "translate(1.5,1.5)" },
+        { "{dim}":   32, "{scn-transform}":  "scale(  2,  2)", "{stroke-width}": "1", },
         { "{dim}":   48, "{scn-transform}":  "scale(  3,  3)" },
         { "{dim}":   64, "{scn-transform}":  "scale(  4,  4)" },
         { "{dim}":   96, "{scn-transform}":  "scale(  6,  6)" },
@@ -78,59 +67,54 @@
       ],
 
       "{inp}": "{cur-dir}/{prj}.svg",
-      "{out}": "{cur-dir}/png/{look}/{prj}_{look}_{dim}x{dim}.png",
+      "{out}": "{cur-dir}/png/{prj}_{dim}x{dim}.png",
       "{cmd}": "{svg2png}"
     },
 
-    { "{look}": "main" },
-
     {
-      "{drop}": [ "{icon-data}", "{param}" ],
+      "{drop}": [ "{param}" ],
 
-      "{look-dir}": "{cur-dir}/png/{look}",
-      "{icon-name}": "{prj}_{look}",
-      "{icon-pthp}": "{look-dir}/{icon-name}",
+      "{png-dir}": "{cur-dir}/png",
+      "{icon-name}": "{prj}",
+      "{icon-pthp}": "{png-dir}/{icon-name}",
 
-      "{look}": [ "glow", "main", ],
       "{exe-pthp}": "{bin-os-dir}/{prj}",
 
       "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
         "{run}": [
-          //'png2icns "{icon-dir}/{look}/{icon-name}.icns" "{look-dir}/{icon-name}_16x16.png" "{look-dir}/{icon-name}_32x32.png" "{look-dir}/{icon-name}_128x128.png" "{look-dir}/{icon-name}_256x256.png" "{look-dir}/{icon-name}_512x512.png" "{look-dir}/{icon-name}_1024x1024.png"',
-          //'{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}_{look}.ico"',
-          '{sub} --move "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_48x48.png" "{icon-pthp}_96x96.png" "{icon-dir}"'
+          //'png2icns "{out-dir}/{icon-name}.icns" "{png-dir}/{icon-name}_16x16.png" "{png-dir}/{icon-name}_32x32.png" "{png-dir}/{icon-name}_128x128.png" "{png-dir}/{icon-name}_256x256.png" "{png-dir}/{icon-name}_512x512.png" "{png-dir}/{icon-name}_1024x1024.png"',
+          //'{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
+          '{sub} --move "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_48x48.png" "{icon-pthp}_96x96.png" "{out-dir}"'
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
-        "{look-dir-mac}": "{look-dir}.iconset",
+        "{png-dir-mac}": "{png-dir}.iconset",
         "{run}": [
-          'cp -p "{icon-pthp}_32x32.png" "{look-dir}/icon_16x16@2x.png"',
-          'mv -f "{icon-pthp}_64x64.png" "{look-dir}/icon_32x32@2x.png"',
-          'cp -p "{icon-pthp}_256x256.png" "{look-dir}/icon_128x128@2x.png"',
-          'cp -p "{icon-pthp}_512x512.png" "{look-dir}/icon_256x256@2x.png"',
-          'mv -f "{icon-pthp}_1024x1024.png" "{look-dir}/icon_512x512@2x.png"',
-          'mv -f "{icon-pthp}_16x16.png" "{look-dir}/icon_16x16.png"',
-          'mv -f "{icon-pthp}_32x32.png" "{look-dir}/icon_32x32.png"',
-          'mv -f "{icon-pthp}_128x128.png" "{look-dir}/icon_128x128.png"',
-          'mv -f "{icon-pthp}_256x256.png" "{look-dir}/icon_256x256.png"',
-          'mv -f "{icon-pthp}_512x512.png" "{look-dir}/icon_512x512.png"',
+          'cp -p "{icon-pthp}_32x32.png" "{png-dir}/icon_16x16@2x.png"',
+          'mv -f "{icon-pthp}_64x64.png" "{png-dir}/icon_32x32@2x.png"',
+          'cp -p "{icon-pthp}_256x256.png" "{png-dir}/icon_128x128@2x.png"',
+          'cp -p "{icon-pthp}_512x512.png" "{png-dir}/icon_256x256@2x.png"',
+          'mv -f "{icon-pthp}_1024x1024.png" "{png-dir}/icon_512x512@2x.png"',
+          'mv -f "{icon-pthp}_16x16.png" "{png-dir}/icon_16x16.png"',
+          'mv -f "{icon-pthp}_32x32.png" "{png-dir}/icon_32x32.png"',
+          'mv -f "{icon-pthp}_128x128.png" "{png-dir}/icon_128x128.png"',
+          'mv -f "{icon-pthp}_256x256.png" "{png-dir}/icon_256x256.png"',
+          'mv -f "{icon-pthp}_512x512.png" "{png-dir}/icon_512x512.png"',
           'rm -f "{icon-pthp}_24x24.png" "{icon-pthp}_48x48.png" "{icon-pthp}_96x96.png"',
 
-          '{sub} --move "{look-dir}" "{look-dir-mac}"',
-          'iconutil --convert icns -o "{icon-dir}/{look}/{icon-name}.icns" "{look-dir-mac}"'
+          '{sub} --move "{png-dir}" "{png-dir-mac}"',
+          'iconutil --convert icns -o "{out-dir}/{icon-name}.icns" "{png-dir-mac}"'
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
         "{run}": [
-          '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}_{look}.ico"',
+          '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
           '"${ProgramFiles}\\nodejs\\npm.cmd" install rcedit',
-          '"{cur-dir}\\node_modules\\rcedit\\bin\\rcedit-x64.exe" "{exe-pthp}.exe" --set-icon "{exe-pthp}_{look}.ico"',
-          '{sub} --delete "{exe-pthp}_{look}.ico"'
+          '"{cur-dir}\\node_modules\\rcedit\\bin\\rcedit-x64.exe" "{exe-pthp}.exe" --set-icon "{exe-pthp}.ico"',
+          '{sub} --delete "{exe-pthp}.ico"'
         ]
       } } } } } }
     },
 
     {
-      "{drop}": "{look}",
-
       "{run}": "{sub} --delete png svg"
     }
   ]
