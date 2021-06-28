@@ -57,7 +57,7 @@ jobs:
 
       - name: Install RCEdit on Windows
         if: runner.os == 'Windows'
-        run: "${env:ProgramFiles}\\nodejs\\npm.cmd" install rcedit
+        run: npm.cmd install rcedit
 
       ################################################################################
 
