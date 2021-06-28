@@ -55,12 +55,6 @@ jobs:
 
       ################################################################################
 
-      - name: Install RCEdit on Windows
-        if: runner.os == 'Windows'
-        run: npm.cmd install rcedit
-
-      ################################################################################
-
       - name: Install ImageMagick on Windows
         if: runner.os == 'Windows'
         run: |
