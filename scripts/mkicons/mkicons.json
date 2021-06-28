@@ -107,6 +107,7 @@
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
         "{run}": [
           '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
+          '{shell} dir "{bin-os-dir}"',
           '"{cur-dir}\\node_modules\\rcedit\\bin\\rcedit-x64.exe" "{exe-pthp}.exe" --set-icon "{exe-pthp}.ico"',
           '{sub} --delete "{exe-pthp}.ico"'
         ]
