@@ -116,7 +116,7 @@ class ConfigFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String importFiles(String paramNameImport, {String impPath, impPathsSerialized}) {
+  String importFiles(String paramNameImport, {String impPath, String impPathsSerialized}) {
     try {
       var fullText = StringExt.EMPTY;
       var keyPrefix = 'import';
@@ -126,28 +126,30 @@ class ConfigFileLoader {
         fullText = text;
       }
       else {
-        fullText += '{';
-
         var jsonData = json5Decode('{"$paramNameImport": $impPathsSerialized}');
         var jsonText = StringExt.EMPTY;
         var impPaths = jsonData[paramNameImport];
 
-        for (impPath in impPaths) {
-          loadSync(impPath);
+        if (impPaths is List) {
+          fullText += '{';
 
-          if (fullText.length > 1) {
-            fullText += RECORD_SEP;
+          for (impPath in impPaths) {
+            loadSync(impPath);
+
+            if (fullText.length > 1) {
+              fullText += RECORD_SEP;
+            }
+
+            var key = getImportFileKey(keyPrefix, impPath: impPath);
+            var map = <String, Object>{};
+            map[key] = json5Decode(text);
+
+            jsonText = jsonEncode(map).replaceAll(RE_JSON_MAP_BRACES, StringExt.EMPTY);
+            fullText += jsonText;
           }
 
-          jsonData = json5Decode(text);
-          var map = <String, Object>{};
-          map[getImportFileKey(keyPrefix, impPath: impPath)] = jsonData.values.toList()[0];
-
-          jsonText = jsonEncode(map).replaceAll(RE_JSON_MAP_BRACES, StringExt.EMPTY);
-          fullText += jsonText;
+          fullText += '}';
         }
-
-        fullText += '}';
       }
 
       clear();
@@ -168,10 +170,8 @@ class ConfigFileLoader {
       return this;
     }
 
-    var subPattern = RegExp.escape(paramNameImport);
-
-    //var pattern = r'([\{\[\,])\s*\"' + RegExp.escape(paramNameImport) + r'\"\s*\:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}])';
-    var pattern = "('${subPattern}'|\"${subPattern}\")" + r'\s*:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}]|\/\/|\/\*)';
+    var paramPattern = RegExp.escape(paramNameImport);
+    var pattern = "('${paramPattern}'|\"${paramPattern}\")" + r'\s*:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}]|\/\/|\/\*)';
     var regExp = RegExp(pattern);
 
     if (!regExp.hasMatch(_text)) {
@@ -247,7 +247,7 @@ class ConfigFileLoader {
       _text = (_file.readAsStringSync() ?? StringExt.EMPTY);
     }
 
-    //_text = _text.purifyJson();
+    _text = _text.purifyJson(); // still needed for imports
 
     if (fileInfo.jsonPath.isEmpty) {
       _data = json5Decode(_text);
