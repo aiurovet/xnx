@@ -168,7 +168,10 @@ class ConfigFileLoader {
       return this;
     }
 
-    var pattern = r'([\{\[\,])\s*\"' + RegExp.escape(paramNameImport) + r'\"\s*\:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}])';
+    var subPattern = RegExp.escape(paramNameImport);
+
+    //var pattern = r'([\{\[\,])\s*\"' + RegExp.escape(paramNameImport) + r'\"\s*\:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}])';
+    var pattern = "('${subPattern}'|\"${subPattern}\")" + r'\s*:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}]|\/\/|\/\*)';
     var regExp = RegExp(pattern);
 
     if (!regExp.hasMatch(_text)) {
@@ -183,10 +186,9 @@ class ConfigFileLoader {
     _text = _text.replaceAllMapped(regExp, (match) {
       var impPath = match.group(4);
       var impPathsSerialized = match.group(5);
+      var elemSep = match.group(6);
 
-      var openChar = match.group(1);
-      var closeChar = match.group(6);
-      var result = openChar + lf.importFiles(paramNameImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + closeChar;
+      var result = lf.importFiles(paramNameImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + elemSep;
 
       return result;
     });
