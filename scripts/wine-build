@@ -34,6 +34,7 @@ cp -pr "${TOP}" "${WIN_ABV}" || exitApp 1 "Failed to copy project to Windows dir
 echo "Copied the latest version to Windows directory"
 
 if (( ${COPY_ONLY} == 0 )); then
+  export WINE=1
   wine cmd /c "C:\\Users\\${USER}\\IdeaProjects\\${PRJ}\\scripts\\build" ${@} 2>&1 | grep -Piv "\\:fixme\\:|FormatMessage failed" || exitApp 1 "Failed to execute Windows build"
 
   rm -rf "${TOP}/bin/Windows"

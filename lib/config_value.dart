@@ -22,7 +22,13 @@ class ConfigValue {
 
   var offset = 0;
 
-  ConfigValue({Object key, @required Object data, this.parent, @required this.listOfLists, @required this.valueParsed}) {
+  ConfigValue({
+    @required Object key,
+    @required Object data,
+    @required this.parent,
+    @required this.listOfLists,
+    @required this.valueParsed
+  }) {
     this.key = key.toString();
     isEnabled = true;
     valueParsed = valueParsed ?? parent?.valueParsed;

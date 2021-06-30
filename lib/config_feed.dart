@@ -15,10 +15,7 @@ class ConfigFeed {
   ConfigFeed({
     @required this.dataParsed,
     @required this.mapExec
-  }) {
-    assert(dataParsed != null);
-    assert(mapExec != null);
-  }
+  });
 
   //////////////////////////////////////////////////////////////////////////////
 

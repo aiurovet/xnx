@@ -214,6 +214,7 @@ class Config {
           if (!isBlank) {
             data.data = resolveIfDeep(value, true);
             data.key = paramNameResolvedIf;
+            return ConfigEventResult.ok;
           }
 
           return ConfigEventResult.ok;

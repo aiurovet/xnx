@@ -19,10 +19,10 @@
   },
 
   "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
-    // Chrome under Wine is out of date, ImageMagick and Inkscape are unable to process
+    // Chrome under Wine is out of date, ImageMagick and Inkscape are failing to process
     "{run}": "cmd /c echo Creating app icons under Wine is disabled",
     "{next}": null
-    //"{svg2png}": "inkscape -z -o \\\"{out}\\\" -w {dim} -h {dim} \\\"{inp}\\\""
+    //"{svg2png}": 'inkscape -z -o "{out}" -w {dim} -h {dim} "{inp}"'
     //"{svg2png}": "{convert} \"{inp}\" \"{out}\""
   }, "{{-else-}}": {
     // Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
@@ -84,7 +84,7 @@
         "{run}": [
           //'png2icns "{out-dir}/{icon-name}.icns" "{png-dir}/{icon-name}_16x16.png" "{png-dir}/{icon-name}_32x32.png" "{png-dir}/{icon-name}_128x128.png" "{png-dir}/{icon-name}_256x256.png" "{png-dir}/{icon-name}_512x512.png" "{png-dir}/{icon-name}_1024x1024.png"',
           //'{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
-          '{sub} --move "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_48x48.png" "{icon-pthp}_96x96.png" "{out-dir}"'
+          '{sub} --move "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_64x64.png" "{icon-pthp}_96x96.png" "{out-dir}"'
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
         "{png-dir-mac}": "{png-dir}.iconset",
