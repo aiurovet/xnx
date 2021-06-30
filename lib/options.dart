@@ -82,7 +82,7 @@ class Options {
   };
   static final Map<String, Object> CMD_ECHO = {
     'name': 'echo',
-    'help': 'print arguments to stdout',
+    'help': 'just print arguments to stdout',
     'negatable': false,
   };
   static final Map<String, Object> CMD_COPY = {

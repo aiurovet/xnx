@@ -247,10 +247,9 @@ class ConfigFileLoader {
       _text = (_file.readAsStringSync() ?? StringExt.EMPTY);
     }
 
-    _text = _text.purifyJson(); // still needed for imports
-
     if (fileInfo.jsonPath.isEmpty) {
       _data = json5Decode(_text);
+      _text = jsonEncode(_data);
     }
     else {
       var data = <Object>[];
@@ -260,10 +259,10 @@ class ConfigFileLoader {
 
       if ((jsonPath != null) && (decoded != null)) {
         data.addAll(jsonPath.read(decoded).map((x) => x.value));
-
         _data = data;
-        _text = (data.isEmpty ? StringExt.EMPTY : jsonEncode(_data));
       }
+
+      _text = (data.isEmpty ? StringExt.EMPTY : jsonEncode(_data));
     }
 
     return this;

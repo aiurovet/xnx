@@ -1,5 +1,5 @@
 {
-  "{{-aliases-}}": {
+  "{{-rename-keywords-}}": {
     "{{-can-expand-content-}}": "{CEC}",
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{CD}",

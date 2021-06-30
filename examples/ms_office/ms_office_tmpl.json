@@ -1,7 +1,7 @@
 // This is a template file used to expand to the actual configuration, which
 // in turn, will be used to expand XML files extracted from an MS Office file
 {
-  "{{-aliases-}}": {
+  "{{-rename-keywords-}}": {
     "{{-cmd-}}": "{c}",
     "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{i}",

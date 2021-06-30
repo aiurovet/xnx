@@ -3,7 +3,7 @@
 // Requires: Google Chrome, ImageMagick's convert, png2icns as well as InkScape for Wine
 
 {
-  "{{-aliases-}}": {
+  "{{-rename-keywords-}}": {
     "{{-cmd-}}": "{cmd}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",

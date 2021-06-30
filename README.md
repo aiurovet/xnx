@@ -188,7 +188,7 @@ See the details of the imported file `cmd.json` beyond this configuration
 {
   // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
 
-  "{{-aliases-}}": {
+  "{{-rename-keywords-}}": {
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",

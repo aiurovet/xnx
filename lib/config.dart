@@ -15,7 +15,7 @@ class Config {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final String CFG_ALIASES = '{{-aliases-}}';
+  static final String CFG_RENAMES = '{{-rename-keywords-}}';
 
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
@@ -147,15 +147,15 @@ class Config {
 
     _logger.information('Processing configuration data');
 
-    Map<String, Object> aliases;
+    Map<String, Object> renames;
 
-    if (all.containsKey(CFG_ALIASES)) {
-      var map = all[CFG_ALIASES];
+    if (all.containsKey(CFG_RENAMES)) {
+      var map = all[CFG_RENAMES];
 
       if (map is Map<String, Object>) {
-        aliases = {};
-        aliases.addAll(map);
-        all.remove(CFG_ALIASES);
+        renames = {};
+        renames.addAll(map);
+        all.remove(CFG_RENAMES);
       }
     }
 
@@ -168,7 +168,7 @@ class Config {
     var action = (actionKey == null ? all : all[actionKey]);
 
     _logger.information('Processing renames');
-    setActualParamNames(aliases);
+    setActualParamNames(renames);
 
     if (action != null) {
       _logger.information('Processing actions');
