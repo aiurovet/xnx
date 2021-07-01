@@ -195,7 +195,6 @@ See the details of the imported file `cmd.json` beyond this configuration
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
     "{{-next-}}": "{next}",
-    "{{-sub-}}": "{sub}"
   },
 
   "{{-import-}}": "../cmd.json",
@@ -215,7 +214,7 @@ See the details of the imported file `cmd.json` beyond this configuration
   // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
 
   // The most accurate. Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
-  "{c}": "{chrome} --headless --disable-gpu --default-background-color=0 --window-size={d},{d} --screenshot={o} \"file://{i}\"",
+  "{c}": "{svg2png} --window-size={d},{d} --screenshot={o} \"file://{i}\"",
 
   "{img-src-dir}": "{cur-dir}/assets/images",
 
@@ -236,7 +235,7 @@ See the details of the imported file `cmd.json` beyond this configuration
         { "{d}":  192, "{r}": "xxxh" }
       ],
 
-      "{o}": "android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
+      "{o}": "{cur-dir}/android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
     },
 
     {
@@ -267,12 +266,12 @@ See the details of the imported file `cmd.json` beyond this configuration
         { "{d}":  167, "{r}": 83.5, "{k}": 2 }
       ],
 
-      "{o}": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
+      "{o}": "{cur-dir}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
     },
 
     {
       "{d}": [ 192, 512 ],
-      "{o}":  "web/icons/Icon-{d}.png"
+      "{o}":  "{cur-dir}/web/icons/Icon-{d}.png"
     }
   ]
 }
