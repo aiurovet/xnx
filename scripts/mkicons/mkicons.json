@@ -14,19 +14,13 @@
     "{{-next-}}": "{next}",
     "{{-out-}}": "{out}",
     "{{-run-}}": "{run}",
-    "{{-stop-}}": "{stop}", // stop immediately
-    "{{-sub-}}": "{sub}"
+    "{{-stop-}}": "{stop}" // stop immediately
   },
 
   "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
     // Chrome under Wine is out of date, ImageMagick and Inkscape are failing to process
     "{run}": "cmd /c echo Creating app icons under Wine is disabled",
     "{next}": null
-    //"{svg2png}": 'inkscape -z -o "{out}" -w {dim} -h {dim} "{inp}"'
-    //"{svg2png}": "{convert} \"{inp}\" \"{out}\""
-  }, "{{-else-}}": {
-    // Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
-    "{svg2png}": '{chrome} --headless --default-background-color=0 --window-size={dim},{dim} --screenshot={out} "file://{inp}"'
   } },
 
   "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
@@ -42,9 +36,9 @@
     {
       "{run}": [
         // Remove possible remnants from the previous run
-        "{sub} --delete out png svg",
+        "--delete out png svg",
         // Ensure temporary and the OS-specific output and icon directories are created
-        '{sub} --mkdir png svg "{out-dir}"'
+        '--mkdir png svg "{out-dir}"'
       ]
     },
 
@@ -68,7 +62,7 @@
 
       "{inp}": "{cur-dir}/{prj}.svg",
       "{out}": "{cur-dir}/png/{prj}_{dim}x{dim}.png",
-      "{cmd}": "{svg2png}"
+      "{cmd}": "{svg2png} --window-size={dim},{dim} --screenshot={out} \"file://{inp}\""
     },
 
     {
@@ -84,7 +78,7 @@
         "{run}": [
           //'png2icns "{out-dir}/{icon-name}.icns" "{png-dir}/{icon-name}_16x16.png" "{png-dir}/{icon-name}_32x32.png" "{png-dir}/{icon-name}_128x128.png" "{png-dir}/{icon-name}_256x256.png" "{png-dir}/{icon-name}_512x512.png" "{png-dir}/{icon-name}_1024x1024.png"',
           //'{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
-          '{sub} --move "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_64x64.png" "{icon-pthp}_96x96.png" "{out-dir}"'
+          '--move "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_64x64.png" "{icon-pthp}_96x96.png" "{out-dir}"'
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
         "{png-dir-mac}": "{png-dir}.iconset",
@@ -101,20 +95,20 @@
           'mv -f "{icon-pthp}_512x512.png" "{png-dir}/icon_512x512.png"',
           'rm -f "{icon-pthp}_24x24.png" "{icon-pthp}_48x48.png" "{icon-pthp}_96x96.png"',
 
-          '{sub} --move "{png-dir}" "{png-dir-mac}"',
+          '--move "{png-dir}" "{png-dir-mac}"',
           'iconutil --convert icns -o "{out-dir}/{icon-name}.icns" "{png-dir-mac}"'
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
         "{run}": [
           '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
           '"${ProgramFiles(x86)}\\Resource Hacker\\ResourceHacker.exe" -open "{exe-pthp}.exe" -save "{exe-pthp}.exe" -action addskip -res "{exe-pthp}.ico" -mask ICONGROUP,MAINICON',
-          '{sub} --delete "{exe-pthp}.ico"'
+          '--delete "{exe-pthp}.ico"'
         ]
       } } } } } }
     },
 
     {
-      "{run}": "{sub} --delete png svg"
+      "{run}": "--delete png svg"
     }
   ]
 }

@@ -17,6 +17,8 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static const String HELP_MIN = '-?';
+
   static final Map<String, Object> APPEND_SEP = {
     'name': 'append-sep',
     'abbr': 's',
@@ -71,7 +73,7 @@ class Options {
   static final Map<String, Object> VERBOSITY = {
     'name': 'verbosity',
     'abbr': 'v',
-    'help': 'how much information to show (0-6): quiet, errors, stdout, some info (default), warnings, any info, debug',
+    'help': 'how much information to show: 0-6, or: quiet, errors, stdout, moderate, warnings, info, debug\n(defaults to "moderate")',
     'valueHelp': 'LEVEL'
   };
   static final Map<String, Object> XARGS = {
@@ -346,10 +348,8 @@ class Options {
         }
       })
       ..addOption(VERBOSITY['name'], abbr: VERBOSITY['abbr'], help: VERBOSITY['help'], valueHelp: VERBOSITY['valueHelp'], defaultsTo: VERBOSITY['defaultsTo'], callback: (value) {
-        var level = (StringExt.isNullOrBlank(value) ?  Logger.LEVEL_UNKNOWN : int.parse(value));
-
-        if ((level != null) && (level != Logger.LEVEL_UNKNOWN) || !_logger.hasLevel) {
-          _logger.level = level;
+        if (value != null) {
+          _logger.levelAsString = value;
         }
       })
       ..addFlag(XARGS['name'], abbr: XARGS['abbr'], help: XARGS['help'], negatable: XARGS['negatable'], callback: (value) {
@@ -550,7 +550,7 @@ class Options {
       _logger.level = Logger.LEVEL_DEFAULT;
     }
 
-    if ((args == null) || args.isEmpty) {
+    if ((args == null) || args.isEmpty || args.contains(HELP_MIN)) {
       printUsage(parser);
     }
 

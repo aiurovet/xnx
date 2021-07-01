@@ -57,7 +57,6 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String cmdNameExpand = '{{-expand-content-}}';
-  String cmdNameSub = '{{-sub-}}';
 
   //////////////////////////////////////////////////////////////////////////////
   // Pre-defined conditional operators
@@ -647,9 +646,6 @@ class Config {
 
       else if (k == cmdNameExpand) {
         cmdNameExpand = v;
-      }
-      else if (k == cmdNameSub) {
-        cmdNameSub = v;
       }
     });
 

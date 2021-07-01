@@ -10,7 +10,6 @@ class Logger {
   static const String FORMAT_DEFAULT = null;
   static const String FORMAT_SIMPLE = '[$STUB_TIME] [$STUB_LEVEL] $STUB_MESSAGE';
 
-  static const int LEVEL_UNKNOWN = -1;
   static const int LEVEL_SILENT = 0;
   static const int LEVEL_ERROR = 1;
   static const int LEVEL_OUT = 2;
@@ -21,18 +20,33 @@ class Logger {
 
   static const int LEVEL_DEFAULT = LEVEL_OUT_INFO;
 
+  static const LEVELS = [ 'quiet', 'errors', 'stdout', 'moderate', 'warnings', 'info', 'debug' ];
+
   static final RegExp RE_PREFIX = RegExp(r'^', multiLine: true);
 
   String _format = FORMAT_DEFAULT;
   String get format => _format;
   set format(String value) => _format = (StringExt.isNullOrEmpty(value) ? null : value);
 
-  int _level = LEVEL_UNKNOWN;
+  int _level = LEVEL_DEFAULT;
   int get level => _level;
 
   set level(int value) =>
-    _level = value < 0 ? LEVEL_UNKNOWN :
+    _level = value < 0 ? LEVEL_DEFAULT :
              value >= LEVEL_DEBUG ? LEVEL_DEBUG : value;
+
+  set levelAsString(String value) {
+    if (StringExt.isNullOrBlank(value)) {
+      _level = LEVEL_DEFAULT;
+    }
+    else {
+      _level = LEVELS.indexOf(value);
+
+      if (_level < 0) {
+        _level = int.tryParse(value) ?? LEVEL_DEFAULT;
+      }
+    }
+  }
 
   void debug(String data) {
     print(data, LEVEL_DEBUG);
@@ -58,7 +72,7 @@ class Logger {
 
   bool hasMinLevel(int minLevel) => (_level >= minLevel);
 
-  bool get hasLevel => (_level > LEVEL_UNKNOWN);
+  bool get hasLevel => (_level != LEVEL_DEFAULT);
 
   bool get isDefault => (_level == LEVEL_DEFAULT);
 

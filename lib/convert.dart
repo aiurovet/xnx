@@ -25,6 +25,7 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static const String FILE_TYPE_TMP = '.tmp';
+  static final RegExp EXE_SUB_RE = RegExp(r'^(-.?|--.*)$');
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -393,7 +394,8 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       var exe = cli[0][0];
       var args = cli[1];
 
-      if (exe == _config.cmdNameSub) {
+      if (EXE_SUB_RE.hasMatch(exe)) {
+        args.insert(0, exe);
         Doul(logger: _logger).exec(args);
         isSuccess = true;
       }

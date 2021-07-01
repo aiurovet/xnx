@@ -7,11 +7,11 @@
     "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
       "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
         "{OsType}": "macOS",
-        "{chrome}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\"",
+        "{svg2png}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --default-background-color=0",
         "{shell}": "zsh -c"
       }, "{{-else-}}": {
         "{OsType}": "Linux",
-        "{chrome}": "google-chrome", // you can use chromium too
+        "{svg2png}": "google-chrome --headless --default-background-color=0", // you can use chromium too
         "{shell}": "bash -c"
       } },
       "{convert}": "convert",
@@ -26,7 +26,7 @@
       "{move}": "ren",
       "{delete}": "del /F/Q/S",
       "{mkdir}": "mkdir",
-      "{chrome}": "chrome",
+      "{svg2png}": "chrome --headless --default-background-color=0 --disable-gpu",
       "{convert}": "magick convert",
       "{shell}": "cmd /c",
       "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500"
@@ -34,10 +34,10 @@
 
     "{this}": "$0",
 
-    "{copy-newer}": "{sub} --copy-newer",
-    "{move-newer}": "{sub} --move-newer",
-    "{zip}": "{sub} --zip",
-    "{unzip}": "{sub} --unzip",
+    "{copy-newer}": "--copy-newer",
+    "{move-newer}": "--move-newer",
+    "{zip}": "--zip",
+    "{unzip}": "--unzip",
 
     "{rename}": "{move}",
     "{rename-newer}": "{move-newer}",

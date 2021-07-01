@@ -4,7 +4,6 @@
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
     "{{-run-}}": "{r}",
-    "{{-sub-}}": "{s}"
   },
 
   "{{-import-}}": "../cmd.json",
@@ -20,5 +19,5 @@
     "{OsType}": "Windows"
   } } } },
 
-  "{r}": '{s} --echo "OS type: {OsType}"'
+  "{r}": '--echo "OS type: {OsType}"'
 }
