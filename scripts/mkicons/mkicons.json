@@ -25,11 +25,18 @@
 
   "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
   "{prj}": "doul",
+  "{icon-name}": "{prj}{look}",
 
   "{{-import-}}": "../../examples/cmd.json",
 
-  "{bin-os-dir}": "{cur-dir}/../../bin/{OsType}",
+  "{bin-os-dir}": "{cur-dir}/../../bin/{OsTypeLC}",
+
   "{out-dir}": "{bin-os-dir}",
+
+  "{lnf}": [
+    { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", "{win-icon-id}": "MAINICON,0" },
+    { "{look}": "_dark", "{icon-stroke}": "white", "{icon-fill}": "black", "{win-icon-id}": "DARKICON,1" }
+  ],
 
   "{R}": [
     // Ensure directory structure matches expectations
@@ -61,15 +68,14 @@
       ],
 
       "{inp}": "{cur-dir}/{prj}.svg",
-      "{out}": "{cur-dir}/png/{prj}_{dim}x{dim}.png",
+      "{out}": "{cur-dir}/png/{icon-name}_{dim}x{dim}.png",
       "{cmd}": "{svg2png} --window-size={dim},{dim} --screenshot={out} \"file://{inp}\""
     },
 
     {
-      "{drop}": [ "{param}" ],
+      "{drop}": "{param}",
 
       "{png-dir}": "{cur-dir}/png",
-      "{icon-name}": "{prj}",
       "{icon-pthp}": "{png-dir}/{icon-name}",
 
       "{exe-pthp}": "{bin-os-dir}/{prj}",
@@ -101,14 +107,14 @@
       }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
         "{run}": [
           '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
-          '"${ProgramFiles(x86)}\\Resource Hacker\\ResourceHacker.exe" -open "{exe-pthp}.exe" -save "{exe-pthp}.exe" -action addskip -res "{exe-pthp}.ico" -mask ICONGROUP,MAINICON',
+          '"${ProgramFiles(x86)}\\Resource Hacker\\ResourceHacker.exe" -open "{exe-pthp}.exe" -save "{exe-pthp}.exe" -action addskip -res "{exe-pthp}.ico" -mask ICONGROUP,{win-icon-id}',
           '--delete "{exe-pthp}.ico"'
         ]
       } } } } } }
     },
 
     {
-      "{run}": "--delete png svg"
+      "{run}": "--delete png svg",
     }
   ]
 }

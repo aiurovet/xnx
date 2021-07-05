@@ -1,27 +1,26 @@
 ## doul
 
-**Copyright © Alexander Iurovetski, 2020 - 2021**
+**Copyright © Alexander Iurovetski 2020 - 2021**
 
 Command-line utility to run multiple commands against the same input with various parameters, and optionally, to expand placeholders inside the input
 
 ##### USAGE:
 
 ```
-doul [OPTIONS]
-
--q, --quiet                  quiet mode (no output except when "-" is specified as output)
--v, --verbosity=<LEVEL>      how much information to show: 0-3
-                             (defaults to "1")
+-h, --help                   this help screen
+-q, --quiet                  quiet mode (no output, same as verbosity 0)
+-v, --verbosity=<LEVEL>      how much information to show: 0-6, or: quiet, errors, stdout, moderate, warnings, info, debug
+                             (defaults to "moderate")
 -x, --xargs                  treat each plain argument independently (e.g. can pass multiple filenames as arguments)
 -c, --config=<FILE>          configuration file in json format
 -l, --list-only              display all commands, but do not execute those; if no command specified, then show config
 -s, --append-sep             append record separator "," when filtering input config file (for "list-only" exclusively)
 -f, --force                  ignore timestamps and force conversion
--h, --help                   this help screen
 -d, --dir=<DIR>              startup directory
                              (defaults to ".")
 -p, --compression=<LEVEL>    compression level for archiving-related operations (1..9) excepting BZip2
                              (defaults to "6")
+    --echo                   just print arguments to stdout
     --copy                   just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
     --copy-newer             just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
     --move                   just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
