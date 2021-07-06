@@ -9,8 +9,8 @@ Command-line utility to run multiple commands against the same input with variou
 ```
 -h, --help                   this help screen
 -q, --quiet                  quiet mode (no output, same as verbosity 0)
--v, --verbosity=<LEVEL>      how much information to show: 0-6, or: quiet, errors, stdout, moderate, warnings, info, debug
-                             (defaults to "moderate")
+-v, --verbosity=<LEVEL>      how much information to show: 0-5, or: quiet, errors, normal, warnings, info, debug
+                             (defaults to "normal")
 -x, --xargs                  treat each plain argument independently (e.g. can pass multiple filenames as arguments)
 -c, --config=<FILE>          configuration file in json format
 -l, --list-only              display all commands, but do not execute those; if no command specified, then show config
@@ -20,7 +20,7 @@ Command-line utility to run multiple commands against the same input with variou
                              (defaults to ".")
 -p, --compression=<LEVEL>    compression level for archiving-related operations (1..9) excepting BZip2
                              (defaults to "6")
-    --echo                   just print arguments to stdout
+    --print                  just print the arguments to stdout
     --copy                   just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
     --copy-newer             just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
     --move                   just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)

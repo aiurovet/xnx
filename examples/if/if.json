@@ -19,5 +19,5 @@
     "{OsType}": "Windows"
   } } } },
 
-  "{r}": '--echo "OS type: {OsType}"'
+  "{r}": '--print "OS type: {OsType}"'
 }

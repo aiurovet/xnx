@@ -72,7 +72,7 @@ class Options {
   static final Map<String, Object> VERBOSITY = {
     'name': 'verbosity',
     'abbr': 'v',
-    'help': 'how much information to show: 0-6, or: quiet, errors, stdout, moderate, warnings, info, debug\n(defaults to "moderate")',
+    'help': 'how much information to show: 0-6, or: quiet, errors, normal, warnings, info, debug\n(defaults to "normal")',
     'valueHelp': 'LEVEL'
   };
   static final Map<String, Object> XARGS = {
@@ -81,9 +81,9 @@ class Options {
     'help': 'treat each plain argument independently (e.g. can pass multiple filenames as arguments)',
     'negatable': false,
   };
-  static final Map<String, Object> CMD_ECHO = {
-    'name': 'echo',
-    'help': 'just print arguments to stdout',
+  static final Map<String, Object> CMD_PRINT = {
+    'name': 'print',
+    'help': 'just print the arguments to stdout',
     'negatable': false,
   };
   static final Map<String, Object> CMD_COPY = {
@@ -262,7 +262,7 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   bool get isCmd => (
-    _isCmdEcho ||
+    _isCmdPrint ||
     _isCmdCopy || _isCmdCopyNewer ||
     _isCmdDelete || _isCmdCreate ||
     _isCmdMove || _isCmdMoveNewer ||
@@ -289,8 +289,8 @@ class Options {
   bool _isCmdDelete;
   bool get isCmdDelete => _isCmdDelete;
 
-  bool _isCmdEcho;
-  bool get isCmdEcho => _isCmdEcho;
+  bool _isCmdPrint;
+  bool get isCmdPrint => _isCmdPrint;
 
   bool _isCmdCreate;
   bool get isCmdCreateDir => _isCmdCreate;
@@ -333,7 +333,7 @@ class Options {
     _isAppendSep = false;
     _isListOnly = false;
 
-    _isCmdEcho = false;
+    _isCmdPrint = false;
     _isCmdCompress = false;
     _isCmdDecompress = false;
     _isCmdMove = false;
@@ -375,8 +375,8 @@ class Options {
       ..addOption(COMPRESSION['name'], abbr: COMPRESSION['abbr'], help: COMPRESSION['help'], valueHelp: COMPRESSION['valueHelp'], defaultsTo: COMPRESSION['defaultsTo'], callback: (value) {
         _compression = int.parse(value);
       })
-      ..addFlag(CMD_ECHO['name'], help: CMD_ECHO['help'], negatable: CMD_ECHO['negatable'], callback: (value) {
-        _isCmdEcho = value;
+      ..addFlag(CMD_PRINT['name'], help: CMD_PRINT['help'], negatable: CMD_PRINT['negatable'], callback: (value) {
+        _isCmdPrint = value;
       })
       ..addFlag(CMD_COPY['name'], help: CMD_COPY['help'], negatable: CMD_COPY['negatable'], callback: (value) {
         _isCmdCopy = value;
@@ -623,20 +623,12 @@ class Options {
       }
     }
 
-    printSystemInfo();
-
     if (!StringExt.isNullOrBlank(_startDirName)) {
       _logger.information('Setting current directory to: "$_startDirName"');
       Directory.current = _startDirName;
     }
 
     unquotePlainArgs();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void printSystemInfo() {
-    _logger.information('OS type: ' + StringExt.getEnvironmentVariable('OSTYPE', defValue: StringExt.UNKNOWN));
   }
 
   //////////////////////////////////////////////////////////////////////////////

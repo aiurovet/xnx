@@ -19,7 +19,7 @@
 
   "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
     // Chrome under Wine is out of date, ImageMagick and Inkscape are failing to process
-    "{run}": "cmd /c echo Creating app icons under Wine is disabled",
+    "{run}": "--print Creating app icons under Wine is disabled",
     "{next}": null
   } },
 
@@ -45,7 +45,7 @@
         // Remove possible remnants from the previous run
         "--delete out png svg",
         // Ensure temporary and the OS-specific output and icon directories are created
-        '--mkdir png svg "{out-dir}"'
+        '--mkdir png svg "{out-dir}"',
       ]
     },
 

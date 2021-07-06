@@ -26,6 +26,7 @@ class Convert {
 
   static const String FILE_TYPE_TMP = '.tmp';
   static final RegExp EXE_SUB_RE = RegExp(r'^(-.?|--.*)$');
+  static final RegExp EXE_SUB_PRINT_RE = RegExp(r'^--print([\s]|$)');
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -86,13 +87,13 @@ class Convert {
     var arg1 = (end >= 0 ? args[0] : null);
     var arg2 = (end >= 1 ? args[1] : null);
 
-    final isEcho = _options.isCmdEcho;
+    final isPrint = _options.isCmdPrint;
     final isCompress = _options.isCmdCompress;
     final isDecompress = _options.isCmdDecompress;
     final isMove = _options.isCmdMove;
 
-    if (isEcho) {
-      _logger.out(_options.plainArgs?.join(StringExt.SPACE) ?? StringExt.EMPTY);
+    if (isPrint) {
+      execPrint(_options.plainArgs, isSilent: isSilent);
     }
     else if (isCompress || isDecompress) {
       final archPath = (isDecompress ? arg1 : (end >= 0 ? args[end] : 0));
@@ -363,17 +364,16 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
-    var isVerbose = _logger.isDetailed;
+    var isPrint = EXE_SUB_PRINT_RE.hasMatch(command);
+    var canRun = (!_options.isListOnly && !isExpandContentOnly);
 
-    if (_options.isListOnly || isExpandContentOnly || !isVerbose) {
-      _logger.outInfo(command);
+    if (!canRun || !isPrint) {
+      _logger.out(command);
     }
 
-    if (_options.isListOnly || isExpandContentOnly) {
+    if (!canRun) {
       return true;
     }
-
-    _logger.information(command);
 
     const isProcessRunSyncUsed = true;
 
@@ -395,8 +395,14 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       var args = cli[1];
 
       if (EXE_SUB_RE.hasMatch(exe)) {
-        args.insert(0, exe);
-        Doul(logger: _logger).exec(args);
+        if (isPrint) {
+          execPrint(args);
+        }
+        else {
+          args.insert(0, exe);
+          Doul(logger: _logger).exec(args);
+        }
+
         isSuccess = true;
       }
       else {
@@ -462,6 +468,14 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     }
 
     return true;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void execPrint(List<String> args, {bool isSilent}) {
+    if (!(isSilent ?? false)) {
+      _logger.out(args?.join(StringExt.SPACE) ?? StringExt.EMPTY);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -729,7 +743,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
       cmd = getValue(map, key: key, value: cmd, canReplace: true);
 
-      _logger.outInfo('Output is up to date for\n\t$cmd\n');
+      _logger.out('Output is up to date for\n\t$cmd\n');
     }
 
     return ConfigEventResult.ok;

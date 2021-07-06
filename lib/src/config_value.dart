@@ -32,6 +32,7 @@ class ConfigValue {
   }) {
     this.key = key.toString();
     isEnabled = true;
+    isReached = false;
     valueParsed = valueParsed ?? parent?.valueParsed;
 
     if (valueParsed != null) {
@@ -247,20 +248,17 @@ class ConfigValue {
 
   void restart() {
     isEnabled = true;
+    isReached = false;
     offset = 0;
 
     if (list != null) {
       for (var v in list) {
-        if (!v.isPlain) {
-          v.restart();
-        }
+        v.restart();
       }
     }
     if (map != null) {
       map.forEach((k, v) {
-        if (!v.isPlain) {
-          v.restart();
-        }
+        v.restart();
       });
     }
   }

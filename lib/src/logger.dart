@@ -13,14 +13,13 @@ class Logger {
   static const int LEVEL_SILENT = 0;
   static const int LEVEL_ERROR = 1;
   static const int LEVEL_OUT = 2;
-  static const int LEVEL_OUT_INFO = 3;
-  static const int LEVEL_WARNING = 4;
-  static const int LEVEL_INFORMATION = 5;
-  static const int LEVEL_DEBUG = 6;
+  static const int LEVEL_WARNING = 3;
+  static const int LEVEL_INFORMATION = 4;
+  static const int LEVEL_DEBUG = 5;
 
-  static const int LEVEL_DEFAULT = LEVEL_OUT_INFO;
+  static const int LEVEL_DEFAULT = LEVEL_OUT;
 
-  static const LEVELS = [ 'quiet', 'errors', 'stdout', 'moderate', 'warnings', 'info', 'debug' ];
+  static const LEVELS = [ 'quiet', 'errors', 'normal', 'warnings', 'info', 'debug' ];
 
   static final RegExp RE_PREFIX = RegExp(r'^', multiLine: true);
 
@@ -100,10 +99,6 @@ class Logger {
 
   void out(String data) {
     print(data, LEVEL_OUT);
-  }
-
-  void outInfo(String data) {
-    print(data, LEVEL_OUT_INFO);
   }
 
   void print(String msg, int level) {

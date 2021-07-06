@@ -83,8 +83,10 @@
     },
 
     {
-      "{d}": [ 192, 512 ],
-      "{o}":  "{cur-dir}/web/icons/Icon-{d}.png"
+      "{dim}": [
+        { "{d}": [ 16, 32, ], "{o}":  "{cur-dir}/web/icons/favicon-{d}x{d}.png" },
+        { "{d}": [ 120, 152, 167, 180 ], "{o}":  "{cur-dir}/web/icons/apple-touch-icon-{d}x{d}.png" }
+      ],
     }
   ]
 }

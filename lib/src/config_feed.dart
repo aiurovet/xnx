@@ -61,7 +61,7 @@ class ConfigFeed {
     for (var i = listOfLists.length - 1; (i >= 0); --i) {
       var curr = listOfLists[i];
 
-      if (!curr.isEnabled) {
+      if (!curr.isEnabled || !curr.isReached) {
         continue;
       }
 
@@ -70,13 +70,6 @@ class ConfigFeed {
       if (curr.offset < list.length) {
         if ((++curr.offset) < list.length) {
           return true;
-        }
-        if (i == 0) {
-          if (!lastValue.isReached && listOfLists.isNotEmpty) {
-            //listOfLists[0].offset = 0;
-            listOfLists[0].restart();
-            return true;
-          }
         }
       }
     }

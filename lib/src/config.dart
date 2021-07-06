@@ -114,7 +114,7 @@ class Config {
       _logger.debug(flatMap.toString() + '\n');
     }
     else {
-      _logger.outInfo(expandStraight(flatMap, (
+      _logger.information(expandStraight(flatMap, (
         flatMap[paramNameOut] ?? flatMap[paramNameCmd] ??
         flatMap[paramNameRun] ?? flatMap[paramNameInp] ??
         StringExt.EMPTY
