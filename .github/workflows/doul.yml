@@ -49,6 +49,8 @@ jobs:
           source_file: 'bin/${{ runner.os }}'
           destination_repo: 'aiurovet/doul-bin'
           destination_folder: '${{ runner.os }}'
+          user_email: 'aiurovet@gmail.com'
+          user_name: 'aiurovet'
 
       ################################################################################
 
