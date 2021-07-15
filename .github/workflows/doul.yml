@@ -42,14 +42,15 @@ jobs:
       ################################################################################
 
       - name: Push the output to bin repository
-        uses: cpina/github-action-push-to-another-repository@main
+        uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: bin/${{ runner.os }}
-          destination-repository-name: 'doul-bin'
-          destination-github-username: 'aiurovet'
-          target-branch: main
+          source_file: 'bin/${{ runner.os }}'
+          destination_repo: 'aiurovet/doul-bin'
+          destination_folder: '${{ runner.os }}'
+          user_email: 'aiurovet@gmail.com'
+          user_name: 'aiurovet'
 
       ################################################################################
 
