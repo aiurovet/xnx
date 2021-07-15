@@ -47,7 +47,6 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir ../doul-bin
           cd ../doul-bin
           git add .
           git config user.name aiurovet
