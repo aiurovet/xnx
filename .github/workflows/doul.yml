@@ -42,16 +42,25 @@ jobs:
       ################################################################################
 
       - name: Push the output to bin repository
-        uses: dmnemec/copy_file_to_another_repo_action@main
+#        uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          source_file: 'bin/${{ runner.os }}'
-          destination_repo: 'aiurovet/doul-bin'
-          destination_folder: '${{ runner.os }}'
-          user_email: 'aiurovet@gmail.com'
-          user_name: 'aiurovet'
+        run: |
+          mkdir ../doul-bin
+          cd ../doul-bin
+          git add .
+          git config user.name aiurovet
+          git config user.email aiurovet@gmail.com
+          git commit -am "Pushed from the source project"
+          git push
+
+#        with:
+#          source_file: 'bin/${{ runner.os }}'
+#          destination_repo: 'aiurovet/doul-bin'
+#          destination_folder: '${{ runner.os }}'
+#          user_email: 'aiurovet@gmail.com'
+#          user_name: 'aiurovet'
 
       ################################################################################
 
