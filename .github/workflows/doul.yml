@@ -141,9 +141,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source-directory: bin/${{ runner.os }}
-          destination-github-username: 'aiurovet'
           destination-repository-name: 'doul-bin'
-          user-email: aiurovet@gmail.com
           target-branch: main
 
       ################################################################################
