@@ -20,7 +20,7 @@ jobs:
         #os: [ ubuntu-latest, macos-latest ]
         #os: [ ubuntu-latest, windows-latest ]
         #os: [ macos-latest, windows-latest ]
-        #os: [ ubuntu-latest ]
+        os: [ ubuntu-latest ]
         #os: [ macos-latest ]
         #os: [ windows-latest ]
 
@@ -132,5 +132,18 @@ jobs:
           message: 'Moving new binaries and icons to version control'
           add: '** --force'
           cwd: bin/${{ runner.os }}
+
+      ################################################################################
+
+      - name: Push the output to bin repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: bin/${{ runner.os }}
+          destination-github-username: 'aiurovet'
+          destination-repository-name: 'doul-bin'
+          user-email: aiurovet@gmail.com
+          target-branch: main
 
       ################################################################################
