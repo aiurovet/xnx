@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           source_file: 'bin/${{ runner.os }}'
-          destination_repo: 'https://${{ secrets.API_TOKEN_GITHUB }}@github.com/aiurovet/doul-bin.git'
+          destination_repo: 'aiurovet/doul-bin'
           destination_folder: '${{ runner.os }}'
           user_email: 'aiurovet@gmail.com'
           user_name: 'aiurovet'
