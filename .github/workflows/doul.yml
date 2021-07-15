@@ -45,6 +45,7 @@ jobs:
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           source_file: 'bin/${{ runner.os }}'
           destination_repo: 'aiurovet/doul-bin'
