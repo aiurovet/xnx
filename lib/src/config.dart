@@ -290,6 +290,13 @@ class Config {
           }
         }
 
+        var isCmd = (key == paramNameCmd);
+        var isRun = (key == paramNameRun);
+
+        if (isCmd || isRun) {
+          flatMap.remove(isCmd ? paramNameRun : paramNameCmd);
+        }
+
         flatMap[key] = dataStr;
       }
 
