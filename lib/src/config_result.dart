@@ -1,0 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////
+
+enum ConfigResult {
+  drop, // drop all current lists to avoid old loops
+  endOfList, // exit from the list's parent
+  next, // move lists to the next combination of values
+  ok, // continue as normal
+  run, // ready to run command
+  stop, // stop immediately
+}
+
+////////////////////////////////////////////////////////////////////////////////

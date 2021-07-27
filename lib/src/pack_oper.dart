@@ -4,7 +4,7 @@ import 'package:doul/src/ext/string.dart';
 import 'package:doul/src/ext/file.dart';
 import 'package:doul/src/ext/file_system_entity.dart';
 import 'package:doul/src/file_oper.dart';
-import 'package:path/path.dart' as pathx;
+import 'package:path/path.dart' as path_api;
 
 enum PackType {
   Bz2,
@@ -73,7 +73,7 @@ class PackOper {
     var toFile = File(toPathExEx);
     print('Creating archive "$toPathExEx"');
 
-    var toDir = Directory(pathx.dirname(toPathExEx));
+    var toDir = Directory(path_api.dirname(toPathExEx));
     var hadToDir = toDir.existsSync();
 
     if (!hadToDir) {
@@ -248,7 +248,7 @@ class PackOper {
       return packType;
     }
 
-    var fileName = pathx.basename(path).toLowerCase();
+    var fileName = path_api.basename(path).toLowerCase();
 
     PackType packTypeByExt;
 
@@ -310,7 +310,7 @@ class PackOper {
 
     if (hasToPath) {
       if (Directory(toPath).existsSync()) {
-        return pathx.join(toPath, pathx.basenameWithoutExtension(fromPath));
+        return path_api.join(toPath, path_api.basenameWithoutExtension(fromPath));
       }
       else {
         return toPath;
@@ -318,7 +318,7 @@ class PackOper {
     }
     else if (isPackTypeTar(packType) && (packType != PackType.Tar)) {
       var defExt = DEFAULT_EXTENSIONS[PackType.Tar][0];
-      var result = pathx.join(pathx.dirname(fromPath), pathx.basenameWithoutExtension(fromPath));
+      var result = path_api.join(path_api.dirname(fromPath), path_api.basenameWithoutExtension(fromPath));
 
       if (!result.endsWith(defExt)) {
         result += defExt;
@@ -389,7 +389,7 @@ class PackOper {
 
     final fromFileEx = FileExt.getIfExists(fromPathEx, description: 'Archive');
 
-    toDirName ??= pathx.dirname(fromPathEx);
+    toDirName ??= path_api.dirname(fromPathEx);
     final toDir = Directory(toDirName);
 
     if (!isSilent) {
@@ -405,7 +405,7 @@ class PackOper {
       }
 
       for (final entity in archive) {
-        final toPath = pathx.join(toDirName, entity.name);
+        final toPath = path_api.join(toDirName, entity.name);
         final isFile = entity.isFile;
 
         if (!isSilent) {

@@ -3,7 +3,7 @@ import 'package:doul/src/ext/string.dart';
 import 'package:doul/src/ext/directory.dart';
 import 'package:doul/src/ext/file.dart';
 import 'package:doul/src/ext/glob.dart';
-import 'package:path/path.dart' as pathx;
+import 'package:path/path.dart' as path_api;
 
 class FileOper {
 
@@ -155,7 +155,7 @@ class FileOper {
         var file = File(currPath);
 
         if (file.existsSync()) {
-          currDirNameLen = (currPath.length - pathx.basename(currPath).length);
+          currDirNameLen = (currPath.length - path_api.basename(currPath).length);
           entities.add(file);
         }
         else {
@@ -376,7 +376,7 @@ class FileOper {
         var entity = entities[entityNo];
 
         if (entity is Directory) {
-          entity.xferSync(pathx.join(toDirName, subPath), isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+          entity.xferSync(path_api.join(toDirName, subPath), isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
         }
         else if (entity is File) {
           entity.xferSync(toDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);

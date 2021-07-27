@@ -11,7 +11,7 @@
       "<pronoun>": "he",
       "<pronoun-att>": "her",
       "<disease>": "Alzheimer's",
-      "<dr-full-name>": "Archibald Anderson"
+      "<dr-full-name>": "Archibald Anderson",
     },
     {
       "<last-name>": "Bourie",
@@ -24,7 +24,7 @@
       "<pronoun>": "she",
       "<pronoun-att>": "his",
       "<disease>": "Botkin's",
-      "<dr-full-name>": "Benny Balderson"
+      "<dr-full-name>": "Benny Balderson",
     }
   ]
 }

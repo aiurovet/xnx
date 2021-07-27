@@ -23,5 +23,8 @@
     { "{envTC}": "Prod", "{envLC}": "prod" }
   ],
 
+  // You can use your own environment variables too: just export
+  // those before calling doul and use here similarly: ${MY_ENV_VAR}
+
   "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{i-dir}/../out/{i-name}-{envTC}{i-ext}"
 }

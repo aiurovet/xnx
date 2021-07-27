@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:path/path.dart' as pathx;
+import 'package:path/path.dart' as path_api;
 import 'file_system_entity.dart';
 import 'string.dart';
 
@@ -36,7 +36,7 @@ extension FileExt on File {
     }
 
     if (escapeQuotes ?? false) {
-      cmd = cmd.replaceAll(r'"', r'\"');
+      cmd = cmd.replaceAll(StringExt.QUOTE_2, StringExt.ESC_QUOTE_2);
     }
 
     return cmd;
@@ -167,7 +167,7 @@ extension FileExt on File {
 
     // Sanity check
 
-    if (pathx.equals(path, toPath)) {
+    if (path_api.equals(path, toPath)) {
       throw Exception('Unable to copy: source and target are the same: "$path"');
     }
 
@@ -175,8 +175,8 @@ extension FileExt on File {
 
     var isToDir = Directory(toPath).existsSync();
     var isToDirValid = isToDir;
-    var toPathEx = (isToDir ? pathx.join(toPath, pathx.basename(path)) : toPath);
-    var toDirName = (isToDir ? toPath : pathx.dirname(toPath));
+    var toPathEx = (isToDir ? path_api.join(toPath, path_api.basename(path)) : toPath);
+    var toDirName = (isToDir ? toPath : path_api.dirname(toPath));
     var canDo = (!isNewerOnly || isNewerThanSync(File(toPathEx)));
 
     // Setting operation flag depending on whether the destination is newer or not

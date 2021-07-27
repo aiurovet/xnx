@@ -1,6 +1,6 @@
 import 'dart:core';
 import 'dart:io';
-import 'package:path/path.dart' as pathx;
+import 'package:path/path.dart' as path_api;
 
 extension StringExt on String {
 
@@ -12,8 +12,6 @@ extension StringExt on String {
 
   static final bool IS_WINDOWS = Platform.isWindows;
   static final String PATH_SEP = Platform.pathSeparator;
-
-  static final RegExp BLANK = RegExp(r'^[\s]*$');
 
   static const String EMPTY = '';
   static const int EOT_CODE = 4;
@@ -35,14 +33,15 @@ extension StringExt on String {
   static final String ESC_QUOTE_1 = (ESC + QUOTE_1);
   static final String ESC_QUOTE_2 = (ESC + QUOTE_2);
 
-  static const String STDIN_DISP = '<stdin>';
+  static const String STDIN_DISPLAY = '<stdin>';
   static const String STDIN_PATH = '-';
 
-  static const String STDOUT_DISP = '<stdout>';
+  static const String STDOUT_DISPLAY = '<stdout>';
   static const String STDOUT_PATH = StringExt.STDIN_PATH;
 
   static const String UNKNOWN = '<unknown>';
 
+  static final RegExp RE_BLANK = RegExp(r'^[\s]*$');
   static final RegExp RE_CMD_LINE = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
   // static final RegExp RE_JSON_COMMAS = RegExp(r'(\"[^\"]*\")|[,][\s\x01]*([\}\]])', multiLine: false);
   // static final RegExp RE_JSON_COMMENTS = RegExp(r'(\"[^\"]*\")|\/\/[^\x01]*\x01|\/\*((?!\*\/).)*\*\/', multiLine: false);
@@ -52,7 +51,7 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String adjustPath() => trim().replaceAll((IS_WINDOWS ? PATH_SEP_NIX : PATH_SEP_WIN), pathx.separator);
+  String adjustPath() => trim().replaceAll((IS_WINDOWS ? PATH_SEP_NIX : PATH_SEP_WIN), path_api.separator);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -116,7 +115,7 @@ extension StringExt on String {
   //////////////////////////////////////////////////////////////////////////////
 
   String getFullPath() {
-    var fullPath = (this == STDIN_PATH ? this : pathx.canonicalize(adjustPath()));
+    var fullPath = (this == STDIN_PATH ? this : path_api.canonicalize(adjustPath()));
 
     return fullPath;
   }
@@ -139,7 +138,7 @@ extension StringExt on String {
   //////////////////////////////////////////////////////////////////////////////
 
   static bool isNullOrBlank(String input) {
-    return ((input == null) || BLANK.hasMatch(input));
+    return ((input == null) || RE_BLANK.hasMatch(input));
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -9,8 +9,7 @@ import 'package:doul/src/ext/string.dart';
 import 'package:doul/src/ext/stdin.dart';
 import 'package:doul/src/logger.dart';
 import 'package:doul/src/pack_oper.dart';
-// ignore: library_prefixes
-import 'package:path/path.dart' as pathx;
+import 'package:path/path.dart' as path_api;
 
 class Options {
 
@@ -37,6 +36,12 @@ class Options {
     'help': 'configuration file in json format',
     'valueHelp': 'FILE',
     'defaultsTo': null,
+  };
+  static final Map<String, Object> EACH = {
+    'name': 'each',
+    'abbr': 'e',
+    'help': 'treat each plain argument independently (e.g. can pass multiple filenames as arguments)\nsee also -x, --xargs',
+    'negatable': false,
   };
   static final Map<String, Object> FORCE_CONVERT = {
     'name': 'force',
@@ -78,7 +83,7 @@ class Options {
   static final Map<String, Object> XARGS = {
     'name': 'xargs',
     'abbr': 'x',
-    'help': 'treat each plain argument independently (e.g. can pass multiple filenames as arguments)',
+    'help': 'similar to the above, but reads arguments from stdin\nuseful in a pipe with a file finding command',
     'negatable': false,
   };
   static final Map<String, Object> CMD_PRINT = {
@@ -245,6 +250,9 @@ class Options {
   bool _isAppendSep;
   bool get isAppendSep => _isAppendSep;
 
+  bool _isEach;
+  bool get isEach => _isEach;
+
   bool _isForced;
   bool get isForced => _isForced;
 
@@ -319,7 +327,7 @@ class Options {
       }
     }
 
-    return pathx.join(startDirName, configFileInfo.filePath).getFullPath();
+    return path_api.join(startDirName, configFileInfo.filePath).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -353,6 +361,9 @@ class Options {
         if (value != null) {
           _logger.levelAsString = value;
         }
+      })
+      ..addFlag(EACH['name'], abbr: EACH['abbr'], help: EACH['help'], negatable: EACH['negatable'], callback: (value) {
+        _isEach = value;
       })
       ..addFlag(XARGS['name'], abbr: XARGS['abbr'], help: XARGS['help'], negatable: XARGS['negatable'], callback: (value) {
         _asXargs = value;
@@ -560,6 +571,8 @@ class Options {
       _plainArgs.addAll(result.rest);
 
       if (_asXargs) {
+        _isEach = true;
+
         var inpArgs = stdin.readAsStringSync().split('\n');
 
         for (var i = 0, n = inpArgs.length; i < n; i++) {
@@ -582,40 +595,40 @@ class Options {
       _startDirName = null;
     }
 
-    _startDirName = pathx.canonicalize(_startDirName ?? '');
+    _startDirName = path_api.canonicalize(_startDirName ?? '');
 
     if (!isCmd) {
       var filePath = _configFileInfo.filePath;
 
       if (filePath != StringExt.STDIN_PATH) {
         if (filePath.isEmpty) {
-          filePath = pathx.join(_startDirName, pathx.basename(_startDirName) + FILE_TYPE_CFG);
+          filePath = path_api.join(_startDirName, path_api.basename(_startDirName) + FILE_TYPE_CFG);
 
           if (!File(filePath).existsSync()) {
-            var lst = DirectoryExt.pathListExSync(pathx.join(_startDirName, FILE_MASK_CFG));
+            var lst = DirectoryExt.pathListExSync(path_api.join(_startDirName, FILE_MASK_CFG));
             filePath = ((lst.isEmpty ? null : lst.first) ?? StringExt.EMPTY);
           }
         }
         else {
-          if (StringExt.isNullOrBlank(pathx.extension(filePath))) {
-            filePath = pathx.setExtension(filePath, FILE_TYPE_CFG);
+          if (StringExt.isNullOrBlank(path_api.extension(filePath))) {
+            filePath = path_api.setExtension(filePath, FILE_TYPE_CFG);
           }
 
           if (StringExt.isNullOrBlank(filePath)) {
             printUsage(parser, error: 'Configuration file is not found');
           }
 
-          if (!pathx.isAbsolute(filePath)) {
+          if (!path_api.isAbsolute(filePath)) {
             filePath = getConfigFullPath(args);
           }
 
           var configFile = File(filePath);
 
           if (!configFile.existsSync()) {
-            var dirName = pathx.dirname(filePath);
-            var fileName = pathx.basename(dirName) + FILE_TYPE_CFG;
+            var dirName = path_api.dirname(filePath);
+            var fileName = path_api.basename(dirName) + FILE_TYPE_CFG;
 
-            filePath = pathx.join(dirName, fileName);
+            filePath = path_api.join(dirName, fileName);
           }
         }
 

@@ -1,3 +1,5 @@
+// A sample configuration file to perform search and replace in MS Office documents
+
 {
   "{{-rename-keywords-}}": {
     // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
@@ -17,7 +19,7 @@
     "{{-inp-sub-path-}}": "{inp-sub-path}",
     "{{-out-}}": "{out}",
     "{{-run-}}": "{run}",
-    "{{-this-}}": "{this}"
+    "{{-this-}}": "{this}",
   },
 
   "{can-expand-content}": false,
@@ -48,17 +50,11 @@
 
         // Compress back to a single file
         "-p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",
-
-        // Delete temp expanded config file
-        "--delete \"{cfg-curr}\""
-      ]
+      ],
     },
     {
-      // Discard the input file array to avoid unnecessary repetitions
-      "{inp}": null,
-
-      // Remove all possible temporary files
-      "{run}": "--delete \"unz\""
+      // Remove all possible temporary directories and files
+      "{run}": "--delete \"{cfg-curr}\" \"unz\"",
     }
   ]
 }

@@ -73,13 +73,11 @@ class Logger {
 
   bool get hasLevel => (_level != LEVEL_DEFAULT);
 
-  bool get isDefault => (_level == LEVEL_DEFAULT);
+  bool get isDebug => (_level >= LEVEL_DEBUG);
 
-  bool get isDetailed => (_level >= LEVEL_INFORMATION);
+  bool get isInfo => (_level >= LEVEL_INFORMATION);
 
   bool get isSilent => (_level == LEVEL_SILENT);
-
-  bool get isUltimate => (_level >= LEVEL_DEBUG);
 
   bool get isUnknown => !hasLevel;
 
@@ -101,8 +99,12 @@ class Logger {
     print(data, LEVEL_OUT);
   }
 
+  void outInfo(String data) {
+    print(data, -LEVEL_OUT);
+  }
+
   void print(String msg, int level) {
-    if ((level > _level) || (msg == null)) {
+    if ((level > _level) || (level < -_level) || (msg == null)) {
       return;
     }
 

@@ -16,11 +16,11 @@ jobs:
 
     strategy:
       matrix:
-        #os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
         #os: [ ubuntu-latest, macos-latest ]
         #os: [ ubuntu-latest, windows-latest ]
         #os: [ macos-latest, windows-latest ]
-        os: [ ubuntu-latest ]
+        #os: [ ubuntu-latest ]
         #os: [ macos-latest ]
         #os: [ windows-latest ]
 
@@ -41,16 +41,16 @@ jobs:
 
       ################################################################################
 
-      - name: Push the output to bin repository
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: 'bin/${{ runner.os }}'
-          destination_repo: 'aiurovet/doul-bin'
-          destination_folder: '${{ runner.os }}'
-          user_email: 'aiurovet@gmail.com'
-          user_name: 'aiurovet'
+#      - name: Push the output to bin repository
+#        uses: dmnemec/copy_file_to_another_repo_action@main
+#        env:
+#          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+#        with:
+#          source_file: 'bin/${{ runner.os }}'
+#          destination_repo: 'aiurovet/doul-bin'
+#          destination_folder: '${{ runner.os }}'
+#          user_email: 'aiurovet@gmail.com'
+#          user_name: 'aiurovet'
 
       ################################################################################
 

@@ -1,6 +1,6 @@
-{
-  // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
+// A sample configuration file to generate PNG icons for Flutter app (all needed platforms and sizes)
 
+{
   "{{-rename-keywords-}}": {
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{cur-dir}",
@@ -52,7 +52,9 @@
     },
 
     {
-      "{{-drop-}}": "{suf}",
+      "{suf}": null,
+
+      "{m}": "",
 
       "{dim}": [
         { "{d}": 1024, "{r}": 1024, "{k}": 1 },
@@ -83,9 +85,11 @@
     },
 
     {
+      "{m}": "",
+
       "{dim}": [
         { "{d}": [ 16, 32, ], "{o}":  "{cur-dir}/web/icons/favicon-{d}x{d}.png" },
-        { "{d}": [ 120, 152, 167, 180 ], "{o}":  "{cur-dir}/web/icons/apple-touch-icon-{d}x{d}.png" }
+        { "{d}": 180, "{o}":  "{cur-dir}/web/icons/apple-touch-icon.png" }
       ],
     }
   ]

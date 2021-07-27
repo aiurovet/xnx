@@ -1,6 +1,5 @@
 import 'dart:io';
-// ignore: library_prefixes
-import 'package:path/path.dart' as pathx;
+import 'package:path/path.dart' as path_api;
 import 'file.dart';
 import 'file_system_entity.dart';
 import 'glob.dart';
@@ -145,7 +144,7 @@ extension DirectoryExt on Directory {
     }
 
     if (isMove) {
-      Directory(pathx.dirname(toDirName)).createSync();
+      Directory(path_api.dirname(toDirName)).createSync();
 
       var toDir = Directory(toDirName);
 
@@ -184,7 +183,7 @@ extension DirectoryExt on Directory {
         entity.xferSync(toSubDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
       else if (entity is File) {
-        var toPath = pathx.join(toDirName, pathx.basename(entity.path));
+        var toPath = path_api.join(toDirName, path_api.basename(entity.path));
         entity.xferSync(toPath, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
     }

@@ -7,12 +7,10 @@
     "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
       "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
         "{OsType}": "macOS",
-        "{OsTypeLC}": "macos",
         "{svg2png}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --default-background-color=0",
         "{shell}": "zsh -c"
       }, "{{-else-}}": {
         "{OsType}": "Linux",
-        "{OsTypeLC}": "linux",
         "{svg2png}": "google-chrome --headless --default-background-color=0", // you can use chromium too
         "{shell}": "bash -c"
       } },
@@ -24,7 +22,6 @@
       "{sleep_0_5s}": "sleep 0.5s"
     }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
       "{OsType}": "Windows",
-      "{OsTypeLC}": "windows",
       "{copy}": "copy /Y",
       "{move}": "ren",
       "{delete}": "del /F/Q/S",

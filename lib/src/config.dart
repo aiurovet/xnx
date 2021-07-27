@@ -1,13 +1,16 @@
-import 'package:doul/src/config_event.dart';
-import 'package:doul/src/config_feed.dart';
+import 'package:doul/src/config_result.dart';
 import 'package:doul/src/config_file_loader.dart';
-import 'package:doul/src/ext/directory.dart';
 import 'package:doul/src/ext/file_system_entity.dart';
-import 'package:doul/src/ext/glob.dart';
 import 'package:doul/src/ext/string.dart';
 import 'package:doul/src/logger.dart';
 import 'package:doul/src/options.dart';
-import 'package:path/path.dart' as pathx;
+import 'package:path/path.dart' as path_api;
+
+////////////////////////////////////////////////////////////////////////////////
+
+typedef ConfigFlatMapProc = ConfigResult Function(Map<String, String> map);
+
+////////////////////////////////////////////////////////////////////////////////
 
 class Config {
 
@@ -16,7 +19,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   static final String CFG_RENAMES = '{{-rename-keywords-}}';
-
+  static const String LIST_SEPARATOR = '\x01';
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -91,10 +94,13 @@ class Config {
 
   Map all;
   RegExp detectPathsRE;
-  var lastModifiedStamp = 0;
+  Map<String, String> flatMap = {};
+  List<Map<String, String>> flatMaps = [];
+  int lastModifiedStamp = 0;
   Options options;
-
-  Map<String, String> growMap;
+  String prevFlatMapStr;
+  Map<List, Object> selections = {};
+  Object topData;
 
   Logger _logger;
 
@@ -107,25 +113,46 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigEventResult defaultMapExec(Map<String, String> flatMap) {
-    growMap = flatMap;
+  bool canRun() {
+    if (flatMap?.isEmpty ?? true) {
+      return false;
+    }
 
-    if (_logger.isUltimate) {
-      _logger.debug(flatMap.toString() + '\n');
+    if (!StringExt.isNullOrBlank(flatMap[paramNameRun])) {
+      return true;
+    }
+
+    if (!StringExt.isNullOrBlank(flatMap[paramNameCmd])) {
+      if (flatMap.containsKey(paramNameInp)) {
+        if (flatMap.containsKey(paramNameOut)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  ConfigResult defaultExecFlatMap(Map<String, String> map) {
+    if (_logger.isDebug) {
+      _logger.debug('$map\n');
     }
     else {
-      _logger.information(expandStraight(flatMap, (
-        flatMap[paramNameOut] ?? flatMap[paramNameCmd] ??
-        flatMap[paramNameRun] ?? flatMap[paramNameInp] ??
-        StringExt.EMPTY
-      )));
+      _logger.outInfo(map.containsKey(paramNameRun) ?
+        'Run: ${expandStraight(map, map[paramNameRun] ?? '')}\n' :
+        'Inp: ${expandStraight(map, map[paramNameInp] ?? '')}\n' +
+        'Out: ${expandStraight(map, map[paramNameOut] ?? '')}\n' +
+        'Cmd: ${expandStraight(map, map[paramNameCmd] ?? '')}\n'
+      );
     }
 
-    return ConfigEventResult.ok;
+    return ConfigResult.ok;
   }
   //////////////////////////////////////////////////////////////////////////////
 
-  bool exec({List<String> args, ConfigMapExec mapExec}) {
+  bool exec({List<String> args, ConfigFlatMapProc execFlatMap}) {
     options.parseArgs(args);
 
     if (options.isCmd) {
@@ -164,16 +191,17 @@ class Config {
       actionKey = all.keys.first;
     }
 
-    var action = (actionKey == null ? all : all[actionKey]);
+    var actions = (actionKey == null ? all : all[actionKey]);
 
     _logger.information('Processing renames');
     setActualParamNames(renames);
 
-    if (action != null) {
+    if (actions != null) {
       _logger.information('Processing actions');
 
-      growMap = {};
-      execFeed(action, mapExec);
+      topData = actions;
+      selections.clear();
+      execData(null, topData, execFlatMap);
     }
 
     return true;
@@ -181,108 +209,100 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void execFeed(Object actions, [ConfigMapExec mapExec]) {
-    var hasCmd = false;
-    var hasInp = false;
-    var hasOut = false;
-    var isReady = false;
+  ConfigResult execData(String key, Object data, ConfigFlatMapProc execFlatMap) {
+    var result = ConfigResult.ok;
 
-    var feed = ConfigFeed(
-      dataParsed: (ConfigData data) {
-        var key = data.key;
+    if (data == topData) {
+      flatMap.clear();
+      prevFlatMapStr = StringExt.EMPTY;
+    }
 
-        if (key == paramNameDrop) {
-          return ConfigEventResult.drop;
-        }
+    if (data is List) {
+      var selection = selections[data];
 
-        if (key == paramNameNext) {
-          return ConfigEventResult.next;
-        }
+      if (selection != null) {
+        result = execData(key, selection, execFlatMap);
+      }
+      else {
+        for (var childData in data) {
+          selections[data] = childData;
 
-        var value = data.data;
-        var strValue = value?.toString()?.trim();
-        var isBlank = StringExt.isNullOrBlank(strValue);
-        var isNull = (value == null);
-
-        if (key == paramNameDetectPaths) {
-          detectPathsRE = (isBlank ? null : RegExp(strValue));
-          return ConfigEventResult.ok;
-        }
-
-        if (key == condNameIf) {
-          if (!isBlank) {
-            data.data = resolveIfDeep(value, true);
-            data.key = paramNameResolvedIf;
-            return ConfigEventResult.ok;
+          if (childData == null) {
+            continue;
           }
 
-          return ConfigEventResult.ok;
-        }
+          result = execData(null, topData, execFlatMap);
 
-        if (data.type != ConfigDataType.plain) {
-          return ConfigEventResult.ok;
-        }
-
-        if (isNull) {
-          growMap.remove(key);
-        }
-        else {
-          if (paramNamesForPath.contains(key) || (detectPathsRE?.hasMatch(key) ?? false)) {
-            strValue = strValue.adjustPath();
-            data.data = strValue;
-          }
-
-          growMap[key] = strValue;
-        }
-
-        var canHaveWildcards = !isBlank && (
-          paramNamesForGlob.contains(key) ||
-          (detectPathsRE?.hasMatch(key) ?? false)
-        );
-
-        if (canHaveWildcards) {
-          if (GlobExt.isGlobPattern(strValue)) {
-            try {
-              data.data = DirectoryExt.pathListExSync(strValue);
-              return ConfigEventResult.ok;
-            }
-            catch (e) {
-              // suppress
-            }
+          if (result != ConfigResult.ok) {
+            break;
           }
         }
 
-        if (key == paramNameCmd) {
-          hasCmd = !isNull;
-        }
-        else if (key == paramNameInp) {
-          hasInp = !isNull;
-        }
-        else if (key == paramNameOut) {
-          hasOut = !isNull;
-        }
-        else if (key == paramNameRun) {
-          isReady = true;
+        selections[data] = null;
 
-          if (isBlank) {
-            data.data = null;
+        if (result == ConfigResult.ok) {
+          result = ConfigResult.endOfList;
+        }
+      }
+    }
+    else if (data is Map<String, Object>) {
+      if (key == condNameIf) {
+        var resolvedData = resolveIf(data);
+
+        if (resolvedData != null) {
+          result = execData(paramNameResolvedIf, resolvedData, execFlatMap);
+        }
+      }
+      else {
+        data.forEach((childKey, childData) {
+          if (result == ConfigResult.ok) {
+            result = execData(childKey, childData, execFlatMap);
+          }
+        });
+
+        if (result == ConfigResult.endOfList) {
+          result = ConfigResult.ok;
+        }
+      }
+    }
+    else if (data == null) {
+      flatMap.remove(key);
+    }
+    else if (key == paramNameDetectPaths) {
+      var dataStr = data.toString().trim();
+      detectPathsRE = (dataStr.isEmpty ? null : RegExp(dataStr));
+    }
+    else {
+      if ((data is num) && ((data % 1) == 0)) {
+        flatMap[key] = data.toStringAsFixed(0);
+      }
+      else {
+        var dataStr = data.toString();
+
+        if (dataStr.isNotEmpty) {
+          var isKeyForGlob = paramNamesForGlob.contains(key);
+          var isKeyForPath = paramNamesForPath.contains(key);
+          var isDetectPaths = (detectPathsRE?.hasMatch(key) ?? false);
+          var hasPath = (isKeyForGlob || isKeyForPath || isDetectPaths);
+
+          if (hasPath) {
+            dataStr = dataStr.adjustPath();
           }
         }
 
-        if (isReady || (hasCmd && hasInp && hasOut)) {
-          isReady = false;
-          hasOut = false;
-          return ConfigEventResult.run;
+        flatMap[key] = dataStr;
+      }
+
+      if (canRun()) {
+        if (isNewFlatMap()) {
+          pushExeToBottom();
+          execFlatMap(flatMap);
         }
+        flatMap.remove(paramNameOut);
+      }
+    }
 
-        return ConfigEventResult.ok;
-      },
-
-      mapExec: mapExec ?? defaultMapExec
-    );
-
-    feed.exec(actions);
-    growMap.clear();
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -308,7 +328,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String getFullCurDirName(String curDirName) {
-    return pathx.join(options.startDirName, curDirName).getFullPath();
+    return path_api.join(options.startDirName, curDirName).getFullPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -337,6 +357,19 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  bool isNewFlatMap() {
+    var flatMapStr = sortAndEncodeFlatMap();
+    var isNew = (flatMapStr != prevFlatMapStr);
+
+    if (_logger.isDebug) {
+      _logger.debug('Is new map: $isNew');
+    }
+
+    return isNew;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   Map<String, Object> loadSync() {
     var lf = ConfigFileLoader(log: _logger);
     lf.loadJsonSync(options.configFileInfo, paramNameImport: paramNameImport, appPlainArgs: options.plainArgs);
@@ -350,6 +383,23 @@ class Config {
     }
     else {
       return <String, Object>{ '+': data };
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void pushExeToBottom() {
+    var key = paramNameRun;
+    var exe = flatMap[key];
+
+    if (exe == null) {
+      key = paramNameCmd;
+      exe = flatMap[key];
+    }
+
+    if (exe != null) {
+      flatMap.remove(key);
+      flatMap[key] = exe;
     }
   }
 
@@ -442,7 +492,7 @@ class Config {
           break;
         }
 
-        var entityNameEx = expandStraight(growMap, entityName);
+        var entityNameEx = expandStraight(flatMap, entityName);
         var isFound = FileSystemEntityExt.tryPatternExistsSync(entityNameEx);
 
         if ((isExists && !isFound) || (!isExists && isFound)) {
@@ -459,8 +509,8 @@ class Config {
       var isIgnoreCase  = (isEqi || isNei || isRxi || isNri);
       var isRegExpMatch = (isRx || isRxi || isNr || isNri);
 
-      var o1 = expandStraight(growMap, operands[0]?.toString());
-      var o2 = expandStraight(growMap, operands[1]?.toString());
+      var o1 = expandStraight(flatMap, operands[0]?.toString());
+      var o2 = expandStraight(flatMap, operands[1]?.toString());
 
       var n1 = (o1 == null ? null : (int.tryParse(o1) ?? double.tryParse(o1)));
       var n2 = (o2 == null ? null : (int.tryParse(o2) ?? double.tryParse(o2)));
@@ -524,48 +574,6 @@ class Config {
     }
 
     return (isThen ? blockThen : blockElse);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  Object resolveIfDeep(Object data, bool isMapIf) {
-    if (isMapIf ?? false) {
-      data = resolveIfDeep(resolveIf(data), false);
-    }
-    else if (data is List) {
-      for (var i = 0, n = data.length; i < n; i++) {
-        data[i] = resolveIfDeep(data[i], false);
-      }
-    }
-    else if (data is Map) {
-      var map = (data as Map);
-
-      if (map.length == 1) {
-        var mapIf = map[condNameIf];
-
-        if (mapIf != null) {
-          return resolveIfDeep(resolveIf(mapIf), false);
-        }
-      }
-
-      var newData = <String, Object>{};
-
-      map.forEach((childKey, childValue) {
-        var childKeyStr = childKey.toString();
-
-        if ((childKeyStr == condNameIf) || (childValue is List) || (childValue is Map)) {
-          newData[childKeyStr] = resolveIfDeep(childValue, false);
-        }
-        else {
-          newData[childKeyStr] = childValue;
-        }
-      });
-
-      map.clear();
-      data = newData;
-    }
-
-    return data;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -683,6 +691,23 @@ class Config {
         (condNameThen ?? StringExt.EMPTY) +
         (condNameElse ?? StringExt.EMPTY);
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String sortAndEncodeFlatMap() {
+    var list = flatMap.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
+    var result = '{${list.map((x) =>
+      '${x.key.quote()}:${x.value?.quote() ?? StringExt.EMPTY}'
+    ).join(',')}';
+
+    if (_logger.isDebug) {
+      _logger.debug(result);
+    }
+
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////

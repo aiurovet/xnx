@@ -1,3 +1,7 @@
+// This is an example of how to use conditional branching, mostly with environment variables and other OS specifics.
+// Generally, branching is highly discouraged in favour of arrays of hash maps where you can specify every combination
+// of parameters a lot easier and much more readable way.
+
 {
   "{{-rename-keywords-}}": {
     "{{-cmd-}}": "{c}",

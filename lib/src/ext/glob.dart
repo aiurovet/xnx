@@ -2,7 +2,7 @@ import 'dart:core';
 import 'dart:io';
 import 'package:file/local.dart';
 import 'package:glob/glob.dart';
-import 'package:path/path.dart' as pathx;
+import 'package:path/path.dart' as path_api;
 
 import 'file_system_entity.dart';
 import 'string.dart';
@@ -42,7 +42,7 @@ extension GlobExt on Glob {
             dirName = StringExt.EMPTY;
           }
           else {
-            dirName = pathx.dirname(dirName);
+            dirName = path_api.dirname(dirName);
           }
 
           return dirName;
@@ -56,7 +56,7 @@ extension GlobExt on Glob {
           return pattern;
         }
         else {
-          return pathx.dirname(pattern);
+          return path_api.dirname(pattern);
         }
       }
     }

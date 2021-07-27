@@ -171,7 +171,9 @@ class ConfigFileLoader {
     }
 
     var paramPattern = RegExp.escape(paramNameImport);
-    var pattern = "('${paramPattern}'|\"${paramPattern}\")" + r'\s*:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}]|\/\/|\/\*)';
+    var pattern = "('$paramPattern'|\"$paramPattern\")";
+    pattern += r'\s*:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}]|\/\/|\/\*)';
+
     var regExp = RegExp(pattern);
 
     if (!regExp.hasMatch(_text)) {
