@@ -2,19 +2,19 @@ import 'dart:cli';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:doul/src/config_result.dart';
-import 'package:doul/src/config_file_loader.dart';
-import 'package:doul/src/config.dart';
-import 'package:doul/src/doul.dart';
-import 'package:doul/src/file_oper.dart';
-import 'package:doul/src/logger.dart';
-import 'package:doul/src/options.dart';
-import 'package:doul/src/pack_oper.dart';
-import 'package:doul/src/ext/directory.dart';
-import 'package:doul/src/ext/file.dart';
-import 'package:doul/src/ext/file_system_entity.dart';
-import 'package:doul/src/ext/stdin.dart';
-import 'package:doul/src/ext/string.dart';
+import 'package:xnx/src/config_result.dart';
+import 'package:xnx/src/config_file_loader.dart';
+import 'package:xnx/src/config.dart';
+import 'package:xnx/src/xnx.dart';
+import 'package:xnx/src/file_oper.dart';
+import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/options.dart';
+import 'package:xnx/src/pack_oper.dart';
+import 'package:xnx/src/ext/directory.dart';
+import 'package:xnx/src/ext/file.dart';
+import 'package:xnx/src/ext/file_system_entity.dart';
+import 'package:xnx/src/ext/stdin.dart';
+import 'package:xnx/src/ext/string.dart';
 import 'package:path/path.dart' as path_api;
 import 'package:process_run/shell.dart';
 
@@ -245,7 +245,7 @@ class Convert {
         }
         else {
           args.insert(0, exe);
-          Doul(logger: _logger).exec(args);
+          Xnx(logger: _logger).exec(args);
         }
 
         isSuccess = true;

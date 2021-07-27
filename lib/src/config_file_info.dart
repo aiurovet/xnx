@@ -1,4 +1,4 @@
-import 'package:doul/src/ext/string.dart';
+import 'package:xnx/src/ext/string.dart';
 
 class ConfigFileInfo {
 

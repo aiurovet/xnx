@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:doul/src/ext/string.dart';
+import 'package:xnx/src/ext/string.dart';
 
 extension StdinExt on Stdin {
 

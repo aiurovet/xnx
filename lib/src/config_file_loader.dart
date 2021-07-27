@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:doul/src/config_file_info.dart';
 import 'package:json5/json5.dart';
 import 'package:json_path/json_path.dart';
 
-import 'package:doul/src/logger.dart';
-import 'package:doul/src/ext/file.dart';
-import 'package:doul/src/ext/stdin.dart';
-import 'package:doul/src/ext/string.dart';
+import 'package:xnx/src/config_file_info.dart';
+import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/ext/file.dart';
+import 'package:xnx/src/ext/stdin.dart';
+import 'package:xnx/src/ext/string.dart';
 
 class ConfigFileLoader {
 

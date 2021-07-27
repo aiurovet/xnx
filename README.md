@@ -1,4 +1,4 @@
-## doul
+## xnx
 
 **Copyright © Alexander Iurovetski 2020 - 2021**
 
@@ -78,7 +78,7 @@ Command-line utility to run multiple commands against the same input with variou
      program\'s output. In this case, instead of supplying a filename (or path),
      just put a dash:
 
-     grep -Pi "..." confdir/my.json | doul -c- -d projdir
+     grep -Pi "..." confdir/my.xnx | xnx -c- -d projdir
 
 
 1.4. Similarly, the program allows you to pass input by piping some other
@@ -142,7 +142,7 @@ Configuration file is expected in JSON format with the following guidelines:
      the temporary file path will be 
      android/app/src/main/res/drawable-xhdpi/ic_launcher_background.tmp.svg
 
-2.6. Environment variables as well as optionless arguments passed to doul, are
+2.6. Environment variables as well as optionless arguments passed to xnx, are
      expanded, but in configuration file only. If you\'d like to expand those
      in input file(s), simply assign that to some placeholder, then use that
      placehloder. For the sake of source code portability, the environment
@@ -181,7 +181,7 @@ Configuration file is expected in JSON format with the following guidelines:
 
 ##### Full sample configuration file to generate mobile (Flutter) app icons
 
-See the details of the imported file `cmd.json` beyond this configuration
+See the details of the imported file `cmd.xnx` beyond this configuration
 
 ```
 {
@@ -196,7 +196,7 @@ See the details of the imported file `cmd.json` beyond this configuration
     "{{-next-}}": "{next}",
   },
 
-  "{{-import-}}": "../cmd.json",
+  "{{-import-}}": "../cmd.xnx",
 
   "{can-expand-content}": true,
 

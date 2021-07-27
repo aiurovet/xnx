@@ -1,6 +1,6 @@
 @echo off
 
-set PRJ=doul
+set PRJ=xnx
 set BIN=bin
 set OST=Windows
 set BIN_OST=%BIN%\%OST%

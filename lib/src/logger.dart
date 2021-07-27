@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:doul/src/ext/string.dart';
+import 'package:xnx/src/ext/string.dart';
 
 class Logger {
   static const String STUB_LEVEL = '{L}';

@@ -1,0 +1,30 @@
+{
+  "{{-rename-keywords-}}": {
+    "{{-can-expand-content-}}": "{CEC}",
+    "{{-cmd-}}": "{c}",
+    "{{-cur-dir-}}": "{CD}",
+    "{{-expand-content-}}": "{expand-content}",
+    "{{-inp-}}": "{i}",
+    "{{-inp-dir-}}": "{i-dir}",
+    "{{-inp-ext-}}": "{i-ext}",
+    "{{-inp-name-}}": "{i-name}",
+    "{{-out-}}": "{o}"
+  },
+
+  "{CEC}": true,
+
+  "{c}": "{expand-content} \"{i}\" \"{o}\"",
+
+  "{i}": "{CD}/template/*settings.xnx",
+
+  "{env}": [
+    { "{envTC}": "Dev",  "{envLC}": "dev"  },
+    { "{envTC}": "Test", "{envLC}": "test" },
+    { "{envTC}": "Prod", "{envLC}": "prod" }
+  ],
+
+  // You can use your own environment variables too: just export
+  // those before calling xnx and use here similarly: ${MY_ENV_VAR}
+
+  "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{i-dir}/../out/{i-name}-{envTC}{i-ext}"
+}

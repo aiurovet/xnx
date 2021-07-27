@@ -1,4 +1,4 @@
-name: Doul
+name: Xnx
 
 on:
   push:
@@ -47,7 +47,7 @@ jobs:
 #          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
 #        with:
 #          source_file: 'bin/${{ runner.os }}'
-#          destination_repo: 'aiurovet/doul-bin'
+#          destination_repo: 'aiurovet/xnx-exe'
 #          destination_folder: '${{ runner.os }}'
 #          user_email: 'aiurovet@gmail.com'
 #          user_name: 'aiurovet'
@@ -108,34 +108,34 @@ jobs:
       - name: Check build result on a Unix-like OS
         if: runner.os != 'Windows'
         run: |
-          ls -1 bin/${{ runner.os }}/*doul*
+          ls -1 bin/${{ runner.os }}/*xnx*
 
       ################################################################################
 
       - name: Check build result on Windows
         if: runner.os == 'Windows'
         run: |
-          Get-ChildItem -Name -Path bin\${{ runner.os }}\*doul*
+          Get-ChildItem -Name -Path bin\${{ runner.os }}\*xnx*
 
       ################################################################################
 
       - name: Integration Test 1 - flutter_app
-        run: bin/${{ runner.os }}/doul -d examples/flutter_app
+        run: bin/${{ runner.os }}/xnx -d examples/flutter_app
 
       ################################################################################
 
       - name: Integration Test 2 - ms_office
-        run: bin/${{ runner.os }}/doul -d examples/ms_office
+        run: bin/${{ runner.os }}/xnx -d examples/ms_office
 
       ################################################################################
 
       - name: Integration Test 3 - multi_conf
-        run: bin/${{ runner.os }}/doul -d examples/multi_conf
+        run: bin/${{ runner.os }}/xnx -d examples/multi_conf
 
       ################################################################################
 
       - name: Integration Test 4 - multi_icon
-        run: bin/${{ runner.os }}/doul -d examples/multi_icon
+        run: bin/${{ runner.os }}/xnx -d examples/multi_icon
 
       ################################################################################
 

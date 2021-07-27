@@ -2,7 +2,7 @@
 
 ################################################################################
 
-PRJ="doul"
+PRJ="xnx"
 OST="${1}" # OS type: Linux, macOS or Windows (default: will be calculated)
 shift
 

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:doul/src/ext/glob.dart';
+import 'package:xnx/src/ext/glob.dart';
 import 'package:path/path.dart' as path_api;
 
 extension FileSystemEntityExt on FileSystemEntity {

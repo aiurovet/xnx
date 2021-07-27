@@ -1,9 +1,9 @@
-import 'package:doul/src/config_result.dart';
-import 'package:doul/src/config_file_loader.dart';
-import 'package:doul/src/ext/file_system_entity.dart';
-import 'package:doul/src/ext/string.dart';
-import 'package:doul/src/logger.dart';
-import 'package:doul/src/options.dart';
+import 'package:xnx/src/config_result.dart';
+import 'package:xnx/src/config_file_loader.dart';
+import 'package:xnx/src/ext/file_system_entity.dart';
+import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/options.dart';
 import 'package:path/path.dart' as path_api;
 
 ////////////////////////////////////////////////////////////////////////////////

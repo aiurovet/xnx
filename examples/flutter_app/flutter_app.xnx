@@ -1,0 +1,96 @@
+// A sample configuration file to generate PNG icons for Flutter app (all needed platforms and sizes)
+
+{
+  "{{-rename-keywords-}}": {
+    "{{-cmd-}}": "{c}",
+    "{{-cur-dir-}}": "{cur-dir}",
+    "{{-can-expand-content-}}": "{can-expand-content}",
+    "{{-inp-}}": "{i}",
+    "{{-out-}}": "{o}",
+    "{{-next-}}": "{next}",
+  },
+
+  "{{-import-}}": "../cmd.xnx",
+
+  "{can-expand-content}": true,
+
+  // Terribly slow
+  // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={o} \"file://{i}\"" },
+
+  // Sometimes fails to display svg properly,
+  // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
+
+  // Not the best quality
+  // { "{c}": "convert \"{i}\" \"{o}\"" },
+
+  // Not the best quality
+  // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+
+  // The most accurate. Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
+  "{c}": "{svg2png} --window-size={d},{d} --screenshot={o} \"file://{i}\"",
+
+  "{img-src-dir}": "{cur-dir}/assets/images",
+
+  "{i}": "{img-src-dir}/app{m}.svg",
+
+  "{R}": [
+    {
+      "{suf}": [
+        { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" },
+        { "{m}": "", "{D}": "mipmap" }
+      ],
+
+      "{dim}": [
+        { "{d}":   48, "{r}": "m" },
+        { "{d}":   72, "{r}": "h" },
+        { "{d}":   96, "{r}": "xh" },
+        { "{d}":  144, "{r}": "xxh" },
+        { "{d}":  192, "{r}": "xxxh" }
+      ],
+
+      "{o}": "{cur-dir}/android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
+    },
+
+    {
+      "{suf}": null,
+
+      "{m}": "",
+
+      "{dim}": [
+        { "{d}": 1024, "{r}": 1024, "{k}": 1 },
+        { "{d}":   20, "{r}":   20, "{k}": 1 },
+        { "{d}":   40, "{r}":   20, "{k}": 2 },
+        { "{d}":   60, "{r}":   20, "{k}": 3 },
+        { "{d}":   29, "{r}":   29, "{k}": 1 },
+        { "{d}":   58, "{r}":   29, "{k}": 2 },
+        { "{d}":   87, "{r}":   29, "{k}": 3 },
+        { "{d}":   40, "{r}":   40, "{k}": 1 },
+        { "{d}":   80, "{r}":   40, "{k}": 2 },
+        { "{d}":  120, "{r}":   40, "{k}": 3 },
+        { "{d}":   50, "{r}":   50, "{k}": 1 },
+        { "{d}":  100, "{r}":   50, "{k}": 2 },
+        { "{d}":   57, "{r}":   57, "{k}": 1 },
+        { "{d}":  114, "{r}":   57, "{k}": 2 },
+        { "{d}":   60, "{r}":   60, "{k}": 1 },
+        { "{d}":  120, "{r}":   60, "{k}": 2 },
+        { "{d}":  180, "{r}":   60, "{k}": 3 },
+        { "{d}":   72, "{r}":   72, "{k}": 1 },
+        { "{d}":  144, "{r}":   72, "{k}": 2 },
+        { "{d}":   76, "{r}":   76, "{k}": 1 },
+        { "{d}":  152, "{r}":   76, "{k}": 2 },
+        { "{d}":  167, "{r}": 83.5, "{k}": 2 }
+      ],
+
+      "{o}": "{cur-dir}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
+    },
+
+    {
+      "{m}": "",
+
+      "{dim}": [
+        { "{d}": [ 16, 32, ], "{o}":  "{cur-dir}/web/icons/favicon-{d}x{d}.png" },
+        { "{d}": 180, "{o}":  "{cur-dir}/web/icons/apple-touch-icon.png" }
+      ],
+    }
+  ]
+}

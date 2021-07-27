@@ -1,3 +1,3 @@
-import 'package:doul/src/doul.dart';
+import 'package:xnx/src/xnx.dart';
 
-void main(List<String> args) => Doul.main(args);
+void main(List<String> args) => Xnx.main(args);

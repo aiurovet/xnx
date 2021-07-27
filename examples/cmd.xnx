@@ -1,0 +1,46 @@
+// Portable way to define OS-specific commands
+// Used via {{-import-}} (see in sub-folders)
+{
+  "cmd": {
+    // You can specify either just command names, or command names with options, or command names with options and
+    // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
+    "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
+      "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
+        "{OsType}": "macOS",
+        "{svg2png}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --default-background-color=0",
+        "{shell}": "zsh -c"
+      }, "{{-else-}}": {
+        "{OsType}": "Linux",
+        "{svg2png}": "google-chrome --headless --default-background-color=0", // you can use chromium too
+        "{shell}": "bash -c"
+      } },
+      "{convert}": "convert",
+      "{copy}": "cp -pr",
+      "{move}": "mv -f",
+      "{delete}": "rm -rf",
+      "{mkdir}": "mkdir -p",
+      "{sleep_0_5s}": "sleep 0.5s"
+    }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${UserProfile}", "" ], "{{-then-}}": {
+      "{OsType}": "Windows",
+      "{copy}": "copy /Y",
+      "{move}": "ren",
+      "{delete}": "del /F/Q/S",
+      "{mkdir}": "mkdir",
+      "{svg2png}": "chrome --headless --default-background-color=0 --disable-gpu",
+      "{convert}": "magick convert",
+      "{shell}": "cmd /c",
+      "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500"
+    } } } },
+
+    "{this}": "$0",
+
+    "{copy-newer}": "--copy-newer",
+    "{move-newer}": "--move-newer",
+    "{zip}": "--zip",
+    "{unzip}": "--unzip",
+
+    "{rename}": "{move}",
+    "{rename-newer}": "{move-newer}",
+    "{remove}": "{delete}"
+  }
+}

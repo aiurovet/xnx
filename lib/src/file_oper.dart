@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'package:doul/src/ext/string.dart';
-import 'package:doul/src/ext/directory.dart';
-import 'package:doul/src/ext/file.dart';
-import 'package:doul/src/ext/glob.dart';
+import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/ext/directory.dart';
+import 'package:xnx/src/ext/file.dart';
+import 'package:xnx/src/ext/glob.dart';
 import 'package:path/path.dart' as path_api;
 
 class FileOper {

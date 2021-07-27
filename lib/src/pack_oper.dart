@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:archive/archive_io.dart';
-import 'package:doul/src/ext/string.dart';
-import 'package:doul/src/ext/file.dart';
-import 'package:doul/src/ext/file_system_entity.dart';
-import 'package:doul/src/file_oper.dart';
 import 'package:path/path.dart' as path_api;
+import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/ext/file.dart';
+import 'package:xnx/src/ext/file_system_entity.dart';
+import 'package:xnx/src/file_oper.dart';
 
 enum PackType {
   Bz2,

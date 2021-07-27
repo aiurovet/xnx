@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:args/args.dart';
-import 'package:doul/src/config_file_info.dart';
-import 'package:doul/src/config_file_loader.dart';
-import 'package:doul/src/ext/directory.dart';
-import 'package:doul/src/ext/glob.dart';
-import 'package:doul/src/ext/string.dart';
-import 'package:doul/src/ext/stdin.dart';
-import 'package:doul/src/logger.dart';
-import 'package:doul/src/pack_oper.dart';
 import 'package:path/path.dart' as path_api;
+import 'package:xnx/src/config_file_info.dart';
+import 'package:xnx/src/config_file_loader.dart';
+import 'package:xnx/src/ext/directory.dart';
+import 'package:xnx/src/ext/glob.dart';
+import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/ext/stdin.dart';
+import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/pack_oper.dart';
 
 class Options {
 
@@ -33,7 +33,7 @@ class Options {
   static final Map<String, Object> CONFIG = {
     'name': 'config',
     'abbr': 'c',
-    'help': 'configuration file in json format',
+    'help': 'configuration file in json5 format\n(default extension: xnx)',
     'valueHelp': 'FILE',
     'defaultsTo': null,
   };
@@ -229,8 +229,8 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final String APP_NAME = 'doul';
-  static final String FILE_TYPE_CFG = '.json';
+  static final String APP_NAME = 'xnx';
+  static final String FILE_TYPE_CFG = '.xnx';
   static final String FILE_MASK_CFG = '${GlobExt.ALL}$FILE_TYPE_CFG';
 
   static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-]${CONFIG['name']}|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
