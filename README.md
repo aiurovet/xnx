@@ -7,12 +7,20 @@ Command-line utility to run multiple commands against the same input with variou
 ##### USAGE:
 
 ```
+USAGE:
+
+xnx [OPTIONS]
+
 -h, --help                   this help screen
 -q, --quiet                  quiet mode (no output, same as verbosity 0)
--v, --verbosity=<LEVEL>      how much information to show: 0-5, or: quiet, errors, normal, warnings, info, debug
+-v, --verbosity=<LEVEL>      how much information to show: 0-6, or: quiet, errors, normal, warnings, info, debug
                              (defaults to "normal")
--x, --xargs                  treat each plain argument independently (e.g. can pass multiple filenames as arguments)
--c, --config=<FILE>          configuration file in json format
+-e, --each                   treat each plain argument independently (e.g. can pass multiple filenames as arguments)
+                             see also -x, --xargs
+-x, --xargs                  similar to the above, but reads arguments from stdin
+                             useful in a pipe with a file finding command
+-c, --config=<FILE>          configuration file in json5 format
+                             (default extension: xnx)
 -l, --list-only              display all commands, but do not execute those; if no command specified, then show config
 -s, --append-sep             append record separator "," when filtering input config file (for "list-only" exclusively)
 -f, --force                  ignore timestamps and force conversion

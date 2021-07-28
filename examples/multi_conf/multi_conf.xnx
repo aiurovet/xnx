@@ -15,7 +15,7 @@
 
   "{c}": "{expand-content} \"{i}\" \"{o}\"",
 
-  "{i}": "{CD}/template/*settings.xnx",
+  "{i}": "{CD}/template/*settings.json",
 
   "{env}": [
     { "{envTC}": "Dev",  "{envLC}": "dev"  },
