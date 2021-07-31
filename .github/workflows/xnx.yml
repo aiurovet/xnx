@@ -41,24 +41,25 @@ jobs:
 
       ################################################################################
 
+#      - name: Push the output to application repository
+#        uses: johno/actions-push-subdirectories@master
+#        env:
+#          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          args: bin aiurovet xnx-application
+
       - name: Push the output to application repository
-        uses: johno/actions-push-subdirectories@master
+        uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: bin aiurovet xnx-application
-
-#      - name: Push the output to application repository
-#        uses: dmnemec/copy_file_to_another_repo_action@main
-#        env:
-#          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-#        with:
-#          source_file: 'bin/${{ runner.os }}'
-#          destination_repo: 'aiurovet/xnx-exe'
-#          destination_folder: '${{ runner.os }}'
-#          user_email: 'aiurovet@gmail.com'
-#          user_name: 'aiurovet'
+          source_file: 'bin/${{ runner.os }}'
+          destination_repo: 'aiurovet/xnx-application'
+          destination_folder: '${{ runner.os }}'
+          user_email: 'aiurovet@gmail.com'
+          user_name: 'aiurovet'
 
 #      ################################################################################
 #
