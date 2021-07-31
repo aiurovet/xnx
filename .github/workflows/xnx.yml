@@ -41,7 +41,17 @@ jobs:
 
       ################################################################################
 
-#      - name: Push the output to application repository
+      - name: Push the output to application repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'bin'
+          destination-github-username: 'aiurovet'
+          destination-repository-name: 'xnx-application'
+          user-email: aiurovet@gmail.com
+          target-branch: main
+
 #        uses: johno/actions-push-subdirectories@master
 #        env:
 #          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
@@ -49,17 +59,16 @@ jobs:
 #        with:
 #          args: bin aiurovet xnx-application
 
-      - name: Push the output to application repository
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          source_file: 'bin/${{ runner.os }}'
-          destination_repo: 'aiurovet/xnx-application'
-          destination_folder: '${{ runner.os }}'
-          user_email: 'aiurovet@gmail.com'
-          user_name: 'aiurovet'
+#        uses: dmnemec/copy_file_to_another_repo_action@main
+#        env:
+#          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          source_file: 'bin/${{ runner.os }}'
+#          destination_repo: 'aiurovet/xnx-application'
+#          destination_folder: '${{ runner.os }}'
+#          user_email: 'aiurovet@gmail.com'
+#          user_name: 'aiurovet'
 
 #      ################################################################################
 #
