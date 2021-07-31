@@ -38,38 +38,38 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: 'bin/Linux'
+          source_file: 'bin/Linux bin/macOS bin/Windows'
           destination_repo: 'aiurovet/xnx-application'
 #          user_email: 'example@email.com'
           user_name: 'aiurovet'
           commit_message: 'Pushed to the application repo'
 
-      ################################################################################
-
-      - name: Push the output to application repository
-        if: runner.os == 'Linux'
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: 'bin/macOS'
-          destination_repo: 'aiurovet/xnx-application'
-#          user_email: 'example@email.com'
-          user_name: 'aiurovet'
-          commit_message: 'Pushed to the application repo'
-
-      ################################################################################
-
-      - name: Push the output to application repository
-        if: runner.os == 'Linux'
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: 'bin/Windows'
-          destination_repo: 'aiurovet/xnx-application'
-#          user_email: 'example@email.com'
-          user_name: 'aiurovet'
-          commit_message: 'Pushed to the application repo'
+#      ################################################################################
+#
+#      - name: Push the output to application repository
+#        if: runner.os == 'Linux'
+#        uses: dmnemec/copy_file_to_another_repo_action@main
+#        env:
+#          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+#        with:
+#          source_file: 'bin/macOS'
+#          destination_repo: 'aiurovet/xnx-application'
+##          user_email: 'example@email.com'
+#          user_name: 'aiurovet'
+#          commit_message: 'Pushed to the application repo'
+#
+#      ################################################################################
+#
+#      - name: Push the output to application repository
+#        if: runner.os == 'Linux'
+#        uses: dmnemec/copy_file_to_another_repo_action@main
+#        env:
+#          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+#        with:
+#          source_file: 'bin/Windows'
+#          destination_repo: 'aiurovet/xnx-application'
+##          user_email: 'example@email.com'
+#          user_name: 'aiurovet'
+#          commit_message: 'Pushed to the application repo'
 
       ################################################################################
