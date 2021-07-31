@@ -39,33 +39,6 @@ jobs:
 #      - uses: browser-actions/setup-chrome@latest
 #      - uses: dart-lang/setup-dart@v1
 
-      ################################################################################
-
-      - name: Push the output to application repository
-        if: runner.os == 'Linux'
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: 'bin/${{ runner.os }}'
-          destination_repo: 'aiurovet/xnx-application'
-          destination_folder: '${{ runner.os }}'
-#          user_email: 'example@email.com'
-          user_name: 'aiurovet'
-          commit_message: 'Pushed to the application repo'
-
-
-#        uses: cpina/github-action-push-to-another-repository@main
-#        env:
-#          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-#        with:
-#          source-directory: 'bin/${{ runner.os }}'
-#          destination-directory: '${{ runner.os }}'
-#          destination-github-username: 'aiurovet'
-#          destination-repository-name: 'xnx-application'
-##          user-email: aiurovet@gmail.com
-#          target-branch: main
-
 #      ################################################################################
 #
 #      - name: Post-Install Dart SDK on Linux

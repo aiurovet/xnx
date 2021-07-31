@@ -1,0 +1,78 @@
+name: XnxToApplication
+
+on:
+  workflow_run:
+    workflows: ["Xnx"]
+    type:
+      - complete
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    env:
+      OSTYPE: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+
+    # Note that this workflow uses the latest stable version of the Dart SDK.
+    # Docker images for other release channels - like dev and beta - are also
+    # available. See https://hub.docker.com/r/google/dart/ for the available
+    # images.
+    ##container:
+    ##  image:  google/dart:beta
+
+    steps:
+
+      ################################################################################
+
+      - uses: actions/checkout@v2
+
+      ################################################################################
+
+      - name: Push the output to application repository
+        if: runner.os == 'Linux'
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: 'bin/Linux'
+          destination_repo: 'aiurovet/xnx-application'
+          destination_folder: 'Linux'
+#          user_email: 'example@email.com'
+          user_name: 'aiurovet'
+          commit_message: 'Pushed to the application repo'
+
+      ################################################################################
+
+      - name: Push the output to application repository
+        if: runner.os == 'Linux'
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: 'bin/macOS'
+          destination_repo: 'aiurovet/xnx-application'
+          destination_folder: 'macOS'
+#          user_email: 'example@email.com'
+          user_name: 'aiurovet'
+          commit_message: 'Pushed to the application repo'
+
+      ################################################################################
+
+      - name: Push the output to application repository
+        if: runner.os == 'Linux'
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: 'bin/Windows'
+          destination_repo: 'aiurovet/xnx-application'
+          destination_folder: 'Windows'
+#          user_email: 'example@email.com'
+          user_name: 'aiurovet'
+          commit_message: 'Pushed to the application repo'
+
+      ################################################################################
