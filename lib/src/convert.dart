@@ -34,7 +34,6 @@ class Convert {
 
   bool canExpandContent;
   RegExp detectPathsRE;
-  bool hasStop;
   bool isExpandContentOnly;
   bool isProcessed;
   bool isStdIn;
@@ -63,6 +62,7 @@ class Convert {
 
     _config = Config(_logger);
     _options = _config.options;
+
     _config.exec(args: args, execFlatMap: execMapWithArgs);
     PackOper.compression = _options.compression;
 

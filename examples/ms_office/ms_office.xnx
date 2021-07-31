@@ -46,7 +46,7 @@
         "--unzip \"{inp}\" \"{unz-dir}\"",
 
         // Expand placeholders in every file extracted from the archive
-        "--dir \"{unz-dir}\" --config \"{cfg-curr}\"",
+        "--xnx \"{cfg-curr}\" --dir \"{unz-dir}\"",
 
         // Compress back to a single file
         "-p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",

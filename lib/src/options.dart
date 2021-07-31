@@ -82,8 +82,14 @@ class Options {
   };
   static final Map<String, Object> XARGS = {
     'name': 'xargs',
-    'abbr': 'x',
+    'abbr': 'a',
     'help': 'similar to the above, but reads arguments from stdin\nuseful in a pipe with a file finding command',
+    'negatable': false,
+  };
+  static final Map<String, Object> XNX = {
+    'name': 'xnx',
+    'abbr': 'x',
+    'help': 'same as -c, --config',
     'negatable': false,
   };
   static final Map<String, Object> CMD_PRINT = {
@@ -352,6 +358,15 @@ class Options {
       ..addFlag(HELP['name'], abbr: HELP['abbr'], help: HELP['help'], negatable: HELP['negatable'], callback: (value) {
         isHelp = value;
       })
+      ..addOption(CONFIG['name'], abbr: CONFIG['abbr'], help: CONFIG['help'], valueHelp: CONFIG['valueHelp'], defaultsTo: CONFIG['defaultsTo'], callback: (value) {
+        _configFileInfo = ConfigFileInfo(value);
+      })
+      ..addOption(XNX['name'], abbr: XNX['abbr'], help: XNX['help'], valueHelp: XNX['valueHelp'], defaultsTo: XNX['defaultsTo'], callback: (value) {
+        _configFileInfo = ConfigFileInfo(value);
+      })
+      ..addOption(START_DIR['name'], abbr: START_DIR['abbr'], help: START_DIR['help'], valueHelp: START_DIR['valueHelp'], defaultsTo: START_DIR['defaultsTo'], callback: (value) {
+        _startDirName = (value == null ? StringExt.EMPTY : value.getFullPath());
+      })
       ..addFlag(QUIET['name'], abbr: QUIET['abbr'], help: QUIET['help'], negatable: QUIET['negatable'], callback: (value) {
         if (value) {
           _logger.level = Logger.LEVEL_SILENT;
@@ -368,9 +383,6 @@ class Options {
       ..addFlag(XARGS['name'], abbr: XARGS['abbr'], help: XARGS['help'], negatable: XARGS['negatable'], callback: (value) {
         _asXargs = value;
       })
-      ..addOption(CONFIG['name'], abbr: CONFIG['abbr'], help: CONFIG['help'], valueHelp: CONFIG['valueHelp'], defaultsTo: CONFIG['defaultsTo'], callback: (value) {
-        _configFileInfo = ConfigFileInfo(value);
-      })
       ..addFlag(LIST_ONLY['name'], abbr: LIST_ONLY['abbr'], help: LIST_ONLY['help'], negatable: LIST_ONLY['negatable'], callback: (value) {
         _isListOnly = value;
       })
@@ -379,9 +391,6 @@ class Options {
       })
       ..addFlag(FORCE_CONVERT['name'], abbr: FORCE_CONVERT['abbr'], help: FORCE_CONVERT['help'], negatable: FORCE_CONVERT['negatable'], callback: (value) {
         _isForced = value;
-      })
-      ..addOption(START_DIR['name'], abbr: START_DIR['abbr'], help: START_DIR['help'], valueHelp: START_DIR['valueHelp'], defaultsTo: START_DIR['defaultsTo'], callback: (value) {
-        _startDirName = (value == null ? StringExt.EMPTY : value.getFullPath());
       })
       ..addOption(COMPRESSION['name'], abbr: COMPRESSION['abbr'], help: COMPRESSION['help'], valueHelp: COMPRESSION['valueHelp'], defaultsTo: COMPRESSION['defaultsTo'], callback: (value) {
         _compression = int.parse(value);
