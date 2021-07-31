@@ -40,7 +40,6 @@ jobs:
         with:
           source_file: 'bin/Linux'
           destination_repo: 'aiurovet/xnx-application'
-          destination_folder: 'Linux'
 #          user_email: 'example@email.com'
           user_name: 'aiurovet'
           commit_message: 'Pushed to the application repo'
@@ -55,7 +54,6 @@ jobs:
         with:
           source_file: 'bin/macOS'
           destination_repo: 'aiurovet/xnx-application'
-          destination_folder: 'macOS'
 #          user_email: 'example@email.com'
           user_name: 'aiurovet'
           commit_message: 'Pushed to the application repo'
@@ -70,7 +68,6 @@ jobs:
         with:
           source_file: 'bin/Windows'
           destination_repo: 'aiurovet/xnx-application'
-          destination_folder: 'Windows'
 #          user_email: 'example@email.com'
           user_name: 'aiurovet'
           commit_message: 'Pushed to the application repo'
