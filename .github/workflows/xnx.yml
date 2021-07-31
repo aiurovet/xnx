@@ -47,7 +47,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: bin/Linux bin/macOS bin/Windows
+          args: bin aiurovet xnx-application
 
 #      - name: Push the output to application repository
 #        uses: dmnemec/copy_file_to_another_repo_action@main
