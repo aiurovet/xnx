@@ -189,22 +189,21 @@ Configuration file is expected in JSON format with the following guidelines:
 
 ##### Full sample configuration file to generate mobile (Flutter) app icons
 
-See the details of the imported file `cmd.xnx` beyond this configuration
+See the details of the imported file `shell.xnx` beyond this configuration
 
 ```
-{
-  // Normal JS-like comments are allowed and will be removed on-the-fly before parsing data
+// A sample configuration file to generate PNG icons for Flutter app (all needed platforms and sizes)
 
+{
   "{{-rename-keywords-}}": {
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
-    "{{-next-}}": "{next}",
   },
 
-  "{{-import-}}": "../cmd.xnx",
+  "{{-import-}}": "../shell.xnx",
 
   "{can-expand-content}": true,
 
@@ -246,7 +245,9 @@ See the details of the imported file `cmd.xnx` beyond this configuration
     },
 
     {
-      "{{-drop-}}": "{suf}",
+      "{suf}": null,
+
+      "{m}": "",
 
       "{dim}": [
         { "{d}": 1024, "{r}": 1024, "{k}": 1 },
@@ -277,8 +278,12 @@ See the details of the imported file `cmd.xnx` beyond this configuration
     },
 
     {
-      "{d}": [ 192, 512 ],
-      "{o}":  "{cur-dir}/web/icons/Icon-{d}.png"
+      "{m}": "",
+
+      "{dim}": [
+        { "{d}": [ 16, 32, ], "{o}":  "{cur-dir}/web/icons/favicon-{d}x{d}.png" },
+        { "{d}": 180, "{o}":  "{cur-dir}/web/icons/apple-touch-icon.png" }
+      ],
     }
   ]
 }

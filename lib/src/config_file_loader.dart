@@ -84,11 +84,12 @@ class ConfigFileLoader {
       if (envArgNo != null) {
         var argNo = (int.tryParse(envArgNo) ?? -1);
 
+        if (argNo == 0) {
+          return startCmd;
+        }
+
         if ((argNo > 0) && (argNo <= argCount)) {
           return args[argNo - 1];
-        }
-        else {
-          return startCmd;
         }
       }
 

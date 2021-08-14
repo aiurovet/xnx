@@ -11,25 +11,20 @@
     "{{-drop-}}": "{drop}",
     "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{inp}",
-    "{{-next-}}": "{next}",
     "{{-out-}}": "{out}",
     "{{-run-}}": "{run}",
     "{{-stop-}}": "{stop}" // stop immediately
   },
 
-  "{{-if-}}": { "!=": [ "${WINE}", "" ], "{{-then-}}": {
-    // Chrome under Wine is out of date, ImageMagick and Inkscape are failing to process
-    "{run}": "--print Creating app icons under Wine is disabled",
-    "{next}": null
-  } },
+  "{{-isolated-}}": true,
 
   "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
   "{prj}": "xnx",
   "{icon-name}": "{prj}{look}",
 
-  "{{-import-}}": "../../examples/cmd.xnx",
+  "{{-import-}}": "../../examples/shell.xnx",
 
-  "{bin-os-dir}": "{cur-dir}/../../bin/{OsType}",
+  "{bin-os-dir}": "{cur-dir}/../../bin/{OSTYPE}",
 
   "{out-dir}": "{bin-os-dir}",
 
@@ -80,11 +75,11 @@
 
       "{exe-pthp}": "{bin-os-dir}/{prj}",
 
-      "{{-if-}}" : { "==/i": [ "{OsType}", "Linux" ], "{{-then-}}": {
+      "{{-if-}}" : { "==/i": [ "{OSTYPE}", "Linux" ], "{{-then-}}": {
         "{run}": [
           '--move "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_64x64.png" "{icon-pthp}_96x96.png" "{out-dir}"'
         ]
-      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "macOS" ], "{{-then-}}": {
+      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OSTYPE}", "macOS" ], "{{-then-}}": {
         "{png-dir-mac}": "{png-dir}.iconset",
         "{run}": [
           '--copy "{icon-pthp}_32x32.png" "{png-dir}/icon_16x16@2x.png"',
@@ -102,7 +97,7 @@
           '--move "{png-dir}" "{png-dir-mac}"',
           'iconutil --convert icns -o "{out-dir}/{icon-name}.icns" "{png-dir-mac}"'
         ]
-      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OsType}", "Windows" ], "{{-then-}}": {
+      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OSTYPE}", "Windows" ], "{{-then-}}": {
         "{run}": [
           '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
           '"${ProgramFiles(x86)}\\Resource Hacker\\ResourceHacker.exe" -open "{exe-pthp}.exe" -save "{exe-pthp}.exe" -action addskip -res "{exe-pthp}.ico" -mask ICONGROUP,{win-icon-id}',

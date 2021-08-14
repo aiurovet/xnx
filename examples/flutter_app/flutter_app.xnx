@@ -7,10 +7,9 @@
     "{{-can-expand-content-}}": "{can-expand-content}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
-    "{{-next-}}": "{next}",
   },
 
-  "{{-import-}}": "../cmd.xnx",
+  "{{-import-}}": "../shell.xnx",
 
   "{can-expand-content}": true,
 

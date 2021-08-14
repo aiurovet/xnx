@@ -25,8 +25,10 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static const String FILE_TYPE_TMP = '.tmp';
-  static final RegExp EXE_SUB_RE = RegExp(r'^(-.?|--.*)$');
-  static final RegExp EXE_SUB_PRINT_RE = RegExp(r'^--print([\s]|$)');
+  static final RegExp EXE_SUB_RE = RegExp(r'^[\s]*[\-]');
+  static final RegExp EXE_SUB_EXPAND_RE = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
+  static final RegExp EXE_SUB_FORCE_RE = RegExp(r'(^|[\s])(-f|--force)([\s]|$)');
+  static final RegExp EXE_SUB_PRINT_RE = RegExp(r'(^|[\s])(--print)([\s]|$)');
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -38,6 +40,7 @@ class Convert {
   bool isProcessed;
   bool isStdIn;
   bool isStdOut;
+  bool isSubRun;
   String curDirName;
   String outDirName;
   String startCmd;
@@ -63,11 +66,14 @@ class Convert {
     _config = Config(_logger);
     _options = _config.options;
 
-    _config.exec(args: args, execFlatMap: execMapWithArgs);
+    _options.parseArgs(args);
     PackOper.compression = _options.compression;
 
     if (_options.isCmd) {
       execBuiltin(_options.plainArgs);
+    }
+    else {
+      _config.exec(args: args, execFlatMap: execMapWithArgs);
     }
 
     return;
@@ -131,7 +137,12 @@ class Convert {
       else if (_options.isCmdDelete) {
         FileOper.deleteSync(paths: args, isSilent: isSilent);
       }
+      else {
+        return false;
+      }
     }
+
+    return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -140,16 +151,24 @@ class Convert {
     var command = expandInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map);
     command = command.replaceAll(_config.paramNameCurDir, curDirName);
 
+    var isForced = _options.isForced;
+
     if (isExpandContentOnly) {
+      isForced = EXE_SUB_FORCE_RE.hasMatch(command);
+
       var cli = command.splitCommandLine();
       var args = cli[1];
       var argc = args.length;
 
       if (argc > 0) {
-        outFilePath = args[argc - 1];
+        inpFilePath = args[0];
 
         if (argc > 1) {
-          inpFilePath = args[0];
+          outFilePath = args[1];
+        }
+        else {
+          outFilePath = inpFilePath;
+          isForced = true;
         }
       }
     }
@@ -157,7 +176,7 @@ class Convert {
     var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath) && command.adjustPath().contains(inpFilePath));
 
     if (isExpandContentOnly && !hasInpFile) {
-      throw Exception('Input file is undefined for ${_config.cmdNameExpand} operation');
+      throw Exception('Input file is undefined for the content expansion');
     }
 
     var inpFile = (hasInpFile ? File(inpFilePath) : null);
@@ -176,11 +195,13 @@ class Convert {
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
     }
 
-    _logger.debug('Temp file path: "${tmpFilePath ?? StringExt.EMPTY}"');
+    if (_logger.isDebug) {
+      _logger.debug('Temp file path: "${tmpFilePath ?? StringExt.EMPTY}"');
+    }
 
     var outFile = (hasOutFile ? File(outFilePath) : null);
 
-    if (!_options.isForced && hasInpFile && hasOutFile && !isSamePath) {
+    if (!isForced && hasInpFile && hasOutFile && !isSamePath) {
       var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
       if (!isChanged) {
@@ -188,7 +209,7 @@ class Convert {
       }
 
       if (!isChanged) {
-        _logger.information('Unchanged: "$outFilePath"');
+        _logger.information('Up to date: "$outFilePath"');
         return false;
       }
     }
@@ -209,12 +230,16 @@ class Convert {
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
-    var isPrint = EXE_SUB_PRINT_RE.hasMatch(command);
-    var canRun = (!_options.isListOnly && !isExpandContentOnly);
+    var match = (isSubRun ? EXE_SUB_PRINT_RE.firstMatch(command) : null);
 
-    if (!canRun || !isPrint) {
-      _logger.out(command);
+    if (match != null) {
+      execPrint([command.substring(match.end - match.start)]);
+      return true;
     }
+
+    _logger.information(command);
+
+    var canRun = (!_options.isListOnly && !isExpandContentOnly);
 
     if (!canRun) {
       return true;
@@ -239,31 +264,26 @@ class Convert {
       var exe = cli[0][0];
       var args = cli[1];
 
-      if (EXE_SUB_RE.hasMatch(exe)) {
-        if (isPrint) {
-          execPrint(args);
-        }
-        else {
-          args.insert(0, exe);
-          Xnx(logger: _logger).exec(args);
-        }
+      if (isSubRun) {
+        args.insert(0, exe);
+        Xnx(logger: _logger).exec(args);
 
         isSuccess = true;
       }
       else {
         if (isProcessRunSyncUsed) {
-          result = Process.runSync(exe, args, workingDirectory: curDirName);
+          result = Process.runSync(exe, args, runInShell: false, workingDirectory: curDirName);
           isSuccess = (result.exitCode == 0);
         }
         else {
           results = waitFor<List<ProcessResult>>(
-              Shell(
-                  environment: Platform.environment,
-                  verbose: _logger.isInfo,
-                  commandVerbose: false,
-                  commentVerbose: false,
-                  runInShell: false
-              ).run(command)
+            Shell(
+              environment: Platform.environment,
+              verbose: _logger.isInfo,
+              commandVerbose: false,
+              commentVerbose: false,
+              runInShell: false
+            ).run(command)
           );
 
           resultCount = results?.length ?? 0;
@@ -326,7 +346,7 @@ class Convert {
       plainArgs.map((x) => x?.quote() ?? StringExt.EMPTY).join(StringExt.SPACE)
     );
 
-    curDirName = getCurDirName(map);
+    curDirName = getCurDirName(map, true);
 
     var inpFilePath = (getValue(map, key: _config.paramNameInp, canReplace: true) ?? StringExt.EMPTY);
     var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
@@ -373,11 +393,15 @@ class Convert {
         command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
       }
 
-      isExpandContentOnly = command.startsWith(_config.cmdNameExpand);
-      canExpandContent = (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
+      isSubRun = EXE_SUB_RE.hasMatch(command);
+      isExpandContentOnly = isSubRun && EXE_SUB_EXPAND_RE.hasMatch(command);
+      canExpandContent = !_options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
 
       if (!StringExt.isNullOrBlank(curDirName)) {
-        _logger.debug('Setting current directory to: "$curDirName"');
+        if (_logger.isDebug) {
+          _logger.debug('Setting current directory to: "$curDirName"');
+        }
+
         Directory.current = curDirName;
       }
 
@@ -422,7 +446,8 @@ class Convert {
 
         outFilePathEx = outFilePathEx.adjustPath();
 
-        _logger.debug('''
+        if (_logger.isDebug) {
+          _logger.debug('''
 
 Input dir:       "${mapCurr[_config.paramNameInpDir]}"
 Input sub-dir:   "${mapCurr[_config.paramNameInpSubDir]}"
@@ -432,19 +457,22 @@ Input name-ext:  "${mapCurr[_config.paramNameInpNameExt]}"
 Input path:      "${mapCurr[_config.paramNameInpPath]}"
 Input sub-path:  "${mapCurr[_config.paramNameInpSubPath]}"
         ''');
+        }
       }
 
       outDirName = (isStdOut ? StringExt.EMPTY : path_api.dirname(outFilePathEx));
 
-      _logger.debug('''
+      if (_logger.isDebug) {
+        _logger.debug('''
 
 Output dir:  "$outDirName"
 Output path: "${outFilePathEx ?? StringExt.EMPTY}"
         ''');
+      }
 
-      // if (isStdOut && !isExpandContentOnly) {
-      //   throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISPLAY}. Use pipe and a separate configuration file per each output.');
-      // }
+      if (isStdOut && !isExpandContentOnly) {
+        throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISPLAY}. Use pipe and a separate configuration file per each output.');
+      }
 
       var isOK = execFile(command.replaceAll(inpFilePath, inpFilePathEx), inpFilePathEx, outFilePathEx, mapCurr);
 
@@ -484,20 +512,6 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       if (execMap(plainArgs, map)) {
         isProcessed = true;
       }
-    }
-
-    if ((isStdOut != null) && !isStdOut && !isProcessed) {
-      var key = _config.paramNameRun;
-      var cmd = map[key];
-
-      if (StringExt.isNullOrBlank(cmd)) {
-        key = _config.paramNameCmd;
-        cmd = map[key];
-      }
-
-      cmd = getValue(map, key: key, value: cmd, canReplace: true);
-
-      _logger.out('Output is up to date for\n\t$cmd\n');
     }
 
     return ConfigResult.ok;
@@ -542,8 +556,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     }
 
     if (_logger.isDebug) {
-      _logger.debug('\n...content of expanded "${inpFile.path}":\n');
-      _logger.debug(text);
+      _logger.debug('\n...content of expanded "${inpFile.path}":\n\n$text');
     }
 
     if (isStdOut) {
@@ -670,9 +683,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String getCurDirName(Map<String, String> map) {
-    var curDirName = (getValue(map, key: _config.paramNameCurDir, canReplace: false) ?? StringExt.EMPTY);
-    curDirName = curDirName.getFullPath();
+  String getCurDirName(Map<String, String> map, bool canReplace) {
+    var curDirName = (getValue(map, key: _config.paramNameCurDir, canReplace: canReplace) ?? StringExt.EMPTY);
+    curDirName = (StringExt.isNullOrBlank(curDirName) ? Directory.current.path : curDirName.getFullPath());
 
     return curDirName;
   }
@@ -715,12 +728,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   String getValue(Map<String, String> map, {String key, String value, bool canReplace}) {
     if ((value == null) && (key != null) && map.containsKey(key)) {
       value = map[key];
-
-      if (key == _config.paramNameCurDir) {
-        value = value.getFullPath();
-        map[key] = value;
-      }
     }
+
+    var isKeyCurDir = (key == _config.paramNameCurDir);
 
     if ((canReplace ?? false) && !StringExt.isNullOrBlank(value)) {
       for (String oldValue; (oldValue != value); ) {
@@ -736,9 +746,14 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       if ((key != null) && value.contains(key) && (map != null) && map.containsKey(key)) {
         value = value.replaceAll(key, map[key]);
       }
+
+      if (isKeyCurDir) {
+        value = value.getFullPath();
+        map[key] = value;
+      }
     }
 
-    if (value?.contains(_config.paramNameCurDir) ?? false) {
+    if (!isKeyCurDir && (value?.contains(_config.paramNameCurDir) ?? false)) {
       value = value.replaceAll(_config.paramNameCurDir, curDirName);
     }
 

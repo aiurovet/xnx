@@ -5,6 +5,7 @@ import 'package:path/path.dart' as path_api;
 import 'package:xnx/src/config_file_info.dart';
 import 'package:xnx/src/config_file_loader.dart';
 import 'package:xnx/src/ext/directory.dart';
+import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/ext/glob.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/ext/stdin.dart';
@@ -88,7 +89,7 @@ class Options {
   };
   static final Map<String, Object> XNX = {
     'name': 'xnx',
-    'abbr': 'x',
+    'abbr': 'X',
     'help': 'same as -c, --config',
     'negatable': false,
   };
@@ -236,10 +237,10 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   static final String APP_NAME = 'xnx';
-  static final String FILE_TYPE_CFG = '.xnx';
+  static final String FILE_TYPE_CFG = '.$APP_NAME';
   static final String FILE_MASK_CFG = '${GlobExt.ALL}$FILE_TYPE_CFG';
 
-  static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-]${CONFIG['name']}|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
+  static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-](${CONFIG['name']}|${XNX['name']})|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
   static final RegExp RE_OPT_START_DIR = RegExp('^[\\-]([\\-]${START_DIR['name']}|${START_DIR['abbr']})([\\=]|\$)', caseSensitive: true);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -326,7 +327,7 @@ class Options {
   String getConfigFullPath(List<String> args) {
     for (var arg in args) {
       if (RE_OPT_CONFIG.hasMatch(arg)) {
-        return configFileInfo.filePath.getFullPath();
+        return _configFileInfo.filePath.getFullPath();
       }
       if (RE_OPT_START_DIR.hasMatch(arg)) {
         break;
@@ -341,6 +342,8 @@ class Options {
   void parseArgs(List<String> args) {
     var errMsg = StringExt.EMPTY;
     var isHelp = false;
+    var configPath = StringExt.EMPTY;
+    var dirName = StringExt.EMPTY;
 
     _configFileInfo = null;
     _startDirName = null;
@@ -359,13 +362,17 @@ class Options {
         isHelp = value;
       })
       ..addOption(CONFIG['name'], abbr: CONFIG['abbr'], help: CONFIG['help'], valueHelp: CONFIG['valueHelp'], defaultsTo: CONFIG['defaultsTo'], callback: (value) {
-        _configFileInfo = ConfigFileInfo(value);
+        if (StringExt.isNullOrBlank(configPath)) {
+          configPath = value;
+        }
       })
-      ..addOption(XNX['name'], abbr: XNX['abbr'], help: XNX['help'], valueHelp: XNX['valueHelp'], defaultsTo: XNX['defaultsTo'], callback: (value) {
-        _configFileInfo = ConfigFileInfo(value);
+      ..addOption(XNX['name'], help: XNX['help'], valueHelp: XNX['valueHelp'], defaultsTo: XNX['defaultsTo'], callback: (value) {
+        if (StringExt.isNullOrBlank(configPath)) {
+          configPath = value;
+        }
       })
       ..addOption(START_DIR['name'], abbr: START_DIR['abbr'], help: START_DIR['help'], valueHelp: START_DIR['valueHelp'], defaultsTo: START_DIR['defaultsTo'], callback: (value) {
-        _startDirName = (value == null ? StringExt.EMPTY : value.getFullPath());
+        dirName = (value == null ? StringExt.EMPTY : value.getFullPath());
       })
       ..addFlag(QUIET['name'], abbr: QUIET['abbr'], help: QUIET['help'], negatable: QUIET['negatable'], callback: (value) {
         if (value) {
@@ -576,6 +583,8 @@ class Options {
     try {
       var result = parser.parse(args);
 
+      setConfigPathAndStartDirName(configPath, dirName);
+
       _plainArgs = <String>[];
       _plainArgs.addAll(result.rest);
 
@@ -599,12 +608,6 @@ class Options {
     if (isHelp) {
       printUsage(parser, error: errMsg);
     }
-
-    if (StringExt.isNullOrBlank(_startDirName)) {
-      _startDirName = null;
-    }
-
-    _startDirName = path_api.canonicalize(_startDirName ?? '');
 
     if (!isCmd) {
       var filePath = _configFileInfo.filePath;
@@ -687,6 +690,59 @@ See README.md for more details
     }
 
     _plainArgs = newArgs;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void setConfigPathAndStartDirName(String configPath, String dirName) {
+    var hasConfigPath = !StringExt.isNullOrBlank(configPath);
+    var hasDirName = StringExt.isNullOrBlank(dirName);
+
+    if (hasDirName) {
+      Directory.current = dirName;
+    }
+
+    if (hasConfigPath && Directory(configPath).tryExistsSync()) {
+      dirName = configPath;
+      configPath = null;
+    }
+
+    if (hasDirName) {
+      _startDirName = path_api.dirname(configPath);
+    }
+    else {
+      _startDirName = path_api.canonicalize(dirName);
+    }
+
+    Directory.current = _startDirName;
+
+    if (!hasConfigPath) {
+      var fileName = path_api.basename(_startDirName);
+      configPath = path_api.join(_startDirName, fileName + FILE_TYPE_CFG);
+    }
+
+    var isConfigPathFound = File(configPath).tryExistsSync();
+
+    if (!isConfigPathFound) {
+      var files = Directory(_startDirName).listSync();
+
+      if (files?.isNotEmpty ?? false) {
+        var paths = files.map((x) => x.path).toList()..sort();
+
+        configPath = paths.firstWhere(
+          (x) => path_api.extension(x) == FILE_TYPE_CFG,
+          orElse: () => null
+        );
+
+        isConfigPathFound = !StringExt.isNullOrBlank(configPath);
+      }
+    }
+
+    if (!isConfigPathFound) {
+      throw Exception('Configuration file not found: "${configPath ?? StringExt.EMPTY}"');
+    }
+
+    _configFileInfo = ConfigFileInfo(configPath);
   }
 
   //////////////////////////////////////////////////////////////////////////////

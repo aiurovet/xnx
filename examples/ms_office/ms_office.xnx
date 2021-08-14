@@ -40,21 +40,21 @@
 
       "{run}": [
         // Expand template config file
-        "{expand-content} \"ms_office_tmpl.xnx\" \"{cfg-curr}\"",
+        '--expand "ms_office_tmpl.xnx" "{cfg-curr}" --force',
 
         // Decompress the input file (the archive)
-        "--unzip \"{inp}\" \"{unz-dir}\"",
+        '--unzip "{inp}" "{unz-dir}"',
 
         // Expand placeholders in every file extracted from the archive
-        "--xnx \"{cfg-curr}\" --dir \"{unz-dir}\"",
+        '--xnx "{cfg-curr}" --dir "{unz-dir}"',
 
         // Compress back to a single file
-        "-p {compression} --zip --move \"{unz-dir}\" \"{out-file}\"",
+        '-p {compression} --zip --move "{unz-dir}" "{out-file}"',
       ],
     },
     {
       // Remove all possible temporary directories and files
-      "{run}": "--delete \"{cfg-curr}\" \"unz\"",
+      "{run}": '--delete "{cur-dir}/unz"',
     }
   ]
 }

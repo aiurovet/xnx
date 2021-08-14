@@ -2,13 +2,11 @@
 // in turn, will be used to expand XML files extracted from an MS Office file
 {
   "{{-rename-keywords-}}": {
-    "{{-cmd-}}": "{c}",
     "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{i}",
-    "{{-out-}}": "{o}"
+    "{{-out-}}": "{o}",
+    "{{-run-}}": "{r}",
   },
-
-  "{c}": "{expand-content} \"{i}\" \"{o}\"",
 
   "data": [
     {
@@ -24,7 +22,8 @@
       "{disease}": "<disease>",
       "{dr-full-name}": "<dr-full-name>",
       "{i}": "**",
-      "{o}": "{i}"
     }
-  ]
+  ],
+
+  "{r}": '--expand "{i}"',
 }

@@ -1,9 +1,7 @@
 {
   "{{-rename-keywords-}}": {
-    "{{-can-expand-content-}}": "{CEC}",
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{CD}",
-    "{{-expand-content-}}": "{expand-content}",
     "{{-inp-}}": "{i}",
     "{{-inp-dir-}}": "{i-dir}",
     "{{-inp-ext-}}": "{i-ext}",
@@ -11,9 +9,7 @@
     "{{-out-}}": "{o}"
   },
 
-  "{CEC}": true,
-
-  "{c}": "{expand-content} \"{i}\" \"{o}\"",
+  "{c}": '--expand "{i}" "{o}"',
 
   "{i}": "{CD}/template/*settings.json",
 
@@ -26,5 +22,5 @@
   // You can use your own environment variables too: just export
   // those before calling xnx and use here similarly: ${MY_ENV_VAR}
 
-  "{dir}": "${HOME}${USERPROFILE}/{envLC}", "{o}": "{i-dir}/../out/{i-name}-{envTC}{i-ext}"
+  "{o}": "{i-dir}/../out/{i-name}-{envTC}{i-ext}",
 }

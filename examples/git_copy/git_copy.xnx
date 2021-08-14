@@ -1,0 +1,63 @@
+{
+  "{{-import-}}": "../shell.xnx",
+
+  "{source-file}": "$1",
+  "{user-name}": "$2",
+  "{target-repo}": "$3",
+  "{target-branch}": "$4",
+  "{target-dir}": "$5",
+  "{commit-message}": "$6",
+  "{user-email}": "$7",
+
+  "{source-repo}": "${GITHUB_REPOSITORY}",
+  "{commit-id}": "${GITHUB_SHA}",
+
+  "x": [
+    { "{{-if-}}": { "==": [ "{target-dir}", "" ], "{{-then-}}": {
+      "{target-dir}": ".",
+    } } },
+
+    { "{{-if-}}": { "==": [ "{commit-message}", "" ], "{{-then-}}": {
+      "{commit-message}": "Copied from {source-repo}, commit {commit-id}",
+    } } },
+
+    { "{{-if-}}": { "==": [ "{source-file}", "" ], "{{-then-}}": {
+      "{{-stop-}}": "Undefined source file or directory name",
+    } } },
+
+    { "{{-if-}}": { "==": [ "{user-name}", "" ], "{{-then-}}": {
+      "{{-stop-}}": "Undefined user name",
+    } } },
+
+    { "{{-if-}}": { "==": [ "{target-repo}", "" ], "{{-then-}}": {
+      "{{-stop-}}": "Undefined target repository name",
+    } } },
+
+    { "{{-if-}}": { "==": [ "{target-branch}", "" ], "{{-then-}}": {
+      "{{-stop-}}": "Undefined target branch name",
+    } } },
+
+    // Create directory to clone to
+
+    { "{clone-dir}": "{TMPDIR}/{target-repo}" },
+    { "{{-run-}}": [ '--delete "{clone-dir}"', '--mkdir "{clone-dir}"' ] },
+    { "{{-cur-dir-}}": "{clone-dir}" },
+
+    // Create directory to clone to
+
+    { "{{-run-}}": [
+      'git add .',
+      'git config --global user.email "{user-email}"',
+      'git config --global user.name "{user-name}"',
+      'git clone --single-branch --branch "{target-branch}" "https://x-access-token:${API_TOKEN_GITHUB}@github.com/{user-name}/{target-repo}.git" "{clone-dir}"',
+      '--copy "{source-file}" "{clone-dir}/{target-dir}"',
+      // There is no need to check whether there are actual changes, as the script is run on commit of the source repo
+      //'git status --untracked-files=no --porcelain',
+      'git commit --message "{commit-message}"',
+      'git push "https://x-access-token:${API_TOKEN_GITHUB}@github.com/{user-name}/{target-repo}.git" --set-upstream "${target-branch}"',
+    ] },
+
+    { "{{-cur-dir-}}": "{clone-dir}/../",
+      "{{-run-}}": '--delete "{clone-dir}"' }
+  ]
+}
