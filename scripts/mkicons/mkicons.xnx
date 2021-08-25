@@ -75,11 +75,11 @@
 
       "{exe-pthp}": "{bin-os-dir}/{prj}",
 
-      "{{-if-}}" : { "==/i": [ "{OSTYPE}", "Linux" ], "{{-then-}}": {
+      "{{-if-}}" : { "": '"{OSTYPE}" ==/i "Linux"', "{{-then-}}": {
         "{run}": [
           '--move "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_64x64.png" "{icon-pthp}_96x96.png" "{out-dir}"'
         ]
-      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OSTYPE}", "macOS" ], "{{-then-}}": {
+      }, "{{-else-}}" : { "{{-if-}}" : { "": '"{OSTYPE}" ==/i "macOS"', "{{-then-}}": {
         "{png-dir-mac}": "{png-dir}.iconset",
         "{run}": [
           '--copy "{icon-pthp}_32x32.png" "{png-dir}/icon_16x16@2x.png"',
@@ -97,7 +97,7 @@
           '--move "{png-dir}" "{png-dir-mac}"',
           'iconutil --convert icns -o "{out-dir}/{icon-name}.icns" "{png-dir-mac}"'
         ]
-      }, "{{-else-}}" : { "{{-if-}}" : { "==/i": [ "{OSTYPE}", "Windows" ], "{{-then-}}": {
+      }, "{{-else-}}" : { "{{-if-}}" : { "": '"{OSTYPE}" ==/i "Windows"', "{{-then-}}": {
         "{run}": [
           '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{exe-pthp}.ico"',
           '"${ProgramFiles(x86)}\\Resource Hacker\\ResourceHacker.exe" -open "{exe-pthp}.exe" -save "{exe-pthp}.exe" -action addskip -res "{exe-pthp}.ico" -mask ICONGROUP,{win-icon-id}',

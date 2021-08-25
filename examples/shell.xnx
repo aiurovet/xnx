@@ -4,12 +4,12 @@
   "cmd": {
     // You can specify either just command names, or command names with options, or command names with options and
     // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
-    "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
+    "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
       "{HOME}": "${HOME}",
       "{USER}": "${USER}",
       "{TMPDIR}": "/tmp",
 
-      "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
+      "{{-if-}}": { "": '-e "/Applications/*.app"', "{{-then-}}": {
         "{OSTYPE}": "macOS",
         "{svg2png}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --default-background-color=0",
         "{shell}": "zsh -c"
@@ -24,7 +24,7 @@
       "{delete}": "rm -rf",
       "{mkdir}": "mkdir -p",
       "{sleep_0_5s}": "sleep 0.5s"
-    }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
+    }, "{{-else-}}": { "{{-if-}}": { "": '"${USERPROFILE}" != ""', "{{-then-}}": {
       "{HOME}": "${USERPROFILE}",
       "{USER}": "${USERNAME}",
       "{OSTYPE}": "Windows",

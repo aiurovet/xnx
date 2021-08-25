@@ -13,27 +13,27 @@
   "{commit-id}": "${GITHUB_SHA}",
 
   "x": [
-    { "{{-if-}}": { "==": [ "{target-dir}", "" ], "{{-then-}}": {
+    { "{{-if-}}": { "": '"{target-dir}" == ""', "{{-then-}}": {
       "{target-dir}": ".",
     } } },
 
-    { "{{-if-}}": { "==": [ "{commit-message}", "" ], "{{-then-}}": {
+    { "{{-if-}}": { "": '"{commit-message}" == ""', "{{-then-}}": {
       "{commit-message}": "Copied from {source-repo}, commit {commit-id}",
     } } },
 
-    { "{{-if-}}": { "==": [ "{source-file}", "" ], "{{-then-}}": {
+    { "{{-if-}}": { "": '"{source-file}" == ""', "{{-then-}}": {
       "{{-stop-}}": "Undefined source file or directory name",
     } } },
 
-    { "{{-if-}}": { "==": [ "{user-name}", "" ], "{{-then-}}": {
+    { "{{-if-}}": { "": '"{user-name}" == ""', "{{-then-}}": {
       "{{-stop-}}": "Undefined user name",
     } } },
 
-    { "{{-if-}}": { "==": [ "{target-repo}", "" ], "{{-then-}}": {
+    { "{{-if-}}": { "": '"{target-repo}" == ""', "{{-then-}}": {
       "{{-stop-}}": "Undefined target repository name",
     } } },
 
-    { "{{-if-}}": { "==": [ "{target-branch}", "" ], "{{-then-}}": {
+    { "{{-if-}}": { "": '"{target-branch}" == ""', "{{-then-}}": {
       "{{-stop-}}": "Undefined target branch name",
     } } },
 

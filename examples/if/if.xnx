@@ -3,17 +3,19 @@
 // of parameters a lot easier and much more readable way.
 
 {
-  "{{-import-}}": "../shell.xnx",
+  //"{{-import-}}": "../shell.xnx",
 
-  "{{-if-}}": { "!=": [ "${HOME}", "" ], "{{-then-}}": {
-    "{{-if-}}": { "-e": [ "/Applications/*.app" ], "{{-then-}}": {
+  "{HostName}": "$(uname)",
+
+  "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
+    "{{-if-}}": { "": '(("${HOME}" != "") || ("${USER}" != "")) && (-e "${HOME}/IdeaProjects/bonpockon/*")', "{{-then-}}": {
       "{OSTYPE}": "macOS",
     }, "{{-else-}}": {
       "{OSTYPE}": "Linux"
     } },
     "{HOME}": "${HOME}",
     "{USER}": "${USER}",
-  }, "{{-else-}}": { "{{-if-}}": { "!=": [ "${USERPROFILE}", "" ], "{{-then-}}": {
+  }, "{{-else-}}": { "{{-if-}}": { "": '"${USERPROFILE}" != ""', "{{-then-}}": {
     "{OSTYPE}": "Windows",
     "{HOME}": "${USERPROFILE}",
     "{USER}": "${USERNAME}"
@@ -23,5 +25,8 @@
     "{USER}": "{OSTYPE}"
   } } } },
 
-  "{{-run-}}": '--print OS:   {OSTYPE}\nUser: {USER}\nHome: {HOME}'
+  "{{-run-}}": [
+    './myscript "OS: {OSTYPE}\nUser: {USER}\nHome: {HOME}"',
+    '--print OS:   {OSTYPE}\nUser: {USER}\nHome: {HOME}'
+  ],
 }

@@ -4,7 +4,6 @@ import 'package:args/args.dart';
 import 'package:path/path.dart' as path_api;
 import 'package:xnx/src/config_file_info.dart';
 import 'package:xnx/src/config_file_loader.dart';
-import 'package:xnx/src/ext/directory.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/ext/glob.dart';
 import 'package:xnx/src/ext/string.dart';
@@ -18,18 +17,29 @@ class Options {
 
   static const String HELP_MIN = '-?';
 
+  static const String ENV_KEY_PREFIX = 'XNX_';
+  static final RE_ENV_SPLIT = RegExp(r'[\s\=]+');
+
+  static const String ENV_APPEND_SEP = '${ENV_KEY_PREFIX}APPEND_SEP';
+  static const String ENV_COMPRESSION = '${ENV_KEY_PREFIX}COMPRESSION';
+  static const String ENV_FORCE = '${ENV_KEY_PREFIX}FORCE';
+  static const String ENV_LIST_ONLY = '${ENV_KEY_PREFIX}LIST_ONLY';
+  static const String ENV_QUIET = '${ENV_KEY_PREFIX}QUIET';
+  static const String ENV_START_DIR = '${ENV_KEY_PREFIX}START_DIR';
+  static const String ENV_VERBOSITY = '${ENV_KEY_PREFIX}VERBOSITY';
+
   static final Map<String, Object> APPEND_SEP = {
     'name': 'append-sep',
     'abbr': 's',
-    'help': 'append record separator "${ConfigFileLoader.RECORD_SEP}" when filtering input config file (for "${LIST_ONLY['name']}" exclusively)',
+    'help': 'append record separator "${ConfigFileLoader.RECORD_SEP}" when filtering input config file (for "${LIST_ONLY['name']}" exclusively), defines environment variable $ENV_APPEND_SEP',
     'negatable': false,
   };
   static final Map<String, Object> COMPRESSION = {
     'name': 'compression',
     'abbr': 'p',
-    'help': 'compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2',
+    'help': 'compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2, defines environment variable $ENV_COMPRESSION',
     'valueHelp': 'LEVEL',
-    'defaultsTo': PackOper.DEFAULT_COMPRESSION.toString(),
+    'defaultsTo': null,
   };
   static final Map<String, Object> CONFIG = {
     'name': 'config',
@@ -47,7 +57,7 @@ class Options {
   static final Map<String, Object> FORCE_CONVERT = {
     'name': 'force',
     'abbr': 'f',
-    'help': 'ignore timestamps and force conversion',
+    'help': 'ignore timestamps and force conversion, defines environment variable $ENV_FORCE',
     'negatable': false,
   };
   static final Map<String, Object> HELP = {
@@ -59,26 +69,26 @@ class Options {
   static final Map<String, Object> LIST_ONLY = {
     'name': 'list-only',
     'abbr': 'l',
-    'help': 'display all commands, but do not execute those; if no command specified, then show config',
+    'help': 'display all commands, but do not execute those; if no command specified, then show config, defines environment variable $ENV_LIST_ONLY',
     'negatable': false,
   };
   static final Map<String, Object> QUIET = {
     'name': 'quiet',
     'abbr': 'q',
-    'help': 'quiet mode (no output, same as verbosity 0)',
+    'help': 'quiet mode (no output, same as verbosity 0), defines environment variable $ENV_QUIET',
     'negatable': false,
   };
   static final Map<String, Object> START_DIR = {
     'name': 'dir',
     'abbr': 'd',
-    'help': 'startup directory',
+    'help': 'startup directory, defines environment variable $ENV_START_DIR',
     'valueHelp': 'DIR',
-    'defaultsTo': '.',
+    'defaultsTo': null,
   };
   static final Map<String, Object> VERBOSITY = {
     'name': 'verbosity',
     'abbr': 'v',
-    'help': 'how much information to show: 0-6, or: quiet, errors, normal, warnings, info, debug\n(defaults to "normal")',
+    'help': 'how much information to show: (0-6 or quiet, errors, normal, warnings, info, debug), defines environment variable $ENV_COMPRESSION\n(defaults to "normal")',
     'valueHelp': 'LEVEL'
   };
   static final Map<String, Object> XARGS = {
@@ -372,16 +382,20 @@ class Options {
         }
       })
       ..addOption(START_DIR['name'], abbr: START_DIR['abbr'], help: START_DIR['help'], valueHelp: START_DIR['valueHelp'], defaultsTo: START_DIR['defaultsTo'], callback: (value) {
-        dirName = (value == null ? StringExt.EMPTY : value.getFullPath());
+        dirName = _getString(ENV_START_DIR, START_DIR['abbr'], value, isPath: true);
+
+        if (!StringExt.isNullOrBlank(dirName)) {
+          dirName = dirName.getFullPath();
+        }
       })
       ..addFlag(QUIET['name'], abbr: QUIET['abbr'], help: QUIET['help'], negatable: QUIET['negatable'], callback: (value) {
-        if (value) {
+        if (_getBool(ENV_QUIET, QUIET['abbr'], value)) {
           _logger.level = Logger.LEVEL_SILENT;
         }
       })
       ..addOption(VERBOSITY['name'], abbr: VERBOSITY['abbr'], help: VERBOSITY['help'], valueHelp: VERBOSITY['valueHelp'], defaultsTo: VERBOSITY['defaultsTo'], callback: (value) {
         if (value != null) {
-          _logger.levelAsString = value;
+          _logger.levelAsString = _getString(ENV_VERBOSITY, VERBOSITY['abbr'], value);
         }
       })
       ..addFlag(EACH['name'], abbr: EACH['abbr'], help: EACH['help'], negatable: EACH['negatable'], callback: (value) {
@@ -391,16 +405,16 @@ class Options {
         _asXargs = value;
       })
       ..addFlag(LIST_ONLY['name'], abbr: LIST_ONLY['abbr'], help: LIST_ONLY['help'], negatable: LIST_ONLY['negatable'], callback: (value) {
-        _isListOnly = value;
+        _isListOnly = _getBool(ENV_LIST_ONLY, LIST_ONLY['abbr'], value);
       })
       ..addFlag(APPEND_SEP['name'], abbr: APPEND_SEP['abbr'], help: APPEND_SEP['help'], negatable: APPEND_SEP['negatable'], callback: (value) {
-        _isAppendSep = value;
+        _isAppendSep = _getBool(ENV_APPEND_SEP, APPEND_SEP['abbr'], value);
       })
       ..addFlag(FORCE_CONVERT['name'], abbr: FORCE_CONVERT['abbr'], help: FORCE_CONVERT['help'], negatable: FORCE_CONVERT['negatable'], callback: (value) {
-        _isForced = value;
+        _isForced = _getBool(ENV_FORCE, FORCE_CONVERT['abbr'], value);
       })
       ..addOption(COMPRESSION['name'], abbr: COMPRESSION['abbr'], help: COMPRESSION['help'], valueHelp: COMPRESSION['valueHelp'], defaultsTo: COMPRESSION['defaultsTo'], callback: (value) {
-        _compression = int.parse(value);
+        _compression = _getInt(ENV_COMPRESSION, COMPRESSION['abbr'], value, defValue: PackOper.DEFAULT_COMPRESSION);
       })
       ..addFlag(CMD_PRINT['name'], help: CMD_PRINT['help'], negatable: CMD_PRINT['negatable'], callback: (value) {
         _isCmdPrint = value;
@@ -583,7 +597,9 @@ class Options {
     try {
       var result = parser.parse(args);
 
-      setConfigPathAndStartDirName(configPath, dirName);
+      if (!isCmd) {
+        setConfigPathAndStartDirName(configPath, dirName);
+      }
 
       _plainArgs = <String>[];
       _plainArgs.addAll(result.rest);
@@ -607,50 +623,6 @@ class Options {
 
     if (isHelp) {
       printUsage(parser, error: errMsg);
-    }
-
-    if (!isCmd) {
-      var filePath = _configFileInfo.filePath;
-
-      if (filePath != StringExt.STDIN_PATH) {
-        if (filePath.isEmpty) {
-          filePath = path_api.join(_startDirName, path_api.basename(_startDirName) + FILE_TYPE_CFG);
-
-          if (!File(filePath).existsSync()) {
-            var lst = DirectoryExt.pathListExSync(path_api.join(_startDirName, FILE_MASK_CFG));
-            filePath = ((lst.isEmpty ? null : lst.first) ?? StringExt.EMPTY);
-          }
-        }
-        else {
-          if (StringExt.isNullOrBlank(path_api.extension(filePath))) {
-            filePath = path_api.setExtension(filePath, FILE_TYPE_CFG);
-          }
-
-          if (StringExt.isNullOrBlank(filePath)) {
-            printUsage(parser, error: 'Configuration file is not found');
-          }
-
-          if (!path_api.isAbsolute(filePath)) {
-            filePath = getConfigFullPath(args);
-          }
-
-          var configFile = File(filePath);
-
-          if (!configFile.existsSync()) {
-            var dirName = path_api.dirname(filePath);
-            var fileName = path_api.basename(dirName) + FILE_TYPE_CFG;
-
-            filePath = path_api.join(dirName, fileName);
-          }
-        }
-
-        _configFileInfo.filePath = filePath;
-      }
-    }
-
-    if (!StringExt.isNullOrBlank(_startDirName)) {
-      _logger.information('Setting current directory to: "$_startDirName"');
-      Directory.current = _startDirName;
     }
 
     unquotePlainArgs();
@@ -696,24 +668,35 @@ See README.md for more details
 
   void setConfigPathAndStartDirName(String configPath, String dirName) {
     var hasConfigPath = !StringExt.isNullOrBlank(configPath);
-    var hasDirName = StringExt.isNullOrBlank(dirName);
+    var hasDirName = !StringExt.isNullOrBlank(dirName);
 
-    if (hasDirName) {
-      Directory.current = dirName;
+    if (hasConfigPath) {
+      if (StringExt.isNullOrBlank(path_api.extension(configPath))) {
+        configPath += FILE_TYPE_CFG;
+      }
+      configPath = configPath.getFullPath();
     }
 
-    if (hasConfigPath && Directory(configPath).tryExistsSync()) {
+    if (!hasDirName && hasConfigPath && Directory(configPath).tryExistsSync()) {
+      hasDirName = true;
       dirName = configPath;
       configPath = null;
     }
 
     if (hasDirName) {
-      _startDirName = path_api.dirname(configPath);
+      _logger.information('Setting current directory to: "$dirName"');
+      Directory.current = dirName;
     }
-    else {
+
+    if (hasDirName) {
+      _startDirName = dirName;
+    }
+    else if (hasConfigPath) {
+      dirName = path_api.dirname(configPath);
       _startDirName = path_api.canonicalize(dirName);
     }
 
+    _logger.information('Setting current directory to: "$_startDirName"');
     Directory.current = _startDirName;
 
     if (!hasConfigPath) {
@@ -743,6 +726,61 @@ See README.md for more details
     }
 
     _configFileInfo = ConfigFileInfo(configPath);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  bool _getBool(String envKey, String optAbbr, bool value, {bool defValue = false}) {
+    var strValue = (value?.toString() ?? StringExt.getEnvironmentVariable(envKey));
+    var hasValue = !StringExt.isNullOrBlank(strValue);
+    var result = (hasValue ? StringExt.parseBool(strValue) : (defValue ?? 0));
+
+    StringExt.setEnvironmentVariable(envKey, (result ? '-$optAbbr' : null));
+
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  int _getInt(String envKey, String optAbbr, String value, {int defValue = 0}) {
+    var strValue = (value?.toString() ?? StringExt.getEnvironmentVariable(envKey));
+
+    if (envKey.startsWith(ENV_KEY_PREFIX)) {
+      var parts = strValue?.split(RE_ENV_SPLIT);
+
+      if ((parts?.length ?? 0) > 1) {
+        strValue = parts[1];
+      }
+    }
+
+    var hasValue = !StringExt.isNullOrBlank(strValue);
+    var intValue = ((hasValue ? int.tryParse(strValue) : null) ?? defValue ?? 0);
+
+    StringExt.setEnvironmentVariable(envKey, '-$optAbbr $intValue', defValue: 0);
+
+    return intValue;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String _getString(String envKey, String optAbbr, String value, {bool isPath, String defValue}) {
+    var strValue = (value ?? StringExt.getEnvironmentVariable(envKey, defValue: defValue));
+
+    if (envKey.startsWith(ENV_KEY_PREFIX)) {
+      var parts = strValue?.split(RE_ENV_SPLIT);
+
+      if ((parts?.length ?? 0) > 1) {
+        strValue = parts[1];
+      }
+    }
+
+    if (isPath) {
+      strValue = strValue.getFullPath();
+    }
+
+    StringExt.setEnvironmentVariable(envKey, '-$optAbbr $strValue', defValue: StringExt.EMPTY);
+
+    return strValue;
   }
 
   //////////////////////////////////////////////////////////////////////////////

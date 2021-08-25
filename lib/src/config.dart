@@ -1,7 +1,7 @@
 import 'package:xnx/src/config_key_data.dart';
 import 'package:xnx/src/config_result.dart';
 import 'package:xnx/src/config_file_loader.dart';
-import 'package:xnx/src/ext/file_system_entity.dart';
+import 'package:xnx/src/expression.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/options.dart';
@@ -56,6 +56,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
   // Pre-defined commands
+
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
@@ -67,34 +68,12 @@ class Config {
   String condNameElse = '{{-else-}}';
 
   //////////////////////////////////////////////////////////////////////////////
-  // Pre-defined comparison operators
-  //////////////////////////////////////////////////////////////////////////////
-
-  String operNameEq = '==';
-  String operNameEqi = '==/i';
-  String operNameDirectoryExists = '-d';
-  String operNameDirectoryNotExists = '!-d';
-  String operNameFileExists = '-f';
-  String operNameFileNotExists = '!-f';
-  String operNameExists = '-e';
-  String operNameNotExists = '!-e';
-  String operNameGe = '>=';
-  String operNameGt = '>';
-  String operNameLe = '<=';
-  String operNameLt = '<';
-  String operNameNe = '!=';
-  String operNameNei = '!=/i';
-  String operNameNr = '!~';
-  String operNameNri = '!~/i';
-  String operNameRx = '~';
-  String operNameRxi = '~/i';
-
-  //////////////////////////////////////////////////////////////////////////////
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
   Map all;
   RegExp detectPathsRE;
+  Expression expression;
   Map<String, String> flatMap = {};
   List<Map<String, String>> flatMaps = [];
   int lastModifiedStamp = 0;
@@ -298,7 +277,7 @@ class Config {
   ConfigResult execDataMapIf(String key, Map<String, Object> data, ConfigFlatMapProc execFlatMap) {
     var result = ConfigResult.ok;
 
-    var resolvedData = resolveIf(data);
+    var resolvedData = expression.exec(data);
 
     if (resolvedData != null) {
       setTrailFor(data, condNameThen, resolvedData);
@@ -488,191 +467,6 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Object resolveIf(Map<String, Object> mapIf) {
-    var isOperFound = false;
-    String operName;
-
-    operName = (!isOperFound ? operNameDirectoryExists : operName);
-    var isDirectoryExists = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isDirectoryExists);
-
-    operName = (!isOperFound ? operNameFileExists : operName);
-    var isFileExists = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isFileExists);
-
-    var isExists = (isFileExists || isDirectoryExists);
-
-    if (!isExists) {
-      operName = (!isOperFound ? operNameExists : operName);
-      isExists = (!isOperFound && mapIf.containsKey(operName));
-      isOperFound = (isOperFound || isExists);
-    }
-
-    operName = (!isOperFound ? operNameNotExists : operName);
-    var isNotExists = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isNotExists);
-
-    operName = (!isOperFound ? operNameEq : operName);
-    var isEq = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isEq);
-
-    operName = (!isOperFound ? operNameEqi : operName);
-    var isEqi = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isEqi);
-
-    operName = (!isOperFound ? operNameGe : operName);
-    var isGe = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isGe);
-
-    operName = (!isOperFound ? operNameGt : operName);
-    var isGt = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isGt);
-
-    operName = (!isOperFound ? operNameLe : operName);
-    var isLe = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isLe);
-
-    operName = (!isOperFound ? operNameLt : operName);
-    var isLt = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isLt);
-
-    operName = (!isOperFound ? operNameNe : operName);
-    var isNe = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isNe);
-
-    operName = (!isOperFound ? operNameNei : operName);
-    var isNei = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isNei);
-
-    operName = (!isOperFound ? operNameRx : operName);
-    var isRx = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isRx);
-
-    operName = (!isOperFound ? operNameRxi : operName);
-    var isRxi = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isRxi);
-
-    operName = (!isOperFound ? operNameNr : operName);
-    var isNr = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isNe);
-
-    operName = (!isOperFound ? operNameNri : operName);
-    var isNri = (!isOperFound && mapIf.containsKey(operName));
-    isOperFound = (isOperFound || isNri);
-
-    if (!isOperFound) {
-      throw Exception('Unknown conditional operation in "$condNameIf": "$mapIf"');
-    }
-
-    if (!mapIf.containsKey(condNameThen)) {
-      throw Exception('Then-block not found in "$condNameIf": "$mapIf"');
-    }
-
-    var blockThen = mapIf[condNameThen];
-    var blockElse = (mapIf.containsKey(condNameElse) ? mapIf[condNameElse] : null);
-
-    if ((blockThen == null) && (blockElse == null)) {
-      throw Exception('Incomplete IF operation: "$condNameIf": "$mapIf"');
-    }
-
-    var operValue = mapIf[operName];
-    var operands = (operValue is List ? operValue : [ operValue as String ]);
-
-    var isThen = true;
-
-    if (isExists || isNotExists) {
-      for (var entityName in operands) {
-        if (entityName == null) {
-          isThen = false;
-          break;
-        }
-
-        var entityNameEx = expandStraight(flatMap, entityName);
-        var isFound = FileSystemEntityExt.tryPatternExistsSync(entityNameEx, isDirectory: isDirectoryExists, isFile: isFileExists);
-
-        if ((isExists && !isFound) || (!isExists && isFound)) {
-          isThen = false;
-          break;
-        }
-      }
-    }
-    else {
-      if (operands.length != 2) {
-        throw Exception('Two operands precisely required for "$operName": $operands');
-      }
-
-      var isIgnoreCase  = (isEqi || isNei || isRxi || isNri);
-      var isRegExpMatch = (isRx || isRxi || isNr || isNri);
-
-      var o1 = expandStraight(flatMap, operands[0]?.toString());
-      var o2 = expandStraight(flatMap, operands[1]?.toString());
-
-      var n1 = (o1 == null ? null : (int.tryParse(o1) ?? double.tryParse(o1)));
-      var n2 = (o2 == null ? null : (int.tryParse(o2) ?? double.tryParse(o2)));
-
-      if ((n1 != null) && (n2 != null)) {
-        if (isGe) {
-          isThen = (n1 >= n2);
-        }
-        else if (isGt) {
-          isThen = (n1 > n2);
-        }
-        else if (isLe) {
-          isThen = (n1 <= n2);
-        }
-        else if (isLt) {
-          isThen = (n1 < n2);
-        }
-        else if (isEq) {
-          isThen = (n1 == n2);
-        }
-        else if (isNe) {
-          isThen = (n1 == n2);
-        }
-        else {
-          isThen = null;
-        }
-      }
-      else {
-        isThen = null;
-      }
-
-      if (isThen == null) {
-        if (isIgnoreCase && !isRegExpMatch) {
-          o1 = o1?.toUpperCase();
-          o2 = o2?.toUpperCase();
-        }
-
-        if (isEq || isEqi) {
-          isThen = (o1 == o2);
-        }
-        else if (isNe || isNei) {
-          isThen = (o1 != o2);
-        }
-        else if (isGe) {
-          isThen = ((o1?.compareTo(o2) ?? -1) >= 0);
-        }
-        else if (isGt) {
-          isThen = ((o1?.compareTo(o2) ?? -1) > 0);
-        }
-        else if (isLe) {
-          isThen = ((o1?.compareTo(o2) ?? 1) <= 0);
-        }
-        else if (isLt) {
-          isThen = ((o1?.compareTo(o2) ?? 1) < 0);
-        }
-        else {
-          var hasMatch = RegExp(o2, caseSensitive: !isIgnoreCase).hasMatch(o1);
-          isThen = (isRx || isRxi ? hasMatch : (isNr || isNri ? !hasMatch : false));
-        }
-      }
-    }
-
-    return (isThen ? blockThen : blockElse);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   void setActualParamNames(Map<String, Object> renames) {
     renames?.forEach((k, v) {
       if (k == paramNameCanExpandContent) {
@@ -783,6 +577,8 @@ class Config {
         (condNameThen ?? StringExt.EMPTY) +
         (condNameElse ?? StringExt.EMPTY);
     }
+
+    expression = Expression(this);
   }
 
   //////////////////////////////////////////////////////////////////////////////

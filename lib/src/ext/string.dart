@@ -107,9 +107,7 @@ extension StringExt on String {
       _initEnvironmentVariables();
     }
 
-    var hasKey = StringExt.ENVIRONMENT.containsKey(key);
-
-    return (hasKey ? StringExt.ENVIRONMENT[key] ?? defValue : defValue);
+    return StringExt.ENVIRONMENT[key] ?? defValue;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -155,6 +153,25 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  String replaceRange(int start, int end, String replacement) {
+    if ((start < 0) || (start >= end)) {
+      return this;
+    }
+
+    var len = length;
+
+    if (start >= len) {
+      return this;
+    }
+
+    var prefix = (start == 0 ? EMPTY : substring(0, start));
+    var suffix = (end >= len ? EMPTY : substring(end));
+
+    return (prefix + (replacement ?? StringExt.EMPTY) + suffix);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   // String purifyJson() {
   //   var result = replaceAll('\r\n', '\x01');
   //   result = result.replaceAll('\r',   '\x01');
@@ -181,6 +198,26 @@ extension StringExt on String {
   //
   //   return result;
   // }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void setEnvironmentVariable<T>(String key, T value, {T defValue}) {
+    if (ENVIRONMENT == null) {
+      _initEnvironmentVariables();
+    }
+
+    if (value == null) {
+      if (defValue == null) {
+        StringExt.ENVIRONMENT.remove(key);
+      }
+      else {
+        StringExt.ENVIRONMENT[key] = defValue.toString();
+      }
+    }
+    else {
+      StringExt.ENVIRONMENT[key] = value.toString();
+    }
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -275,7 +312,7 @@ extension StringExt on String {
 
     var escapedQuote = r'\' + plainQuote;
 
-    var result = substring(1, (len - 2)).replaceAll(escapedQuote, plainQuote);
+    var result = substring(1, (len - 1)).replaceAll(escapedQuote, plainQuote);
 
     return result;
   }

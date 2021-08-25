@@ -4,7 +4,7 @@ class ConfigFileInfo {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final RegExp PATH_RE = RegExp(r'(.*)(path\=)(.*)', caseSensitive: false);
+  static final RegExp RE_PATH = RegExp(r'(.*)(path\=)(.*)', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,7 @@ class ConfigFileInfo {
     filePath = input.substring(0, foundAt);
 
     var filters = input.substring(foundAt + 1);
-    var match = PATH_RE.firstMatch(filters);
+    var match = RE_PATH.firstMatch(filters);
 
     if ((match?.start ?? -1) >= 0) {
       jsonPath = match.group(3);

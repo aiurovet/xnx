@@ -28,44 +28,37 @@ extension FileSystemEntityExt on FileSystemEntity {
   //////////////////////////////////////////////////////////////////////////////
 
   static bool tryPatternExistsSync(String entityName, {bool isDirectory = false, bool isFile = false, recursive = false}) {
+    FileSystemEntity entity;
+
     try {
       var parentName = path_api.dirname(entityName);
       var filter = GlobExt.toGlob(path_api.basename(entityName));
       var lst = filter.listSync(root: parentName);
-      var entity = lst?.first;
 
-      if (entity == null) {
-        return false;
-      }
+      var isAny = ((isDirectory == null) && (isFile == null));
 
-      isDirectory ??= false;
-      isFile ??= false;
+      entity = lst?.firstWhere((x) {
+        var type = x.statSync()?.type;
 
-      if (!isDirectory && !isFile) {
-        return true;
-      }
+        if (type == null) {
+          return false;
+        }
 
-      if (isDirectory && isFile) {
-        return false;
-      }
-
-      var type = FileSystemEntity.typeSync(entity.path);
-
-      if (isDirectory && (type == FileSystemEntityType.directory)) {
-        return true;
-      }
-      else if (isFile && (type == FileSystemEntityType.file)) {
-        return true;
-      }
-      else {
-        return false;
-      }
+        switch (type) {
+          case FileSystemEntityType.directory:
+            return (isAny || isDirectory);
+          case FileSystemEntityType.file:
+            return (isAny || isFile);
+          default:
+            return false;
+        }
+      }, orElse: () => null);
     }
     catch (e) {
       // Suppressed
     }
 
-    return false;
+    return (entity != null);
   }
 
   //////////////////////////////////////////////////////////////////////////////

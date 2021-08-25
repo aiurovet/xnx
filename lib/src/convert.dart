@@ -25,10 +25,12 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   static const String FILE_TYPE_TMP = '.tmp';
-  static final RegExp EXE_SUB_RE = RegExp(r'^[\s]*[\-]');
-  static final RegExp EXE_SUB_EXPAND_RE = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
-  static final RegExp EXE_SUB_FORCE_RE = RegExp(r'(^|[\s])(-f|--force)([\s]|$)');
-  static final RegExp EXE_SUB_PRINT_RE = RegExp(r'(^|[\s])(--print)([\s]|$)');
+
+  static final RegExp RE_EXE_SUB = RegExp(r'^[\s]*[\-]');
+  static final RegExp RE_EXE_SUB_EXPAND = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
+  static final RegExp RE_EXE_SUB_FORCE = RegExp(r'(^|[\s])(-f|--force)([\s]|$)');
+  static final RegExp RE_EXE_SUB_PRINT = RegExp(r'(^|[\s])(--print)([\s]|$)');
+  static final RegExp RE_IS_SHELL_CMD = RegExp(r'[\$\(\)\[\]\<\>\`\&\|]');
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -154,7 +156,7 @@ class Convert {
     var isForced = _options.isForced;
 
     if (isExpandContentOnly) {
-      isForced = EXE_SUB_FORCE_RE.hasMatch(command);
+      isForced = RE_EXE_SUB_FORCE.hasMatch(command);
 
       var cli = command.splitCommandLine();
       var args = cli[1];
@@ -230,7 +232,7 @@ class Convert {
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
-    var match = (isSubRun ? EXE_SUB_PRINT_RE.firstMatch(command) : null);
+    var match = (isSubRun ? RE_EXE_SUB_PRINT.firstMatch(command) : null);
 
     if (match != null) {
       execPrint([command.substring(match.end - match.start)]);
@@ -271,18 +273,28 @@ class Convert {
         isSuccess = true;
       }
       else {
-        if (isProcessRunSyncUsed) {
-          result = Process.runSync(exe, args, runInShell: false, workingDirectory: curDirName);
+        var isShellCmd = isShellCommand(command);
+
+        if (isProcessRunSyncUsed && !isShellCmd) {
+          result = Process.runSync(
+            exe,
+            args,
+            environment: StringExt.ENVIRONMENT,
+            runInShell: false,
+            workingDirectory: curDirName
+          );
+
           isSuccess = (result.exitCode == 0);
         }
         else {
           results = waitFor<List<ProcessResult>>(
             Shell(
-              environment: Platform.environment,
+              environment: StringExt.ENVIRONMENT,
               verbose: _logger.isInfo,
               commandVerbose: false,
               commentVerbose: false,
-              runInShell: false
+              runInShell: isShellCmd,
+              workingDirectory: curDirName
             ).run(command)
           );
 
@@ -393,8 +405,8 @@ class Convert {
         command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
       }
 
-      isSubRun = EXE_SUB_RE.hasMatch(command);
-      isExpandContentOnly = isSubRun && EXE_SUB_EXPAND_RE.hasMatch(command);
+      isSubRun = RE_EXE_SUB.hasMatch(command);
+      isExpandContentOnly = isSubRun && RE_EXE_SUB_EXPAND.hasMatch(command);
       canExpandContent = !_options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
 
       if (!StringExt.isNullOrBlank(curDirName)) {
@@ -759,6 +771,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
     return (value ?? StringExt.EMPTY);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  bool isShellCommand(String command) =>
+      RE_IS_SHELL_CMD.hasMatch(command);
 
   //////////////////////////////////////////////////////////////////////////////
 
