@@ -3,19 +3,8 @@ import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/ext/string.dart';
 
 class Expression {
-  static const String BOND_AND = '&&';
-  static const String BOND_OR = '||';
-
-  static const String MASK_VALUE_TRUE = r'true|[1-9][0-9]*';
-  static const String MASK_VALUE_FALSE = r'false|[0]+';
-
-  static RegExp RE_ENDS_WITH_TRUE = RegExp(r'(^|[\s\(\|])(' + MASK_VALUE_TRUE + r')[\s\)[\|]*$',);
-  static RegExp RE_ENDS_WITH_FALSE = RegExp(r'(^|[\s\(\&])(' + MASK_VALUE_FALSE + r')[\s\)[\&]*$');
-
-  static RegExp RE_BRACKETS = RegExp(r'[\(\)]');
-
-  static RegExp RE_VALUE_TRUE = RegExp(r'^' + MASK_VALUE_TRUE + r'$');
-  static RegExp RE_VALUE_FALSE = RegExp(r'^' + MASK_VALUE_FALSE + r'$');
+  static RegExp RE_ENDS_WITH_TRUE = RegExp(r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',);
+  static RegExp RE_ENDS_WITH_FALSE = RegExp(r'(^|[\s\(\&])(false|[0]+)[\s\)[\&]*$');
 
   final Config _config;
 
@@ -77,10 +66,13 @@ class Expression {
   bool _execBondFree(String condition) {
     List<Object> x;
 
-    if (RE_VALUE_TRUE.hasMatch(condition)) {
+    var conditionLower = condition.toLowerCase();
+    var conditionAsNum = int.tryParse(conditionLower);
+
+    if ((conditionLower == 'true') || ((conditionAsNum != null) && (conditionAsNum != 0))) {
       return true;
     }
-    if (RE_VALUE_FALSE.hasMatch(condition)) {
+    if ((conditionLower == 'false') || ((conditionAsNum != null) && (conditionAsNum == 0))) {
       return false;
     }
     if ((x = _parseOper(condition, '!-d', 1)) != null) {
@@ -142,10 +134,10 @@ class Expression {
   }
 
   bool _execBracketFree(String condition) {
-    var orParts = condition.split(BOND_OR);
+    var orParts = condition.split('||');
 
     for (var orPart in orParts) {
-      var andParts = orPart.split(BOND_AND);
+      var andParts = orPart.split('&&');
       var isThen = true;
 
       for (var andPart in andParts) {
@@ -200,36 +192,33 @@ class Expression {
   }
 
   List<int> _getFirstChunk(String condition) {
-    var matches = RE_BRACKETS.allMatches(condition);
-
-    var start = -1;
+    var beg = -1;
+    var len = condition.length;
     var bracketCount = 0;
 
-    if (matches?.isNotEmpty ?? false) {
-      for (var match in matches) {
-        switch (condition[match.start]) {
-          case '(':
-            ++bracketCount;
-            if (start < 0) {
-              start = match.start;
-            }
-            break;
-          case ')':
-            --bracketCount;
-            if (bracketCount == 0) {
-              return [start, match.end];
-            }
-            break;
-        }
+    for (var cur = 0; cur < len; cur++) {
+      switch (condition[cur]) {
+        case '(':
+          ++bracketCount;
+          if (beg < 0) {
+            beg = cur;
+          }
+          break;
+        case ')':
+          --bracketCount;
+          if (bracketCount == 0) {
+            return [beg, cur + 1];
+          }
+          break;
       }
+    }
 
-      if (bracketCount > 0) {
-        throw Exception('Too many opening parentheses in $condition');
-      }
+    if (bracketCount > 0) {
+      throw Exception('Too many opening parentheses in $condition');
+    }
 
-      if (bracketCount < 0) {
-        throw Exception('Too many closing parentheses in $condition');
-      }
+    if (bracketCount < 0) {
+      throw Exception('Too many closing parentheses in $condition');
     }
 
     return [-1, -1];

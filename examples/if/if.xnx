@@ -8,7 +8,7 @@
   "{HostName}": "$(uname)",
 
   "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
-    "{{-if-}}": { "": '(("${HOME}" != "") || ("${USER}" != "")) && (-e "${HOME}/IdeaProjects/bonpockon/*")', "{{-then-}}": {
+    "{{-if-}}": { "": '(("${HOME}" != "") || ("${USER}" != "")) && (-e "/Applications/*.app")', "{{-then-}}": {
       "{OSTYPE}": "macOS",
     }, "{{-else-}}": {
       "{OSTYPE}": "Linux"
