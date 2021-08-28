@@ -44,7 +44,7 @@ class Options {
   static final Map<String, Object> CONFIG = {
     'name': 'config',
     'abbr': 'c',
-    'help': 'configuration file in json5 format\n(default extension: $FILE_TYPE_CFG)',
+    'help': 'configuration file in json5 format https://json5.org/\n(default extension: $FILE_TYPE_CFG)',
     'valueHelp': 'FILE',
     'defaultsTo': null,
   };
@@ -664,7 +664,7 @@ For more details, see README.md
     _plainArgs = newArgs;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////4///////////////////
 
   void setConfigPathAndStartDirName(String configPath, String dirName) {
     var hasConfigPath = !StringExt.isNullOrBlank(configPath);
