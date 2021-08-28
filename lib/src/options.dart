@@ -44,7 +44,7 @@ class Options {
   static final Map<String, Object> CONFIG = {
     'name': 'config',
     'abbr': 'c',
-    'help': 'configuration file in json5 format\n(default extension: xnx)',
+    'help': 'configuration file in json5 format\n(default extension: $FILE_TYPE_CFG)',
     'valueHelp': 'FILE',
     'defaultsTo': null,
   };
@@ -88,7 +88,7 @@ class Options {
   static final Map<String, Object> VERBOSITY = {
     'name': 'verbosity',
     'abbr': 'v',
-    'help': 'how much information to show: (0-6 or quiet, errors, normal, warnings, info, debug), defines environment variable $ENV_COMPRESSION\n(defaults to "normal")',
+    'help': 'how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug), defines environment variable $ENV_COMPRESSION\n(defaults to "${Logger.LEVELS[Logger.LEVEL_DEFAULT]}")',
     'valueHelp': 'LEVEL'
   };
   static final Map<String, Object> XARGS = {
@@ -641,7 +641,7 @@ $APP_NAME [OPTIONS]
 
 ${parser.usage}
 
-See README.md for more details
+For more details, see README.md
       ''');
 
     throw Exception(hasError ? error : HELP['name']);
@@ -756,7 +756,7 @@ See README.md for more details
     var hasValue = !StringExt.isNullOrBlank(strValue);
     var intValue = ((hasValue ? int.tryParse(strValue) : null) ?? defValue ?? 0);
 
-    StringExt.setEnvironmentVariable(envKey, '-$optAbbr $intValue', defValue: 0);
+    StringExt.setEnvironmentVariable(envKey, '$intValue', defValue: 0);
 
     return intValue;
   }
@@ -778,7 +778,7 @@ See README.md for more details
       strValue = strValue.getFullPath();
     }
 
-    StringExt.setEnvironmentVariable(envKey, '-$optAbbr $strValue', defValue: StringExt.EMPTY);
+    StringExt.setEnvironmentVariable(envKey, '$strValue', defValue: StringExt.EMPTY);
 
     return strValue;
   }
