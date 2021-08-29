@@ -1,8 +1,12 @@
 @echo off
 
 set PRJ=xnx
+set APP=app
 set BIN=bin
 set OST=Windows
+set OST_LC=windows
+
+set ZIP=%APP%\%PRJ%-%OST_LC%.zip
 set BIN_OST=%BIN%\%OST%
 
 rem Reset errorlevel
@@ -31,5 +35,7 @@ if errorlevel 1 exit /B 1
 
 copy /Y "README.md" "%BIN_OST%"
 if errorlevel 1 exit /B 1
+
+"%BIN%\%OST%\%PRJ%" --zip "%BIN_OST%" "%ZIP%"
 
 exit /B 0
