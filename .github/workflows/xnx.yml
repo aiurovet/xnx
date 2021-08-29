@@ -10,8 +10,8 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
 
-    env:
-      OSTYPE: ${{ runner.os,, }}
+#    env:
+#      OSTYPE: ${{ runner.os,, }}
 
     strategy:
       matrix:
@@ -35,6 +35,8 @@ jobs:
       ################################################################################
 
       - name: Checking
+        env:
+          OSTYPE: ${{ runner.os,, }}
         run: echo ${OSTYPE}
 
 #      ################################################################################
