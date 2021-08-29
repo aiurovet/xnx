@@ -40,110 +40,137 @@ jobs:
 
       ################################################################################
 
-      - name: Post-Install Dart SDK on Linux
+      - name: Set environment on Linux
         if: runner.os == 'Linux'
-        run: sudo apt-get update
+        env:
+          OS_LC: linux
 
       ################################################################################
 
-      - name: Install ResourceHacker on Windows
+      - name: Set environment on macOS
+        if: runner.os == 'macOS'
+        env:
+          OS_LC: macos
+
+      ################################################################################
+
+      - name: Set environment on Windows
         if: runner.os == 'Windows'
-        run: choco install -y reshack --no-progress
+        env:
+          OS_LC: windows
 
       ################################################################################
 
-      - name: Install ImageMagick on Windows
-        if: runner.os == 'Windows'
-        run: |
-          choco install -y imagemagick.app --no-progress
-          Get-ChildItem -Path "${env:ProgramFiles}" | Where-Object {($_.Name -Like 'ImageMagick*')} | %{$_.FullName} | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-
-      ################################################################################
-
-      - name: Install dependencies
-        run: dart pub get
-
-      ################################################################################
-
-      # Uncomment this step to verify the use of 'dart format' on each commit.
-      # - name: Verify formatting
-      #   run: dart format --output=none --set-exit-if-changed .
-
-      # Consider passing '--fatal-infos' for slightly stricter analysis.
-      - name: Analyze project source
-        run: dart analyze
-
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
-      ##- name: Run tests
-      ##  run: dart test
-
-      ################################################################################
-
-      - name: Build the application on a Unix-like OS
+      - name: Check OS_LC on a Unix-like OS
         if: runner.os != 'Windows'
-        run: scripts/build "${{ runner.os }}"
+        run: echo "${OS_LC}"
 
-      - name: Build the application on Windows
-        if: runner.os == 'Windows'
-        run: scripts\build
-
-      ################################################################################
-
-      - name: Check build result on a Unix-like OS
-        if: runner.os != 'Windows'
-        run: |
-          ls -1 bin/${{ runner.os }}/*xnx*
-          ls -1 app/xnx-${{ runner.os.lowercase }}.zip
-
-      ################################################################################
-
-      - name: Check build result on Windows
-        if: runner.os == 'Windows'
-        run: |
-          Get-ChildItem -Name -Path bin\${{ runner.os }}\*xnx*
-          Get-ChildItem -Name -Path app\xnx-${{ runner.os.lowercase }}.zip
-
-      ################################################################################
-
-      - name: Integration Test 1 - flutter_app
-        run: bin/${{ runner.os }}/xnx -d examples/flutter_app
-
-      ################################################################################
-
-      - name: Integration Test 2 - ms_office
-        run: bin/${{ runner.os }}/xnx -d examples/ms_office
-
-      ################################################################################
-
-      - name: Integration Test 3 - multi_conf
-        run: bin/${{ runner.os }}/xnx -d examples/multi_conf
-
-      ################################################################################
-
-      - name: Integration Test 4 - multi_icon
-        run: bin/${{ runner.os }}/xnx -d examples/multi_icon
-
-      ################################################################################
-
-      - name: Cleanup on a Unix-like OS
-        if: runner.os != 'Windows'
-        run: rm -rf bin/${{ runner.os }}
-
-      ################################################################################
-
-      - name: Cleanup on Windows
-        if: runner.os == 'Windows'
-        run: rmdir /s /q bin\${{ runner.os }}
-
-      ################################################################################
-
-      - name: Push binaries and icons back to the project
-        uses: EndBug/add-and-commit@v7
-        with:
-          message: 'Moving new binaries and icons to version control'
-          add: 'app/xnx-${{ runner.os.lowercase }}.zip --force'
-#          cwd: app
-
-      ################################################################################
+#      ################################################################################
+#
+#      - name: Post-Install Dart SDK on Linux
+#        if: runner.os == 'Linux'
+#        run: sudo apt-get update
+#
+#      ################################################################################
+#
+#      - name: Install ResourceHacker on Windows
+#        if: runner.os == 'Windows'
+#        run: choco install -y reshack --no-progress
+#
+#      ################################################################################
+#
+#      - name: Install ImageMagick on Windows
+#        if: runner.os == 'Windows'
+#        run: |
+#          choco install -y imagemagick.app --no-progress
+#          Get-ChildItem -Path "${env:ProgramFiles}" | Where-Object {($_.Name -Like 'ImageMagick*')} | %{$_.FullName} | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+#
+#      ################################################################################
+#
+#      - name: Install dependencies
+#        run: dart pub get
+#
+#      ################################################################################
+#
+#      # Uncomment this step to verify the use of 'dart format' on each commit.
+#      # - name: Verify formatting
+#      #   run: dart format --output=none --set-exit-if-changed .
+#
+#      # Consider passing '--fatal-infos' for slightly stricter analysis.
+#      - name: Analyze project source
+#        run: dart analyze
+#
+#      # Your project will need to have tests in test/ and a dependency on
+#      # package:test for this step to succeed. Note that Flutter projects will
+#      # want to change this to 'flutter test'.
+#      ##- name: Run tests
+#      ##  run: dart test
+#
+#      ################################################################################
+#
+#      - name: Build the application on a Unix-like OS
+#        if: runner.os != 'Windows'
+#        run: scripts/build "${{ runner.os }}"
+#
+#      - name: Build the application on Windows
+#        if: runner.os == 'Windows'
+#        run: scripts\build
+#
+#      ################################################################################
+#
+#      - name: Check build result on a Unix-like OS
+#        if: runner.os != 'Windows'
+#        run: |
+#          ls -1 bin/${{ runner.os }}/*xnx*
+#          ls -1 app/xnx-${{ runner.os.lowercase }}.zip
+#
+#      ################################################################################
+#
+#      - name: Check build result on Windows
+#        if: runner.os == 'Windows'
+#        run: |
+#          Get-ChildItem -Name -Path bin\${{ runner.os }}\*xnx*
+#          Get-ChildItem -Name -Path app\xnx-${{ runner.os.lowercase }}.zip
+#
+#      ################################################################################
+#
+#      - name: Integration Test 1 - flutter_app
+#        run: bin/${{ runner.os }}/xnx -d examples/flutter_app
+#
+#      ################################################################################
+#
+#      - name: Integration Test 2 - ms_office
+#        run: bin/${{ runner.os }}/xnx -d examples/ms_office
+#
+#      ################################################################################
+#
+#      - name: Integration Test 3 - multi_conf
+#        run: bin/${{ runner.os }}/xnx -d examples/multi_conf
+#
+#      ################################################################################
+#
+#      - name: Integration Test 4 - multi_icon
+#        run: bin/${{ runner.os }}/xnx -d examples/multi_icon
+#
+#      ################################################################################
+#
+#      - name: Cleanup on a Unix-like OS
+#        if: runner.os != 'Windows'
+#        run: rm -rf bin/${{ runner.os }}
+#
+#      ################################################################################
+#
+#      - name: Cleanup on Windows
+#        if: runner.os == 'Windows'
+#        run: rmdir /s /q bin\${{ runner.os }}
+#
+#      ################################################################################
+#
+#      - name: Push binaries and icons back to the project
+#        uses: EndBug/add-and-commit@v7
+#        with:
+#          message: 'Moving the new application package to version control'
+#          add: 'app/xnx-${{ runner.os.lowercase }}.zip --force'
+##          cwd: app
+#
+#      ################################################################################
