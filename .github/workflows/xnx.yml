@@ -133,7 +133,7 @@ jobs:
 
       - name: Cleanup on Windows
         if: runner.os == 'Windows'
-        run: del /Q /S bin\${{ runner.os }}
+        run: rmdir /s /q bin\${{ runner.os }}
 
       ################################################################################
 
@@ -141,7 +141,7 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Moving new binaries and icons to version control'
-          add: 'xnx-${{ runner.os.lowercase }}.zip --force'
+          add: 'xnx-${{ runner.os }}.zip --force'
           cwd: app
 
       ################################################################################
