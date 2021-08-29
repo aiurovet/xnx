@@ -68,9 +68,11 @@ jobs:
         if: runner.os != 'Windows'
         run: echo ${OS_LC}
 
+      ################################################################################
+
       - name: Check OS_LC on Windows
         if: runner.os != 'Windows'
-        run: echo Write-Host $env:{OS_LC}
+        run: Write-Host $env:{OS_LC}
 
 #      ################################################################################
 #
