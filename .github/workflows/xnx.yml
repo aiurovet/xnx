@@ -141,7 +141,7 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Moving new binaries and icons to version control'
-          add: 'xnx-${{ runner.os }}.zip --force'
-          cwd: app
+          add: 'app/xnx-${{ runner.os }}.zip --force'
+#          cwd: app
 
       ################################################################################
