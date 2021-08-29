@@ -186,7 +186,34 @@ class Expression {
   }
 
   bool _execOperMatch(Object o1, Object o2, {bool isStraight, bool isCase}) {
-    var isThen = RegExp(o2, caseSensitive: isCase).hasMatch(o1);
+    var pattern = (o2 as String);
+    var patternLen = (pattern?.length ?? 0);
+
+    if (patternLen <= 1) {
+      throw Exception('Pattern "$pattern" is not pair-delimited with "/"');
+    }
+
+    var brace = pattern[0];
+    var patternEnd = pattern.lastIndexOf(brace);
+
+    if ((brace != '/') || (patternEnd == 0)) {
+      throw Exception('Unmatched pair of delimiters: "/" expected in the beginning and close to the end of "$pattern" (one or more flags might be added: imsu)');
+    }
+
+    var flags = (patternEnd < patternLen - 1 ? pattern.substring(patternEnd + 1) : null);
+
+    isCase = (isCase && ((flags?.indexOf('i') ?? -1) >= 0));
+    var isDotAll = ((flags?.indexOf('s') ?? -1) >= 0);
+    var isMultiLine = ((flags?.indexOf('m') ?? -1) >= 0);
+    var isUnicode = ((flags?.indexOf('u') ?? -1) >= 0);
+
+    var isThen = RegExp(
+      pattern.substring(1, patternEnd),
+      caseSensitive: isCase,
+      dotAll: isDotAll,
+      multiLine: isMultiLine,
+      unicode: isUnicode
+    ).hasMatch(o1 as String);
 
     return (isThen && isStraight);
   }

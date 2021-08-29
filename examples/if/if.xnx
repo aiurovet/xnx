@@ -7,6 +7,12 @@
 
   "{HostName}": "$(uname)",
 
+  "if-regex": {
+    "{{-if-}}": { "": '"${HOME}" ~ |\/\\.|HOME|i', "{{-then-}}": {
+      "{{-run-}}": "--print Has match",
+    },
+  } },
+
   "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
     "{{-if-}}": { "": '(("${HOME}" != "") || ("${USER}" != "")) && (-e "/Applications/*.app")', "{{-then-}}": {
       "{OSTYPE}": "macOS",
