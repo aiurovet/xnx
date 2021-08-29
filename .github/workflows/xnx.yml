@@ -95,7 +95,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           ls -1 bin/${{ runner.os }}/*xnx*
-          ls -1 app/*.zip
+          ls -1 app/xnx-${{ runner.os.lowercase }}.zip
 
       ################################################################################
 
@@ -103,6 +103,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           Get-ChildItem -Name -Path bin\${{ runner.os }}\*xnx*
+          Get-ChildItem -Name -Path app\xnx-${{ runner.os.lowercase }}.zip
 
       ################################################################################
 
@@ -142,7 +143,7 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Moving new binaries and icons to version control'
-          add: 'app/xnx-${{ runner.os }}.zip --force'
+          add: 'app/xnx-${{ runner.os.lowercase }}.zip --force'
 #          cwd: app
 
       ################################################################################
