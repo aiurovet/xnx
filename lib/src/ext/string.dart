@@ -107,7 +107,7 @@ extension StringExt on String {
       _initEnvironmentVariables();
     }
 
-    return StringExt.ENVIRONMENT[key] ?? defValue;
+    return StringExt.ENVIRONMENT[key] ?? defValue ?? EMPTY;
   }
 
   //////////////////////////////////////////////////////////////////////////////

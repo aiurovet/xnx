@@ -22,7 +22,9 @@ doc/api/
 
 # Application-related
 *.zip
-bin/**/README*
+bin/Linux/*
+bin/macOS/*
+bin/Windows/*
 examples/flutter_app/android/
 examples/flutter_app/ios/
 examples/flutter_app/web/
