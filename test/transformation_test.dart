@@ -42,7 +42,7 @@ void main() {
       expect(flatMap['{env,3,1}'], 'v');
       expect(flatMap['{weird}'], 'ababVablop');
       expect(flatMap['{groups}'], r'ad$2\ef$2\hi');
-      expect(flatMap['{echo}'], '1 2\n');
+      expect(flatMap['{echo}']?.replaceAll('\r\n', '\n'), '1 2\n');
     });
   });
 }
