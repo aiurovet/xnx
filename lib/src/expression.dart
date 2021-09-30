@@ -1,40 +1,47 @@
-import 'package:xnx/src/config.dart';
-import 'package:xnx/src/ext/file_system_entity.dart';
+import 'package:collection/collection.dart';
 import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/flat_map.dart';
+import 'package:xnx/src/keywords.dart';
+import 'package:xnx/src/operation.dart';
 
 class Expression {
-  static RegExp RE_ENDS_WITH_TRUE = RegExp(r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',);
-  static RegExp RE_ENDS_WITH_FALSE = RegExp(r'(^|[\s\(\&])(false|[0]+)[\s\)[\&]*$');
+  static final RegExp RE_ENDS_WITH_TRUE = RegExp(r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',);
+  static final RegExp RE_ENDS_WITH_FALSE = RegExp(r'(^|[\s\(\&])(false|[0]+)[\s\)[\&]*$');
 
-  final Config _config;
+  final FlatMap _flatMap;
+  final Keywords _kw;
+  Operation? _operation;
 
-  Expression(this._config);
+  Expression(this._flatMap, this._kw) {
+    _operation = Operation(_flatMap);
+  }
 
-  Object exec(Map<String, Object> mapIf) {
-    var condition = mapIf?.entries?.firstWhere((x) =>
-      (x.key != _config.condNameThen) &&
-      (x.key != _config.condNameElse),
-      orElse: () => null
+  Object? exec(Map<String, Object> mapIf) {
+    var condition = mapIf.entries.firstWhereOrNull((x) =>
+      (x.key != _kw.forThen) &&
+      (x.key != _kw.forElse)
     )?.value;
 
+    var blockElse = mapIf[_kw.forElse];
+
     if (condition == null) {
-      throw Exception('Condition not found in "$mapIf"');
+      return blockElse;
     }
 
-    var blockThen = mapIf[_config.condNameThen];
+    var blockThen = mapIf[_kw.forThen];
 
     if (blockThen == null) {
       throw Exception('Then-block not found in "$mapIf"');
     }
 
-    var isThen = _exec(condition);
+    var isThen = _exec(condition as String);
 
-    return (isThen ? blockThen : mapIf[_config.condNameElse]);
+    return (isThen ? blockThen : blockElse);
   }
 
   bool _exec(String condition) {
-    if (StringExt.isNullOrBlank(condition)) {
-      return null;
+    if (condition.isBlank()) {
+      return false;
     }
 
     for (; ;) {
@@ -63,76 +70,6 @@ class Expression {
     return _execBracketFree(condition.trim());
   }
 
-  bool _execBondFree(String condition) {
-    List<Object> x;
-
-    var conditionLower = condition.toLowerCase();
-    var conditionAsNum = int.tryParse(conditionLower);
-
-    if ((conditionLower == 'true') || ((conditionAsNum != null) && (conditionAsNum != 0))) {
-      return true;
-    }
-    if ((conditionLower == 'false') || ((conditionAsNum != null) && (conditionAsNum == 0))) {
-      return false;
-    }
-    if ((x = _parseOper(condition, '!-d', 1)) != null) {
-      return _execOperExists(x[0], isStraight: false, isDir: true);
-    }
-    if ((x = _parseOper(condition, '-d', 1)) != null) {
-      return _execOperExists(x[0], isStraight: false, isDir: true);
-    }
-    if ((x = _parseOper(condition, '!-e', 1)) != null) {
-      return _execOperExists(x[0], isStraight: false);
-    }
-    if ((x = _parseOper(condition, '-e', 1)) != null) {
-      return _execOperExists(x[0], isStraight: true);
-    }
-    if ((x = _parseOper(condition, '!-f', 1)) != null) {
-      return _execOperExists(x[0], isStraight: false, isDir: false);
-    }
-    if ((x = _parseOper(condition, '-f', 1)) != null) {
-      return _execOperExists(x[0], isStraight: true, isDir: false);
-    }
-    if ((x = _parseOper(condition, '!=/i', 2, canBeNum: true)) != null) {
-      return _execOperCompare(x[0], x[1], isStraight: false, isCase: false, cmpType: 0);
-    }
-    if ((x = _parseOper(condition, '!=', 2, canBeNum: true)) != null) {
-      return _execOperCompare(x[0], x[1], isStraight: false, isCase: true, cmpType: 0);
-    }
-    if ((x = _parseOper(condition, '==/i', 2, canBeNum: true)) != null) {
-      return _execOperCompare(x[0], x[1], isStraight: true, isCase: false, cmpType: 0);
-    }
-    if ((x = _parseOper(condition, '==', 2, canBeNum: true)) != null) {
-      return _execOperCompare(x[0], x[1], isStraight: true, isCase: true, cmpType: 0);
-    }
-    if ((x = _parseOper(condition, '!~/i', 2, canBeNum: true)) != null) {
-      return _execOperMatch(x[0], x[1], isStraight: false, isCase: false);
-    }
-    if ((x = _parseOper(condition, '!~', 2, canBeNum: true)) != null) {
-      return _execOperMatch(x[0], x[1], isStraight: false, isCase: true);
-    }
-    if ((x = _parseOper(condition, '~/i', 2, canBeNum: true)) != null) {
-      return _execOperMatch(x[0], x[1], isStraight: true, isCase: false);
-    }
-    if ((x = _parseOper(condition, '~', 2, canBeNum: true)) != null) {
-      return _execOperMatch(x[0], x[1], isStraight: true, isCase: true);
-    }
-    if ((x = _parseOper(condition, '>=', 2, canBeNum: true)) != null) {
-      return _execOperCompare(x[0], x[1], isStraight: false, isCase: true, cmpType: 1);
-    }
-    if ((x = _parseOper(condition, '>', 2, canBeNum: true)) != null) {
-      return _execOperCompare(x[0], x[1], isStraight: false, isCase: true, cmpType: 2);
-    }
-    if ((x = _parseOper(condition, '<=', 2, canBeNum: true)) != null) {
-      return _execOperCompare(x[0], x[1], isStraight: false, isCase: true, cmpType: -1);
-    }
-    if ((x = _parseOper(condition, '<', 2, canBeNum: true)) != null) {
-      return _execOperCompare(x[0], x[1], isStraight: false, isCase: true, cmpType: -2);
-    }
-
-    return false;
-  }
-
   bool _execBracketFree(String condition) {
     var orParts = condition.split('||');
 
@@ -141,7 +78,7 @@ class Expression {
       var isThen = true;
 
       for (var andPart in andParts) {
-        if (!_execBondFree(andPart.trim())) {
+        if (!(_operation?.exec(andPart.trim()) ?? false)) {
           isThen = false;
           break;
         }
@@ -153,69 +90,6 @@ class Expression {
     }
 
     return false;
-  }
-
-  bool _execOperCompare(Object o1, Object o2, {bool isStraight, bool isCase, int cmpType}) {
-    cmpType ??= 0;
-
-    var cmpResult = -cmpType;
-
-    if ((o1 is num) && (o2 is num)) {
-      cmpResult = (o1 - o2);
-    }
-    else if ((o1 is String) && (o2 is String)) {
-      cmpResult = (isCase ? o1 : o1.toLowerCase()).compareTo(isCase ? o2 : o2.toLowerCase());
-    }
-
-    var isThen = (
-      cmpType <  -1 ? (cmpResult <  0) :
-      cmpType == -1 ? (cmpResult <= 0) :
-      cmpType ==  1 ? (cmpResult >= 0) :
-      cmpType >   1 ? (cmpResult >  0) :
-                      (cmpResult == 0)
-    );
-
-    return (isThen == isStraight);
-  }
-
-  bool _execOperExists(String mask, {bool isStraight, bool isDir}) {
-    var maskEx = _config.expandStraight(_config.flatMap, mask).unquote();
-    var isThen = FileSystemEntityExt.tryPatternExistsSync(maskEx, isDirectory: isDir, isFile: (isDir == null ? null : !isDir));
-
-    return (isThen && isStraight);
-  }
-
-  bool _execOperMatch(Object o1, Object o2, {bool isStraight, bool isCase}) {
-    var pattern = (o2 as String);
-    var patternLen = (pattern?.length ?? 0);
-
-    if (patternLen <= 1) {
-      throw Exception('Pattern "$pattern" is not pair-delimited with "/"');
-    }
-
-    var brace = pattern[0];
-    var patternEnd = pattern.lastIndexOf(brace);
-
-    if ((brace != '/') || (patternEnd == 0)) {
-      throw Exception('Unmatched pair of delimiters: "/" expected in the beginning and close to the end of "$pattern" (one or more flags might be added: imsu)');
-    }
-
-    var flags = (patternEnd < patternLen - 1 ? pattern.substring(patternEnd + 1) : null);
-
-    isCase = (isCase && ((flags?.indexOf('i') ?? -1) >= 0));
-    var isDotAll = ((flags?.indexOf('s') ?? -1) >= 0);
-    var isMultiLine = ((flags?.indexOf('m') ?? -1) >= 0);
-    var isUnicode = ((flags?.indexOf('u') ?? -1) >= 0);
-
-    var isThen = RegExp(
-      pattern.substring(1, patternEnd),
-      caseSensitive: isCase,
-      dotAll: isDotAll,
-      multiLine: isMultiLine,
-      unicode: isUnicode
-    ).hasMatch(o1 as String);
-
-    return (isThen && isStraight);
   }
 
   List<int> _getFirstChunk(String condition) {
@@ -249,44 +123,5 @@ class Expression {
     }
 
     return [-1, -1];
-  }
-
-  List<Object> _parseOper(String condition, String operName, int count, {bool canBeNum = false}) {
-    var beg = condition.indexOf(operName);
-
-    if (beg < 0) {
-      return null;
-    }
-
-    var flatMap = _config.flatMap;
-
-    if (count == 1) {
-      if (beg > 0) {
-        throw Exception('Condition $condition has unary operation which should appear in the front');
-      }
-
-      var o1 = _config.expandStraight(flatMap, condition.substring(operName.length).trim());
-      var n1 = ((canBeNum ?? false) ? num.tryParse(o1) : null);
-
-      if ((canBeNum ?? false) && (n1 == null)) {
-        throw Exception('The operand of $condition should be numeric');
-      }
-
-      return [(n1 ?? o1)];
-    }
-    else if (count == 2) {
-      var o1 = _config.expandStraight(flatMap, condition.substring(0, beg).trim());
-      var o2 = _config.expandStraight(flatMap, condition.substring(beg + operName.length).trim());
-
-      var n1 = ((canBeNum ?? false) ? num.tryParse(o1) : null);
-      var n2 = ((canBeNum ?? false) ? num.tryParse(o2) : null);
-
-      var isNum = ((n1 != null) && (n2 != null));
-
-      return [(isNum ? n1 : o1), (isNum ? n2 : o2)];
-    }
-    else {
-      throw Exception('Operations with more than two operands are not supported');
-    }
   }
 }

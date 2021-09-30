@@ -1,15 +1,14 @@
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/string.dart';
 import '../helper.dart';
 
 void main() {
   Helper.forEachMemoryFileSystem((fileSystem) {
-    Env.init(fileSystem);
-
     group('Environment', () {
       test('clearLocal', () {
+        Helper.initFileSystem(fileSystem);
+
         Env.clearLocal();
         expect(Env.getAllLocal().length, 0);
         Env.set('XNX_A', 'A');
@@ -19,6 +18,8 @@ void main() {
       });
 
       test('expand', () {
+        Helper.initFileSystem(fileSystem);
+
         Env.clearLocal();
         Env.set('XNX_A', 'A');
         Env.set('XNX_B', 'B');
@@ -27,11 +28,15 @@ void main() {
       });
 
       test('get', () {
+        Helper.initFileSystem(fileSystem);
+
         expect(Env.get(Env.homeKey), Platform.environment[Env.homeKey]);
-        expect(Env.get(Env.homeKey.toLowerCase()), Env.isWindows ? Platform.environment[Env.homeKey] : StringExt.EMPTY);
+        expect(Env.get(Env.homeKey.toLowerCase()), Env.isWindows ? Platform.environment[Env.homeKey] : '');
       });
 
       test('getAll', () {
+        Helper.initFileSystem(fileSystem);
+
         Env.clearLocal();
         expect(Env.getAll().length, Platform.environment.length);
         Env.set('XNX_A', 'A');
@@ -39,6 +44,8 @@ void main() {
       });
 
       test('getAllLocal', () {
+        Helper.initFileSystem(fileSystem);
+
         Env.clearLocal();
         expect(Env.getAllLocal().length, 0);
         Env.set('XNX_A', 'A');
@@ -50,14 +57,20 @@ void main() {
       });
 
       test('getHome', () {
+        Helper.initFileSystem(fileSystem);
+
         expect(Env.getHome(), Platform.environment[Env.isWindows ? 'USERPROFLE' : 'HOME']);
       });
 
       test('homeKey', () {
+        Helper.initFileSystem(fileSystem);
+
         expect(Env.homeKey, (Env.isWindows ? 'USERPROFLE' : 'HOME'));
       });
 
       test('set', () {
+        Helper.initFileSystem(fileSystem);
+
         Env.clearLocal();
         Env.set('XNX_A', 'A');
         expect(Env.get('XNX_A'), 'A');

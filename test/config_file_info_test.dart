@@ -1,15 +1,31 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/config_key_data.dart';
+import 'package:xnx/src/config_file_info.dart';
 
 void main() {
   group('ConfigKeyData', () {
-    test('constructor', () {
-      expect(ConfigKeyData(null, null).key, null);
-      expect(ConfigKeyData(null, null).data, null);
-      expect(ConfigKeyData('', null).key, '');
-      expect(ConfigKeyData('a', null).key, 'a');
-      expect(ConfigKeyData('', true).data, true);
-      expect(ConfigKeyData('a', true).data, true);
+    test('init', () {
+      var x = ConfigFileInfo();
+
+      x.init();
+      expect(x.filePath.isEmpty && x.jsonPath.isEmpty, true);
+      x.init(filePath: 'a');
+      expect(x.filePath.isNotEmpty && x.jsonPath.isEmpty, true);
+      x.init(jsonPath: 'a');
+      expect(x.filePath.isEmpty && x.jsonPath.isNotEmpty, true);
+      x.init(filePath: 'a', jsonPath: 'a');
+      expect(x.filePath.isNotEmpty && x.jsonPath.isNotEmpty, true);
+    });
+    test('parse', () {
+      var x = ConfigFileInfo();
+
+      x.parse('a');
+      expect(x.filePath.isNotEmpty && x.jsonPath.isEmpty, true);
+      x.parse('a?b');
+      expect(x.filePath.isNotEmpty && x.jsonPath.isEmpty, true);
+      x.parse('a?b=c');
+      expect(x.filePath.isNotEmpty && x.jsonPath.isEmpty, true);
+      x.parse('a?path=c');
+      expect(x.filePath.isNotEmpty && x.jsonPath.isNotEmpty, true);
     });
   });
 }

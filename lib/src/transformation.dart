@@ -1,570 +1,487 @@
-import 'package:xnx/src/config.dart';
-import 'package:xnx/src/ext/file_system_entity.dart';
-import 'package:xnx/src/ext/string.dart';
+import 'package:intl/intl.dart';
+import 'package:meta/meta.dart';
+import 'package:xnx/src/command.dart';
+import 'package:xnx/src/flat_map.dart';
+import 'package:xnx/src/keywords.dart';
 
-enum OperationType {
+enum TransformationType {
   Unknown,
-  AlwaysFalse,
-  AlwaysTrue,
-  Equals,
-  Exists,
-  ExistsDir,
-  ExistsFile,
-  Greater,
-  GreaterOrEquals,
-  Less,
-  LessOrEquals,
-  Matches,
-  NotEquals,
-  NotExists,
-  NotExistsDir,
-  NotExistsFile,
-  NotMatches,
+  Add,
+  Div,
+  Index,
+  IndexRegExp,
+  LastIndex,
+  LastIndexRegExp,
+  Max,
+  Min,
+  Mod,
+  Mul,
+  Now,
+  Replace,
+  ReplaceRegExp,
+  Run,
+  Sub,
+  Substring,
+  TimeNow,
+  Today,
+  ToLowerCase,
+  ToUpperCase,
 }
 
-class Operation {
+class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
-  // Straight -> opposite operation type mapping
+  // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static const Map<OperationType, OperationType> _oppositeOf = {
-    OperationType.Unknown: OperationType.Unknown,
-    OperationType.AlwaysFalse: OperationType.AlwaysTrue,
-    OperationType.AlwaysTrue: OperationType.AlwaysFalse,
-    OperationType.Equals: OperationType.NotEquals,
-    OperationType.Exists: OperationType.NotExists,
-    OperationType.ExistsDir: OperationType.NotExistsDir,
-    OperationType.ExistsFile: OperationType.NotExistsFile,
-    OperationType.Greater: OperationType.LessOrEquals,
-    OperationType.GreaterOrEquals: OperationType.Less,
-    OperationType.Less: OperationType.GreaterOrEquals,
-    OperationType.LessOrEquals: OperationType.Greater,
-    OperationType.Matches: OperationType.NotMatches,
-    OperationType.NotEquals: OperationType.Equals,
-    OperationType.NotExists: OperationType.Exists,
-    OperationType.NotExistsDir: OperationType.ExistsDir,
-    OperationType.NotExistsFile: OperationType.ExistsFile,
-    OperationType.NotMatches: OperationType.Matches,
-  };
+  static final RegExp _RE_GROUP = RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
 
   //////////////////////////////////////////////////////////////////////////////
-  // Properties
+  // Protected members
   //////////////////////////////////////////////////////////////////////////////
 
-  OperationType type = OperationType.Unknown;
-
-  bool isCaseSensitive = true;
-  bool isDotAll = false;
-  bool isMultiLine = false;
-  bool isUnicode = false;
-
-  List<Object?> operands = [];
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Private members
-  //////////////////////////////////////////////////////////////////////////////
-
-  final Config _config;
-
-  var _condition = StringExt.EMPTY;
-  var _isOpposite = false;
-  var _begPos = -1;
-  var _endPos = 0;
+  @protected final FlatMap flatMap;
+  @protected final Keywords keywords;
+  @protected final Map<String, TransformationType> nameTypeMap = {};
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Operation(this._config);
+  Transformation({required this.flatMap, required this.keywords}) {
+    _initNameTypeMap();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool exec(String condition) {
-    switch (parse(condition)) {
-      case OperationType.AlwaysFalse:
-        return false;
-      case OperationType.AlwaysTrue:
-        return true;
-      case OperationType.Equals:
-      case OperationType.Greater:
-      case OperationType.GreaterOrEquals:
-      case OperationType.Less:
-      case OperationType.LessOrEquals:
-      case OperationType.NotEquals:
-        return _execCompare();
-      case OperationType.Exists:
-      case OperationType.ExistsDir:
-      case OperationType.ExistsFile:
-      case OperationType.NotExists:
-      case OperationType.NotExistsDir:
-      case OperationType.NotExistsFile:
-        return _execExists();
-      case OperationType.Matches:
-      case OperationType.NotMatches:
-        return _execMatches();
+  Object? exec(Object? todo, {int offset = 0}) {
+    if (todo is List) {
+      if (todo.isNotEmpty) {
+        var name = _toName(todo[0]);
+        var type = nameTypeMap[name];
+
+        if ((type != null) && (type != TransformationType.Unknown)) {
+          return _exec(type, todo, offset: offset);
+        }
+      }
+
+      for (var x in todo) {
+        exec(x);
+      }
+    }
+    else if (todo is Map<String, Object?>) {
+      todo.forEach((key, value) {
+        var name = key.replaceAll(' ', '').toLowerCase();
+        var type = nameTypeMap[name] ?? TransformationType.Unknown;
+        Object? newValue;
+
+        if (type == TransformationType.Unknown) {
+          newValue = exec(value);
+        }
+        else if (value is List<Object?>) {
+          newValue = _exec(type, value).toString();
+        }
+        else {
+          _fail(type, 'invalid argument(s)');
+        }
+
+        flatMap[key] = newValue?.toString();
+      });
+    }
+
+    return todo;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  Object? _exec(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    switch (type) {
+      case TransformationType.Add:
+      case TransformationType.Div:
+      case TransformationType.Max:
+      case TransformationType.Min:
+      case TransformationType.Mod:
+      case TransformationType.Mul:
+      case TransformationType.Sub:
+        return _execMath(type, todo, offset: offset);
+      case TransformationType.Index:
+      case TransformationType.LastIndex:
+        return _execIndex(type, todo, offset: offset);
+      case TransformationType.IndexRegExp:
+      case TransformationType.LastIndexRegExp:
+        return _execIndexRegExp(type, todo, offset: offset);
+      case TransformationType.Run:
+        return _execExecute(type, todo, offset: offset);
+      case TransformationType.Today:
+      case TransformationType.Now:
+      case TransformationType.TimeNow:
+        return _execDateTime(type, todo, offset: offset);
+      case TransformationType.Replace:
+        return _execReplace(type, todo, offset: offset);
+      case TransformationType.ReplaceRegExp:
+        return _execReplaceRegExp(type, todo, offset: offset);
+      case TransformationType.Substring:
+        return _execSubstring(type, todo, offset: offset);
+      case TransformationType.ToLowerCase:
+      case TransformationType.ToUpperCase:
+        return _execToCase(type, todo, offset: offset);
       default:
-        return false;
+        return null;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _checkCompares(int from, int length) {
-    switch (_condition[from]) {
-      case '<':
-        type = OperationType.Less;
-        break;
-      case '>':
-        type = OperationType.Greater;
-        break;
+  String? _execDateTime(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
+
+    var format = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    format = flatMap.expand(format);
+
+    var now = DateTime.now();
+
+    if (format.isNotEmpty) {
+      return DateFormat(format).format(now);
+    }
+
+    var nowStr = now.toIso8601String();
+
+    switch (type) {
+      case TransformationType.Today:
+        return nowStr.substring(0, 10);
+      case TransformationType.TimeNow:
+        return nowStr.substring(11, 6);
       default:
-        return false;
+        return nowStr;
     }
-
-    var last = from + 1;
-
-    for (; last < length; last++) {
-      switch (_condition[last]) {
-        case '=':
-          type = (type == OperationType.Less ? OperationType.LessOrEquals :
-          OperationType.GreaterOrEquals);
-          continue;
-        default:
-          break;
-      }
-      break;
-    }
-
-    if (_begPos < 0) {
-      _begPos = from;
-    }
-
-    _endPos = last;
-
-    return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _checkEquals(int from, int length) {
-    var last = from + 1;
+  String? _execExecute(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
 
-    for (; last < length; last++) {
-      switch (_condition[last]) {
-        case '=':
-          continue;
-        case '/':
-          if (((++last) < length) && (_condition[last] == 'i')) {
-            ++last;
-            isCaseSensitive = false;
-          }
-          break;
-        default:
-          break;
-      }
-      break;
-    }
+    var txt = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var cmd = Command(text: txt, isToVar: true);
 
-    type = OperationType.Equals;
-
-    if (_begPos < 0) {
-      _begPos = from;
-    }
-
-    _endPos = last;
-
-    return true;
+    return cmd.exec();
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _checkExists(int from, int length) {
-    var last = from + 1;
+  String? _execIndex(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
 
-    if (last < length) {
-      switch (_condition[last]) {
-        case 'd':
-          type = OperationType.ExistsDir;
-          break;
-        case 'e':
-          type = OperationType.Exists;
-          break;
-        case 'f':
-          type = OperationType.ExistsFile;
-          break;
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var fndStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+
+    if ((inpStr != null) && inpStr.isEmpty &&
+        (fndStr != null) && fndStr.isEmpty) {
+      var begStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+      var begPos = _toInt(begStr) ?? 0;
+
+      switch (type) {
+        case TransformationType.Index:
+          return inpStr.indexOf(fndStr, begPos).toString();
+        case TransformationType.LastIndex:
+          return inpStr.lastIndexOf(fndStr, begPos).toString();
         default:
-          return false;
+          break;
       }
     }
 
-    if (_begPos < 0) {
-      _begPos = from;
-    }
-
-    _endPos = last + 1;
-
-    return true;
+    return '-1';
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _checkMatches(int from, int length) {
-    var last = from + 1;
+  String? _execIndexRegExp(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
 
-    if ((last < length) && (_condition[last] == '/')) {
-      for (; (++last) < length;) {
-        switch (_condition[last]) {
-          case 'i':
-            isCaseSensitive = false;
-            continue;
-          case 's':
-            isDotAll = true;
-            continue;
-          case 'm':
-            isMultiLine = true;
-            continue;
-          case 'u':
-            isUnicode = true;
-            continue;
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var patStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+
+    if ((inpStr != null) && inpStr.isNotEmpty &&
+        (patStr != null) && patStr.isNotEmpty) {
+      var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+      var regExp = _toRegExp(patStr, flgStr);
+
+      if (regExp != null) {
+        switch (type) {
+          case TransformationType.IndexRegExp:
+            var match = regExp.firstMatch(inpStr);
+            return (match?.start ?? -1).toString();
+          case TransformationType.LastIndexRegExp:
+            var allMatches = regExp.allMatches(inpStr);
+            if (allMatches.isNotEmpty) {
+              return allMatches.last.start.toString();
+            }
+            break;
           default:
             break;
         }
-        break;
       }
     }
 
-    type = OperationType.Matches;
-
-    if (_begPos < 0) {
-      _begPos = from;
-    }
-
-    _endPos = last;
-
-    return true;
+    return '-1';
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _checkTrueFalse() {
-    var length = _condition.length;
+  String? _execMath(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
 
-    if (length <= 0) {
-      type = OperationType.AlwaysFalse;
-      return true;
+    var o1 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var n1 = _toNum(o1);
+
+    if (n1 == null) {
+      _fail(type, 'Bad argument #1');
     }
 
-    var from = _skipNegations(0, length) + 1;
-    var conditionLC = _condition.substring(from).toLowerCase();
+    var o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var n2 = _toNum(o2);
 
-    if ((from >= length) || (conditionLC == 'false')) {
-      type = OperationType.AlwaysFalse;
+    if (n2 == null) {
+      _fail(type, 'Bad argument #2');
+    }
+
+    switch (type) {
+      case TransformationType.Add:
+        return (n1 + n2).toString();
+      case TransformationType.Div:
+        return (n1 / n2).toString();
+      case TransformationType.Max:
+        return (n1 >= n2 ? n1 : n2).toString();
+      case TransformationType.Min:
+        return (n1 <= n2 ? n1 : n2).toString();
+      case TransformationType.Mod:
+        return (n1 % n2).toString();
+      case TransformationType.Mul:
+        return (n1 * n2).toString();
+      case TransformationType.Sub:
+        return (n1 - n2).toString();
+      default:
+        return null;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String? _execReplace(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
+
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var srcStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var dstStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+
+    if (inpStr == null) {
+      _fail(type, 'undefined input string (1st param)');
+    }
+
+    if (srcStr == null) {
+      _fail(type, 'undefined search string (2nd param)');
+    }
+
+    inpStr = flatMap.expand(inpStr);
+
+    return inpStr.replaceAll(srcStr, dstStr ?? '');
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String? _execReplaceRegExp(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
+
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+
+    if ((inpStr == null) || inpStr.isEmpty) {
+      return '';
+    }
+
+    var srcPat = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+
+    if ((srcPat == null) || srcPat.isEmpty) {
+      _fail(type, 'undefined search pattern (2nd param)');
+    }
+
+    var dstStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+
+    var regExp = _toRegExp(srcPat, flgStr);
+
+    if (regExp == null) {
+      _fail(type, 'invalid regular expression $srcPat');
+    }
+
+    var isGlobal = flgStr?.contains('g') ?? false;
+
+    inpStr = flatMap.expand(inpStr);
+
+    String resStr;
+
+    if (dstStr.contains(r'$')) {
+      if (isGlobal) {
+        resStr = inpStr.replaceAllMapped(regExp, (match) => _execReplaceRegExpMatcher(match, dstStr));
+      }
+      else {
+        resStr = inpStr.replaceFirstMapped(regExp, (match) => _execReplaceRegExpMatcher(match, dstStr));
+      }
+    }
+    else if (isGlobal) {
+      resStr = inpStr.replaceAll(regExp, dstStr);
     }
     else {
-      var n = num.tryParse(conditionLC);
+      resStr = inpStr.replaceFirst(regExp, dstStr);
+    }
 
-      if ((n ?? -1) == 0) {
-        type = OperationType.AlwaysFalse;
+    return resStr;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String _execReplaceRegExpMatcher(Match match, String dstStr) {
+    return dstStr.replaceAllMapped(_RE_GROUP, (groupMatch) {
+      var s = groupMatch[1];
+
+      if ((s != null) && s.isNotEmpty) {
+        return s[1];
+      }
+
+      s = groupMatch[2];
+
+      if ((s != null) && s.isNotEmpty) {
+        return s[1];
+      }
+
+      s = (groupMatch[4] ?? groupMatch[5]);
+      var groupNo = _toInt(s) ?? -1;
+
+      if ((groupNo >= 0) && (groupNo <= match.groupCount)) {
+        return match[groupNo] ?? '';
       }
       else {
-        if (conditionLC == 'true') {
-          type = OperationType.AlwaysTrue;
-        }
-        else {
-          if ((n != null) && (n != 0)){
-            type = OperationType.AlwaysTrue;
-          }
-        }
+        return '';
       }
-    }
-
-    if (_isOpposite) {
-      if (type == OperationType.AlwaysFalse) {
-        type = OperationType.AlwaysTrue;
-      }
-      else {
-        type = OperationType.AlwaysFalse;
-      }
-      _isOpposite = false;
-    }
-
-    return (type != OperationType.Unknown);
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _execCompare() {
-    var o1 = operands[0];
-    var o2 = operands[1];
+  String? _execSubstring(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
 
-    var cmpResult = 0;
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var begStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var lenStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
 
-    if ((o1 is num) && (o2 is num)) {
-      cmpResult = ((o1 - o2) as int);
-    }
-    else if ((o1 is String) && (o2 is String)) {
-      cmpResult = (isCaseSensitive ? o1 : o1.toLowerCase()).compareTo(isCaseSensitive ? o2 : o2.toLowerCase());
+    if (inpStr == null) {
+      _fail(type, 'undefined input string (1st param)');
     }
 
-    var isThen = (
-      type == OperationType.Less ? (cmpResult <  0) :
-      type == OperationType.LessOrEquals ? (cmpResult <= 0) :
-      type == OperationType.GreaterOrEquals ? (cmpResult >= 0) :
-      type == OperationType.Greater ? (cmpResult >  0) :
-      type == OperationType.Equals ? (cmpResult == 0) :
-      type == OperationType.NotEquals ? (cmpResult != 0) :
-      false
-    );
+    if (begStr == null) {
+      _fail(type, 'undefined offset (2nd param)');
+    }
 
-    return isThen;
+    var begVal = _toInt(begStr) ?? 0;
+    var lenVal = _toInt(lenStr) ?? 0;
+
+    if (begVal <= 0) {
+      _fail(type, 'The offset (2nd param) is not a number');
+    }
+
+    --begVal;
+    inpStr = flatMap.expand(inpStr);
+
+    if (lenVal <= 0) {
+      lenVal = (inpStr.length - begVal);
+    }
+
+    return inpStr.substring(begVal, begVal + lenVal);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _execExists() {
-    var mask = (operands[0] as String);
+  String? _execToCase(TransformationType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
 
-    var isThen = true;
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
 
-    if (mask.isNotEmpty) {
-      mask = _config.expandStraight(_config.flatMap, mask);
-
-      isThen = (mask.isEmpty ? false : FileSystemEntityExt.tryPatternExistsSync(
-        mask,
-        isDirectory: (type == OperationType.ExistsDir),
-        isFile: (type == OperationType.ExistsFile),
-      ));
+    if (inpStr == null) {
+      _fail(type, 'undefined input string');
     }
 
-    if ((type == OperationType.NotExists) ||
-        (type == OperationType.NotExistsDir) ||
-        (type == OperationType.NotExistsFile)) {
-      return !isThen;
-    }
+    inpStr = flatMap.expand(inpStr);
 
-    return isThen;
+    switch (type) {
+      case TransformationType.ToLowerCase:
+        return inpStr.toLowerCase();
+      case TransformationType.ToUpperCase:
+        return inpStr.toUpperCase();
+      default:
+        return null;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _execMatches() {
-    var pattern = (operands[1] as String);
+  Never _fail(TransformationType type, String msg) =>
+    throw Exception('Invalid transformation "$type": $msg');
 
-    var isThen = (pattern.isEmpty ? false : RegExp(
+  //////////////////////////////////////////////////////////////////////////////
+
+  void _initNameTypeMap() {
+    nameTypeMap.clear();
+    nameTypeMap[_toName(keywords.forFnAdd)] = TransformationType.Add;
+    nameTypeMap[_toName(keywords.forFnDiv)] = TransformationType.Div;
+    nameTypeMap[_toName(keywords.forFnIndex)] = TransformationType.Index;
+    nameTypeMap[_toName(keywords.forFnIndexRegExp)] = TransformationType.IndexRegExp;
+    nameTypeMap[_toName(keywords.forFnLastIndex)] = TransformationType.LastIndex;
+    nameTypeMap[_toName(keywords.forFnLastIndexRegExp)] = TransformationType.LastIndexRegExp;
+    nameTypeMap[_toName(keywords.forFnLower)] = TransformationType.ToLowerCase;
+    nameTypeMap[_toName(keywords.forFnMax)] = TransformationType.Max;
+    nameTypeMap[_toName(keywords.forFnMin)] = TransformationType.Min;
+    nameTypeMap[_toName(keywords.forFnMod)] = TransformationType.Mod;
+    nameTypeMap[_toName(keywords.forFnMul)] = TransformationType.Mul;
+    nameTypeMap[_toName(keywords.forFnNow)] = TransformationType.Now;
+    nameTypeMap[_toName(keywords.forFnReplace)] = TransformationType.Replace;
+    nameTypeMap[_toName(keywords.forFnReplaceRegExp)] = TransformationType.ReplaceRegExp;
+    nameTypeMap[_toName(keywords.forFnRun)] = TransformationType.Run;
+    nameTypeMap[_toName(keywords.forFnSub)] = TransformationType.Sub;
+    nameTypeMap[_toName(keywords.forFnSubstr)] = TransformationType.Substring;
+    nameTypeMap[_toName(keywords.forFnToday)] = TransformationType.Today;
+    nameTypeMap[_toName(keywords.forFnTimeNow)] = TransformationType.TimeNow;
+    nameTypeMap[_toName(keywords.forFnUpper)] = TransformationType.ToUpperCase;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  int? _toInt(String? input) =>
+    (input == null ? null : int.tryParse(input));
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String _toName(String input) =>
+    input.trim().toLowerCase();
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  num? _toNum(String? input) =>
+    (input == null ? null : num.tryParse(input));
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  RegExp? _toRegExp(String? pattern, String? flags) {
+    if (pattern == null) {
+      return null;
+    }
+
+    flags ??= '';
+
+    return RegExp(
       pattern,
-      caseSensitive: isCaseSensitive,
-      dotAll: isDotAll,
-      multiLine: isMultiLine,
-      unicode: isUnicode
-    ).hasMatch(operands[0] as String));
-
-    return (type == OperationType.NotMatches ? !isThen : isThen);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void _fail(String condition, [String? details]) {
-    if (details?.isNotEmpty ?? false) {
-      details = ': $details';
-    }
-
-    throw Exception('Invalid condition $condition$details');
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  OperationType parse(String condition) {
-    _reset(condition.trim());
-
-    if (_checkTrueFalse()) {
-      return type;
-    }
-
-    var curChr = StringExt.EMPTY;
-    var isQuote1 = false;
-    var isQuote2 = false;
-    var length = _condition.length;
-
-    for (var isFound = false, curPos = 0; (curPos < length) && !isFound; curPos++) {
-      curChr = _condition[curPos];
-
-      switch (curChr) {
-        case '"':
-          _begPos = -1;
-          if (!isQuote1) {
-            isQuote2 = !isQuote2;
-          }
-          continue;
-        case "'":
-          _begPos = -1;
-          if (!isQuote2) {
-            isQuote1 = !isQuote1;
-          }
-          continue;
-        default:
-          if (isQuote1 || isQuote2) {
-            continue;
-          }
-          break;
-      }
-
-      switch (curChr) {
-        case '!':
-          if (_begPos < 0) {
-            _begPos = curPos;
-          }
-          curPos = _skipNegations(curPos, length);
-          continue;
-        case '~':
-          isFound = _checkMatches(curPos, length);
-          continue;
-        case '=':
-          isFound = _checkEquals(curPos, length);
-          continue;
-        case '<':
-        case '>':
-          isFound = _checkCompares(curPos, length);
-          continue;
-        case '-':
-          isFound = _checkExists(curPos, length);
-          continue;
-        case ' ':
-        case '\t':
-          isFound = (type != OperationType.Unknown);
-          continue;
-      }
-    }
-
-    if (type == OperationType.Unknown) {
-      var isEmpty = _condition.replaceAll('!', StringExt.EMPTY).isBlank();
-      type = (isEmpty ? OperationType.AlwaysFalse : OperationType.AlwaysTrue);
-    }
-
-    if (_isOpposite) {
-      type = _oppositeOf[type] ?? type;
-      _isOpposite = false;
-    }
-
-    _setOperands();
-
-    return type;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  Operation _reset([String? condition]) {
-    if (condition != null) {
-      _condition = condition;
-    }
-
-    _isOpposite = false;
-    _begPos = -1;
-    _endPos = 0;
-
-    operands.clear();
-
-    type = OperationType.Unknown;
-
-    isCaseSensitive = true;
-    isDotAll = false;
-    isMultiLine = false;
-    isUnicode = false;
-
-    return this;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void _setOperands() {
-    if ((type == OperationType.AlwaysTrue) ||
-        (type == OperationType.AlwaysFalse)) {
-      return;
-    }
-
-    if ((_begPos < 0) || (_endPos <= _begPos)) {
-      _fail(_condition);
-    }
-
-    var isBinary = (
-      (type == OperationType.Equals) ||
-      (type == OperationType.Greater) ||
-      (type == OperationType.GreaterOrEquals) ||
-      (type == OperationType.Less) ||
-      (type == OperationType.LessOrEquals) ||
-      (type == OperationType.Equals) ||
-      (type == OperationType.Matches) ||
-      (type == OperationType.NotEquals) ||
-      (type == OperationType.NotMatches)
+      caseSensitive: !flags.contains('i'),
+      dotAll: flags.contains('s'),
+      multiLine: flags.contains('m'),
+      unicode: flags.contains('u'),
     );
-
-    var expArgCount = (isBinary ? 2 : 1);
-    var isUnary = (expArgCount == 1);
-
-    if ((expArgCount <= 1) && (_begPos > 0)) {
-      _fail(_condition, 'only one argument expected');
-    }
-
-    if ((expArgCount > 1) && (_begPos <= 0)) {
-      _fail(_condition, 'two arguments expected');
-    }
-
-    var length = _condition.length;
-
-    var begPos = (isUnary ? 0 : _begPos);
-    var o1 = (isUnary ? null : (begPos >= 0 ? _condition.substring(0, begPos).trim() : _condition));
-    var o2 = (begPos >= 0 ? _condition.substring(_endPos < length ? _endPos : length).trim() : null);
-
-    num? n1;
-
-    if (o1 != null) {
-      o1 = _config.expandStraight(_config.flatMap, o1);
-      n1 = (isBinary ? num.tryParse(o1) : null);
-
-      operands.add(n1 ?? o1);
-    }
-
-    num? n2;
-
-    if (o2 != null) {
-      o2 = _config.expandStraight(_config.flatMap, o2);
-      n2 = (isBinary && (n1 != null) ? num.tryParse(o2) : null);
-
-      operands.add(n2 ?? o2);
-    }
-
-    if (type == OperationType.Unknown) {
-      if (((n1 != null) && (n1 == 0)) || (o1?.isEmpty ?? true)) {
-        if (_isOpposite) {
-          type = OperationType.AlwaysTrue;
-        }
-        else {
-          type = OperationType.AlwaysFalse;
-        }
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  int _skipNegations(int from, int length) {
-    var last = from;
-
-    for (; last < length; last++) {
-      var curChar = _condition[last];
-
-      switch (curChar) {
-        case '!':
-          _isOpposite = !_isOpposite;
-          continue;
-        case ' ':
-        case '\t':
-          continue;
-        default:
-          break;
-      }
-      break;
-    }
-
-    return last - 1;
   }
 
   //////////////////////////////////////////////////////////////////////////////

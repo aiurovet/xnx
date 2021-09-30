@@ -46,12 +46,6 @@ jobs:
 
       ################################################################################
 
-      - name: Install ResourceHacker on Windows
-        if: runner.os == 'Windows'
-        run: choco install -y reshack --no-progress
-
-      ################################################################################
-
       - name: Install ImageMagick on Windows
         if: runner.os == 'Windows'
         run: |
@@ -73,15 +67,13 @@ jobs:
       - name: Analyze project source
         run: dart analyze
 
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
-      ##- name: Run tests
-      ##  run: dart test
+      # Tests
+      - name: Run tests
+        run: dart test
 
       ################################################################################
 
-      - name: Build the application on a Unix-like OS
+      - name: Build the application on a POSIX-like OS
         if: runner.os != 'Windows'
         run: scripts/build "${{ runner.os }}"
 
@@ -91,7 +83,7 @@ jobs:
 
       ################################################################################
 
-      - name: Check build result on a Unix-like OS
+      - name: Check build result on a POSIX-like OS
         if: runner.os != 'Windows'
         run: |
           ls -1 bin/${{ runner.os }}/*xnx* app
@@ -126,7 +118,7 @@ jobs:
 
       ################################################################################
 
-      - name: Cleanup on a Unix-like OS
+      - name: Cleanup on a POSIX-like OS
         if: runner.os != 'Windows'
         run: rm -rf bin/${{ runner.os }}
 

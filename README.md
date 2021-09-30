@@ -68,7 +68,7 @@ xnx [OPTIONS]
      in versioned files. You can run the program from specific location or put
      it as an option while running from a batch script, console, or by double-
      clicking a launcher (shortcut) icon. You can specify pathname separators
-     in any style (forward slashes as in Unix or backslashes as in Windows),
+     in any style (forward slashes (POSIX) or backslashes (Windows),
      the program will expand those depending on the OS it is run under. This
      applies to {{-cur-dir-}}, {{-inp-}}, {{-out-}} as well as any other key,
      which matches the regular expression pattern in {{-detect-paths-}}. This
@@ -136,7 +136,7 @@ Configuration file is expected in JSON format with the following guidelines:
      "expand-content" flag is still required to be set to true.
 
 2.4. For the sake of source code portability, the environment variables are
-     required to be specified strictly in UNIX/Linux/macOS format:
+     required to be specified strictly in POSIX format:
      \$ABC_123_DEF4 or \${ABC_123_DEF4} (under Windows though, environment
      variables will be considered case-insensitive). You can escape expansion
      by doubling the dollar sign: \$\$ABC.
@@ -154,7 +154,7 @@ Configuration file is expected in JSON format with the following guidelines:
      expanded, but in configuration file only. If you\'d like to expand those
      in input file(s), simply assign that to some placeholder, then use that
      placehloder. For the sake of source code portability, the environment
-     variables are required strictly in UNIX/Linux/macOS form: $\*, $@, $1,
+     variables are required strictly in POSIX form: $\*, $@, $1,
      $2, ..., $ABC_123_DEF4 or ${\*}, ${@}, ${1}, ${2}, ..., ${ABC_123_DEF4}
      (under Windows though, environment variables will be considered case-
      insensitive). You can escape expansion by escaping with \ or doubling
@@ -165,7 +165,7 @@ Configuration file is expected in JSON format with the following guidelines:
      for each such argument. 
 
 2.7. Directory separator char in file paths is also required to be specified in
-     UNIX/Linux/macOS style: "abc/def/xyz.svg". For the sake of code portability,
+     POSIX style: "abc/def/xyz.svg". For the sake of code portability,
      it is also recommended (but not enforced) to avoid specifying DOS/Windows
      drive explicitly even if you run the program solely under those OSes.
 

@@ -1,87 +1,46 @@
-import 'package:file/file.dart';
-import 'package:file/memory.dart';
 import 'package:test/test.dart';
-import 'package:xnx/src/config.dart';
-import 'package:xnx/src/expression.dart';
+import 'package:xnx/src/command.dart';
 import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/flat_map.dart';
-import 'package:xnx/src/keywords.dart';
-
-import 'helper.dart';
-
-////////////////////////////////////////////////////////////////////////////////
-
-final blockThen = [true];
-final blockElse = [false];
-
-final keyIf = '{{-if-}}';
-final keyCondition = '';
-
-////////////////////////////////////////////////////////////////////////////////
-
-var mapIf = { keyIf: {
-  keyCondition: 'false',
-  '{{-then-}}': blockThen,
-  '{{-else-}}': blockElse
-}};
-
-////////////////////////////////////////////////////////////////////////////////
-
-void init(FileSystem fileSystem) {
-  Env.init(fileSystem);
-
-  var root = (Env.fileSystem is MemoryFileSystem ? Path.getFullPath(Path.separator) : Env.getHome());
-  var path = Path.join(root, 'test-dir', 'sub-dir');
-  var dir = Env.fileSystem.directory(path);
-
-  dir.createSync(recursive: true);
-
-  Env.fileSystem.file(Path.join(path, 'file1.txt')).createSync();
-  Env.fileSystem.file(Path.join(path, 'file2.txt')).createSync();
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void main() {
-  group('Expression', () {
-    Helper.forEachMemoryFileSystem((fileSystem) {
-      test('exec', () {
-        init(fileSystem);
+  group('Command', () {
+    test('getStartCommand', () {
+      var startCmd = Command.getStartCommand();
+      expect(startCmd.isNotEmpty, true);
+    });
+    test('parse', () {
+      var c = Command();
 
-        var x = Expression(FlatMap(), Keywords());
+      expect(c.parse(null).path.isEmpty && c.args.isEmpty, true);
+      expect(c.parse('').path.isEmpty && c.args.isEmpty, true);
+      expect((c.parse('abc').path.length == 3) && c.args.isEmpty, true);
+      expect((c.parse('abc def ghi').path.length == 3) && (c.args.length == 2), true);
+      expect((c.parse('"abc" "d\'e\'f" \'g"hi"\'').path.length == 3) && (c.args.length == 2), true);
+      expect((c.parse('"ab c" "d \'e\' f" \'g  "hi"\'').path.length == 4) && (c.args.length == 2), true);
+      expect((c.parse('abc def|ghi').path.length == 3) && (c.args.length == 3), true);
+      expect((c.parse('abc def| ghi').path.length == 3) && (c.args.length == 3), true);
+      expect((c.parse('abc def\\| ghi').path.length == 3) && (c.args.length == 2), true);
+      expect(c.parse('abc def\\t\\r\\n').args[0].endsWith('\t\r\n'), true);
+      expect(c.parse('abc \'"d e f"\'').args[0], '"d e f"');
+      expect(c.parse('abc "\\\\\\"d e f\\""').args[0], '\\"d e f"');
+    });
 
-        expect(x.exec(setIf('false')), blockElse);
-        expect(x.exec(setIf('true')), blockThen);
-        expect(x.exec(setIf('!false')), blockThen);
-        expect(x.exec(setIf(' !  true')), blockElse);
-        expect(x.exec(setIf(' !  !\t\t! false')), blockThen);
-        expect(x.exec(setIf('true || false')), blockThen);
-        expect(x.exec(setIf('true && false')), blockElse);
-        expect(x.exec(setIf('(true && false) || (true && !false)')), blockThen);
-        expect(x.exec(setIf('(!true || false) && (true || false)')), blockElse);
-        expect(x.exec(setIf('-e/test-dir')), blockThen);
-        expect(x.exec(setIf(' ! -d /test-dir/sub-dir')), blockElse);
-        expect(x.exec(setIf('-f /test-dir/sub-dir/*1.txt')), blockThen);
-        expect(x.exec(setIf('-e /test-dir/**/*2.txt')), blockThen);
-        expect(x.exec(setIf(Env.getHome())), blockThen); // a string test
-      });
+    test('exec', () {
+      Env.init(null);
+
+      var c = Command(isToVar: true);
+
+      expect(c.exec(text: null), '');
+      expect(c.exec(text: ''), '');
+      expect(c.exec(text: '--print "1 2"'), '1 2');
+
+      if (!Env.isWindows) {
+        expect(c.exec(text: 'echo "1 2"'), '1 2\n');
+      }
     });
   });
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-Map<String, Object> setIf(String? condition) {
-  var dataIf = mapIf[keyIf];
-
-  (dataIf as Map<String, Object?>)[keyCondition] = condition;
-
-  if (dataIf == null) {
-    throw Exception('Conditional map should not be null');
-  }
-
-  return dataIf;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

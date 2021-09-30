@@ -1,6 +1,7 @@
 import 'dart:io';
+import 'package:collection/collection.dart';
 import 'package:xnx/src/ext/glob.dart';
-import 'package:path/path.dart' as path_api;
+import 'package:xnx/src/ext/path.dart';
 
 extension FileSystemEntityExt on FileSystemEntity {
 
@@ -27,22 +28,22 @@ extension FileSystemEntityExt on FileSystemEntity {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool tryPatternExistsSync(String entityName, {bool isDirectory = false, bool isFile = false, recursive = false}) {
-    FileSystemEntity entity;
+  static bool tryPatternExistsSync(String entityName,
+    {bool isDirectory = false, bool isFile = false, recursive = false}) {
+    FileSystemEntity? entity;
 
     try {
-      var parentName = path_api.dirname(entityName);
-      var filter = GlobExt.toGlob(path_api.basename(entityName));
+      var fullEntityName = Path.getFullPath(entityName);
+      var parentName = GlobExt.dirname(fullEntityName);
+      var subPattern = Path.relative(fullEntityName, from: parentName);
+
+      var filter = GlobExt.toGlob(subPattern);
       var lst = filter.listSync(root: parentName);
 
-      var isAny = ((isDirectory == null) && (isFile == null));
+      var isAny = (isDirectory == isFile);
 
-      entity = lst?.firstWhere((x) {
-        var type = x.statSync()?.type;
-
-        if (type == null) {
-          return false;
-        }
+      entity = lst.firstWhereOrNull((x) {
+        var type = x.statSync().type;
 
         switch (type) {
           case FileSystemEntityType.directory:
@@ -52,10 +53,11 @@ extension FileSystemEntityExt on FileSystemEntity {
           default:
             return false;
         }
-      }, orElse: () => null);
+      });
     }
     catch (e) {
       // Suppressed
+      print(e);
     }
 
     return (entity != null);

@@ -1,10 +1,7 @@
 import 'dart:core';
-import 'dart:io';
-import 'package:file/local.dart';
+import 'package:file/file.dart';
 import 'package:glob/glob.dart';
-import 'package:path/path.dart' as path_api;
-
-import 'file_system_entity.dart';
+import 'package:xnx/src/ext/path.dart';
 import 'string.dart';
 
 extension GlobExt on Glob {
@@ -13,107 +10,104 @@ extension GlobExt on Glob {
 
   static const String ALL = '*';
 
-  static final RegExp _RE_GLOB = RegExp(r'\*|\?|\[[^\]]*\]|\{[^\}]*\}', caseSensitive: false);
-  static final RegExp _RE_PATH = RegExp(r'[\/\\]', caseSensitive: false);
   static final RegExp _RE_RECURSIVE = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
-  static final RegExp _RE_WILDCARD = RegExp(r'[\*\?]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final _fileSystem = LocalFileSystem();
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String getDirectoryName(String pattern, {bool isDirectoryName = false}) {
-    if (pattern == null) {
-      return pattern;
+  static String dirname(String pattern, {bool isDirectoryName = false}) {
+    if (pattern.isEmpty || !pattern.contains(Path.separator)) {
+      if (Path.driveSeparator.isEmpty || !pattern.contains(Path.driveSeparator)) {
+        return '';
+      }
     }
-    else {
-      var m = _RE_GLOB.firstMatch(pattern);
 
-      if (m != null) {
-        if (m.start > 0) {
-          var dirName = pattern.substring(0, m.start);
+    var dirName = '';
+    var parts = Path.dirname(pattern).split(Path.separator);
 
-          if (dirName.endsWith(StringExt.PATH_SEP)) {
-            dirName = dirName.substring(0, dirName.length - 1);
-          }
-          else if (!dirName.contains(StringExt.PATH_SEP)) {
-            dirName = StringExt.EMPTY;
-          }
-          else {
-            dirName = path_api.dirname(dirName);
-          }
-
-          return dirName;
-        }
-        else {
-          return StringExt.EMPTY;
-        }
+    for (var part in parts) {
+      if (isGlobPattern(part)) {
+        break;
+      }
+      if (part.isEmpty) {
+        dirName += Path.separator;
       }
       else {
-        if (isDirectoryName ?? false) {
-          return pattern;
-        }
-        else {
-          return path_api.dirname(pattern);
-        }
+        dirName = Path.join(dirName, part);
       }
     }
+
+    return dirName;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool isRecursive(String pattern) {
-    return ((pattern != null) && _RE_RECURSIVE.hasMatch(pattern));
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static bool isGlobPattern(String pattern) {
+  static bool isRecursive(String? pattern) {
     if (pattern == null) {
       return false;
     }
 
-    if (_RE_WILDCARD.hasMatch(pattern)) {
+    final m = _RE_RECURSIVE.firstMatch(pattern);
+
+    if ((m == null) || (m.start < 0)) {
+      return false;
+    }
+
+    return (Path.adjust(pattern).contains(Path.separator, m.start + 1));
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static bool isGlobPattern(String? pattern) {
+    if (pattern == null) {
+      return false;
+    }
+
+    if (pattern.contains('*') ||
+        pattern.contains('?') ||
+        pattern.contains('{') ||
+        pattern.contains('[')) {
       return true;
     }
 
-    if (!_RE_GLOB.hasMatch(pattern)) {
-      return false;
-    }
-
-    if (File(pattern).tryExistsSync()) {
-      return false;
-    }
-
-    if (Directory(pattern).tryExistsSync()) {
-      return false;
-    }
-
-    return true;
+    return false;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<FileSystemEntity> listSync({String root, bool followLinks = true}) {
-    var lst = listFileSystemSync(_fileSystem, root: root, followLinks: followLinks);
+  List<FileSystemEntity> listSync({String? root, bool? recursive, bool followLinks = false}) {
+    var that = this;
+
+    var fullRoot = (root == null ?
+      Path.fileSystem.currentDirectory.path :
+      Path.getFullPath(root)
+    );
+
+    var lst = Path.fileSystem
+      .directory(fullRoot)
+      .listSync(
+        recursive: recursive ?? isRecursive(pattern),
+        followLinks: followLinks
+      )
+      .where((x) {
+        var hasMatch = that.matches(Path.toPosix(Path.relative(x.path, from: fullRoot)));
+        return hasMatch;
+      })
+      .toList()
+    ;
 
     return lst;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Glob toGlob(String pattern, {bool isPath}) {
-    Glob filter;
+  static Glob toGlob(String? pattern, {bool? isPath}) {
+    var patternEx = ((pattern == null) || pattern.isBlank() ? ALL : pattern);
 
-    pattern = (StringExt.isNullOrBlank(pattern) ? ALL : pattern);
-    isPath = (isPath ?? _RE_PATH.hasMatch(pattern));
-
-    var caseSensitive = !StringExt.IS_WINDOWS;
-    var recursive = isRecursive(pattern);
-
-    filter = Glob(pattern, recursive: recursive, caseSensitive: caseSensitive);
+    var filter = Glob(
+      Path.toPosix(patternEx),
+      recursive: isRecursive(patternEx),
+      caseSensitive: Path.isCaseSensitive
+    );
 
     return filter;
   }

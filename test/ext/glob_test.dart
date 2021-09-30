@@ -1,15 +1,14 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/glob.dart';
 import 'package:xnx/src/ext/path.dart';
-import 'helper.dart';
+import '../helper.dart';
 
 void main() {
   Helper.forEachMemoryFileSystem((fileSystem) {
-    Env.init(fileSystem);
-
     group('Glob', () {
       test('dirname', () {
+        Helper.initFileSystem(fileSystem);
+
         final pathSep = Path.separator;
 
         expect(GlobExt.dirname(''), '');
@@ -25,6 +24,8 @@ void main() {
       });
 
       test('isRecursive', () {
+        Helper.initFileSystem(fileSystem);
+
         final pathSep = Path.separator;
 
         expect(GlobExt.isRecursive(null), false);
@@ -36,6 +37,8 @@ void main() {
       });
 
       test('isGlobPattern', () {
+        Helper.initFileSystem(fileSystem);
+
         final pathSep = Path.separator;
 
         expect(GlobExt.isGlobPattern(null), false);

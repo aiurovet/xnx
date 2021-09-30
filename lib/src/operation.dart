@@ -1,6 +1,7 @@
-import 'package:xnx/src/config.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/ext/string.dart';
+
+import 'flat_map.dart';
 
 enum OperationType {
   Unknown,
@@ -65,16 +66,16 @@ class Operation {
   // Private members
   //////////////////////////////////////////////////////////////////////////////
 
-  final Config _config;
+  final FlatMap _flatMap;
 
-  var _condition = StringExt.EMPTY;
+  var _condition = '';
   var _isOpposite = false;
   var _begPos = -1;
   var _endPos = 0;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Operation(this._config);
+  Operation(this._flatMap);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -326,7 +327,7 @@ class Operation {
     var isThen = true;
 
     if (mask.isNotEmpty) {
-      mask = _config.expandStraight(_config.flatMap, mask);
+      mask = _flatMap.expand(mask);
 
       isThen = (mask.isEmpty ? false : FileSystemEntityExt.tryPatternExistsSync(
         mask,
@@ -362,13 +363,8 @@ class Operation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void _fail(String condition, [String? details]) {
-    if (details?.isNotEmpty ?? false) {
-      details = ': $details';
-    }
-
-    throw Exception('Invalid condition $condition$details');
-  }
+  Never _fail(String condition, [String? details]) =>
+    throw Exception('Invalid condition $condition${details?.isNotEmpty ?? false ? ': $details' : ''}');
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -379,7 +375,7 @@ class Operation {
       return type;
     }
 
-    var curChr = StringExt.EMPTY;
+    var curChr = '';
     var isQuote1 = false;
     var isQuote2 = false;
     var length = _condition.length;
@@ -435,7 +431,7 @@ class Operation {
     }
 
     if (type == OperationType.Unknown) {
-      var isEmpty = _condition.replaceAll('!', StringExt.EMPTY).isBlank();
+      var isEmpty = _condition.replaceAll('!', '').isBlank();
       type = (isEmpty ? OperationType.AlwaysFalse : OperationType.AlwaysTrue);
     }
 
@@ -516,7 +512,7 @@ class Operation {
     num? n1;
 
     if (o1 != null) {
-      o1 = _config.expandStraight(_config.flatMap, o1);
+      o1 = _flatMap.expand(o1);
       n1 = (isBinary ? num.tryParse(o1) : null);
 
       operands.add(n1 ?? o1);
@@ -525,7 +521,7 @@ class Operation {
     num? n2;
 
     if (o2 != null) {
-      o2 = _config.expandStraight(_config.flatMap, o2);
+      o2 = _flatMap.expand(o2);
       n2 = (isBinary && (n1 != null) ? num.tryParse(o2) : null);
 
       operands.add(n2 ?? o2);

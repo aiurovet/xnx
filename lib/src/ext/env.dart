@@ -1,28 +1,23 @@
 import 'dart:io';
 import 'package:file/file.dart';
-import 'package:file/memory.dart';
+import 'package:file/local.dart';
 import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
 
-class Environment {
-  static const _DLR = r'$';
-  static const _DLR_DLR = r'$$';
+class Env {
+  static const _DOLLAR = r'$';
+  static const _DOLLAR_DOLLAR = r'$$';
 
-  static final RegExp _RE_ENV_VAR_NAME = RegExp(r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(#|[0-9]+)|\$[\{](#|[0-9]+)[\}]', caseSensitive: false);
+  static final RegExp _RE_ENV_VAR_NAME = RegExp(
+      r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(#|[0-9]+)|\$[\{](#|[0-9]+)[\}]',
+      caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
   static final bool isWindows = Platform.isWindows;
 
-  //////////////////////////////////////////////////////////////////////////////
-
+  static String escape = r'\'; // for any OS
+  static String escapeEscape = (escape + escape);
   static final String homeKey = (isWindows ? 'USERPROFILE' : 'HOME');
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Dependency injection
-  //////////////////////////////////////////////////////////////////////////////
-
-  static FileSystem fileSystem = MemoryFileSystem();
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -30,25 +25,25 @@ class Environment {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void clearLocal() =>
-    _local.clear();
+  static void clearLocal() => _local.clear();
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String expand(String input, {List<String>? args, bool canEscape = false}) {
+  static String expand(String input,
+      {List<String>? args, bool canEscape = false}) {
     if ((args != null) && args.isEmpty) {
       args = null;
     }
 
-    var out = StringExt.EMPTY;
+    var out = '';
 
-    for (var inp in input.split(_DLR_DLR)) {
+    for (var inp in input.split(_DOLLAR_DOLLAR)) {
       if (out.isNotEmpty) {
-        out += _DLR;
+        out += _DOLLAR;
       }
 
       out += inp.replaceAllMapped(_RE_ENV_VAR_NAME, (match) {
-        var envVarName = (match.group(1) ?? match.group(2) ?? StringExt.EMPTY);
+        var envVarName = (match.group(1) ?? match.group(2) ?? '');
 
         if (envVarName.isNotEmpty) {
           var newValue = get(envVarName);
@@ -61,7 +56,7 @@ class Environment {
         }
 
         if (args != null) {
-          var argStr = (match.group(3) ?? match.group(4) ?? StringExt.EMPTY);
+          var argStr = (match.group(3) ?? match.group(4) ?? '');
 
           if (argStr == '#') {
             return args.length.toString();
@@ -76,10 +71,10 @@ class Environment {
           }
         }
 
-        return StringExt.EMPTY;
+        return '';
       });
     }
-        
+
     return out;
   }
 
@@ -90,7 +85,7 @@ class Environment {
     var value = (_local.isEmpty ? null : _local[keyEx]);
 
     if (value == null) {
-      return Platform.environment[keyEx] ?? defValue ?? StringExt.EMPTY;
+      return Platform.environment[keyEx] ?? defValue ?? '';
     }
     else {
       return value;
@@ -100,22 +95,23 @@ class Environment {
   //////////////////////////////////////////////////////////////////////////////
 
   static Map<String, String> getAll({bool isLocalOnly = false}) =>
-    <String, String>{}..addAll(_local)..addAll(Platform.environment);
+      <String, String>{}
+        ..addAll(_local)
+        ..addAll(Platform.environment);
 
   //////////////////////////////////////////////////////////////////////////////
 
   static Map<String, String> getAllLocal() =>
-    <String, String>{}..addAll(_local);
+      <String, String>{}..addAll(_local);
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getHome() =>
-    get(homeKey);
+  static String getHome() => get(homeKey);
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void init(FileSystem newFileSystem) {
-    Path.init(newFileSystem);
+  static void init(FileSystem? newFileSystem, {bool isPortable = true}) {
+    Path.init(newFileSystem ?? LocalFileSystem());
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -131,7 +127,7 @@ class Environment {
       _local.remove(keyEx);
     }
     else {
-      _local[keyEx] = ((value ?? defValue)?.toString() ?? StringExt.EMPTY);
+      _local[keyEx] = ((value ?? defValue)?.toString() ?? '');
     }
   }
 
@@ -143,6 +139,13 @@ class Environment {
     if (from.isNotEmpty) {
       _local.addAll(from);
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void setEscape([String? newEscape]) {
+    escape = newEscape ?? r'\';
+    escapeEscape = escape + escape;
   }
 
   //////////////////////////////////////////////////////////////////////////////

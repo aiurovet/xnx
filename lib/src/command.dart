@@ -1,199 +1,375 @@
-import 'package:file/file.dart';
+import 'dart:cli';
+import 'dart:io';
+import 'package:process_run/shell.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
-import 'file.dart';
-import 'file_system_entity.dart';
-import 'glob.dart';
-import 'string.dart';
+import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/xnx.dart';
 
-extension DirectoryExt on Directory {
+class Command {
+  //////////////////////////////////////////////////////////////////////////////
+  // Constants
+  //////////////////////////////////////////////////////////////////////////////
+
+  static const _BREAK_CHARS = ' \t|&<>';
+  static const _LOCAL_PRINT = r'--print';
+  static const _OPTION_CHARS = r'-+';
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Properties
+  //////////////////////////////////////////////////////////////////////////////
+
+  List<String> args = [];
+  bool isLocal = false;
+  bool isSync = true;
+  bool isShellRequired = false;
+  bool isToVar = false;
+  String path = '';
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Internals
+  //////////////////////////////////////////////////////////////////////////////
+
+  Logger? _logger;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final CUR_DIR_ABBR = '.';
-  static final PARENT_DIR_ABBR = '..';
+  Command(
+      {String? path,
+      List<String>? args,
+      String? text,
+      bool isSync = true,
+      bool isToVar = false,
+      Logger? logger}) {
+    this.isSync = isSync;
+    this.isToVar = isToVar;
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Dependency injection
-  //////////////////////////////////////////////////////////////////////////////
+    _logger = logger;
 
-  static FileSystem get _fileSystem => Env.fileSystem;
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String appendPathSeparator(String dirName) {
-    var pathSep = Path.separator;
-
-    if (dirName.isBlank() || dirName.endsWith(pathSep)) {
-      return dirName;
+    if (text?.isNotEmpty ?? false) {
+      if ((path?.isNotEmpty ?? false) || (args?.isNotEmpty ?? false)) {
+        throw Exception(
+            'Either command text, or executable path with arguments expected');
+      }
+      parse(text);
     }
     else {
-      return (dirName + pathSep);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  List<FileSystemEntity> entityListSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
-    var lst = <FileSystemEntity>[];
-
-    if (checkExists && !tryExistsSync()) {
-      return lst;
-    }
-
-    var filter = GlobExt.toGlob(pattern);
-    var entities = filter.listSync(root: path);
-
-    for (var entity in entities) {
-      if (entity is Directory) {
-        if (takeDirs) {
-          lst.add(entity);
+      if (path != null) {
+        this.path = path;
+      }
+      if (args != null) {
+        if (this.path.isNotEmpty) {
+          this.args = args;
+        }
+        else {
+          this.path = args[0];
+          this.args = args.sublist(1);
         }
       }
-      else if (takeFiles) {
-        lst.add(entity);
-      }
     }
-
-    return lst;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<FileSystemEntity> entityListExSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
-    var dirName = GlobExt.dirname(pattern);
-    var subPattern = (dirName.length <= 1 ? pattern : pattern.substring(dirName.length + 1));
-    var dir = _fileSystem.directory(dirName);
-    var lst = dir.entityListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
-
-    return lst;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  int getFullLevel() {
-    return Path.getFullPath(path).tokensOf(Path.separator);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  int getLevel() {
-    return path.tokensOf(Path.separator);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  List<String> pathListSync(String? pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
-    var lst = <String>[];
-
-    if (checkExists && !tryExistsSync()) {
-      return lst;
+  String exec({String? text, bool canExec = true}) {
+    if (text != null) {
+      parse(text);
     }
 
-    var filter = GlobExt.toGlob(pattern);
-    var entities = filter.listSync(root: path);
+    var outLines = '';
 
-    for (var entity in entities) {
-      var entityPath = entity.path;
-
-      if (entity is Directory) {
-        if (takeDirs) {
-          lst.add(entityPath);
-        }
-      }
-      else if (takeFiles) {
-        lst.add(entityPath);
-      }
+    if (isLocal && args.isNotEmpty && (args[0] == _LOCAL_PRINT)) {
+      return print(_logger, args.sublist(1), isToVar: isToVar);
     }
 
-    return lst;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static List<String> pathListExSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
-    var isGlobPattern = GlobExt.isGlobPattern(pattern);
-    var dir = (isGlobPattern ? null : _fileSystem.directory(pattern));
-    List<String> lst;
-
-    if ((dir != null) && dir.existsSync()) {
-      lst = dir.pathListSync(null, checkExists: false, takeDirs: takeDirs, takeFiles: takeFiles);
-    }
-    else if (isGlobPattern) {
-      var dirName = GlobExt.dirname(pattern);
-      var subPattern = (dirName.length <= 1 ? pattern : pattern.substring(dirName.length + 1));
-
-      dir = (dirName.isBlank() ? _fileSystem.currentDirectory : _fileSystem.directory(dirName));
-      lst = dir.pathListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
-    }
-    else {
-      lst = [pattern];
+    if (path.isEmpty) {
+      return outLines;
     }
 
-    return lst;
-  }
+    _logger?.information(toString());
 
-  //////////////////////////////////////////////////////////////////////////////
-
-  void xferSync(String toDirName, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
-    var fromFullDirName = appendPathSeparator(Path.getFullPath(path));
-    var toFullDirName = appendPathSeparator(Path.getFullPath(toDirName));
-
-    if (toFullDirName.contains(fromFullDirName)) {
-      var action = 'Can\'t ${isMove ? 'rename' : 'copy'} directory "$fromFullDirName"';
-      var target = (toFullDirName == fromFullDirName ? 'itself' : 'it\'s sub-directory $toFullDirName');
-
-      throw Exception('$action to $target');
+    if (!canExec) {
+      return outLines;
     }
 
-    if (!isSilent) {
-      print('--- ${isMove ? 'Renaming' : 'Copying'} dir "$path"');
-    }
+    ProcessResult? result;
+    List<ProcessResult>? results;
+    var errMsg = '';
+    var isSuccess = false;
 
-    if (isMove) {
-      _fileSystem.directory(Path.dirname(toDirName)).createSync();
+    var oldCurDir = Path.fileSystem.currentDirectory;
+    var oldLocEnv = Env.getAllLocal();
+    var fullEnv = Env.getAll();
 
-      var toDir = _fileSystem.directory(toDirName);
-
-      toDir.deleteIfExistsSync(recursive: true);
-
-      renameSync(toDirName);
-
-      return;
-    }
-
-    var toDir = _fileSystem.directory(toDirName);
-    toDir.createSync(recursive: true);
-
-    var entities = listSync(recursive: false);
-
-    entities.sort((e1, e2) {
-      var isDir1 = (e1 is Directory);
-      var isDir2 = (e2 is Directory);
-
-      if (isDir1 == isDir2) {
-        return e1.path.compareTo(e2.path);
+    try {
+      if (isLocal) {
+        Xnx(logger: _logger).exec(args);
+        isSuccess = true;
       }
       else {
-        return (isDir1 ? -1 : 1);
-      }
-    });
+        if (path.isBlank()) {
+          // Shouldn't happen, but just in case
+          throw Exception('Executable is not defined for $args');
+        }
 
-    var dirNameLen = path.length;
+        if (isSync && !isShellRequired) {
+          result = Process.runSync(path, args,
+              environment: fullEnv,
+              runInShell: false,
+              workingDirectory: Path.currentDirectory.path);
 
-    for (var i = 0, n = entities.length; i < n; i++) {
-      var entity = entities[i];
+          isSuccess = (result.exitCode == 0);
+        }
+        else {
+          results = waitFor<List<ProcessResult>>(Shell(
+                  environment: fullEnv,
+                  verbose: (_logger?.isInfo ?? false),
+                  commandVerbose: false,
+                  commentVerbose: false,
+                  runInShell: isShellRequired,
+                  workingDirectory: Path.currentDirectory.path)
+              .run(path));
 
-      if (entity is Directory) {
-        var toSubDirName = toDirName + entity.path.substring(dirNameLen);
-
-        entity.xferSync(toSubDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
-      }
-      else if (entity is File) {
-        var toPath = Path.join(toDirName, Path.basename(entity.path));
-        entity.xferSync(toPath, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+          result = (results.isEmpty ? null : results[0]);
+          isSuccess = !results.any((x) => (x.exitCode != 0));
+        }
       }
     }
+    on Error catch (e) {
+      errMsg = e.toString();
+    }
+    on Exception catch (e) {
+      errMsg = e.toString();
+    }
+
+    if (!isLocal && (result != null)) {
+      if (isSync) {
+        if (result.stdout?.isNotEmpty ?? false) {
+          outLines = result.stdout;
+        }
+      } else if (results != null) {
+        if (results.outLines.isNotEmpty) {
+          outLines = results.outLines.toString();
+        }
+      }
+
+      if (isSuccess) {
+        if (!isToVar) {
+          _logger?.out(outLines);
+          outLines = '';
+        }
+      }
+      else {
+        if (isSync) {
+          _logger?.error('Exit code: ${result.exitCode}');
+          _logger?.error(
+              '\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
+        } else if ((results != null) && results.isNotEmpty) {
+          _logger?.error(
+              'Exit codes: ${results.map((x) => x.exitCode).join(', ')}');
+          _logger?.error('\n*** Errors:\n\n${results.errLines}');
+        }
+      }
+    }
+
+    Env.setAllLocal(oldLocEnv);
+    Path.fileSystem.currentDirectory = oldCurDir;
+
+    if (!isSuccess) {
+      throw Exception(errMsg.isEmpty ? '\nExecution failed' : errMsg);
+    }
+
+    return outLines;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String getStartCommand({bool escapeQuotes = false}) {
+    var path = Platform.resolvedExecutable;
+    var args = <String>[];
+
+    var scriptPath = Platform.script.path;
+
+    if (Path.basenameWithoutExtension(path) !=
+        Path.basenameWithoutExtension(scriptPath)) {
+      args.add(scriptPath);
+    }
+
+    args.addAll(Platform.executableArguments);
+
+    return Command(path: path, args: args).toString();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  Command parse(String? input) {
+    args.clear();
+    path = '';
+    isLocal = false;
+    isShellRequired = false;
+
+    var buffer = input?.trim() ?? '';
+
+    if (buffer.isEmpty) {
+      return this;
+    }
+
+    for (var argEndPos = 0;;) {
+      if (argEndPos > 0) {
+        buffer = _addArg(buffer, argEndPos);
+      }
+
+      argEndPos = buffer.length;
+
+      if (argEndPos == 0) {
+        break;
+      }
+
+      switch (buffer[0]) {
+        case "'":
+        case '"':
+          argEndPos = _getNextQuotePos(buffer, argEndPos);
+          continue;
+        default:
+          argEndPos = _getNextBreakPos(buffer, argEndPos);
+          continue;
+      }
+    }
+
+    return this;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String print(Logger? logger, List<String> args, {bool isSilent = false, bool isToVar = false}) {
+    var out = args.join(' ');
+
+    if (isToVar) {
+      return out;
+    }
+    else if (!isSilent) {
+      logger?.out(out);
+    }
+
+    return '';
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  @override
+  String toString() {
+    var str = path.quote();
+
+    for (var arg in args) {
+      if (str.isNotEmpty) {
+        str += ' ';
+      }
+      str += arg.quote();
+    }
+
+    return str;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String _addArg(String input, int endPos) {
+    var hasPath = (path.isNotEmpty || isLocal);
+    var arg = input.substring(0, endPos).trim().unquote().trim();
+
+    if (arg.isNotEmpty) {
+      var firstChar = arg[0];
+
+      if (!hasPath) {
+        isLocal = _OPTION_CHARS.contains(firstChar);
+        hasPath = isLocal;
+      }
+
+      if (Env.escape.isNotEmpty) {
+        var parts = arg.split(Env.escapeEscape);
+        arg = '';
+
+        for (var part in parts) {
+          if (arg.isNotEmpty) {
+            arg += Env.escape;
+          }
+          arg += part
+              .replaceAll(Env.escape + 'n', '\n')
+              .replaceAll(Env.escape + 'r', '\r')
+              .replaceAll(Env.escape + 't', '\t');
+        }
+      }
+
+      if (hasPath) {
+        args.add(arg);
+      }
+      else {
+        path = arg;
+      }
+
+      if (!isShellRequired && input.contains('(')) {
+        isShellRequired = true;
+      }
+    }
+
+    return input.substring(endPos).trim();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  int _getNextBreakPos(String input, int endPos) {
+    for (var isEscape = false, curPos = 0; curPos < endPos; curPos++) {
+      var curChr = input[curPos];
+
+      if (curChr == Env.escape) {
+        isEscape = !isEscape;
+        continue;
+      }
+
+      if (isEscape) {
+        isEscape = false;
+        continue;
+      }
+
+      var brkPos = _BREAK_CHARS.indexOf(curChr);
+
+      if (brkPos < 0) {
+        continue;
+      }
+
+      if (brkPos >= 2) {
+        isShellRequired = true;
+      }
+
+      return (curPos == 0 ? 1 : curPos);
+    }
+
+    return endPos;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  int _getNextQuotePos(String input, int endPos) {
+    var begChr = input[0];
+
+    for (var isEscape = false, curPos = 1; curPos < endPos; curPos++) {
+      var curChr = input[curPos];
+
+      if (curChr == Env.escape) {
+        isEscape = !isEscape;
+        continue;
+      }
+
+      if (!isEscape) {
+        if (curChr == begChr) {
+          return curPos + 1;
+        }
+      }
+
+      isEscape = false;
+    }
+
+    return endPos;
   }
 
   //////////////////////////////////////////////////////////////////////////////

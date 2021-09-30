@@ -1,11 +1,11 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/config.dart';
+import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/operation.dart';
 
 void main() {
   group('Operation', () {
     test('parse', () {
-      var o = Operation(Config());
+      var o = Operation(FlatMap());
 
       expect(o.parse(''), OperationType.AlwaysFalse);
       expect(o.parse('  '), OperationType.AlwaysFalse);
@@ -60,7 +60,7 @@ void main() {
     });
 
     test('exec', () {
-      var o = Operation(Config());
+      var o = Operation(FlatMap());
 
       expect(o.exec(''), false);
       expect(o.exec('  '), false);

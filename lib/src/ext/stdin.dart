@@ -7,9 +7,7 @@ extension StdinExt on Stdin {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String readAsStringSync({int endByte}) {
-    endByte ??= StringExt.EOT_CODE;
-
+  String readAsStringSync({int endByte = StringExt.EOT_CODE}) {
     final input = <int>[];
 
     for (var isEmpty = true; ; isEmpty = false) {
@@ -17,7 +15,7 @@ extension StdinExt on Stdin {
 
       if ((byte < 0) || ((endByte != 0) && (byte == endByte))) {
         if (isEmpty) {
-          return null;
+          return '';
         }
 
         break;
@@ -26,7 +24,7 @@ extension StdinExt on Stdin {
       input.add(byte);
     }
 
-    return (utf8.decode(input, allowMalformed: true) ?? StringExt.EMPTY);
+    return utf8.decode(input, allowMalformed: true);
   }
 
   //////////////////////////////////////////////////////////////////////////////

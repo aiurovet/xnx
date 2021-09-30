@@ -1,6 +1,6 @@
-import 'dart:io';
+import 'package:file/file.dart';
 import 'package:archive/archive_io.dart';
-import 'package:path/path.dart' as path_api;
+import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/ext/file.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
@@ -44,36 +44,28 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void archiveSync({PackType packType, String fromPath, List<String> fromPaths,
-    int start = 0, int end, String toPath, bool isMove = false, bool isSilent = false}) {
-
-    var toPathEx = (toPath ?? fromPaths[end]);
+  static void archiveSync(PackType? packType, List<String> paths, {bool isMove = false, bool isSilent = false}) {
+    var pathLists = Path.argsToLists(paths, oper: 'archive', isLastSeparate: true);
 
     if (packType == null) {
       throw Exception('Archive type is not defined');
+    }
+
+    var toPath = pathLists[1][0];
+
+    if (toPath.isEmpty) {
+      throw Exception('Destination path is not defined');
     }
 
     final isZip = (packType == PackType.Zip);
     final isTar = isPackTypeTar(packType);
     final isTarPacked = (isTar && (packType != PackType.Tar));
 
-    if ((fromPath == null) && ((fromPaths == null) || fromPaths.isEmpty)) {
-      return;
-    }
+    var toPathEx = (isTarPacked ?_getUnpackPath(packType, toPath, null) :  toPath);
+    var toFile = Path.fileSystem.file(toPathEx);
+    print('Creating archive "$toPathEx"');
 
-    String toPathExEx;
-
-    if (isTarPacked) {
-      toPathExEx = getUnpackPath(packType, toPathEx, null);
-    }
-    else {
-      toPathExEx = toPathEx;
-    }
-
-    var toFile = File(toPathExEx);
-    print('Creating archive "$toPathExEx"');
-
-    var toDir = Directory(path_api.dirname(toPathExEx));
+    var toDir = Path.fileSystem.directory(Path.dirname(toPathEx));
     var hadToDir = toDir.existsSync();
 
     if (!hadToDir) {
@@ -83,32 +75,29 @@ class PackOper {
       toFile.deleteIfExistsSync();
     }
 
-    TarFileEncoder tarFileEncoder;
-    ZipFileEncoder zipFileEncoder;
+    TarFileEncoder? tarFileEncoder;
+    ZipFileEncoder? zipFileEncoder;
 
     try {
       tarFileEncoder = (isTar ? TarFileEncoder() : null);
-      tarFileEncoder?.create(toPathExEx);
+      tarFileEncoder?.create(toPathEx);
 
       zipFileEncoder = (isZip ? ZipFileEncoder() : null);
-      zipFileEncoder?.create(toPathExEx, level: compression);
+      zipFileEncoder?.create(toPathEx, level: compression);
 
-      FileOper.listSync(path: fromPath,
-        paths: fromPaths,
-        start: start,
-        end: end,
+      FileOper.listSync(pathLists[0],
         repeats: (isMove ? 2 : 1),
         isSilent: isSilent,
         isSorted: true,
         isMinimal: true,
         listProc: (entities, entityNo, repeatNo, subPath) {
           if (entityNo < 0) { // empty list
-            throw Exception('Source was not found: "${fromPath ?? fromPaths[start] ?? StringExt.EMPTY}"');
+            throw Exception('Source was not found: "${paths[0]}"');
           }
 
           var entity = entities[entityNo];
           var isDir = (entity is Directory);
-          var isDirOnly = entity.path.endsWith(StringExt.PATH_SEP);
+          var isDirOnly = entity.path.endsWith(Path.separator);
 
           if (repeatNo == 0) {
             if (!isSilent) {
@@ -117,23 +106,18 @@ class PackOper {
 
             if (isTar) {
               if (isDir) {
-                if (isDirOnly) {
-                  tarFileEncoder.addDirectory(entity);
-                }
-                else {
-                  tarFileEncoder.addDirectory(entity);
-                }
+                tarFileEncoder?.addDirectory(entity as Directory);
               }
-              else {
-                tarFileEncoder.addFile(entity);
+              else if (!isDirOnly) {
+                tarFileEncoder?.addFile(entity as File);
               }
             }
             else if (isZip) {
               if (isDir) {
-                zipFileEncoder.addDirectory(entity, includeDirName: (subPath.isNotEmpty || isDirOnly));
+                zipFileEncoder?.addDirectory(entity as Directory, includeDirName: ((subPath?.isNotEmpty ?? false) || isDirOnly));
               }
               else {
-                zipFileEncoder.addFile(entity);
+                zipFileEncoder?.addFile(entity as File);
               }
             }
           }
@@ -165,13 +149,204 @@ class PackOper {
     }
 
     if (isTarPacked) {
-      compressSync(packType, toPathExEx, toPath: toPathEx, isMove: true, isSilent: isSilent);
+      compressSync(packType, toPathEx, toPath: toPath, isMove: true, isSilent: isSilent);
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Archive decodeArchSync(PackType packType, File file) {
+  static String compressSync(PackType packType, String fromPath, {String? toPath, bool isMove = true, bool isSilent = false}) {
+    final fromFile = FileExt.getIfExistsSync(fromPath);
+
+    if (fromFile == null) {
+      return '';
+    }
+
+    if (!isSilent) {
+      print('Packing "${fromFile.path}"');
+    }
+
+    final encoder = _encodeFileSync(packType, fromFile);
+    final toPathEx = _getPackPath(packType, fromPath, toPath);
+    final toFile = FileExt.truncateIfExistsSync(toPathEx);
+
+    if ((encoder != null) && (toFile != null)) {
+      toFile.writeAsBytesSync(encoder);
+    }
+
+    if (isMove) {
+      fromFile.delete();
+    }
+
+    return toPathEx;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static PackType? getPackType(PackType packType, String path) {
+    if (path.isBlank()) {
+      return packType;
+    }
+
+    var fileName = Path.basename(path).toLowerCase();
+
+    PackType? packTypeByExt;
+
+    if (!fileName.isBlank()) {
+      var maxMatchLen = 0;
+
+      DEFAULT_EXTENSIONS.forEach((key, value) {
+        value.forEach((currExt) {
+          final currLen = currExt.length;
+
+          if ((packTypeByExt == null) || (currLen > maxMatchLen)) {
+            if (fileName.endsWith(currExt)) {
+              maxMatchLen = currLen;
+              packTypeByExt = key;
+            }
+          }
+        });
+      });
+    }
+
+    return packTypeByExt;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static bool isPackTypeTar(PackType packType) =>
+    ((packType == PackType.Tar) || (packType == PackType.TarBz2) ||
+    (packType == PackType.TarGz) || (packType == PackType.TarZlib));
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void unarchiveSync(PackType packType, String fromPath, String? toDirName,
+    {bool isMove = false, bool isSilent = false}) {
+
+    final isTar = isPackTypeTar(packType);
+    final isZip = (packType == PackType.Zip);
+
+    if (!isTar && !isZip) {
+      throw Exception('Archive type is not supported: "$packType"');
+    }
+
+    final isTarPack = (isTar && (packType != PackType.Tar));
+    String fromPathEx;
+
+    if (isTarPack) {
+      fromPathEx = uncompressSync(packType, fromPath, toPath: null, isMove: isMove, isSilent: isSilent);
+    }
+    else {
+      fromPathEx = fromPath;
+    }
+
+    final fromFileEx = FileExt.getIfExistsSync(fromPathEx, description: 'Archive');
+
+    if (fromFileEx == null) {
+      return;
+    }
+
+    toDirName ??= Path.dirname(fromPathEx);
+    final toDir = Path.fileSystem.directory(toDirName);
+
+    if (!isSilent) {
+      print('Extracting from archive "$fromPathEx" to "$toDirName"');
+    }
+
+    final toDirExisted = toDir.existsSync();
+    final archive = _decodeArchSync((isTarPack ? PackType.Tar : packType), fromFileEx);
+
+    if (archive == null) {
+      return;
+    }
+
+    try {
+      if (!toDirExisted) {
+        toDir.createSync(recursive: true);
+      }
+
+      for (final entity in archive) {
+        final toPath = Path.join(toDirName, entity.name);
+        final isFile = entity.isFile;
+
+        if (!isSilent) {
+          print('Extracting ${isFile ? 'file' : 'dir'} "${entity.name}"');
+        }
+
+        if (isFile) {
+          Path.fileSystem.file(toPath)
+            ..createSync(recursive: true)
+            ..writeAsBytesSync(entity.content);
+        }
+        else {
+          Path.fileSystem.directory(toPath)
+            .createSync(recursive: true);
+        }
+      }
+
+      if (isMove || isTarPack) {
+        if (isTarPack) {
+          if (!isSilent) {
+            print('Deleting archive "$fromPathEx"'); // current path
+          }
+
+          fromFileEx.deleteSync();
+        }
+
+        if (!isTarPack || isMove) {
+          if (!isSilent) {
+            print('Deleting archive "$fromPath"'); // original path
+          }
+
+          Path.fileSystem.file(fromPath).deleteIfExistsSync();
+        }
+      }
+    }
+    catch (e) {
+      if (isTarPack) {
+        fromFileEx.deleteIfExistsSync();
+      }
+      if (!toDirExisted) {
+        toDir.deleteSync(recursive: true);
+      }
+
+      rethrow;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String uncompressSync(PackType packType, String fromPath, {String? toPath, bool isMove = true, bool isSilent = false}) {
+    final fromFile = FileExt.getIfExistsSync(fromPath);
+
+    if (fromFile == null) {
+      return '';
+    }
+
+    if (!isSilent) {
+      print('Unpacking "${fromFile.path}"');
+    }
+
+    final decoder = _decodeFileSync(packType, fromFile);
+    final toPathEx = _getUnpackPath(packType, fromPath, toPath);
+    final toFile = FileExt.truncateIfExistsSync(toPathEx);
+
+    if ((decoder != null) && (toFile != null)) {
+      toFile.writeAsBytesSync(decoder);
+    }
+
+    if (isMove) {
+      fromFile.delete();
+    }
+
+    return toPathEx;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Internal methods
+  //////////////////////////////////////////////////////////////////////////////
+
+  static Archive? _decodeArchSync(PackType packType, File file) {
     final bytes = file.readAsBytesSync();
 
     if (packType == PackType.Tar) {
@@ -187,7 +362,7 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<int> decodeFileSync(PackType packType, File file) {
+  static List<int>? _decodeFileSync(PackType packType, File file) {
     final bytes = file.readAsBytesSync();
     List<int> result;
 
@@ -205,7 +380,7 @@ class PackOper {
         result = ZLibDecoder().decodeBytes(bytes);
         break;
       default:
-        throw Exception('Unknown archive type to decode: "${packType ?? StringExt.EMPTY}"');
+        throw Exception('Unknown archive type to decode: "$packType"');
     }
 
     return result;
@@ -213,9 +388,9 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<int> encodeFileSync(PackType packType, File file) {
+  static List<int>? _encodeFileSync(PackType packType, File file) {
     final bytes = file.readAsBytesSync();
-    List<int> result;
+    List<int>? result;
 
     switch (packType) {
       case PackType.Bz2:
@@ -231,7 +406,7 @@ class PackOper {
         result = ZLibEncoder().encode(bytes, level: compression);
         break;
       default:
-        throw Exception('Unknown archive type to decode: "${packType ?? StringExt.EMPTY}"');
+        throw Exception('Unknown archive type to decode: "$packType"');
     }
 
     return result;
@@ -239,43 +414,24 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static PackType getPackType(PackType packType, String path) {
-    if (packType != null) {
-      return packType;
+  static String _getFirstDefaultExtension(PackType packType) {
+    var lst = DEFAULT_EXTENSIONS[packType];
+
+    if ((lst != null) && lst.isNotEmpty) {
+      return lst[0];
     }
 
-    if (StringExt.isNullOrBlank(path)) {
-      return packType;
-    }
-
-    var fileName = path_api.basename(path).toLowerCase();
-
-    PackType packTypeByExt;
-
-    if (!StringExt.isNullOrBlank(fileName)) {
-      var maxMatchLen = 0;
-
-      DEFAULT_EXTENSIONS.forEach((key, value) {
-          value.forEach((currExt) {
-            final currLen = currExt.length;
-
-            if ((packTypeByExt == null) || (currLen > maxMatchLen)) {
-              if (fileName.endsWith(currExt)) {
-                maxMatchLen = currLen;
-                packTypeByExt = key;
-              }
-            }
-        });
-      });
-    }
-
-    return packTypeByExt;
+    throw Exception('Can\'t find the first default extension for pack type $packType');
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getPackPath(PackType packType, String fromPath, String toPath) {
-    if (!StringExt.isNullOrBlank(toPath) || (packType == null) || (packType == PackType.Zip)) {
+  static String _getPackPath(PackType packType, String fromPath, String? toPath) {
+    if (toPath == null) {
+      return '';
+    }
+
+    if (!toPath.isBlank() || (packType == PackType.Zip)) {
       return toPath;
     }
 
@@ -296,29 +452,31 @@ class PackOper {
         break;
     }
 
-    return fromPath + DEFAULT_EXTENSIONS[packTypeEx][0];
+    return fromPath + _getFirstDefaultExtension(packTypeEx);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getUnpackPath(PackType packType, String fromPath, String toPath) {
-    final hasToPath = !StringExt.isNullOrBlank(toPath);
+  static String _getUnpackPath(PackType? packType, String fromPath, String? toPath) {
+    if (!(toPath?.isBlank() ?? true)) {
+      toPath = null;
+    }
 
     if ((packType == null) || (packType == PackType.Tar) || !isPackTypeTar(packType)) {
       return (toPath ?? fromPath);
     }
 
-    if (hasToPath) {
-      if (Directory(toPath).existsSync()) {
-        return path_api.join(toPath, path_api.basenameWithoutExtension(fromPath));
+    if (toPath != null) {
+      if (Path.fileSystem.directory(toPath).existsSync()) {
+        return Path.join(toPath, Path.basenameWithoutExtension(fromPath));
       }
       else {
         return toPath;
       }
     }
     else if (isPackTypeTar(packType) && (packType != PackType.Tar)) {
-      var defExt = DEFAULT_EXTENSIONS[PackType.Tar][0];
-      var result = path_api.join(path_api.dirname(fromPath), path_api.basenameWithoutExtension(fromPath));
+      var defExt = _getFirstDefaultExtension(PackType.Tar);
+      var result = Path.join(Path.dirname(fromPath), Path.basenameWithoutExtension(fromPath));
 
       if (!result.endsWith(defExt)) {
         result += defExt;
@@ -329,149 +487,6 @@ class PackOper {
     else {
       return fromPath;
     }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static bool isPackTypeTar(PackType packType) =>
-      ((packType == PackType.Tar) || (packType == PackType.TarBz2) || (packType == PackType.TarGz) || (packType == PackType.TarZlib));
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String compressSync(PackType packType, String fromPath, {String toPath, bool isMove = true, bool isSilent = false}) {
-    final fromFile = FileExt.getIfExists(fromPath);
-
-    if (!isSilent ?? false) {
-      print('Packing "${fromFile.path}"');
-    }
-
-    final encoder = encodeFileSync(packType, fromFile);
-    final toPathEx = getPackPath(packType, fromPath, toPath);
-    final toFile = FileExt.truncateIfExists(toPathEx);
-
-    toFile.writeAsBytesSync(encoder);
-
-    if (isMove) {
-      fromFile.delete();
-    }
-
-    return toPathEx;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static void unarchiveSync(PackType packType, String fromPath, String toDirName,
-    {bool isMove = false, bool isSilent = false}) {
-
-    isMove = (isMove ?? false);
-    isSilent = (isSilent ?? false);
-
-    if (packType == null) {
-      throw Exception('Archive type is not defined');
-    }
-
-    final isTar = isPackTypeTar(packType);
-    final isZip = (packType == PackType.Zip);
-
-    if (!isTar && !isZip) {
-      throw Exception('Archive type is not supported: "$packType"');
-    }
-
-    final isTarPack = (isTar && (packType != PackType.Tar));
-    String fromPathEx;
-
-    if (isTarPack) {
-      fromPathEx = uncompressSync(packType, fromPath, toPath: null, isMove: isMove, isSilent: isSilent);
-    }
-    else {
-      fromPathEx = fromPath;
-    }
-
-    final fromFileEx = FileExt.getIfExists(fromPathEx, description: 'Archive');
-
-    toDirName ??= path_api.dirname(fromPathEx);
-    final toDir = Directory(toDirName);
-
-    if (!isSilent) {
-      print('Extracting from archive "$fromPathEx" to "$toDirName"');
-    }
-
-    final toDirExisted = toDir.existsSync();
-    final archive = decodeArchSync((isTarPack ? PackType.Tar : packType), fromFileEx);
-
-    try {
-      if (!toDirExisted) {
-        toDir.createSync(recursive: true);
-      }
-
-      for (final entity in archive) {
-        final toPath = path_api.join(toDirName, entity.name);
-        final isFile = entity.isFile;
-
-        if (!isSilent) {
-          print('Extracting ${isFile ? 'file' : 'dir'} "${entity.name}"');
-        }
-
-        if (isFile) {
-          File(toPath)
-            ..createSync(recursive: true)
-            ..writeAsBytesSync(entity.content);
-        } else {
-          Directory(toPath)
-            .createSync(recursive: true);
-        }
-      }
-
-      if (isMove || isTarPack) {
-        if (isTarPack) {
-          if (!isSilent) {
-            print('Deleting archive "$fromPathEx"'); // current path
-          }
-
-          fromFileEx.deleteSync();
-        }
-
-        if (!isTarPack || isMove) {
-          if (!isSilent) {
-            print('Deleting archive "$fromPath"'); // original path
-          }
-
-          File(fromPath).deleteIfExistsSync();
-        }
-      }
-    }
-    catch (e) {
-      if (isTarPack) {
-        fromFileEx.deleteIfExistsSync();
-      }
-      if (!toDirExisted) {
-        toDir.deleteSync(recursive: true);
-      }
-
-      rethrow;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String uncompressSync(PackType packType, String fromPath, {String toPath, bool isMove = true, bool isSilent = false}) {
-    final fromFile = FileExt.getIfExists(fromPath);
-
-    if (!isSilent ?? false) {
-      print('Unpacking "${fromFile.path}"');
-    }
-
-    final decoder = decodeFileSync(packType, fromFile);
-    final toPathEx = getUnpackPath(packType, fromPath, toPath);
-    final toFile = FileExt.truncateIfExists(toPathEx);
-
-    toFile.writeAsBytesSync(decoder);
-
-    if (isMove) {
-      fromFile.delete();
-    }
-
-    return toPathEx;
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -1,11 +1,12 @@
-import 'dart:cli';
 import 'dart:convert';
 import 'dart:io';
+import 'package:file/file.dart';
+import 'package:xnx/src/command.dart';
 
 import 'package:xnx/src/config_result.dart';
 import 'package:xnx/src/config_file_loader.dart';
 import 'package:xnx/src/config.dart';
-import 'package:xnx/src/xnx.dart';
+import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/options.dart';
@@ -13,10 +14,9 @@ import 'package:xnx/src/pack_oper.dart';
 import 'package:xnx/src/ext/directory.dart';
 import 'package:xnx/src/ext/file.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
+import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/stdin.dart';
 import 'package:xnx/src/ext/string.dart';
-import 'package:path/path.dart' as path_api;
-import 'package:process_run/shell.dart';
 
 class Convert {
 
@@ -36,22 +36,23 @@ class Convert {
   // Parameters
   //////////////////////////////////////////////////////////////////////////////
 
-  bool canExpandContent;
-  RegExp detectPathsRE;
-  bool isExpandContentOnly;
-  bool isProcessed;
-  bool isStdIn;
-  bool isStdOut;
-  bool isSubRun;
-  String curDirName;
-  String outDirName;
-  String startCmd;
+  bool canExpandContent = false;
+  RegExp? detectPathsRE;
+  bool isExpandContentOnly = false;
+  bool isProcessed = false;
+  bool isStdIn = false;
+  bool isStdOut = false;
+  bool isSubRun = false;
+  String curDirName = '';
+  String outDirName = '';
+  String startCmd = '';
 
-  Config _config;
-  List<String> _inpParamNames;
-  List<String> _exeParamNames;
-  Logger _logger;
-  Options _options;
+  Config _config = Config();
+  Logger _logger = Logger();
+  Options _options = Options();
+
+  List<String> _exeParamNames = [];
+  List<String> _inpParamNames = [];
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -62,7 +63,7 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   void exec(List<String> args) {
-    startCmd = FileExt.getStartCommand();
+    startCmd = Command.getStartCommand();
     isProcessed = false;
 
     _config = Config(_logger);
@@ -83,61 +84,66 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool execBuiltin(List<String> args, {bool isSilent}) {
-    var argCount = (args?.length ?? 0);
+  bool execBuiltin(List<String>? args, {bool isSilent = false}) {
+    if ((args == null) || args.isEmpty) {
+      throw Exception('No argument specified for the built-in command');
+    }
 
     final isPrint = _options.isCmdPrint;
     final isCompress = _options.isCmdCompress;
     final isDecompress = _options.isCmdDecompress;
     final isMove = _options.isCmdMove;
 
-    if (argCount <= 0) {
-      throw Exception('No argument specified for the built-in command');
-    }
-
-    isSilent ??= _logger.isSilent;
-
-    var end = (args.length - 1);
-    var arg1 = (end >= 0 ? args[0] : null);
-    var arg2 = (end >= 1 ? args[1] : null);
+    var argCount = (args.length - 1);
+    var arg1 = (argCount >= 0 ? args[0] : null);
+    var arg2 = (argCount >= 1 ? args[1] : null);
 
     if (isPrint) {
-      execPrint(_options.plainArgs, isSilent: isSilent);
+      Command.print(_logger, _options.plainArgs, isSilent: isSilent);
     }
     else if (isCompress || isDecompress) {
-      final archPath = (isDecompress ? arg1 : (end >= 0 ? args[end] : 0));
-      final archType = PackOper.getPackType(_options.archType, archPath);
-      final isTar = PackOper.isPackTypeTar(archType);
+      final archPath = (isDecompress ? arg1 : args[argCount < 0 ? 0 : argCount]);
+      final archType = (_options.archType == null || archPath == null ? null : PackOper.getPackType(_options.archType!, archPath));
 
-      if (isTar || (archType == PackType.Zip)) {
-        if (isCompress) {
-          PackOper.archiveSync(fromPaths: args, end: end, packType: archType, isMove: isMove, isSilent: isSilent);
+      if (archType != null) {
+        final isTar = PackOper.isPackTypeTar(archType);
+
+        if (isTar || (archType == PackType.Zip)) {
+          if (isCompress) {
+            PackOper.archiveSync(archType, args, isMove: isMove, isSilent: isSilent);
+          }
+          else if (arg1 != null) {
+            PackOper.unarchiveSync(archType, arg1, arg2, isMove: isMove, isSilent: isSilent);
+          }
         }
-        else {
-          PackOper.unarchiveSync(archType, arg1, arg2, isMove: isMove, isSilent: isSilent);
+        else if (arg1 != null) {
+          if (isCompress) {
+            PackOper.compressSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+          }
+          else {
+            PackOper.uncompressSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+          }
         }
       }
+      else if (archPath == null) {
+        throw Exception('Undefined archive file');
+      }
       else {
-        if (isCompress) {
-          PackOper.compressSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
-        }
-        else {
-          PackOper.uncompressSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
-        }
+        throw Exception('Undefined type of archiving');
       }
     }
     else {
       if (_options.isCmdCopy || _options.isCmdCopyNewer) {
-        FileOper.xferSync(fromPaths: args, end: end, isMove: false, isNewerOnly: _options.isCmdCopyNewer, isSilent: isSilent);
+        FileOper.xferSync(args, isMove: false, isNewerOnly: _options.isCmdCopyNewer, isSilent: isSilent);
       }
       else if (_options.isCmdMove || _options.isCmdMoveNewer) {
-        FileOper.xferSync(fromPaths: args, end: end, isMove: true, isNewerOnly: _options.isCmdMoveNewer, isSilent: isSilent);
+        FileOper.xferSync(args, isMove: true, isNewerOnly: _options.isCmdMoveNewer, isSilent: isSilent);
       }
       else if (_options.isCmdCreateDir) {
-        FileOper.createDirSync(dirNames: args, isSilent: isSilent);
+        FileOper.createDirSync(args, isSilent: isSilent);
       }
       else if (_options.isCmdDelete) {
-        FileOper.deleteSync(paths: args, isSilent: isSilent);
+        FileOper.deleteSync(args, isSilent: isSilent);
       }
       else {
         return false;
@@ -149,9 +155,9 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, Map<String, String> map) {
-    var command = expandInpNames(cmdTemplate.replaceAll(_config.paramNameOut, outFilePath), map);
-    command = command.replaceAll(_config.paramNameCurDir, curDirName);
+  bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, FlatMap map) {
+    var command = expandInpNames(cmdTemplate.replaceAll(_config.kw.forOut, outFilePath), map);
+    command = command.replaceAll(_config.kw.forCurDir, curDirName);
 
     var isForced = _options.isForced;
 
@@ -160,50 +166,53 @@ class Convert {
 
       var cli = command.splitCommandLine();
       var args = cli[1];
-      var argc = args.length;
 
-      if (argc > 0) {
-        inpFilePath = args[0];
+      if (args != null) {
+        var argc = args.length;
 
-        if (argc > 1) {
-          outFilePath = args[1];
-        }
-        else {
-          outFilePath = inpFilePath;
-          isForced = true;
+        if (argc > 0) {
+          inpFilePath = args[0];
+
+          if (argc > 1) {
+            outFilePath = args[1];
+          }
+          else {
+            outFilePath = inpFilePath;
+            isForced = true;
+          }
         }
       }
     }
 
-    var hasInpFile = (!isStdIn && !StringExt.isNullOrBlank(inpFilePath) && command.adjustPath().contains(inpFilePath));
+    var hasInpFile = (!isStdIn && !inpFilePath.isBlank() && Path.adjust(command).contains(inpFilePath));
 
     if (isExpandContentOnly && !hasInpFile) {
       throw Exception('Input file is undefined for the content expansion');
     }
 
-    var inpFile = (hasInpFile ? File(inpFilePath) : null);
+    var inpFile = (hasInpFile ? Path.fileSystem.file(inpFilePath) : null);
 
     if ((inpFile != null) && !inpFile.existsSync()) {
       throw Exception('Input file is not found: "$inpFilePath"');
     }
 
-    var hasOutFile = (!isStdOut && !StringExt.isNullOrBlank(outFilePath) && !Directory(outFilePath).existsSync());
+    var hasOutFile = (!isStdOut && !outFilePath.isBlank() && !Path.fileSystem.directory(outFilePath).existsSync());
 
-    String tmpFilePath;
+    var tmpFilePath = '';
 
-    var isSamePath = (hasInpFile && hasOutFile && path_api.equals(inpFilePath, outFilePath));
+    var isSamePath = (hasInpFile && hasOutFile && Path.equals(inpFilePath, outFilePath));
 
     if (canExpandContent && (!isExpandContentOnly || isSamePath)) {
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
     }
 
     if (_logger.isDebug) {
-      _logger.debug('Temp file path: "${tmpFilePath ?? StringExt.EMPTY}"');
+      _logger.debug('Temp file path: "$tmpFilePath"');
     }
 
-    var outFile = (hasOutFile ? File(outFilePath) : null);
+    var outFile = (hasOutFile ? Path.fileSystem.file(outFilePath) : null);
 
-    if (!isForced && hasInpFile && hasOutFile && !isSamePath) {
+    if (!isForced && (inpFile != null) && (outFile != null) && !isSamePath) {
       var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
       if (!isChanged) {
@@ -216,215 +225,103 @@ class Convert {
       }
     }
 
-    if (hasInpFile && hasOutFile && !isSamePath) {
+    if ((inpFile != null) && (outFile != null) && !isSamePath) {
       outFile.deleteIfExistsSync();
     }
 
-    if (canExpandContent && hasInpFile) {
+    if (canExpandContent && (inpFile != null)) {
       expandInpContent(inpFile, outFilePath, tmpFilePath, map);
     }
 
-    command = (getValue(map, value: command, canReplace: true) ?? StringExt.EMPTY);
+    command = getValue(map, value: command, canReplace: true);
 
-    var tmpFile = (tmpFilePath != null ? File(tmpFilePath) : null);
+    var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
     if (tmpFile != null) {
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
-    var match = (isSubRun ? RE_EXE_SUB_PRINT.firstMatch(command) : null);
-
-    if (match != null) {
-      execPrint([command.substring(match.end - match.start)]);
-      return true;
-    }
-
-    _logger.information(command);
-
-    var canRun = (!_options.isListOnly && !isExpandContentOnly);
-
-    if (!canRun) {
-      return true;
-    }
-
-    const isProcessRunSyncUsed = true;
-
-    String errMsg;
-    var isSuccess = false;
-    var oldCurDir = Directory.current;
-    var resultCount = 0;
-    ProcessResult result;
-    List<ProcessResult> results;
-
-    try {
-      if (StringExt.isNullOrBlank(command)) {
-        // Shouldn't happen, but just in case
-        return true;
-      }
-
-      var cli = command.splitCommandLine();
-      var exe = cli[0][0];
-      var args = cli[1];
-
-      if (isSubRun) {
-        args.insert(0, exe);
-        Xnx(logger: _logger).exec(args);
-
-        isSuccess = true;
-      }
-      else {
-        var isShellCmd = isShellCommand(command);
-
-        if (isProcessRunSyncUsed && !isShellCmd) {
-          result = Process.runSync(
-            exe,
-            args,
-            environment: StringExt.ENVIRONMENT,
-            runInShell: false,
-            workingDirectory: curDirName
-          );
-
-          isSuccess = (result.exitCode == 0);
-        }
-        else {
-          results = waitFor<List<ProcessResult>>(
-            Shell(
-              environment: StringExt.ENVIRONMENT,
-              verbose: _logger.isInfo,
-              commandVerbose: false,
-              commentVerbose: false,
-              runInShell: isShellCmd,
-              workingDirectory: curDirName
-            ).run(command)
-          );
-
-          resultCount = results?.length ?? 0;
-          result = (resultCount <= 0 ? null : results[0]);
-          isSuccess = (resultCount <= 0 ? false : !results.any((x) => (x.exitCode != 0)));
-        }
-      }
-    }
-    on Error catch (e) {
-      errMsg = e.toString();
-    }
-    on Exception catch (e) {
-      errMsg = e.toString();
-    }
+    Command(text: command)
+      .exec(canExec: !_options.isListOnly && !isExpandContentOnly);
 
     tmpFile?.deleteIfExistsSync();
-    Directory.current = oldCurDir;
-
-    if (result != null) {
-      if (isProcessRunSyncUsed) {
-        if (result.stdout?.isNotEmpty ?? false) {
-          _logger.out(result.stdout);
-        }
-      }
-      else {
-        if (results.outLines?.isNotEmpty ?? false) {
-          _logger.out(results.outLines.toString());
-        }
-      }
-
-      if (!isSuccess) {
-        if (isProcessRunSyncUsed) {
-          _logger.error('Exit code: ${result.exitCode}');
-          _logger.error('\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
-        }
-        else {
-          var unitsEnding = (resultCount == 1 ? '' : 's');
-
-          _logger.error('Exit code$unitsEnding: ${results.map((x) => x.exitCode).join(', ')}');
-          _logger.error('\n*** Error$unitsEnding:\n\n${results.errLines}');
-        }
-      }
-    }
-
-    if (!isSuccess) {
-      throw Exception(errMsg);
-    }
 
     return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool execMap(List<String> plainArgs, Map<String, String> map) {
-    var mapCurr = <String, String>{};
+  bool execMap(List<String> plainArgs, FlatMap map) {
+    var mapCurr = FlatMap();
 
-    map[ConfigFileLoader.ALL_ARGS] = (
-      plainArgs?.isEmpty ?? true ?
-      StringExt.EMPTY :
-      plainArgs.map((x) => x?.quote() ?? StringExt.EMPTY).join(StringExt.SPACE)
-    );
-
+    map[ConfigFileLoader.ALL_ARGS] = (plainArgs.isEmpty ? '' : plainArgs.map((x) => x.quote()).join(' '));
     curDirName = getCurDirName(map, true);
 
-    var inpFilePath = (getValue(map, key: _config.paramNameInp, canReplace: true) ?? StringExt.EMPTY);
-    var hasInpFile = !StringExt.isNullOrBlank(inpFilePath);
+    var inpFilePath = getValue(map, key: _config.kw.forInp, canReplace: true);
+    var hasInpFile = !inpFilePath.isBlank();
 
     if (hasInpFile) {
-      if (!path_api.isAbsolute(inpFilePath)) {
-        inpFilePath = path_api.join(curDirName, inpFilePath);
+      if (!Path.isAbsolute(inpFilePath)) {
+        inpFilePath = Path.join(curDirName, inpFilePath);
       }
 
-      if (inpFilePath.contains(_config.paramNameInp) ||
-          inpFilePath.contains(_config.paramNameInpDir) ||
-          inpFilePath.contains(_config.paramNameInpExt) ||
-          inpFilePath.contains(_config.paramNameInpName) ||
-          inpFilePath.contains(_config.paramNameInpNameExt) ||
-          inpFilePath.contains(_config.paramNameInpPath) ||
-          inpFilePath.contains(_config.paramNameInpSubDir) ||
-          inpFilePath.contains(_config.paramNameInpSubPath)) {
+      if (inpFilePath.contains(_config.kw.forInp) ||
+          inpFilePath.contains(_config.kw.forInpDir) ||
+          inpFilePath.contains(_config.kw.forInpExt) ||
+          inpFilePath.contains(_config.kw.forInpName) ||
+          inpFilePath.contains(_config.kw.forInpNameExt) ||
+          inpFilePath.contains(_config.kw.forInpPath) ||
+          inpFilePath.contains(_config.kw.forInpSubDir) ||
+          inpFilePath.contains(_config.kw.forInpSubPath)) {
         inpFilePath = expandInpNames(inpFilePath, map);
       }
 
-      inpFilePath = inpFilePath.getFullPath();
+      inpFilePath = Path.getFullPath(inpFilePath);
     }
 
-    var subStart = (hasInpFile ? (inpFilePath.length - path_api.basename(inpFilePath).length) : 0);
+    var subStart = (hasInpFile ? (inpFilePath.length - Path.basename(inpFilePath).length) : 0);
     var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
     for (var inpFilePathEx in inpFilePaths) {
-      inpFilePathEx = inpFilePathEx.adjustPath();
+      inpFilePathEx = Path.adjust(inpFilePathEx);
 
       mapCurr = expandMap(map, curDirName, inpFilePathEx);
 
-      var detectPathsPattern = getValue(mapCurr, key: _config.paramNameDetectPaths, canReplace: true);
+      var detectPathsPattern = getValue(mapCurr, key: _config.kw.forDetectPaths, canReplace: true);
 
-      if (StringExt.isNullOrBlank(detectPathsPattern)) {
+      if (detectPathsPattern.isBlank()) {
         detectPathsRE = null;
       }
       else {
         detectPathsRE = RegExp(detectPathsPattern, caseSensitive: false);
       }
 
-      var command = getValue(mapCurr, key: _config.paramNameRun, canReplace: false);
+      var command = getValue(mapCurr, key: _config.kw.forRun, canReplace: false);
 
-      if (StringExt.isNullOrBlank(command)) {
-        command = getValue(mapCurr, key: _config.paramNameCmd, canReplace: false);
+      if (command.isBlank()) {
+        command = getValue(mapCurr, key: _config.kw.forCmd, canReplace: false);
       }
 
       isSubRun = RE_EXE_SUB.hasMatch(command);
       isExpandContentOnly = isSubRun && RE_EXE_SUB_EXPAND.hasMatch(command);
-      canExpandContent = !_options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.paramNameCanExpandContent, canReplace: false)));
+      canExpandContent = !_options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.kw.forCanExpandContent, canReplace: false)));
 
-      if (!StringExt.isNullOrBlank(curDirName)) {
+      if (!curDirName.isBlank()) {
         if (_logger.isDebug) {
           _logger.debug('Setting current directory to: "$curDirName"');
         }
 
-        Directory.current = curDirName;
+        Path.fileSystem.currentDirectory = curDirName;
       }
 
-      if (StringExt.isNullOrBlank(command)) {
+      if (command.isBlank()) {
         if (_config.options.isListOnly) {
-          _logger.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.RECORD_SEP : StringExt.EMPTY));
+          _logger.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.RECORD_SEP : ''));
         }
         return true;
       }
 
-      var outFilePath = (getValue(mapCurr, key: _config.paramNameOut, canReplace: true) ?? StringExt.EMPTY).adjustPath();
+      var outFilePath = Path.adjust(getValue(mapCurr, key: _config.kw.forOut, canReplace: true));
       var hasOutFile = outFilePath.isNotEmpty;
 
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
@@ -433,52 +330,52 @@ class Convert {
       var outFilePathEx = (hasOutFile ? outFilePath : inpFilePathEx);
 
       if (hasInpFile) {
-        var dirName = path_api.dirname(inpFilePathEx);
-        var inpNameExt = path_api.basename(inpFilePathEx);
+        var dirName = Path.dirname(inpFilePathEx);
+        var inpNameExt = Path.basename(inpFilePathEx);
 
-        mapCurr[_config.paramNameInpDir] = dirName;
-        mapCurr[_config.paramNameInpSubDir] = (dirName.length <= subStart ? StringExt.EMPTY : dirName.substring(subStart));
-        mapCurr[_config.paramNameInpNameExt] = inpNameExt;
-        mapCurr[_config.paramNameInpExt] = path_api.extension(inpNameExt);
-        mapCurr[_config.paramNameInpName] = path_api.basenameWithoutExtension(inpNameExt);
-        mapCurr[_config.paramNameInpPath] = inpFilePathEx;
-        mapCurr[_config.paramNameInpSubPath] = inpFilePathEx.substring(subStart);
-        mapCurr[_config.paramNameThis] = startCmd;
+        mapCurr[_config.kw.forInpDir] = dirName;
+        mapCurr[_config.kw.forInpSubDir] = (dirName.length <= subStart ? '' : dirName.substring(subStart));
+        mapCurr[_config.kw.forInpNameExt] = inpNameExt;
+        mapCurr[_config.kw.forInpExt] = Path.extension(inpNameExt);
+        mapCurr[_config.kw.forInpName] = Path.basenameWithoutExtension(inpNameExt);
+        mapCurr[_config.kw.forInpPath] = inpFilePathEx;
+        mapCurr[_config.kw.forInpSubPath] = inpFilePathEx.substring(subStart);
+        mapCurr[_config.kw.forThis] = startCmd;
 
         mapCurr.forEach((k, v) {
-          if ((v != null) && !_exeParamNames.contains(k) && !_inpParamNames.contains(k)) {
+          if (!_exeParamNames.contains(k) && !_inpParamNames.contains(k)) {
             mapCurr[k] = expandInpNames(v, mapCurr);
           }
         });
 
         if (hasOutFile) {
           outFilePathEx = expandInpNames(outFilePathEx, mapCurr);
-          outFilePathEx = path_api.join(curDirName, outFilePathEx).getFullPath();
+          outFilePathEx = Path.getFullPath(Path.join(curDirName, outFilePathEx));
         }
 
-        outFilePathEx = outFilePathEx.adjustPath();
+        outFilePathEx = Path.adjust(outFilePathEx);
 
         if (_logger.isDebug) {
           _logger.debug('''
 
-Input dir:       "${mapCurr[_config.paramNameInpDir]}"
-Input sub-dir:   "${mapCurr[_config.paramNameInpSubDir]}"
-Input name:      "${mapCurr[_config.paramNameInpName]}"
-Input extension: "${mapCurr[_config.paramNameInpExt]}"
-Input name-ext:  "${mapCurr[_config.paramNameInpNameExt]}"
-Input path:      "${mapCurr[_config.paramNameInpPath]}"
-Input sub-path:  "${mapCurr[_config.paramNameInpSubPath]}"
+Input dir:       "${mapCurr[_config.kw.forInpDir]}"
+Input sub-dir:   "${mapCurr[_config.kw.forInpSubDir]}"
+Input name:      "${mapCurr[_config.kw.forInpName]}"
+Input extension: "${mapCurr[_config.kw.forInpExt]}"
+Input name-ext:  "${mapCurr[_config.kw.forInpNameExt]}"
+Input path:      "${mapCurr[_config.kw.forInpPath]}"
+Input sub-path:  "${mapCurr[_config.kw.forInpSubPath]}"
         ''');
         }
       }
 
-      outDirName = (isStdOut ? StringExt.EMPTY : path_api.dirname(outFilePathEx));
+      outDirName = (isStdOut ? '' : Path.dirname(outFilePathEx));
 
       if (_logger.isDebug) {
         _logger.debug('''
 
 Output dir:  "$outDirName"
-Output path: "${outFilePathEx ?? StringExt.EMPTY}"
+Output path: "$outFilePathEx"
         ''');
       }
 
@@ -501,14 +398,14 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execMapWithArgs(Map<String, String> map) {
+  ConfigResult execMapWithArgs(FlatMap map) {
     var plainArgs = _options.plainArgs;
 
-    _exeParamNames = _config.getExeParamNames();
-    _inpParamNames = _config.getInpParamNames();
+    _exeParamNames = _config.kw.getAllForExe();
+    _inpParamNames = _config.kw.getAllForInp();
 
-    if ((plainArgs?.length ?? 0) <= 0) {
-      plainArgs = [ null ];
+    if (plainArgs.isEmpty) {
+      plainArgs = [ '' ];
     }
 
     if (_options.isEach) {
@@ -531,22 +428,14 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void execPrint(List<String> args, {bool isSilent}) {
-    if (!(isSilent ?? false)) {
-      _logger.out(args?.join(StringExt.SPACE) ?? StringExt.EMPTY);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  File expandInpContent(File inpFile, String outFilePath, String tmpFilePath, Map<String, String> map) {
-    var text = StringExt.EMPTY;
+  File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, FlatMap map) {
+    var text = '';
 
     if (inpFile == null) {
       text = stdin.readAsStringSync();
     }
     else {
-      text = (inpFile.readAsStringSync() ?? StringExt.EMPTY);
+      text = inpFile.readAsStringSync();
     }
 
     for (; ;) {
@@ -568,7 +457,7 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
     }
 
     if (_logger.isDebug) {
-      _logger.debug('\n...content of expanded "${inpFile.path}":\n\n$text');
+      _logger.debug('\n...content of expanded "${inpFile?.path ?? ''}":\n\n$text');
     }
 
     if (isStdOut) {
@@ -576,48 +465,48 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       return null;
     }
     else {
-      var inpFilePath = inpFile.path;
+      var inpFilePath = inpFile?.path ?? '';
 
-      var inpDirName = path_api.dirname(inpFilePath);
-      var inpFileName = path_api.basename(inpFilePath);
+      var inpDirName = Path.dirname(inpFilePath);
+      var inpFileName = Path.basename(inpFilePath);
 
-      var outDirName = path_api.dirname(outFilePath);
-      var outFileName = path_api.basename(outFilePath);
+      var outDirName = Path.dirname(outFilePath);
+      var outFileName = Path.basename(outFilePath);
 
-      if (path_api.equals(inpFileName, outFileName)) {
+      if (Path.equals(inpFileName, outFileName)) {
         outFileName = inpFileName;
       }
 
-      if (path_api.equals(inpDirName, outDirName)) {
+      if (Path.equals(inpDirName, outDirName)) {
         outDirName = inpDirName;
       }
 
-      outFilePath = path_api.join(outDirName, outFileName);
+      outFilePath = Path.join(outDirName, outFileName);
 
-      var outDir = Directory(outDirName);
+      var outDir = Path.fileSystem.directory(outDirName);
 
       if (!outDir.existsSync()) {
         outDir.createSync(recursive: true);
       }
 
-      if (Directory(outFilePath).existsSync()) {
-        outFileName = (inpFilePath.startsWith(curDirName) ? inpFilePath.substring(curDirName.length) : path_api.basename(inpFilePath));
+      if (Path.fileSystem.directory(outFilePath).existsSync()) {
+        outFileName = (inpFilePath.startsWith(curDirName) ? inpFilePath.substring(curDirName.length) : Path.basename(inpFilePath));
 
-        var rootPrefixLen = path_api.rootPrefix(outFileName).length;
+        var rootPrefixLen = Path.rootPrefix(outFileName).length;
 
         if (rootPrefixLen > 0) {
           outFileName = outFileName.substring(rootPrefixLen);
         }
 
-        outFilePath = path_api.join(outFilePath, outFileName);
+        outFilePath = Path.join(outFilePath, outFileName);
       }
 
-      var tmpFile = File(tmpFilePath ?? outFilePath);
+      var tmpFile = Path.fileSystem.file(tmpFilePath);
 
       tmpFile.deleteIfExistsSync();
       tmpFile.writeAsStringSync(text);
 
-      if (path_api.equals(inpFilePath, outFilePath)) {
+      if (Path.equals(inpFilePath, outFilePath)) {
         tmpFile.renameSync(outFilePath);
       }
 
@@ -627,13 +516,13 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String expandInpNames(String value, Map<String, String> map) {
+  String expandInpNames(String value, FlatMap map) {
     String inpParamName;
     var result = value;
 
     for (var i = 0, n = _inpParamNames.length; i < n; i++) {
       inpParamName = _inpParamNames[i];
-      result = result.replaceAll(inpParamName, (map[inpParamName] ?? StringExt.EMPTY));
+      result = result.replaceAll(inpParamName, (map[inpParamName] ?? ''));
     }
 
     return result;
@@ -641,15 +530,15 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Map<String, String> expandMap(Map<String, String> map, String curDirName, String inpFilePath) {
-    var newMap = <String, String>{};
-    newMap.addAll(map);
+  FlatMap expandMap(FlatMap map, String curDirName, String inpFilePath) {
+    var newMap = FlatMap();
+    newMap.add(map);
 
-    var paramNameCurDir = _config.paramNameCurDir;
-    var paramNameInp = _config.paramNameInp;
+    var paramNameCurDir = _config.kw.forCurDir;
+    var paramNameInp = _config.kw.forInp;
 
     newMap.forEach((k, v) {
-      if (StringExt.isNullOrBlank(k)) {
+      if (k.isBlank()) {
         return;
       }
       if (k == paramNameCurDir) {
@@ -673,19 +562,19 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   String getActualInpFilePath(String inpFilePath, String outFilePath) {
-    if (isStdIn || (isExpandContentOnly && !path_api.equals(inpFilePath, outFilePath)) || !canExpandContent) {
+    if (isStdIn || (isExpandContentOnly && !Path.equals(inpFilePath, outFilePath)) || !canExpandContent) {
       return inpFilePath;
     }
     else if (!isStdOut) {
-      if (StringExt.isNullOrBlank(outFilePath)) {
-        return StringExt.EMPTY;
+      if (outFilePath.isBlank()) {
+        return '';
       }
       else {
-        var tmpFileName = (path_api.basenameWithoutExtension(outFilePath) +
-            FILE_TYPE_TMP + path_api.extension(inpFilePath));
-        var tmpDirName = path_api.dirname(outFilePath);
+        var tmpFileName = (Path.basenameWithoutExtension(outFilePath) +
+            FILE_TYPE_TMP + Path.extension(inpFilePath));
+        var tmpDirName = Path.dirname(outFilePath);
 
-        return path_api.join(tmpDirName, tmpFileName);
+        return Path.join(tmpDirName, tmpFileName);
       }
     }
     else {
@@ -695,9 +584,9 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String getCurDirName(Map<String, String> map, bool canReplace) {
-    var curDirName = (getValue(map, key: _config.paramNameCurDir, canReplace: canReplace) ?? StringExt.EMPTY);
-    curDirName = (StringExt.isNullOrBlank(curDirName) ? Directory.current.path : curDirName.getFullPath());
+  String getCurDirName(FlatMap map, bool canReplace) {
+    var curDirName = (getValue(map, key: _config.kw.forCurDir, canReplace: canReplace));
+    curDirName = (curDirName.isBlank() ? Path.fileSystem.currentDirectory.path : Path.getFullPath(curDirName));
 
     return curDirName;
   }
@@ -709,11 +598,11 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
   //////////////////////////////////////////////////////////////////////////////
 
   static List<String> getInpFilePaths(String filePath, String curDirName) {
-    if (StringExt.isNullOrBlank(filePath)) {
+    if (filePath.isBlank()) {
       return [ filePath ]; // ensure at least one pass in a loop
     }
 
-    var filePathTrim = filePath?.trim() ?? StringExt.EMPTY;
+    var filePathTrim = filePath.trim();
 
     var lst = <String>[];
 
@@ -721,8 +610,8 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
       lst.add(filePath);
     }
     else {
-      if (!path_api.isAbsolute(filePathTrim)) {
-        filePathTrim = path_api.join(curDirName, filePathTrim).getFullPath();
+      if (!Path.isAbsolute(filePathTrim)) {
+        filePathTrim = Path.getFullPath(Path.join(curDirName, filePathTrim));
       }
 
       lst = getDirList(filePathTrim);
@@ -737,39 +626,39 @@ Output path: "${outFilePathEx ?? StringExt.EMPTY}"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String getValue(Map<String, String> map, {String key, String value, bool canReplace}) {
+  String getValue(FlatMap map, {String? key, String? value, required bool canReplace}) {
     if ((value == null) && (key != null) && map.containsKey(key)) {
       value = map[key];
     }
 
-    var isKeyCurDir = (key == _config.paramNameCurDir);
+    var isKeyCurDir = (key == _config.kw.forCurDir);
 
-    if ((canReplace ?? false) && !StringExt.isNullOrBlank(value)) {
-      for (String oldValue; (oldValue != value); ) {
+    if (canReplace && (value != null) && !value.isBlank()) {
+      for (String? oldValue; (oldValue != value); ) {
         oldValue = value;
 
         map.forEach((k, v) {
-          if ((k != key) && !StringExt.isNullOrBlank(k)) {
-            value = value.replaceAll(k, v);
+          if ((k != key) && !k.isBlank()) {
+            value = value?.replaceAll(k, v);
           }
         });
       }
 
-      if ((key != null) && value.contains(key) && (map != null) && map.containsKey(key)) {
-        value = value.replaceAll(key, map[key]);
+      if ((key != null) && (value?.contains(key) ?? false) && map.containsKey(key)) {
+        value = value?.replaceAll(key, map[key] ?? '');
       }
 
       if (isKeyCurDir) {
-        value = value.getFullPath();
-        map[key] = value;
+        value = Path.getFullPath(value);
+        map[key ?? ''] = value ?? '';
       }
     }
 
-    if (!isKeyCurDir && (value?.contains(_config.paramNameCurDir) ?? false)) {
-      value = value.replaceAll(_config.paramNameCurDir, curDirName);
+    if (!isKeyCurDir && (value?.contains(_config.kw.forCurDir) ?? false)) {
+      value = value?.replaceAll(_config.kw.forCurDir, curDirName);
     }
 
-    return (value ?? StringExt.EMPTY);
+    return (value ?? '');
   }
 
   //////////////////////////////////////////////////////////////////////////////

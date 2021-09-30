@@ -1,6 +1,6 @@
 import 'dart:core';
-import 'dart:io';
-import 'package:path/path.dart' as path_api;
+
+import 'package:xnx/src/ext/env.dart';
 
 extension StringExt on String {
 
@@ -8,30 +8,12 @@ extension StringExt on String {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static Map<String, String> ENVIRONMENT;
-
-  static final bool IS_WINDOWS = Platform.isWindows;
-  static final String PATH_SEP = Platform.pathSeparator;
-
-  static const String EMPTY = '';
   static const int EOT_CODE = 4;
   static final String EOT = String.fromCharCode(StringExt.EOT_CODE);
   static const String FALSE_STR = 'false';
   static const String NEWLINE = '\n';
-  static const String PATH_SEP_NIX = r'/';
-  static const String PATH_SEP_WIN = r'\';
-  static const String QUOTE_1 = "'";
-  static const String QUOTE_2 = '"';
-  static const String SPACE = ' ';
-  static const String TAB = '\t';
   static const String TRUE = 'true';
   static const String FALSE = 'false';
-
-  static final String ESC = r'\'; // must be portable
-  static final String ESC_ESC = (ESC + ESC);
-  static final String ESC_PATH_SEP_WIN = (ESC + PATH_SEP_WIN);
-  static final String ESC_QUOTE_1 = (ESC + QUOTE_1);
-  static final String ESC_QUOTE_2 = (ESC + QUOTE_2);
 
   static const String STDIN_DISPLAY = '<stdin>';
   static const String STDIN_PATH = '-';
@@ -45,130 +27,23 @@ extension StringExt on String {
   static final RegExp RE_CMD_LINE = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
   // static final RegExp RE_JSON_COMMAS = RegExp(r'(\"[^\"]*\")|[,][\s\x01]*([\}\]])', multiLine: false);
   // static final RegExp RE_JSON_COMMENTS = RegExp(r'(\"[^\"]*\")|\/\/[^\x01]*\x01|\/\*((?!\*\/).)*\*\/', multiLine: false);
-  static final RegExp RE_ENV_VAR_NAME = RegExp(r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]', caseSensitive: false);
   static final RegExp RE_INTEGER = RegExp(r'^\d+$', caseSensitive: false);
   static final RegExp RE_PROTOCOL = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String adjustPath() => trim().replaceAll((IS_WINDOWS ? PATH_SEP_NIX : PATH_SEP_WIN), path_api.separator);
+  bool isBlank() =>
+    trim().isEmpty; // faster than regex
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String escapeEscapeChar() => replaceAll(ESC, ESC_ESC);
+  // static bool isNullOrBlank(String? input) =>
+  //   ((input == null) || RE_BLANK.hasMatch(input));
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String expandEnvironmentVariables({List<String> args, bool canEscape = false}) {
-    if (ENVIRONMENT == null) {
-      _initEnvironmentVariables();
-    }
-
-    var argCount = (args?.length ?? 0);
-
-    var result = replaceAll(r'\\', '\x01');
-    result = result.replaceAll(r'\$', '\x02');
-    result = result.replaceAll(r'$$', '\x03');
-    result = result.replaceAllMapped(RE_ENV_VAR_NAME, (match) {
-      var envVarName = (match.group(1) ?? match.group(2));
-
-      if (argCount >= 0) {
-        var argNo = int.tryParse(envVarName, radix: 10);
-
-        if ((argNo ?? -1) > 0) {
-          return args[argNo - 1];
-        }
-      }
-
-      if (IS_WINDOWS) {
-        envVarName = envVarName.toUpperCase();
-      }
-
-      if (ENVIRONMENT.containsKey(envVarName)) {
-        var envExp = ENVIRONMENT[envVarName];
-
-        return (canEscape ? envExp.escapeEscapeChar() : envExp);
-      }
-      else {
-        return EMPTY;
-      }
-    });
-    result = result.replaceAll('\x03', r'$');
-    result = result.replaceAll('\x02', r'\$');
-    result = result.replaceAll('\x01', r'\\');
-
-    return result;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String getEnvironmentVariable(String key, {String defValue}) {
-    if (ENVIRONMENT == null) {
-      _initEnvironmentVariables();
-    }
-
-    return StringExt.ENVIRONMENT[key] ?? defValue ?? EMPTY;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  String getFullPath() {
-    var fullPath = (this == STDIN_PATH ? this : path_api.canonicalize(adjustPath()));
-
-    return fullPath;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static void _initEnvironmentVariables() {
-    ENVIRONMENT = {};
-
-    if (IS_WINDOWS) {
-      Platform.environment.forEach((k, v) {
-        ENVIRONMENT[k.toUpperCase()] = v;
-      });
-    }
-    else {
-      ENVIRONMENT = Map.from(Platform.environment);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static bool isNullOrBlank(String input) {
-    return ((input == null) || RE_BLANK.hasMatch(input));
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static bool isNullOrEmpty(String input) {
-    return ((input == null) || input.isEmpty);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static bool parseBool(String input) {
-    return ((input != null) && (input.toLowerCase() == TRUE));
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  String replaceRange(int start, int end, String replacement) {
-    if ((start < 0) || (start >= end)) {
-      return this;
-    }
-
-    var len = length;
-
-    if (start >= len) {
-      return this;
-    }
-
-    var prefix = (start == 0 ? EMPTY : substring(0, start));
-    var suffix = (end >= len ? EMPTY : substring(end));
-
-    return (prefix + (replacement ?? StringExt.EMPTY) + suffix);
-  }
+  static bool parseBool(String? input) =>
+    ((input != null) && (input.toLowerCase() == TRUE));
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -180,17 +55,17 @@ extension StringExt on String {
   //   result = result.replaceAll('\\\"', '\x03');
   //   result = result.replaceAllMapped(RE_JSON_COMMENTS, (match) {
   //      var literal = match.group(1);
-  //      if (!isNullOrBlank(literal)) {
+  //      if ((literal != null) && !literal.isBlank()) {
   //        return literal;
   //      }
   //      return EMPTY;
   //   });
   //   result = result.replaceAllMapped(RE_JSON_COMMAS, (match) {
   //     var literal = match.group(1);
-  //     if (!isNullOrBlank(literal)) {
+  //     if ((literal != null) && !literal.isBlank()) {
   //       return literal;
   //     }
-  //     return match.group(2);
+  //     return match.group(2) ?? EMPTY;
   //   });
   //   result = result.replaceAll('\x03', '\\\"');
   //   result = result.replaceAll('\x02', '\\\\');
@@ -201,44 +76,24 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void setEnvironmentVariable<T>(String key, T value, {T defValue}) {
-    if (ENVIRONMENT == null) {
-      _initEnvironmentVariables();
-    }
-
-    if (value == null) {
-      if (defValue == null) {
-        StringExt.ENVIRONMENT.remove(key);
-      }
-      else {
-        StringExt.ENVIRONMENT[key] = defValue.toString();
-      }
-    }
-    else {
-      StringExt.ENVIRONMENT[key] = value.toString();
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   Map<int, List<String>> splitCommandLine() {
-    String cmd;
+    String? cmd;
     var args = <String>[];
 
-    var result = replaceAll(ESC_ESC, '\x01');
-    result = result.replaceAll(ESC_QUOTE_1, '\x02');
-    result = result.replaceAll(ESC_QUOTE_2, '\x03');
+    var result = replaceAll(Env.escape + Env.escape, '\x01');
+    result = result.replaceAll(Env.escape + "'", '\x02');
+    result = result.replaceAll(Env.escape + '"', '\x03');
     result = result.replaceAllMapped(RE_CMD_LINE, (match) {
-      var s = match.group(2);
+      var s = match.group(2) ?? '';
 
-      if (StringExt.isNullOrBlank(s)) {
-        s = match.group(4);
+      if (s.isBlank()) {
+        s = match.group(4) ?? '';
 
-        if (StringExt.isNullOrBlank(s)) {
-          s = match.group(6);
+        if (s.isBlank()) {
+          s = match.group(6) ?? '';
         }
 
-        if (StringExt.isNullOrBlank(s)) {
+        if (s.isBlank()) {
           return s;
         }
       }
@@ -260,39 +115,20 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String quote({bool isSingle = false}) {
-    var plainQuote = (isSingle ? QUOTE_1 : QUOTE_2);
-    var escapedQuote = ESC + plainQuote;
-
-    var result = plainQuote + replaceAll(plainQuote, escapedQuote) + plainQuote;
-
-    return result;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  int tokensOf(String that) {
-    var thisLen = length;
-    var thatLen = (that?.length ?? 0);
-
-    if ((thatLen <= 0) || (thatLen > thisLen)) {
-      return 0;
+  String quote() {
+    if (!contains(' ') && !contains('\t')) {
+      return this;
     }
-    else if (thatLen > 1) {
-      return (((thisLen - replaceAll(that, EMPTY).length) / thatLen) as int);
-    }
-    else {
-      var tokCount = 0;
-      var thatChar = that[0];
 
-      for (var i = 0; i < thisLen; i++) {
-        if (this[i] == thatChar) {
-          tokCount++;
-        }
-      }
+    var q = (contains('"') ? "'" : '"');
+    var result = this;
 
-      return tokCount;
+    if (Env.escape.isNotEmpty && contains(q)) {
+      result = replaceAll(Env.escape, Env.escapeEscape);
+      result = result.replaceAll(q, Env.escape + q);
     }
+
+    return q + result + q;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -304,15 +140,15 @@ extension StringExt on String {
       return this;
     }
 
-    var plainQuote = this[0];
+    var q = this[0];
+    var hasQ = (((q == "'") || (q == '"')) && (q == this[len - 1]));
+    var result = (hasQ ? substring(1, (len - 1)) : this);
 
-    if (((plainQuote != '"') && (plainQuote != "'")) || (plainQuote != this[len - 1])) {
-      return this;
+    if (result.contains(Env.escape)) {
+      result = result.replaceAll(Env.escape + "'", "'");
+      result = result.replaceAll(Env.escape + '"', '"');
+      result = result.replaceAll(Env.escapeEscape, Env.escape);
     }
-
-    var escapedQuote = r'\' + plainQuote;
-
-    var result = substring(1, (len - 1)).replaceAll(escapedQuote, plainQuote);
 
     return result;
   }

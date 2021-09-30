@@ -1,46 +1,64 @@
+import 'dart:io';
+
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/glob.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'helper.dart';
+import 'package:xnx/src/logger.dart';
 
 void main() {
-  Helper.forEachMemoryFileSystem((fileSystem) {
-    Env.init(fileSystem);
+  group('Logger', () {
+    test('level', () {
+      var logger = Logger();
 
-    group('Glob', () {
-      test('dirname', () {
-        final pathSep = Path.separator;
+      logger.level = Logger.LEVEL_SILENT - 1;
+      expect(logger.level, Logger.LEVEL_DEFAULT);
 
-        expect(GlobExt.dirname(''), '');
-        expect(GlobExt.dirname('*abc*.def'), '');
-        expect(GlobExt.dirname('sub-dir${pathSep}*abc*.def'), 'sub-dir');
-        expect(GlobExt.dirname('sub-dir**${pathSep}*abc*.def'), '');
-        expect(GlobExt.dirname('top-dir${pathSep}sub-dir**${pathSep}*abc*.def'),
-            'top-dir');
-      });
+      for (var level = Logger.LEVEL_SILENT; level < Logger.LEVEL_DEBUG; level++) {
+        logger.level = level;
+        expect(logger.level, level);
+      }
 
-      test('isRecursive', () {
-        final pathSep = Path.separator;
+      logger.level = Logger.LEVEL_DEBUG + 1;
+      expect(logger.level, Logger.LEVEL_DEBUG);
+    });
 
-        expect(GlobExt.isRecursive(null), false);
-        expect(GlobExt.isRecursive(''), false);
-        expect(GlobExt.isRecursive('abc*.def'), false);
-        expect(GlobExt.isRecursive('abc**x.def'), false);
-        expect(GlobExt.isRecursive('**${pathSep}abc*.def'), true);
-        expect(GlobExt.isRecursive('xy**${pathSep}abc*.def'), true);
-      });
+    test('levelAsString', () {
+      var logger = Logger();
 
-      test('isGlobPattern', () {
-        final pathSep = Path.separator;
+      logger.levelAsString = '';
+      expect(logger.level, Logger.LEVEL_DEFAULT);
 
-        expect(GlobExt.isGlobPattern(null), false);
-        expect(GlobExt.isGlobPattern(''), false);
-        expect(GlobExt.isGlobPattern('abc.def'), false);
-        expect(GlobExt.isGlobPattern('abc?.def'), true);
-        expect(GlobExt.isGlobPattern('abc*.def'), true);
-        expect(GlobExt.isGlobPattern('dir${pathSep}abc.{def,gh}'), true);
-      });
+      logger.levelAsString = '-1';
+      expect(logger.level, Logger.LEVEL_DEFAULT);
+
+      var level = -1;
+
+      for (var levelAsString in Logger.LEVELS) {
+        ++level;
+        logger.levelAsString = levelAsString;
+        expect(logger.level, level);
+      }
+    });
+
+    test('formatMessage', () {
+      var logger = Logger(Logger.LEVEL_SILENT);
+      var text = 'Abc';
+      expect(logger.formatMessage(text, Logger.LEVEL_SILENT - 1), null);
+      expect(logger.formatMessage(text, Logger.LEVEL_SILENT - 0), null);
+      expect(logger.formatMessage(text, Logger.LEVEL_SILENT + 1), null);
+
+      for (var level = Logger.LEVEL_ERROR; level <= Logger.LEVEL_DEBUG; level++) {
+        logger.level = level;
+        expect(logger.formatMessage(text, level - 1), ((level - 1 == Logger.LEVEL_SILENT) || (level - 1 > logger.level) ? null : text));
+        expect(logger.formatMessage(text, level - 0), ((level - 0 == Logger.LEVEL_SILENT) || (level - 0 > logger.level) ? null : text));
+        expect(logger.formatMessage(text, level + 1), ((level + 1 == Logger.LEVEL_SILENT) || (level + 1 > logger.level) ? null : text));
+      }
+    });
+
+    test('getSink', () {
+      var logger = Logger();
+
+      for (var level = Logger.LEVEL_SILENT; level <= Logger.LEVEL_DEBUG; level++) {
+        expect(logger.getSink(level), (level == Logger.LEVEL_OUT ? stdout : stderr));
+      }
     });
   });
 }

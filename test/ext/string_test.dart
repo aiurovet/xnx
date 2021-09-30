@@ -2,41 +2,39 @@ import 'package:test/test.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
-import 'helper.dart';
+import '../helper.dart';
 
 void main() {
   Helper.forEachMemoryFileSystem((fileSystem) {
-    Env.init(fileSystem);
-
     group('String', () {
-      test('escapeEscapeChar', () {
-        expect(''.escapeEscapeChar(), '');
-        expect(r'\'.escapeEscapeChar(), r'\\');
-        expect(r'a\bc\'.escapeEscapeChar(), r'a\\bc\\');
-      });
-
       test('getFullPath', () {
-        var curDir = Env.fileSystem.currentDirectory.path;
+        Helper.initFileSystem(fileSystem);
+
+        var curDir = Path.fileSystem.currentDirectory.path;
         var pathSep = Path.separator;
 
         expect(Path.equals(Path.getFullPath(''), curDir), true);
         expect(Path.equals(Path.getFullPath('.'), curDir), true);
         expect(Path.equals(Path.getFullPath('..'), Path.dirname(curDir)), true);
         expect(Path.equals(Path.getFullPath('..${pathSep}a${pathSep}bc'),
-            Path.join(Path.dirname(curDir), 'a', 'bc')), true);
+          Path.join(Path.dirname(curDir), 'a', 'bc')), true);
         expect(Path.equals(Path.getFullPath('${pathSep}a${pathSep}bc'),
-            '${pathSep}a${pathSep}bc'), true);
+          '${pathSep}a${pathSep}bc'), true);
       });
 
       test('isBlank', () {
+        Helper.initFileSystem(fileSystem);
+
         expect(''.isBlank(), true);
         expect(' '.isBlank(), true);
         expect(' \t'.isBlank(), true);
         expect(' \t\n'.isBlank(), true);
-        expect(' \t\n.'.isBlank(), false);
+        expect(' \t\nA'.isBlank(), false);
       });
 
       test('parseBool', () {
+        Helper.initFileSystem(fileSystem);
+
         expect(StringExt.parseBool(null), false);
         expect(StringExt.parseBool(''), false);
         expect(StringExt.parseBool('false'), false);
@@ -50,6 +48,8 @@ void main() {
       });
 
       test('splitCommandLine', () {
+        Helper.initFileSystem(fileSystem);
+
         expect(''.splitCommandLine(), {0: [''], 1: []});
         expect('a'.splitCommandLine(), {0: ['a'], 1: []});
         expect('"a b"'.splitCommandLine(), {0: ['a b'], 1: []});
@@ -58,36 +58,39 @@ void main() {
       });
 
       test('quote', () {
-        expect(''.quote(isSingle: false), '""');
-        expect(''.quote(isSingle: true), '\'\'');
-        expect('a b c '.quote(isSingle: false), '"a b c "');
-        expect('a b c '.quote(isSingle: true), '\'a b c \'');
-        expect('a"b"c'.quote(isSingle: false), '"a\\"b\\"c"');
-        expect('a"b"c'.quote(isSingle: true), '\'a"b"c\'');
-        expect('a\'b\'c'.quote(isSingle: false), '"a\'b\'c"');
-        expect('a\'b\'c'.quote(isSingle: true), '\'a\\\'b\\\'c\'');
-      });
+        Helper.initFileSystem(fileSystem);
 
-      test('tokensOf', () {
-        expect(''.tokensOf(''), 0);
-        expect(''.tokensOf('.'), 0);
-        expect('a.b.c'.tokensOf('abcdefg'), 0);
-        expect('a.b.c'.tokensOf(''), 0);
-        expect('a.b.c'.tokensOf('.'), 2);
+        Env.setEscape(r'^');
+        expect('a ^"\'b\'"c'.quote(), '\'a ^^"^\'b^\'"c\'');
+
+        Env.setEscape();
+        expect(''.quote(), '');
+        expect('"'.quote(), '"');
+        expect("'".quote(), "'");
+        expect(' '.quote(), '" "');
+        expect('a b c '.quote(), '"a b c "');
+        expect('a"b"c'.quote(), 'a"b"c');
+        expect('a "b"c'.quote(), '\'a "b"c\'');
+        expect('a \'b\'c'.quote(), '"a \'b\'c"');
+        expect('a \\"\'b\'"c'.quote(), '\'a \\\\"\\\'b\\\'"c\'');
       });
 
       test('unquote', () {
-        expect('""'.unquote(), '');
-        expect('\'\''.unquote(), '');
+        Helper.initFileSystem(fileSystem);
+
+        Env.setEscape(r'^');
+        expect('\'a ^^"^\'b^\'"c\''.unquote(), 'a ^"\'b\'"c');
+
+        Env.setEscape();
+        expect(''.unquote(), '');
+        expect('"'.unquote(), '"');
+        expect("'".unquote(), "'");
+        expect('" "'.unquote(), ' ');
         expect('"a b c "'.unquote(), 'a b c ');
-        expect('\'a b c \''.unquote(), 'a b c ');
-        expect('"a\\"b\\"c"'.unquote(), 'a"b"c');
-        expect('\'a"b"c\''.unquote(), 'a"b"c');
-        expect('"a\'b\'c"'.unquote(), 'a\'b\'c');
-        expect('\'a\\\'b\\\'c\''.unquote(), 'a\'b\'c');
-        expect('"abc'.unquote(), '"abc');
-        expect('\'abc'.unquote(), '\'abc');
-        expect('abca'.unquote(), 'abca');
+        expect('a"b"c'.unquote(), 'a"b"c');
+        expect('\'a "b"c\''.unquote(), 'a "b"c');
+        expect('"a \'b\'c"'.unquote(), 'a \'b\'c');
+        expect('\'a \\\\"\\\'b\\\'"c\''.unquote(), 'a \\"\'b\'"c');
       });
     });
   });

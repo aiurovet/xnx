@@ -2,14 +2,17 @@ import 'package:xnx/src/config_key_data.dart';
 import 'package:xnx/src/config_result.dart';
 import 'package:xnx/src/config_file_loader.dart';
 import 'package:xnx/src/expression.dart';
+import 'package:xnx/src/ext/env.dart';
+import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/flat_map.dart';
+import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/options.dart';
-import 'package:path/path.dart' as path_api;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef ConfigFlatMapProc = ConfigResult Function(Map<String, String> map);
+typedef ConfigFlatMapProc = ConfigResult Function(FlatMap map);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -23,88 +26,46 @@ class Config {
   static final RegExp RE_PARAM_NAME = RegExp(r'[\{][^\{\}]+[\}]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
-  // Pre-defined parameters names
-  //////////////////////////////////////////////////////////////////////////////
-
-  String paramNameCanExpandContent = '{{-can-expand-content-}}';
-  String paramNameCmd = '{{-cmd-}}';
-  String paramNameCurDir = '{{-cur-dir-}}';
-  String paramNameDetectPaths = '{{-detect-paths-}}';
-  String paramNameInp = '{{-inp-}}';
-  String paramNameInpDir = '{{-inp-dir-}}';
-  String paramNameInpExt = '{{-inp-ext-}}';
-  String paramNameInpName = '{{-inp-name-}}';
-  String paramNameInpNameExt = '{{-inp-name-ext-}}';
-  String paramNameInpPath = '{{-inp-path-}}';
-  String paramNameInpSubDir = '{{-inp-sub-dir-}}';
-  String paramNameInpSubPath = '{{-inp-sub-path-}}';
-  String paramNameImport = '{{-import-}}';
-  String paramNameOut = '{{-out-}}';
-  String paramNameRun = '{{-run-}}';
-  String paramNameRename = '{{-rename-keywords-}}';
-  String paramNameStop = '{{-stop-}}';
-  String paramNameThis = '{{-this-}}';
-
-  List<String> paramNamesForGlob;
-  List<String> paramNamesForPath;
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Dependencies
-  //////////////////////////////////////////////////////////////////////////////
-
-  String paramNameResolvedIf; // to be calculated from condName*
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Pre-defined commands
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Pre-defined conditional operators
-  //////////////////////////////////////////////////////////////////////////////
-
-  String condNameIf = '{{-if-}}';
-  String condNameThen = '{{-then-}}';
-  String condNameElse = '{{-else-}}';
-
-  //////////////////////////////////////////////////////////////////////////////
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  Map all;
-  RegExp detectPathsRE;
-  Expression expression;
-  Map<String, String> flatMap = {};
-  List<Map<String, String>> flatMaps = [];
+  Map all = {};
+  RegExp? detectPathsRE;
+  Expression? expression;
+  FlatMap flatMap = FlatMap();
+  Keywords kw = Keywords();
   int lastModifiedStamp = 0;
-  Options options;
-  String prevFlatMapStr;
-  Object topData;
+  Options options = Options();
+  String prevFlatMapStr = '';
+  Object? topData;
 
   final Map<Object, ConfigKeyData> _trail = {};
-  Logger _logger;
+  Logger _logger = Logger();
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Config(Logger log) {
-    _logger = log;
+  Config([Logger? log]) {
+    if (log != null) {
+      _logger = log;
+    }
+
     options = Options(_logger);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   bool canRun() {
-    if (flatMap?.isEmpty ?? true) {
+    if (flatMap.isEmpty) {
       return false;
     }
 
-    if (!StringExt.isNullOrBlank(flatMap[paramNameRun])) {
+    if (!(flatMap[kw.forRun]?.isBlank() ?? true)) {
       return true;
     }
 
-    if (!StringExt.isNullOrBlank(flatMap[paramNameCmd])) {
-      if (flatMap.containsKey(paramNameInp)) {
-        if (flatMap.containsKey(paramNameOut)) {
+    if (!(flatMap[kw.forCmd]?.isBlank() ?? true)) {
+      if (flatMap.containsKey(kw.forInp)) {
+        if (flatMap.containsKey(kw.forOut)) {
           return true;
         }
       }
@@ -120,11 +81,11 @@ class Config {
       _logger.debug('$map\n');
     }
     else {
-      _logger.outInfo(map.containsKey(paramNameRun) ?
-        'Run: ${expandStraight(map, map[paramNameRun] ?? '')}\n' :
-        'Inp: ${expandStraight(map, map[paramNameInp] ?? '')}\n' +
-        'Out: ${expandStraight(map, map[paramNameOut] ?? '')}\n' +
-        'Cmd: ${expandStraight(map, map[paramNameCmd] ?? '')}\n'
+      _logger.outInfo(map.containsKey(kw.forRun) ?
+        'Run: ${expandStraight(map, map[kw.forRun] ?? '')}\n' :
+        'Inp: ${expandStraight(map, map[kw.forInp] ?? '')}\n'
+        'Out: ${expandStraight(map, map[kw.forOut] ?? '')}\n'
+        'Cmd: ${expandStraight(map, map[kw.forCmd] ?? '')}\n'
       );
     }
 
@@ -132,7 +93,7 @@ class Config {
   }
   //////////////////////////////////////////////////////////////////////////////
 
-  bool exec({List<String> args, ConfigFlatMapProc execFlatMap}) {
+  bool exec({List<String>? args, ConfigFlatMapProc? execFlatMap}) {
     _logger.information('Loading configuration data');
 
     var tmpAll = loadSync();
@@ -142,24 +103,24 @@ class Config {
     }
     else {
       _logger.information('Nothing found');
-      return null;
+      return false;
     }
 
     _logger.information('Processing configuration data');
 
-    Map<String, Object> renames;
+    Map<String, Object>? renames;
 
-    if (all.containsKey(paramNameRename)) {
-      var map = all[paramNameRename];
+    if (all.containsKey(kw.forRename)) {
+      var map = all[kw.forRename];
 
       if (map is Map<String, Object>) {
         renames = {};
         renames.addAll(map);
-        all.remove(paramNameRename);
+        all.remove(kw.forRename);
       }
     }
 
-    String actionKey;
+    String? actionKey;
 
     if (all.length == 1) {
       actionKey = all.keys.first;
@@ -168,7 +129,7 @@ class Config {
     var actions = (actionKey == null ? all : all[actionKey]);
 
     _logger.information('Processing renames');
-    setActualParamNames(renames);
+    kw.rename(renames);
 
     if (actions != null) {
       _logger.information('Processing actions');
@@ -182,10 +143,10 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execData(String key, Object data, ConfigFlatMapProc execFlatMap) {
+  ConfigResult execData(String? key, Object? data, ConfigFlatMapProc? execFlatMap) {
     if (data == null) {
-      flatMap.remove(key);
-      return (key == paramNameStop ? ConfigResult.stop : ConfigResult.ok);
+      flatMap[key] = null;
+      return (key == kw.forStop ? ConfigResult.stop : ConfigResult.ok);
     }
 
     var trailKeyData = _trail[data];
@@ -195,7 +156,7 @@ class Config {
     }
 
     if (data is List) {
-      if (key == paramNameRun) { // direct execution in a loop
+      if (key == kw.forRun) { // direct execution in a loop
         return execDataListRun(key, data, execFlatMap);
       }
       else {
@@ -204,8 +165,8 @@ class Config {
     }
 
     if (data is Map<String, Object>) {
-      if (key == condNameIf) {
-        return execDataMapIf(key, data, execFlatMap);
+      if (key == kw.forIf) {
+        return execDataMapIf(data, execFlatMap);
       }
       else {
         return execDataMap(key, data, execFlatMap);
@@ -217,7 +178,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataList(String key, List data, ConfigFlatMapProc execFlatMap) {
+  ConfigResult execDataList(String? key, List data, ConfigFlatMapProc? execFlatMap) {
     for (var childData in data) {
       if (childData == null) {
         continue;
@@ -232,14 +193,18 @@ class Config {
     }
 
     setTrailFor(data, null, null);
-    flatMap.remove(key);
+    flatMap[key] = null;
 
     return ConfigResult.okEndOfList;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataListRun(String key, List data, ConfigFlatMapProc execFlatMap) {
+  ConfigResult execDataListRun(String? key, List data, ConfigFlatMapProc? execFlatMap) {
+    if (key == null) {
+      return ConfigResult.stop;
+    }
+
     var result = ConfigResult.ok;
 
     for (var childData in data) {
@@ -260,7 +225,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataMap(String key, Map<String, Object> data, ConfigFlatMapProc execFlatMap) {
+  ConfigResult execDataMap(String? key, Map<String, Object> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
     data.forEach((childKey, childData) {
@@ -274,14 +239,14 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataMapIf(String key, Map<String, Object> data, ConfigFlatMapProc execFlatMap) {
+  ConfigResult execDataMapIf(Map<String, Object> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
-    var resolvedData = expression.exec(data);
+    var resolvedData = expression?.exec(data);
 
     if (resolvedData != null) {
-      setTrailFor(data, condNameThen, resolvedData);
-      result = execData(condNameThen, resolvedData, execFlatMap);
+      setTrailFor(data, kw.forThen, resolvedData);
+      result = execData(kw.forThen, resolvedData, execFlatMap);
       setTrailFor(data, null, null);
     }
 
@@ -290,7 +255,16 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataPlain(String key, Object data, ConfigFlatMapProc execFlatMap) {
+  ConfigResult execDataPlain(String? key, Object data, ConfigFlatMapProc? execFlatMap) {
+    if (key == null) {
+      return ConfigResult.stop;
+    }
+
+    if (key == Env.escape) {
+      Env.escape = key;
+      return ConfigResult.ok;
+    }
+
     var result = ConfigResult.ok;
 
     if ((data is num) && ((data % 1) == 0)) {
@@ -301,35 +275,35 @@ class Config {
     var dataStr = data.toString().trim();
     var isEmpty = dataStr.isEmpty;
 
-    if (key == paramNameDetectPaths) {
+    if (key == kw.forDetectPaths) {
       detectPathsRE = (isEmpty ? null : RegExp(dataStr));
       return result;
     }
 
-    if (key == paramNameStop) {
+    if (key == kw.forStop) {
       if (!isEmpty) {
-        _logger.out(expandStraight(flatMap, dataStr));
+        _logger.out(flatMap.expand(dataStr));
       }
 
       return ConfigResult.stop;
     }
 
     if (!isEmpty) {
-      var isKeyForGlob = paramNamesForGlob.contains(key);
-      var isKeyForPath = paramNamesForPath.contains(key);
+      var isKeyForGlob = kw.allForGlob.contains(key);
+      var isKeyForPath = kw.allForPath.contains(key);
       var isDetectPaths = (detectPathsRE?.hasMatch(key) ?? false);
       var hasPath = (isKeyForGlob || isKeyForPath || isDetectPaths);
 
       if (hasPath) {
-        dataStr = dataStr.adjustPath();
+        dataStr = Path.adjust(dataStr);
       }
     }
 
-    var isCmd = (key == paramNameCmd);
-    var isRun = (key == paramNameRun);
+    var isCmd = (key == kw.forCmd);
+    var isRun = (key == kw.forRun);
 
     if (isCmd || isRun) {
-      flatMap.remove(isCmd ? paramNameRun : paramNameCmd);
+      flatMap[isCmd ? kw.forRun : kw.forCmd] = null;
     }
 
     flatMap[key] = dataStr;
@@ -343,16 +317,18 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataRun(ConfigFlatMapProc execFlatMap) {
+  ConfigResult execDataRun(ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
     if (isNewFlatMap()) {
       pushExeToBottom();
-      result = execFlatMap(flatMap);
 
-      flatMap.removeWhere((k, v) =>
-        (k == paramNameOut) || (k == paramNameRun)
-      );
+      if (execFlatMap != null) {
+        result = execFlatMap(flatMap);
+      }
+
+      flatMap[kw.forOut] = null;
+      flatMap[kw.forRun] = null;
     }
 
     return result;
@@ -361,11 +337,11 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String expandStraight(Map<String, String> map, String value) {
-    if ((value == null) || (map == null)) {
+    if (value.isEmpty || map.isEmpty) {
       return value;
     }
 
-    for (var oldValue = StringExt.EMPTY; oldValue != value;) {
+    for (var oldValue = ''; oldValue != value;) {
       oldValue = value;
 
       map.forEach((k, v) {
@@ -381,31 +357,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String getFullCurDirName(String curDirName) {
-    return path_api.join(options.startDirName, curDirName).getFullPath();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  List<String> getInpParamNames() {
-    return [
-      paramNameInp,
-      paramNameInpDir,
-      paramNameInpExt,
-      paramNameInpName,
-      paramNameInpNameExt,
-      paramNameInpPath,
-      paramNameInpSubDir,
-      paramNameInpSubPath,
-    ];
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  List<String> getExeParamNames() {
-    return [
-      paramNameCmd,
-      paramNameRun,
-    ];
+    return Path.getFullPath(Path.join(options.startDirName, curDirName));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -424,166 +376,53 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Map<String, Object> loadSync() {
-    var lf = ConfigFileLoader(log: _logger);
-    lf.loadJsonSync(options.configFileInfo, paramNameImport: paramNameImport, appPlainArgs: options.plainArgs);
+  Map<String, Object?> loadSync() {
+    var lf = ConfigFileLoader(logger: _logger);
+    lf.loadJsonSync(options.configFileInfo, paramNameImport: kw.forImport, appPlainArgs: options.plainArgs);
 
-    lastModifiedStamp = lf.lastModifiedStamp;
+    lastModifiedStamp = lf.lastModifiedStamp ?? 0;
 
     var data = lf.data;
 
-    if (data is Map) {
+    if (data == null) {
+      return {};
+    }
+
+    if (data is Map<String, Object?>) {
       return data;
     }
     else {
-      return <String, Object>{ '+': data };
+      return <String, Object?>{ '+': data};
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void print(String msg, {bool isSilent}) {
-    if (!(isSilent ?? false)) {
-      _logger.out(msg ?? StringExt.EMPTY);
+  void print(String? msg, {bool isSilent = false}) {
+    if (isSilent) {
+      _logger.out(msg ?? '');
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   void pushExeToBottom() {
-    var key = paramNameRun;
+    var key = kw.forRun;
     var exe = flatMap[key];
 
     if (exe == null) {
-      key = paramNameCmd;
+      key = kw.forCmd;
       exe = flatMap[key];
     }
 
     if (exe != null) {
-      flatMap.remove(key);
       flatMap[key] = exe;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void setActualParamNames(Map<String, Object> renames) {
-    renames?.forEach((k, v) {
-      if (k == paramNameCanExpandContent) {
-        paramNameCanExpandContent = v;
-      }
-      else if (k == paramNameCmd) {
-        paramNameCmd = v;
-      }
-      else if (k == paramNameCurDir) {
-        paramNameCurDir = v;
-      }
-      else if (k == paramNameDetectPaths) {
-        paramNameDetectPaths = v;
-      }
-      else if (k == paramNameInp) {
-        paramNameInp = v;
-      }
-      else if (k == paramNameInpDir) {
-        paramNameInpDir = v;
-      }
-      else if (k == paramNameInpExt) {
-        paramNameInpExt = v;
-      }
-      else if (k == paramNameInpName) {
-        paramNameInpName = v;
-      }
-      else if (k == paramNameInpNameExt) {
-        paramNameInpNameExt = v;
-      }
-      else if (k == paramNameInpPath) {
-        paramNameInpPath = v;
-      }
-      else if (k == paramNameInpSubDir) {
-        paramNameInpSubDir = v;
-      }
-      else if (k == paramNameInpSubPath) {
-        paramNameInpSubPath = v;
-      }
-      else if (k == paramNameImport) {
-        paramNameImport = v;
-      }
-      else if (k == paramNameOut) {
-        paramNameOut = v;
-      }
-      else if (k == paramNameRun) {
-        paramNameRun = v;
-      }
-      else if (k == paramNameRename) {
-        paramNameRename = v;
-      }
-      else if (k == paramNameStop) {
-        paramNameStop = v;
-      }
-      else if (k == paramNameThis) {
-        paramNameThis = v;
-      }
-
-      // Pre-defined conditions
-
-      else if (k == condNameIf) {
-        condNameIf = v;
-      }
-      else if (k == condNameThen) {
-        condNameThen = v;
-      }
-      else if (k == condNameElse) {
-        condNameElse = v;
-      }
-
-      // Pre-defined commands
-
-      // else if (k == cmdNameExpand) {
-      //   cmdNameExpand = v;
-      // }
-    });
-
-    // Resolve dependencies - file names and paths
-
-    paramNamesForGlob = [
-      paramNameInp,
-      paramNameInpDir,
-      paramNameInpName,
-      paramNameInpNameExt,
-      paramNameInpPath,
-      paramNameInpSubDir,
-      paramNameInpSubPath,
-    ];
-
-    paramNamesForPath = [
-      paramNameInp,
-      paramNameInpDir,
-      paramNameInpPath,
-      paramNameInpSubDir,
-      paramNameInpSubPath,
-      paramNameOut,
-      paramNameCurDir,
-    ];
-
-    // Resolve dependencies - If
-
-    if ((condNameIf == null) || ((condNameThen == null) && (condNameElse == null))) {
-      condNameThen = null;
-      condNameElse = null;
-      paramNameResolvedIf = null;
-    }
-    else {
-      paramNameResolvedIf = condNameIf +
-        (condNameThen ?? StringExt.EMPTY) +
-        (condNameElse ?? StringExt.EMPTY);
-    }
-
-    expression = Expression(this);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void setTrailFor(Object currData, String toKey, Object toData) {
+  void setTrailFor(Object currData, String? toKey, Object? toData) {
     if (toKey == null) {
       _trail.remove(currData);
     }
@@ -599,7 +438,7 @@ class Config {
       ..sort((a, b) => a.key.compareTo(b.key));
 
     var result = '{${list.map((x) =>
-      '${x.key.quote()}:${x.value?.quote() ?? StringExt.EMPTY}'
+      '${x.key.quote()}:${x.value.quote()}'
     ).join(',')}';
 
     if (_logger.isDebug) {

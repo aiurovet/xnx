@@ -1,12 +1,11 @@
-import 'dart:io';
-import 'package:path/path.dart' as path_api;
+import 'package:file/file.dart';
+import 'package:xnx/src/ext/path.dart';
 import 'file.dart';
 import 'file_system_entity.dart';
 import 'glob.dart';
 import 'string.dart';
 
 extension DirectoryExt on Directory {
-
   //////////////////////////////////////////////////////////////////////////////
 
   static final CUR_DIR_ABBR = '.';
@@ -15,9 +14,9 @@ extension DirectoryExt on Directory {
   //////////////////////////////////////////////////////////////////////////////
 
   static String appendPathSeparator(String dirName) {
-    var pathSep = StringExt.PATH_SEP;
+    var pathSep = Path.separator;
 
-    if (StringExt.isNullOrEmpty(dirName) || dirName.endsWith(pathSep)) {
+    if (dirName.isBlank() || dirName.endsWith(pathSep)) {
       return dirName;
     }
     else {
@@ -27,23 +26,30 @@ extension DirectoryExt on Directory {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<FileSystemEntity> entityListSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
-    var lst = <FileSystemEntity>[];
+  List<FileSystemEntity> entityListSync(String pattern,
+      {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
+    var entities = <FileSystemEntity>[];
 
     if (checkExists && !tryExistsSync()) {
-      return lst;
+      return entities;
     }
 
-    var filter = GlobExt.toGlob(pattern);
-    var entities = filter.listSync(root: path);
+    if (pattern.isBlank()) {
+      entities.addAll(listSync());
+    }
+    else {
+      var filter = GlobExt.toGlob(pattern);
+      entities = filter.listSync(root: path);
+    }
+
+    var lst = <FileSystemEntity>[];
 
     for (var entity in entities) {
       if (entity is Directory) {
         if (takeDirs) {
           lst.add(entity);
         }
-      }
-      else if (takeFiles) {
+      } else if (takeFiles) {
         lst.add(entity);
       }
     }
@@ -53,30 +59,34 @@ extension DirectoryExt on Directory {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<FileSystemEntity> entityListExSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
-    var dirName = GlobExt.getDirectoryName(pattern);
-    var subPattern = ((dirName == null) || (dirName.length <= 1) ? pattern : pattern.substring(dirName.length + 1));
-    var dir = Directory(dirName);
-    var lst = dir.entityListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
+  static List<FileSystemEntity> entityListExSync(String pattern,
+      {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
+    var isDir = Path.fileSystem.isDirectorySync(pattern);
+
+    var dirName = (isDir ? pattern : GlobExt.dirname(pattern));
+
+    var subPattern = (isDir
+      ? ''
+      : (dirName.length <= 1
+        ? pattern
+        : pattern.substring(dirName.length + 1)));
+
+    var dir = Path.fileSystem.directory(dirName);
+
+    var lst = dir.entityListSync(
+      subPattern,
+      checkExists: checkExists,
+      takeDirs: takeDirs,
+      takeFiles: takeFiles
+    );
 
     return lst;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int getFullLevel() {
-    return path.getFullPath().tokensOf(StringExt.PATH_SEP);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  int getLevel() {
-    return path.tokensOf(StringExt.PATH_SEP);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  List<String> pathListSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
+  List<String> pathListSync(String? pattern,
+      {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
     var lst = <String>[];
 
     if (checkExists && !tryExistsSync()) {
@@ -93,8 +103,7 @@ extension DirectoryExt on Directory {
         if (takeDirs) {
           lst.add(entityPath);
         }
-      }
-      else if (takeFiles) {
+      } else if (takeFiles) {
         lst.add(entityPath);
       }
     }
@@ -104,20 +113,26 @@ extension DirectoryExt on Directory {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<String> pathListExSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
+  static List<String> pathListExSync(String pattern,
+      {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
     var isGlobPattern = GlobExt.isGlobPattern(pattern);
-    var dir = (isGlobPattern ? null : Directory(pattern));
+    var dir = (isGlobPattern ? null : Path.fileSystem.directory(pattern));
     List<String> lst;
 
-    if (dir?.existsSync() ?? false) {
-      lst = dir.pathListSync(null, checkExists: false, takeDirs: takeDirs, takeFiles: takeFiles);
-    }
-    else if (isGlobPattern) {
-      var dirName = GlobExt.getDirectoryName(pattern);
-      var subPattern = ((dirName == null) || (dirName.length <= 1) ? pattern : pattern.substring(dirName.length + 1));
+    if ((dir != null) && dir.existsSync()) {
+      lst = dir.pathListSync(null,
+          checkExists: false, takeDirs: takeDirs, takeFiles: takeFiles);
+    } else if (isGlobPattern) {
+      var dirName = GlobExt.dirname(pattern);
+      var subPattern = (dirName.length <= 1
+          ? pattern
+          : pattern.substring(dirName.length + 1));
 
-      dir = (StringExt.isNullOrBlank(dirName) ? Directory.current : Directory(dirName));
-      lst = dir.pathListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
+      dir = (dirName.isBlank()
+          ? Path.fileSystem.currentDirectory
+          : Path.fileSystem.directory(dirName));
+      lst = dir.pathListSync(subPattern,
+          checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
     }
     else {
       lst = [pattern];
@@ -128,13 +143,17 @@ extension DirectoryExt on Directory {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void xferSync(String toDirName, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
-    var fromFullDirName = appendPathSeparator(path.getFullPath());
-    var toFullDirName = appendPathSeparator(toDirName.getFullPath());
+  void xferSync(String toDirName,
+      {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
+    var fromFullDirName = appendPathSeparator(Path.getFullPath(path));
+    var toFullDirName = appendPathSeparator(Path.getFullPath(toDirName));
 
     if (toFullDirName.contains(fromFullDirName)) {
-      var action = 'Can\'t ${isMove ? 'rename' : 'copy'} directory "$fromFullDirName"';
-      var target = (toFullDirName == fromFullDirName ? 'itself' : 'it\'s sub-directory $toFullDirName');
+      var action =
+          'Can\'t ${isMove ? 'rename' : 'copy'} directory "$fromFullDirName"';
+      var target = (toFullDirName == fromFullDirName
+          ? 'itself'
+          : 'it\'s sub-directory $toFullDirName');
 
       throw Exception('$action to $target');
     }
@@ -144,9 +163,9 @@ extension DirectoryExt on Directory {
     }
 
     if (isMove) {
-      Directory(path_api.dirname(toDirName)).createSync();
+      Path.fileSystem.directory(Path.dirname(toDirName)).createSync();
 
-      var toDir = Directory(toDirName);
+      var toDir = Path.fileSystem.directory(toDirName);
 
       toDir.deleteIfExistsSync(recursive: true);
 
@@ -155,7 +174,7 @@ extension DirectoryExt on Directory {
       return;
     }
 
-    var toDir = Directory(toDirName);
+    var toDir = Path.fileSystem.directory(toDirName);
     toDir.createSync(recursive: true);
 
     var entities = listSync(recursive: false);
@@ -180,11 +199,13 @@ extension DirectoryExt on Directory {
       if (entity is Directory) {
         var toSubDirName = toDirName + entity.path.substring(dirNameLen);
 
-        entity.xferSync(toSubDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+        entity.xferSync(toSubDirName,
+            isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
       else if (entity is File) {
-        var toPath = path_api.join(toDirName, path_api.basename(entity.path));
-        entity.xferSync(toPath, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+        var toPath = Path.join(toDirName, Path.basename(entity.path));
+        entity.xferSync(toPath,
+            isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
     }
   }
