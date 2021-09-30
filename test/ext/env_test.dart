@@ -59,13 +59,13 @@ void main() {
       test('getHome', () {
         Helper.initFileSystem(fileSystem);
 
-        expect(Env.getHome(), Platform.environment[Env.isWindows ? 'USERPROFLE' : 'HOME']);
+        expect(Env.getHome(), Platform.environment[Env.isWindows ? 'USERPROFILE' : 'HOME']);
       });
 
       test('homeKey', () {
         Helper.initFileSystem(fileSystem);
 
-        expect(Env.homeKey, (Env.isWindows ? 'USERPROFLE' : 'HOME'));
+        expect(Env.homeKey, (Env.isWindows ? 'USERPROFILE' : 'HOME'));
       });
 
       test('set', () {
