@@ -13,18 +13,28 @@ class Keywords {
   String forInpSubDir = '{{-inp-sub-dir-}}';
   String forInpSubPath = '{{-inp-sub-path-}}';
   String forImport = '{{-import-}}';
+  String forOnce = '{{-once-}}';
   String forOut = '{{-out-}}';
   String forRun = '{{-run-}}';
   String forRename = '{{-rename-keywords-}}';
   String forStop = '{{-stop-}}';
   String forThis = '{{-this-}}';
+  String forTransform = '{{-xform-}}';
 
   String forFnAdd = '=Add';
+  String forFnAddDays = '=AddDays';
+  String forFnAddMonths = '=AddMonths';
+  String forFnAddYears = '=AddYears';
+  String forFnDate = '=Date';
   String forFnDiv = '=Div';
+  String forFnEndOfMonth = '=EndOfMonth';
+  String forFnFileSize = '=FileSize';
   String forFnIndex = '=Index';
-  String forFnIndexRegExp = '=IndexRegExp';
-  String forFnLastIndex = '=Index';
-  String forFnLastIndexRegExp = '=LastIndexRegExp';
+  String forFnMatch = '=Match';
+  String forFnLastIndex = '=LastIndex';
+  String forFnLastMatch = '=LastMatch';
+  String forFnLastModified = '=LastModified';
+  String forFnLocal = '=Local';
   String forFnLower = '=Lower';
   String forFnMax = '=Max';
   String forFnMin = '=Min';
@@ -32,13 +42,15 @@ class Keywords {
   String forFnMul = '=Mul';
   String forFnNow = '=Now';
   String forFnReplace = '=Replace';
-  String forFnReplaceRegExp = '=ReplaceRegExp';
+  String forFnReplaceMatch = '=ReplaceMatch';
   String forFnRun = '=Run';
+  String forFnStartOfMonth = '=StartOfMonth';
   String forFnSub = '=Sub';
   String forFnSubstr = '=Substr';
+  String forFnTime = '=Time';
   String forFnToday = '=Today';
-  String forFnTimeNow = '=TimeNow';
   String forFnUpper = '=Upper';
+  String forFnUtc = '=Utc';
 
   final allForGlob = <String>[];
   final allForPath = <String>[];
@@ -128,6 +140,9 @@ class Keywords {
       else if (k == forImport) {
         forImport = s;
       }
+      else if (k == forOnce) {
+        forOnce = s;
+      }
       else if (k == forOut) {
         forOut = s;
       }
@@ -142,6 +157,9 @@ class Keywords {
       }
       else if (k == forThis) {
         forThis = s;
+      }
+      else if (k == forTransform) {
+        forTransform = s;
       }
 
       // Pre-defined conditions

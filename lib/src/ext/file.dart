@@ -4,12 +4,11 @@ import 'package:xnx/src/ext/path.dart';
 import 'file_system_entity.dart';
 import 'string.dart';
 
-extension FileExt on File {
-  //////////////////////////////////////////////////////////////////////////////
-  // Constants
-  //////////////////////////////////////////////////////////////////////////////
+//
+// Using milliseconds, as microseconds don't work on Windows
+//
 
-  static final int MCSEC_PER_SEC = 1000000;
+extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +19,7 @@ extension FileExt on File {
       return null;
     }
     else {
-      return info.modified.microsecondsSinceEpoch;
+      return info.modified.millisecondsSinceEpoch;
     }
   }
 
@@ -28,7 +27,7 @@ extension FileExt on File {
 
   int compareLastModifiedToSync({File? toFile, DateTime? toLastModified}) {
     var toLastModStamp = (toFile?.lastModifiedStampSync() ??
-        toLastModified?.microsecondsSinceEpoch);
+        toLastModified?.millisecondsSinceEpoch);
 
     var result =
         compareLastModifiedStampToSync(toLastModifiedStamp: toLastModStamp);
@@ -49,6 +48,43 @@ extension FileExt on File {
         : (lastModStamp < toLastModStamp ? -1 : 1));
 
     return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String formatSize(int fileSize, String format, {int decimals = 2, String? units}) {
+    if (fileSize <= 0) {
+      return fileSize.toString();
+    }
+
+    var divisor = 1;
+
+    switch (format) {
+      case 'K':
+        divisor = 1024;
+        break;
+      case 'M':
+        divisor = 1024 * 1024;
+        break;
+      case 'G':
+        divisor = 1024 * 1024 * 1024;
+        break;
+      case 'T':
+        divisor = 1024 * 1024 * 1024 * 1024;
+        break;
+      case 'P':
+        divisor = 1024 * 1024 * 1024 * 1024 * 1024;
+        break;
+      case 'E':
+        divisor = 1024 * 1024 * 1024 * 1024 * 1024 * 1024;
+        break;
+      default:
+        break;
+    }
+
+    var fileSizeStr = (fileSize / divisor).toStringAsFixed(decimals);
+
+    return (units == null ? fileSizeStr : fileSizeStr + units);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -90,20 +126,20 @@ extension FileExt on File {
 
     var newStat = statSync();
 
-    var stamp1 = modifiedEx.microsecondsSinceEpoch;
-    var stamp2 = newStat.modified.microsecondsSinceEpoch;
+    var stamp1 = modifiedEx.millisecondsSinceEpoch;
+    var stamp2 = newStat.modified.millisecondsSinceEpoch;
 
     if (stamp2 < stamp1) {
-      stamp1 = ((stamp2 + MCSEC_PER_SEC) - (stamp2 % MCSEC_PER_SEC));
-      modifiedEx = DateTime.fromMicrosecondsSinceEpoch(stamp1);
+      stamp1 = ((stamp2 + Duration.millisecondsPerSecond) - (stamp2 % Duration.millisecondsPerSecond));
+      modifiedEx = DateTime.fromMillisecondsSinceEpoch(stamp1);
 
       setLastModifiedSync(modifiedEx);
       newStat = statSync();
-      stamp2 = newStat.modified.microsecondsSinceEpoch;
+      stamp2 = newStat.modified.millisecondsSinceEpoch;
 
       if (stamp2 < stamp1) {
-        stamp1 += MCSEC_PER_SEC;
-        modifiedEx = DateTime.fromMicrosecondsSinceEpoch(stamp1);
+        stamp1 += Duration.millisecondsPerSecond;
+        modifiedEx = DateTime.fromMillisecondsSinceEpoch(stamp1);
         setLastModifiedSync(modifiedEx);
       }
 

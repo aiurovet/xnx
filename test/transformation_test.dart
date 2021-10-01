@@ -1,18 +1,23 @@
 import 'package:test/test.dart';
 import 'package:xnx/src/ext/env.dart';
+import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/transformation.dart';
 
+import 'helper.dart';
+
 void main() {
   group('Transformation', () {
-    test('exec', () {
+    test('execNonFile', () {
       Env.init(null);
 
       var flatMap = FlatMap();
 
-      var now = DateTime.now().toIso8601String();
-      var today = now.substring(0, 10);
+      var now = DateTime.now();
+      var nowStr = now.toIso8601String();
+      var todayStr = nowStr.substring(0, 10);
 
       Transformation(flatMap: flatMap, keywords: Keywords())
         .exec(<String, Object?>{
@@ -20,29 +25,97 @@ void main() {
           '{4*3}': [r'=mul', 4, 3],
           '{math}': [r'=div', [r'=mul', 9, 3], [r'=mod', 5, 3]],
           '{today}': [r'=Today'],
+          '{startOfMonth}': [r'=StartOfMonth', '2021-03-15'],
+          '{endOfFeb}': [r'=EndOfMonth', '2021-02-15'],
+          '{endOfMonth}': [r'=EndOfMonth', '2021-03-15'],
           '{year}': [r'=Today', 'yyyy'],
+          '{date}': [r'=Date', '2021-03-15 14:27:35.080' ],
+          '{time}': [r'=Time', '2021-03-15 14:27:35.080' ],
+          '{local}': [r'=Local', '2021-03-15 14:27:35.080' ],
+          '{utc}': [r'=Utc', '2021-03-15 14:27:35.080' ],
+          '{date+2d}': [r'=AddDays', '2021-03-15', 2 ],
+          '{date-2d}': [r'=AddDays', '2021-03-15', -2 ],
+          '{date+2m}': [r'=AddMonths', '2021-03-15', 2 ],
+          '{date-2m}': [r'=AddMonths', '2021-03-15', -2 ],
+          '{date+2y}': [r'=AddYears', '2021-03-15', 2 ],
+          '{date-2y}': [r'=AddYears', '2021-03-15', -2 ],
+          '{today+2y}': [r'=AddYears', null, 2 ],
           '{Env}': 'DeV',
           '{env}': [r'=lower', '{Env}'],
           '{ENV}': [r'=Upper', '{Env}'],
           '{ENV,1,1}': [r'=Upper', ['=substr', '{env}', 1, 1]],
           '{env,3,1}': [r'=Lower', ['=substr', '{ENV}', 3, 1]],
-          '{weird}': [r'=replaceRegExp', '{Env}elop', '[de]', 'ab', '/gi'],
-          '{groups}': [r'=replaceRegExp', 'abcdefghi', '(bc(d))|(g(h))', r'$2\$2\\${4}', '/gi'],
+          '{index5}': [r'=Index', 'Abcbcdefbqpr', 'b', 5],
+          '{lastIndex}': [r'=LastIndex', 'Abcbcdefbqprstbz', 'b'],
+          '{lastIndex14}': [r'=LastIndex', 'Abcbcdefbqprstbz', 'b', 14],
+          '{match}': [r'=Match', 'Abcbcdefbqprcde', '[cd]'],
+          '{lastMatch}': [r'=LastMatch', 'Abcbcdefbqprcde', '[cd]'],
+          '{weird}': [r'=replaceMatch', '{Env}elop', '[de]', 'ab', '/gi'],
+          '{groups}': [r'=replaceMatch', 'abcdefghi', '(bc(d))|(g(h))', r'$2\$2\\${4}', '/gi'],
           '{echo}': [r'=run', 'echo "1 2"'],
         });
 
       expect(flatMap['{1+2}'], '3');
       expect(flatMap['{4*3}'], '12');
       expect(flatMap['{math}'], '13.5');
-      expect(flatMap['{today}'], today);
-      expect(flatMap['{year}'], today.substring(0, 4));
+      expect(flatMap['{today}'], todayStr);
+      expect(flatMap['{year}'], todayStr.substring(0, 4));
+      expect(flatMap['{startOfMonth}'], '2021-03-01');
+      expect(flatMap['{endOfMonth}'], '2021-03-31');
+      expect(flatMap['{endOfFeb}'], '2021-02-28');
+      expect(flatMap['{date}'], '2021-03-15');
+      expect(flatMap['{time}'], '14:27:35.080');
+      expect(flatMap['{local}'], (DateTime.parse('2021-03-15T14:27:35.080').toUtc()).toLocal().toIso8601String());
+      expect(flatMap['{utc}'], DateTime.parse('2021-03-15T14:27:35.080').toUtc().toIso8601String());
+      expect(flatMap['{date+2d}'], '2021-03-17');
+      expect(flatMap['{date-2d}'], '2021-03-13');
+      expect(flatMap['{date+2m}'], '2021-05-15');
+      expect(flatMap['{date-2m}'], '2021-01-15');
+      expect(flatMap['{date+2y}'], '2023-03-15');
+      expect(flatMap['{date-2y}'], '2019-03-15');
       expect(flatMap['{env}'], 'dev');
       expect(flatMap['{ENV}'], 'DEV');
       expect(flatMap['{ENV,1,1}'], 'D');
       expect(flatMap['{env,3,1}'], 'v');
+      expect(flatMap['{index5}'], '9');
+      expect(flatMap['{lastIndex}'], '15');
+      expect(flatMap['{lastIndex14}'], '9');
+      expect(flatMap['{match}'], '3');
+      expect(flatMap['{lastMatch}'], '14');
       expect(flatMap['{weird}'], 'ababVablop');
       expect(flatMap['{groups}'], r'ad$2\ef$2\hi');
-      expect(flatMap['{echo}']?.replaceAll('\r\n', '\n'), '1 2\n');
+      expect(flatMap['{echo}'], '1 2');
+    });
+    test('execFile', () {
+      Helper.forEachMemoryFileSystem((fileSystem) {
+        Helper.initFileSystem(fileSystem);
+
+        var minDateTimeStr = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch).toIso8601String();
+        FileOper.createDirSync(['dir1', Path.join('dir2', 'dir3')], isSilent: true);
+
+        var file = Path.fileSystem.file(Path.join('dir1', 'file1.txt'));
+        file.createSync();
+        file.writeAsStringSync('Test' * (1024 + 256));
+
+        var flatMap = FlatMap();
+
+        Transformation(flatMap: flatMap, keywords: Keywords())
+          .exec(<String, Object?>{
+            '{dirSize}': [r'=fileSize', 'dir1'],
+            '{fileSize}': [r'=fileSize', file.path],
+            '{fileSizeK}': [r'=fileSize', file.path, 'K'],
+            '{lastModifiedDir}': [r'=lastModified', 'dir1'],
+            '{lastModifiedFile}': [r'=lastModified', file.path],
+          });
+
+        expect(flatMap['{dirSize}'], '-1');
+        expect(flatMap['{fileSize}'], '5120.00');
+        expect(flatMap['{fileSizeK}'], '5.00');
+        expect((flatMap['{lastModifiedDir}'] ?? '').compareTo(minDateTimeStr) >= 0, true);
+        expect((flatMap['{lastModifiedFile}'] ?? '').compareTo(minDateTimeStr) >= 0, true);
+
+        FileOper.deleteSync(['dir1', 'dir2'], isSilent: true);
+      });
     });
   });
 }

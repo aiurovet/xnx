@@ -37,7 +37,7 @@ void main() {
       expect(c.exec(text: '--print "1 2"'), '1 2');
 
       if (!Env.isWindows) {
-        expect(c.exec(text: 'echo "1 2"'), '1 2\n');
+        expect(c.exec(text: 'echo "1 2"'), '1 2');
       }
     });
   });

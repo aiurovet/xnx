@@ -71,7 +71,7 @@ void main() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Map<String, Object> setIf(String? condition) {
+Map<String, Object?> setIf(String? condition) {
   var dataIf = mapIf[keyIf];
 
   (dataIf as Map<String, Object?>)[keyCondition] = condition;

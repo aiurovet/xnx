@@ -241,7 +241,7 @@ class Convert {
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
-    Command(text: command)
+    Command(text: command, logger: _logger)
       .exec(canExec: !_options.isListOnly && !isExpandContentOnly);
 
     tmpFile?.deleteIfExistsSync();

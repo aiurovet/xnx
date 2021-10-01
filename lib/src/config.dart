@@ -9,6 +9,7 @@ import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/options.dart';
+import 'package:xnx/src/transformation.dart';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +40,9 @@ class Config {
   String prevFlatMapStr = '';
   Object? topData;
 
+  final List<Object> _once = [];
   final Map<Object, ConfigKeyData> _trail = {};
+  late final Transformation _transformation;
   Logger _logger = Logger();
 
   //////////////////////////////////////////////////////////////////////////////
@@ -50,6 +53,7 @@ class Config {
     }
 
     options = Options(_logger);
+    _transformation = Transformation(flatMap: flatMap, keywords: kw);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -108,13 +112,12 @@ class Config {
 
     _logger.information('Processing configuration data');
 
-    Map<String, Object>? renames;
+    var renames = <String, Object?>{};
 
     if (all.containsKey(kw.forRename)) {
       var map = all[kw.forRename];
 
-      if (map is Map<String, Object>) {
-        renames = {};
+      if (map is Map<String, Object?>) {
         renames.addAll(map);
         all.remove(kw.forRename);
       }
@@ -149,6 +152,10 @@ class Config {
       return (key == kw.forStop ? ConfigResult.stop : ConfigResult.ok);
     }
 
+    if (_once.contains(data)) {
+      return ConfigResult.ok;
+    }
+
     var trailKeyData = _trail[data];
 
     if (trailKeyData != null) {
@@ -164,7 +171,7 @@ class Config {
       }
     }
 
-    if (data is Map<String, Object>) {
+    if (data is Map<String, Object?>) {
       if (key == kw.forIf) {
         return execDataMapIf(data, execFlatMap);
       }
@@ -225,8 +232,16 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataMap(String? key, Map<String, Object> data, ConfigFlatMapProc? execFlatMap) {
+  ConfigResult execDataMap(String? key, Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
+
+    if (key == kw.forOnce) {
+      _once.add(data);
+    }
+    else if (key == kw.forTransform) {
+      _transformation.exec(data);
+      return result;
+    }
 
     data.forEach((childKey, childData) {
       if (result == ConfigResult.ok) {
@@ -239,7 +254,7 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataMapIf(Map<String, Object> data, ConfigFlatMapProc? execFlatMap) {
+  ConfigResult execDataMapIf(Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
     var resolvedData = expression?.exec(data);

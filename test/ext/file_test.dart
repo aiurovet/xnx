@@ -61,7 +61,7 @@ void main() {
         Helper.initFileSystem(fileSystem);
 
         var now = DateTime.now();
-        var nowMS = now.microsecondsSinceEpoch;
+        var nowMS = now.millisecondsSinceEpoch;
 
         var file = Path.fileSystem.file('a.txt');
         file.writeAsStringSync('Test1');
@@ -100,12 +100,12 @@ void main() {
             isMove: false, isNewerOnly: false, isSilent: true);
         expect(dst.lengthSync(), src.lengthSync());
 
-        var lastMod = dst.lastModifiedSync().microsecondsSinceEpoch;
-        expect(lastMod, src.lastModifiedSync().microsecondsSinceEpoch);
+        var lastMod = dst.lastModifiedSync().millisecondsSinceEpoch;
+        expect(lastMod, src.lastModifiedSync().millisecondsSinceEpoch);
 
         src.xferSync(dst.path, isMove: true, isNewerOnly: true, isSilent: true);
         sleep(Duration(milliseconds: delay));
-        expect(dst.lastModifiedSync().microsecondsSinceEpoch, lastMod);
+        expect(dst.lastModifiedSync().millisecondsSinceEpoch, lastMod);
         expect(src.existsSync(), false);
 
         dst.deleteSync();

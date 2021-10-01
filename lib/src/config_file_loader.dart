@@ -162,7 +162,7 @@ class ConfigFileLoader {
               }
 
               var key = getImportFileKey(keyPrefix, impPath: impPathEx);
-              var map = <String, Object>{};
+              var map = <String, Object?>{};
               map[key] = json5Decode(text);
 
               jsonText = jsonEncode(map)
@@ -288,7 +288,7 @@ class ConfigFileLoader {
       _text = jsonEncode(_data);
     }
     else {
-      var data = <Object>[];
+      var data = <Object?>[];
 
       var jsonPath = JsonPath(fileInfo.jsonPath);
       var decoded = json5Decode(_text);

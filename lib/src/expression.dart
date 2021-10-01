@@ -16,7 +16,7 @@ class Expression {
     _operation = Operation(_flatMap);
   }
 
-  Object? exec(Map<String, Object> mapIf) {
+  Object? exec(Map<String, Object?> mapIf) {
     var condition = mapIf.entries.firstWhereOrNull((x) =>
       (x.key != _kw.forThen) &&
       (x.key != _kw.forElse)

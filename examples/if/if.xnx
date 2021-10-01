@@ -5,7 +5,11 @@
 {
   //"{{-import-}}": "../shell.xnx",
 
-  "{HostName}": "$(uname)",
+  "{{-once-}}": {
+    "{{-xform-}}": {
+      "{HOST}": ["=run", "uname -n"],
+    },
+  },
 
   "if-regex": {
     "{{-if-}}": { "": '"${HOME}" !~/i \/(\\.|HOME)', "{{-then-}}": {
@@ -34,7 +38,7 @@
   } } } },
 
   "{{-run-}}": [
-    './myscript "OS: {OSTYPE}\nUser: {USER}\nHome: {HOME}"',
-    '--print OS:   {OSTYPE}\nUser: {USER}\nHome: {HOME}'
+    './myscript "OS: {OSTYPE}, User: {USER}, Home: {HOME}, Host: {HOST}"',
+    '--print OS:   {OSTYPE}\nUser: {USER}\nHome: {HOME}\nHost: {HOST}'
   ],
 }

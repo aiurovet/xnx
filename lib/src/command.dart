@@ -8,6 +8,7 @@ import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/xnx.dart';
 
 class Command {
+
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
@@ -180,7 +181,7 @@ class Command {
       throw Exception(errMsg.isEmpty ? '\nExecution failed' : errMsg);
     }
 
-    return outLines;
+    return outLines.trim();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -246,7 +247,7 @@ class Command {
     var out = args.join(' ');
 
     if (isToVar) {
-      return out;
+      return out.trim();
     }
     else if (!isSilent) {
       logger?.out(out);
