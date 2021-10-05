@@ -1,5 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:file/file.dart';
 import 'package:archive/archive_io.dart';
+import 'package:xnx/src/command.dart';
+import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/ext/file.dart';
@@ -29,8 +32,8 @@ class PackOper {
     PackType.Tar: [ '.tar', ],
     PackType.TarBz2: [ '.tar.bz2', '.tbz', ],
     PackType.TarGz: [ '.tar.gz', '.tgz', ],
-    PackType.TarZlib: [ '.tar.zl', '.tzl' ],
-    PackType.Zlib: [ '.zl', ],
+    PackType.TarZlib: [ '.tar.z', '.tz' ],
+    PackType.Zlib: [ '.Z', ],
     PackType.Zip: [ '.zip', ],
   };
 
@@ -61,7 +64,7 @@ class PackOper {
     final isTar = isPackTypeTar(packType);
     final isTarPacked = (isTar && (packType != PackType.Tar));
 
-    var toPathEx = (isTarPacked ?_getUnpackPath(packType, toPath, null) :  toPath);
+    var toPathEx = (isTarPacked ? getUnpackPath(packType, toPath, null) :  toPath);
     var toFile = Path.fileSystem.file(toPathEx);
     print('Creating archive "$toPathEx"');
 
@@ -167,7 +170,7 @@ class PackOper {
     }
 
     final encoder = _encodeFileSync(packType, fromFile);
-    final toPathEx = _getPackPath(packType, fromPath, toPath);
+    final toPathEx = getPackPath(packType, fromPath, toPath);
     final toFile = FileExt.truncateIfExistsSync(toPathEx);
 
     if ((encoder != null) && (toFile != null)) {
@@ -183,8 +186,37 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static PackType? getPackType(PackType packType, String path) {
-    if (path.isBlank()) {
+  static String getPackPath(PackType packType, String fromPath, String? toPath) {
+    if (toPath != null) {
+      if ((packType == PackType.Zip) || (!toPath.isBlank() && (toPath != fromPath))) {
+        return toPath;
+      }
+    }
+
+    PackType packTypeEx;
+
+    switch (packType) {
+      case PackType.TarBz2:
+        packTypeEx = PackType.Bz2;
+        break;
+      case PackType.TarGz:
+        packTypeEx = PackType.Gz;
+        break;
+      case PackType.TarZlib:
+        packTypeEx = PackType.Zlib;
+        break;
+      default:
+        packTypeEx = packType;
+        break;
+    }
+
+    return fromPath + _getFirstDefaultExtension(packTypeEx);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static PackType? getPackType(PackType? packType, String? path) {
+    if ((packType != null) || (path == null) || path.isBlank()) {
       return packType;
     }
 
@@ -200,7 +232,7 @@ class PackOper {
           final currLen = currExt.length;
 
           if ((packTypeByExt == null) || (currLen > maxMatchLen)) {
-            if (fileName.endsWith(currExt)) {
+            if (fileName.endsWith(currExt.toLowerCase())) {
               maxMatchLen = currLen;
               packTypeByExt = key;
             }
@@ -210,6 +242,89 @@ class PackOper {
     }
 
     return packTypeByExt;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String getUnpackPath(PackType? packType, String fromPath, String? toPath) {
+    packType ??= getPackType(packType, fromPath);
+
+    if (packType == null) {
+      throw Exception('Undefined uncompressed type');
+    }
+
+    if (packType == PackType.Tar) {
+      throw Exception('File "$fromPath" is not compressed');
+    }
+
+    var fileTitle = Path.basenameWithoutExtension(fromPath);
+    var extTar = DEFAULT_EXTENSIONS[PackType.Tar]?[0] ?? '';
+
+    if (isPackTypeTar(packType) && !fileTitle.toLowerCase().endsWith(extTar.toLowerCase())) {
+      fileTitle += extTar;
+    }
+
+    if ((toPath != null) && !toPath.isBlank() && (toPath != fromPath)) {
+      if (Path.fileSystem.directory(toPath).existsSync()) {
+        toPath = Path.join(toPath, fileTitle);
+      }
+    }
+    else {
+      toPath = Path.join(Path.dirname(fromPath), fileTitle);
+    }
+
+    return toPath;
+/*
+    if (packType == null) {
+      throw Exception('Unable to determine compression type of the file "$fromPath"');
+    }
+
+    var defExtStr = _getFirstDefaultExtension(packType).toLowerCase();
+
+    if (fromPath.toLowerCase().endsWith(defExtStr)) {
+      return fromPath.substring(0, fromPath.length - defExtStr.length);
+    }
+
+    if (isPackTypeTar(packType)) {
+      defExtStr = DEFAULT_EXTENSIONS[packType]?[0] ?? '';
+    }
+    else {
+      var defExt = DEFAULT_EXTENSIONS.values.firstWhereOrNull((x) => fromPath.endsWith(x[0]));
+
+      if (defExt == null) {
+        return fromPath;
+      }
+      else {
+        return fromPath.substring(0, defExt.first.length);
+      }
+    }
+
+    if ((packType == null) || (packType == PackType.Tar) || !isPackTypeTar(packType)) {
+      return (toPath ?? fromPath);
+    }
+
+    if (toPath != null) {
+      if (Path.fileSystem.directory(toPath).existsSync()) {
+        return Path.join(toPath, Path.basenameWithoutExtension(fromPath));
+      }
+      else {
+        return toPath;
+      }
+    }
+    else if (isPackTypeTar(packType) && (packType != PackType.Tar)) {
+      var defExt = _getFirstDefaultExtension(PackType.Tar);
+      var result = Path.join(Path.dirname(fromPath), Path.basenameWithoutExtension(fromPath));
+
+      if (!result.endsWith(defExt)) {
+        result += defExt;
+      }
+
+      return result;
+    }
+    else {
+      return fromPath;
+    }
+*/
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -265,6 +380,8 @@ class PackOper {
         toDir.createSync(recursive: true);
       }
 
+      final cmd = (Env.isWindows ? null : Command(isSync: true, isToVar: true));
+
       for (final entity in archive) {
         final toPath = Path.join(toDirName, entity.name);
         final isFile = entity.isFile;
@@ -275,8 +392,15 @@ class PackOper {
 
         if (isFile) {
           Path.fileSystem.file(toPath)
-            ..createSync(recursive: true)
+            ..createSync(recursive: false)
             ..writeAsBytesSync(entity.content);
+
+          if (cmd != null) {
+            if (((entity.mode & 0x92) != 0x92) /* at least, one of three levels is read-only */ ||
+                ((entity.mode & 0x49) != 0x00) /* at least, one of three levels is executable */) {
+              cmd.exec(text: 'chmod ${entity.unixPermissions.toRadixString(8)} $toPath');
+            }
+          }
         }
         else {
           Path.fileSystem.directory(toPath)
@@ -328,7 +452,7 @@ class PackOper {
     }
 
     final decoder = _decodeFileSync(packType, fromFile);
-    final toPathEx = _getUnpackPath(packType, fromPath, toPath);
+    final toPathEx = getUnpackPath(packType, fromPath, toPath);
     final toFile = FileExt.truncateIfExistsSync(toPathEx);
 
     if ((decoder != null) && (toFile != null)) {
@@ -422,71 +546,6 @@ class PackOper {
     }
 
     throw Exception('Can\'t find the first default extension for pack type $packType');
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String _getPackPath(PackType packType, String fromPath, String? toPath) {
-    if (toPath == null) {
-      return '';
-    }
-
-    if (!toPath.isBlank() || (packType == PackType.Zip)) {
-      return toPath;
-    }
-
-    PackType packTypeEx;
-
-    switch (packType) {
-      case PackType.TarBz2:
-        packTypeEx = PackType.Bz2;
-        break;
-      case PackType.TarGz:
-        packTypeEx = PackType.Gz;
-        break;
-      case PackType.TarZlib:
-        packTypeEx = PackType.Zlib;
-        break;
-      default:
-        packTypeEx = packType;
-        break;
-    }
-
-    return fromPath + _getFirstDefaultExtension(packTypeEx);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String _getUnpackPath(PackType? packType, String fromPath, String? toPath) {
-    if (!(toPath?.isBlank() ?? true)) {
-      toPath = null;
-    }
-
-    if ((packType == null) || (packType == PackType.Tar) || !isPackTypeTar(packType)) {
-      return (toPath ?? fromPath);
-    }
-
-    if (toPath != null) {
-      if (Path.fileSystem.directory(toPath).existsSync()) {
-        return Path.join(toPath, Path.basenameWithoutExtension(fromPath));
-      }
-      else {
-        return toPath;
-      }
-    }
-    else if (isPackTypeTar(packType) && (packType != PackType.Tar)) {
-      var defExt = _getFirstDefaultExtension(PackType.Tar);
-      var result = Path.join(Path.dirname(fromPath), Path.basenameWithoutExtension(fromPath));
-
-      if (!result.endsWith(defExt)) {
-        result += defExt;
-      }
-
-      return result;
-    }
-    else {
-      return fromPath;
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

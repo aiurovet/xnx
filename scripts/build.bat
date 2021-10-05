@@ -23,7 +23,7 @@ if not exist "%BIN_OST%" (
     if errorlevel 1 exit /B 1
 )
 
-call pub get
+call dart pub get
 if errorlevel 1 exit /B 1
 
 dart compile exe "%BIN%\main.dart" -o "%BIN_OST%\%PRJ%.exe"

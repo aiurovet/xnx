@@ -103,7 +103,7 @@ class Convert {
     }
     else if (isCompress || isDecompress) {
       final archPath = (isDecompress ? arg1 : args[argCount < 0 ? 0 : argCount]);
-      final archType = (_options.archType == null || archPath == null ? null : PackOper.getPackType(_options.archType!, archPath));
+      final archType = PackOper.getPackType(_options.archType, archPath);
 
       if (archType != null) {
         final isTar = PackOper.isPackTypeTar(archType);

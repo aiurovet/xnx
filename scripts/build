@@ -56,7 +56,7 @@ mkdir -p "${BIN}" || exitApp 1 "Failed to create directory \"${BIN}\""
 
 EXE="${BIN}/${PRJ}"
 
-pub get || exitApp 1 "Failed to retrieve packages"
+dart pub get || exitApp 1 "Failed to retrieve packages"
 echo "Compiling..."
 dart compile exe "${SRC}" -o "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
 wc -c "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""

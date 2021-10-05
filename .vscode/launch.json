@@ -4,6 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+    { "name": "xnx - built-in",    "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "--ungz", "/home/ra/LICENSE.txt.gz" ] },
     { "name": "xnx - flutter_app", "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-d", "examples/flutter_app" ] },
     { "name": "xnx - if",          "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-d", "examples/if" ] },
     { "name": "xnx - ms_office",   "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-d", "examples/ms_office" ] },
