@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:file/file.dart';
 import 'package:archive/archive_io.dart';
 import 'package:xnx/src/command.dart';
@@ -391,6 +390,9 @@ class PackOper {
         }
 
         if (isFile) {
+          Path.fileSystem.directory(Path.dirname(toPath))
+            .createSync(recursive: true);
+
           Path.fileSystem.file(toPath)
             ..createSync(recursive: false)
             ..writeAsBytesSync(entity.content);

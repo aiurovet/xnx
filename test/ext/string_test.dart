@@ -47,16 +47,6 @@ void main() {
         expect(StringExt.parseBool('TRUE'), true);
       });
 
-      test('splitCommandLine', () {
-        Helper.initFileSystem(fileSystem);
-
-        expect(''.splitCommandLine(), {0: [''], 1: []});
-        expect('a'.splitCommandLine(), {0: ['a'], 1: []});
-        expect('"a b"'.splitCommandLine(), {0: ['a b'], 1: []});
-        expect('"a b" "cd e" fgh \'i"j\''.splitCommandLine(),
-            {0: ['a b'], 1: ['cd e', 'fgh', 'i"j']});
-      });
-
       test('quote', () {
         Helper.initFileSystem(fileSystem);
 

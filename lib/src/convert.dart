@@ -164,10 +164,9 @@ class Convert {
     if (isExpandContentOnly) {
       isForced = RE_EXE_SUB_FORCE.hasMatch(command);
 
-      var cli = command.splitCommandLine();
-      var args = cli[1];
+      var args = Command(text: command).args;
 
-      if (args != null) {
+      if (args.isNotEmpty) {
         var argc = args.length;
 
         if (argc > 0) {

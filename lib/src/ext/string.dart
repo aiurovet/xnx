@@ -25,8 +25,6 @@ extension StringExt on String {
 
   static final RegExp RE_BLANK = RegExp(r'^[\s]*$');
   static final RegExp RE_CMD_LINE = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
-  // static final RegExp RE_JSON_COMMAS = RegExp(r'(\"[^\"]*\")|[,][\s\x01]*([\}\]])', multiLine: false);
-  // static final RegExp RE_JSON_COMMENTS = RegExp(r'(\"[^\"]*\")|\/\/[^\x01]*\x01|\/\*((?!\*\/).)*\*\/', multiLine: false);
   static final RegExp RE_INTEGER = RegExp(r'^\d+$', caseSensitive: false);
   static final RegExp RE_PROTOCOL = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
 
@@ -44,74 +42,6 @@ extension StringExt on String {
 
   static bool parseBool(String? input) =>
     ((input != null) && (input.toLowerCase() == TRUE));
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  // String purifyJson() {
-  //   var result = replaceAll('\r\n', '\x01');
-  //   result = result.replaceAll('\r',   '\x01');
-  //   result = result.replaceAll('\n',   '\x01');
-  //   result = result.replaceAll('\\\\', '\x02');
-  //   result = result.replaceAll('\\\"', '\x03');
-  //   result = result.replaceAllMapped(RE_JSON_COMMENTS, (match) {
-  //      var literal = match.group(1);
-  //      if ((literal != null) && !literal.isBlank()) {
-  //        return literal;
-  //      }
-  //      return EMPTY;
-  //   });
-  //   result = result.replaceAllMapped(RE_JSON_COMMAS, (match) {
-  //     var literal = match.group(1);
-  //     if ((literal != null) && !literal.isBlank()) {
-  //       return literal;
-  //     }
-  //     return match.group(2) ?? EMPTY;
-  //   });
-  //   result = result.replaceAll('\x03', '\\\"');
-  //   result = result.replaceAll('\x02', '\\\\');
-  //   result = result.replaceAll('\x01', '\n');
-  //
-  //   return result;
-  // }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  Map<int, List<String>> splitCommandLine() {
-    String? cmd;
-    var args = <String>[];
-
-    var result = replaceAll(Env.escape + Env.escape, '\x01');
-    result = result.replaceAll(Env.escape + "'", '\x02');
-    result = result.replaceAll(Env.escape + '"', '\x03');
-    result = result.replaceAllMapped(RE_CMD_LINE, (match) {
-      var s = match.group(2) ?? '';
-
-      if (s.isBlank()) {
-        s = match.group(4) ?? '';
-
-        if (s.isBlank()) {
-          s = match.group(6) ?? '';
-        }
-
-        if (s.isBlank()) {
-          return s;
-        }
-      }
-
-      s = s.trim();
-
-      if (cmd == null) {
-        cmd = s;
-      }
-      else {
-        args.add(s);
-      }
-
-      return s;
-    });
-
-    return <int, List<String>>{ 0: [ cmd ?? this ], 1: args };
-  }
 
   //////////////////////////////////////////////////////////////////////////////
 

@@ -11,7 +11,7 @@ import 'helper.dart';
 void main() {
   group('Transformation', () {
     test('execNonFile', () {
-      Env.init(null);
+      Env.init();
 
       var flatMap = FlatMap();
 

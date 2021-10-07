@@ -10,7 +10,7 @@ class Xnx {
   Logger _logger = Logger();
 
   Xnx({Logger? logger}) {
-    Env.init(null);
+    Env.init();
 
     if (logger != null) {
       _logger = logger;

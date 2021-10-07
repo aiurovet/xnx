@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:file/file.dart';
-import 'package:file/local.dart';
 import 'package:xnx/src/ext/path.dart';
 
 class Env {
@@ -110,8 +109,12 @@ class Env {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void init(FileSystem? newFileSystem, {bool isPortable = true}) {
-    Path.init(newFileSystem ?? LocalFileSystem());
+  static Directory getHomeDirectory() => Path.fileSystem.directory(getHome());
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static void init({FileSystem? fileSystem}) {
+    Path.init(fileSystem);
   }
 
   //////////////////////////////////////////////////////////////////////////////

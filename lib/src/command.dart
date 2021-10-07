@@ -36,13 +36,7 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Command(
-      {String? path,
-      List<String>? args,
-      String? text,
-      bool isSync = true,
-      bool isToVar = false,
-      Logger? logger}) {
+  Command({String? path, List<String>? args, String? text, bool isSync = true, bool isToVar = false, Logger? logger}) {
     this.isSync = isSync;
     this.isToVar = isToVar;
 
@@ -50,9 +44,9 @@ class Command {
 
     if (text?.isNotEmpty ?? false) {
       if ((path?.isNotEmpty ?? false) || (args?.isNotEmpty ?? false)) {
-        throw Exception(
-            'Either command text, or executable path with arguments expected');
+        throw Exception('Either command text, or executable path with arguments expected');
       }
+
       parse(text);
     }
     else {
@@ -116,21 +110,22 @@ class Command {
 
         if (isSync && !isShellRequired) {
           result = Process.runSync(path, args,
-              environment: fullEnv,
-              runInShell: false,
-              workingDirectory: Path.currentDirectory.path);
+            environment: fullEnv,
+            runInShell: false,
+            workingDirectory: Path.currentDirectory.path
+          );
 
           isSuccess = (result.exitCode == 0);
         }
         else {
           results = waitFor<List<ProcessResult>>(Shell(
-                  environment: fullEnv,
-                  verbose: (_logger?.isInfo ?? false),
-                  commandVerbose: false,
-                  commentVerbose: false,
-                  runInShell: isShellRequired,
-                  workingDirectory: Path.currentDirectory.path)
-              .run(path));
+            environment: fullEnv,
+            verbose: (_logger?.isInfo ?? false),
+            commandVerbose: false,
+            commentVerbose: false,
+            runInShell: isShellRequired,
+            workingDirectory: Path.currentDirectory.path
+          ).run(path));
 
           result = (results.isEmpty ? null : results[0]);
           isSuccess = !results.any((x) => (x.exitCode != 0));

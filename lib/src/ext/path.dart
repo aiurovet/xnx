@@ -74,6 +74,7 @@ class Path {
   //////////////////////////////////////////////////////////////////////////////
 
   static Directory get currentDirectory => fileSystem.currentDirectory;
+  static set currentDirectory(Directory value) => fileSystem.currentDirectory = value;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -95,8 +96,8 @@ class Path {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void init(FileSystem newFileSystem) {
-    fileSystem = newFileSystem;
+  static void init(FileSystem? newFileSystem) {
+    fileSystem = newFileSystem ?? localFileSystem;
     separator = fileSystem.path.separator;
 
     isWindowsFS = (separator == r'\');

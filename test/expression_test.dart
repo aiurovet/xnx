@@ -28,7 +28,7 @@ var mapIf = { keyIf: {
 ////////////////////////////////////////////////////////////////////////////////
 
 void init(FileSystem fileSystem) {
-  Env.init(fileSystem);
+  Helper.initFileSystem(fileSystem);
 
   var root = (Path.fileSystem is MemoryFileSystem ? Path.getFullPath(Path.separator) : Env.getHome());
   var path = Path.join(root, 'test-dir', 'sub-dir');

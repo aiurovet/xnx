@@ -1,14 +1,13 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/file.dart';
 import 'package:xnx/src/ext/path.dart';
 import '../helper.dart';
 
 void main() {
   Helper.forEachMemoryFileSystem((fileSystem) {
-    Env.init(fileSystem);
+    Helper.initFileSystem(fileSystem);
     var delay = 5;
 
     group('File', () {
@@ -35,10 +34,7 @@ void main() {
 
         expect(outFile2.compareLastModifiedToSync(toFile: outFile1) > 0, true);
         expect(outFile1.compareLastModifiedToSync(toFile: outFile2) < 0, true);
-        expect(
-            outFile2.compareLastModifiedToSync(toLastModified: DateTime.now()) <
-                0,
-            true);
+        expect(outFile2.compareLastModifiedToSync(toLastModified: DateTime.now()) <= 0, true);
 
         outFile1.deleteSync();
         outFile2.deleteSync();

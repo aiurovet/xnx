@@ -28,7 +28,7 @@ void main() {
     });
 
     test('exec', () {
-      Env.init(null);
+      Env.init();
 
       var c = Command(isToVar: true);
 

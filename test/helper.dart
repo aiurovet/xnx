@@ -20,7 +20,7 @@ class Helper {
     (fs as StyleableFileSystem).style.toString();
 
   static void initFileSystem(FileSystem fs, {bool canShow = true}) {
-    Env.init(fs);
+    Env.init(fileSystem: fs);
 
     if (canShow) {
       print('FS: ${getFileSystemStyleName(Path.fileSystem)}');
