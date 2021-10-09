@@ -31,7 +31,7 @@ void main() {
         expect(GlobExt.isRecursive(null), false);
         expect(GlobExt.isRecursive(''), false);
         expect(GlobExt.isRecursive('abc*.def'), false);
-        expect(GlobExt.isRecursive('abc**x.def'), false);
+        expect(GlobExt.isRecursive('abc**x.def'), true);
         expect(GlobExt.isRecursive('**${pathSep}abc*.def'), true);
         expect(GlobExt.isRecursive('xy**${pathSep}abc*.def'), true);
       });
