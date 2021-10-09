@@ -23,8 +23,7 @@ class ConfigFileLoader {
   static const String RECORD_SEP = ',';
 
   static final String ALL_ARGS = r'${@}';
-  static final RegExp RE_CMD_LINE_ARG = RegExp(
-      r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([0-9]+))|(\$\{([1-9][0-9]*)\})');
+  static final RegExp RE_CMD_LINE_ARG = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([0-9]+))|(\$\{([1-9][0-9]*)\})');
   static final RegExp RE_IMP_FILE_KEY_BAD_CHARS = RegExp(r'[\\\/\.,;]');
   static final RegExp RE_JSON_MAP_BRACES = RegExp(r'^[\s\{]+|[\s\}]+$');
 
@@ -53,8 +52,7 @@ class ConfigFileLoader {
   // Construction
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader(
-      {bool isStdIn = false, File? file, String? text, Logger? logger}) {
+  ConfigFileLoader({bool isStdIn = false, File? file, String? text, Logger? logger}) {
     _file = file;
     _isStdIn = isStdIn;
     _lastModifiedStamp = (file?.lastModifiedStampSync() ?? 0);
@@ -132,8 +130,7 @@ class ConfigFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String importFiles(String paramNameImport,
-      {String? impPath, String? impPathsSerialized}) {
+  String importFiles(String paramNameImport, {String? impPath, String? impPathsSerialized}) {
     try {
       var fullText = '';
       var keyPrefix = 'import';
@@ -219,9 +216,7 @@ class ConfigFileLoader {
       var impPathsSerialized = match.group(5);
       var elemSep = match.group(6) ?? '';
 
-      var result = lf.importFiles(paramNameImport,
-              impPath: impPath, impPathsSerialized: impPathsSerialized) +
-          elemSep;
+      var result = lf.importFiles(paramNameImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + elemSep;
 
       return result;
     });
@@ -236,8 +231,7 @@ class ConfigFileLoader {
   // Methods
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo,
-      {String? paramNameImport, List<String>? appPlainArgs}) {
+  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {String? paramNameImport, List<String>? appPlainArgs}) {
     loadSyncEx(fileInfo);
 
     if (!(paramNameImport?.isBlank() ?? true)) {

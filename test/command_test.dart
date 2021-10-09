@@ -2,8 +2,6 @@ import 'package:test/test.dart';
 import 'package:xnx/src/command.dart';
 import 'package:xnx/src/ext/env.dart';
 
-////////////////////////////////////////////////////////////////////////////////
-
 void main() {
   group('Command', () {
     test('getStartCommand', () {

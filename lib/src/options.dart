@@ -752,9 +752,7 @@ For more details, see README.md
       if (files.isNotEmpty) {
         var paths = files.map((x) => x.path).toList()..sort();
 
-        configPath = paths.firstWhereOrNull(
-          (x) => Path.extension(x) == FILE_TYPE_CFG
-        );
+        configPath = paths.firstWhereOrNull((x) => Path.extension(x) == FILE_TYPE_CFG);
 
         isConfigPathFound = !(configPath?.isBlank() ?? true);
       }

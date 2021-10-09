@@ -96,8 +96,7 @@ class FileOper {
           if (!currDirName.isBlank() &&
               (currDirName != DirectoryExt.CUR_DIR_ABBR)) {
             if (!Path.fileSystem.directory(currDirName).existsSync()) {
-              throw Exception(
-                  'Top source directory was not found: "${currDir.path}"');
+              throw Exception('Top source directory was not found: "${currDir.path}"');
             }
           }
 
@@ -112,8 +111,7 @@ class FileOper {
           // Get the list of all files and directories matching path pattern
 
           var currFilter = GlobExt.toGlob(currPath.substring(currDirNameLen));
-          entities.addAll(currFilter.listFileSystemSync(Path.fileSystem,
-              root: currDirName));
+          entities.addAll(currFilter.listFileSystemSync(Path.fileSystem, root: currDirName));
         }
       }
 
@@ -132,8 +130,7 @@ class FileOper {
         _removeSubPaths(entities, isFast: (sortProc == null));
       }
 
-      dirNameLen -= _shortenSubPaths(
-          entities, (DirectoryExt.CUR_DIR_ABBR + Path.separator));
+      dirNameLen -= _shortenSubPaths(entities, (DirectoryExt.CUR_DIR_ABBR + Path.separator));
 
       if (dirNameLen < 0) {
         dirNameLen = 0;
@@ -230,7 +227,8 @@ class FileOper {
       if (entityPath.startsWith(prefix)) {
         if (entity is Directory) {
           entity = Path.fileSystem.directory(entity.path.substring(prefixLen));
-        } else if (entity is File) {
+        }
+        else if (entity is File) {
           entity = Path.fileSystem.file(entity.path.substring(prefixLen));
         }
 

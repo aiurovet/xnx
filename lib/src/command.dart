@@ -78,7 +78,7 @@ class Command {
       return print(_logger, args.sublist(1), isToVar: isToVar);
     }
 
-    if (path.isEmpty) {
+    if (path.isEmpty && !isLocal) {
       return outLines;
     }
 
@@ -144,7 +144,8 @@ class Command {
         if (result.stdout?.isNotEmpty ?? false) {
           outLines = result.stdout;
         }
-      } else if (results != null) {
+      }
+      else if (results != null) {
         if (results.outLines.isNotEmpty) {
           outLines = results.outLines.toString();
         }
@@ -159,11 +160,10 @@ class Command {
       else {
         if (isSync) {
           _logger?.error('Exit code: ${result.exitCode}');
-          _logger?.error(
-              '\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
-        } else if ((results != null) && results.isNotEmpty) {
-          _logger?.error(
-              'Exit codes: ${results.map((x) => x.exitCode).join(', ')}');
+          _logger?.error('\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
+        }
+        else if ((results != null) && results.isNotEmpty) {
+          _logger?.error('Exit codes: ${results.map((x) => x.exitCode).join(', ')}');
           _logger?.error('\n*** Errors:\n\n${results.errLines}');
         }
       }

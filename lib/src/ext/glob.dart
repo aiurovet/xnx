@@ -41,19 +41,8 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool isRecursive(String? pattern) {
-    if (pattern == null) {
-      return false;
-    }
-
-    final m = _RE_RECURSIVE.firstMatch(pattern);
-
-    if ((m == null) || (m.start < 0)) {
-      return false;
-    }
-
-    return (Path.adjust(pattern).contains(Path.separator, m.start + 1));
-  }
+  static bool isRecursive(String? pattern) =>
+    ((pattern != null) && _RE_RECURSIVE.hasMatch(pattern));
 
   //////////////////////////////////////////////////////////////////////////////
 

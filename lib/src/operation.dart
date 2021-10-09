@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/ext/string.dart';
 
@@ -66,7 +67,7 @@ class Operation {
   // Private members
   //////////////////////////////////////////////////////////////////////////////
 
-  final FlatMap _flatMap;
+  @protected final FlatMap flatMap;
 
   var _condition = '';
   var _isOpposite = false;
@@ -75,7 +76,7 @@ class Operation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Operation(this._flatMap);
+  Operation({required this.flatMap});
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -327,7 +328,7 @@ class Operation {
     var isThen = true;
 
     if (mask.isNotEmpty) {
-      mask = _flatMap.expand(mask);
+      mask = flatMap.expand(mask);
 
       isThen = (mask.isEmpty ? false : FileSystemEntityExt.tryPatternExistsSync(
         mask,
@@ -512,7 +513,7 @@ class Operation {
     num? n1;
 
     if (o1 != null) {
-      o1 = _flatMap.expand(o1);
+      o1 = flatMap.expand(o1);
       n1 = (isBinary ? num.tryParse(o1) : null);
 
       operands.add(n1 ?? o1);
@@ -521,7 +522,7 @@ class Operation {
     num? n2;
 
     if (o2 != null) {
-      o2 = _flatMap.expand(o2);
+      o2 = flatMap.expand(o2);
       n2 = (isBinary && (n1 != null) ? num.tryParse(o2) : null);
 
       operands.add(n2 ?? o2);

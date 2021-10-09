@@ -156,24 +156,25 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, FlatMap map) {
-    var command = expandInpNames(cmdTemplate.replaceAll(_config.kw.forOut, outFilePath), map);
-    command = command.replaceAll(_config.kw.forCurDir, curDirName);
+    var command = expandInpNames(cmdTemplate.replaceAll(_config.keywords.forOut, outFilePath), map);
+    command = command.replaceAll(_config.keywords.forCurDir, curDirName);
 
     var isForced = _options.isForced;
 
     if (isExpandContentOnly) {
       isForced = RE_EXE_SUB_FORCE.hasMatch(command);
 
-      var args = Command(text: command).args;
+      var cli = Command(text: command);
+      var args = cli.args;
 
-      if (args.isNotEmpty) {
+      if (cli.isLocal && args.isNotEmpty) {
         var argc = args.length;
 
-        if (argc > 0) {
-          inpFilePath = args[0];
+        if (argc > 1) {
+          inpFilePath = args[1];
 
-          if (argc > 1) {
-            outFilePath = args[1];
+          if (argc > 2) {
+            outFilePath = args[2];
           }
           else {
             outFilePath = inpFilePath;
@@ -240,6 +241,14 @@ class Convert {
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
+    _logger.information(command);
+
+    var canRun = (!_options.isListOnly && !isExpandContentOnly);
+
+    if (!canRun) {
+      return true;
+    }
+
     Command(text: command, logger: _logger)
       .exec(canExec: !_options.isListOnly && !isExpandContentOnly);
 
@@ -256,7 +265,7 @@ class Convert {
     map[ConfigFileLoader.ALL_ARGS] = (plainArgs.isEmpty ? '' : plainArgs.map((x) => x.quote()).join(' '));
     curDirName = getCurDirName(map, true);
 
-    var inpFilePath = getValue(map, key: _config.kw.forInp, canReplace: true);
+    var inpFilePath = getValue(map, key: _config.keywords.forInp, canReplace: true);
     var hasInpFile = !inpFilePath.isBlank();
 
     if (hasInpFile) {
@@ -264,14 +273,14 @@ class Convert {
         inpFilePath = Path.join(curDirName, inpFilePath);
       }
 
-      if (inpFilePath.contains(_config.kw.forInp) ||
-          inpFilePath.contains(_config.kw.forInpDir) ||
-          inpFilePath.contains(_config.kw.forInpExt) ||
-          inpFilePath.contains(_config.kw.forInpName) ||
-          inpFilePath.contains(_config.kw.forInpNameExt) ||
-          inpFilePath.contains(_config.kw.forInpPath) ||
-          inpFilePath.contains(_config.kw.forInpSubDir) ||
-          inpFilePath.contains(_config.kw.forInpSubPath)) {
+      if (inpFilePath.contains(_config.keywords.forInp) ||
+          inpFilePath.contains(_config.keywords.forInpDir) ||
+          inpFilePath.contains(_config.keywords.forInpExt) ||
+          inpFilePath.contains(_config.keywords.forInpName) ||
+          inpFilePath.contains(_config.keywords.forInpNameExt) ||
+          inpFilePath.contains(_config.keywords.forInpPath) ||
+          inpFilePath.contains(_config.keywords.forInpSubDir) ||
+          inpFilePath.contains(_config.keywords.forInpSubPath)) {
         inpFilePath = expandInpNames(inpFilePath, map);
       }
 
@@ -286,7 +295,7 @@ class Convert {
 
       mapCurr = expandMap(map, curDirName, inpFilePathEx);
 
-      var detectPathsPattern = getValue(mapCurr, key: _config.kw.forDetectPaths, canReplace: true);
+      var detectPathsPattern = getValue(mapCurr, key: _config.keywords.forDetectPaths, canReplace: true);
 
       if (detectPathsPattern.isBlank()) {
         detectPathsRE = null;
@@ -295,15 +304,15 @@ class Convert {
         detectPathsRE = RegExp(detectPathsPattern, caseSensitive: false);
       }
 
-      var command = getValue(mapCurr, key: _config.kw.forRun, canReplace: false);
+      var command = getValue(mapCurr, key: _config.keywords.forRun, canReplace: false);
 
       if (command.isBlank()) {
-        command = getValue(mapCurr, key: _config.kw.forCmd, canReplace: false);
+        command = getValue(mapCurr, key: _config.keywords.forCmd, canReplace: false);
       }
 
       isSubRun = RE_EXE_SUB.hasMatch(command);
       isExpandContentOnly = isSubRun && RE_EXE_SUB_EXPAND.hasMatch(command);
-      canExpandContent = !_options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.kw.forCanExpandContent, canReplace: false)));
+      canExpandContent = !_options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false)));
 
       if (!curDirName.isBlank()) {
         if (_logger.isDebug) {
@@ -320,7 +329,7 @@ class Convert {
         return true;
       }
 
-      var outFilePath = Path.adjust(getValue(mapCurr, key: _config.kw.forOut, canReplace: true));
+      var outFilePath = Path.adjust(getValue(mapCurr, key: _config.keywords.forOut, canReplace: true));
       var hasOutFile = outFilePath.isNotEmpty;
 
       isStdIn = (inpFilePath == StringExt.STDIN_PATH);
@@ -332,14 +341,14 @@ class Convert {
         var dirName = Path.dirname(inpFilePathEx);
         var inpNameExt = Path.basename(inpFilePathEx);
 
-        mapCurr[_config.kw.forInpDir] = dirName;
-        mapCurr[_config.kw.forInpSubDir] = (dirName.length <= subStart ? '' : dirName.substring(subStart));
-        mapCurr[_config.kw.forInpNameExt] = inpNameExt;
-        mapCurr[_config.kw.forInpExt] = Path.extension(inpNameExt);
-        mapCurr[_config.kw.forInpName] = Path.basenameWithoutExtension(inpNameExt);
-        mapCurr[_config.kw.forInpPath] = inpFilePathEx;
-        mapCurr[_config.kw.forInpSubPath] = inpFilePathEx.substring(subStart);
-        mapCurr[_config.kw.forThis] = startCmd;
+        mapCurr[_config.keywords.forInpDir] = dirName;
+        mapCurr[_config.keywords.forInpSubDir] = (dirName.length <= subStart ? '' : dirName.substring(subStart));
+        mapCurr[_config.keywords.forInpNameExt] = inpNameExt;
+        mapCurr[_config.keywords.forInpExt] = Path.extension(inpNameExt);
+        mapCurr[_config.keywords.forInpName] = Path.basenameWithoutExtension(inpNameExt);
+        mapCurr[_config.keywords.forInpPath] = inpFilePathEx;
+        mapCurr[_config.keywords.forInpSubPath] = inpFilePathEx.substring(subStart);
+        mapCurr[_config.keywords.forThis] = startCmd;
 
         mapCurr.forEach((k, v) {
           if (!_exeParamNames.contains(k) && !_inpParamNames.contains(k)) {
@@ -357,13 +366,13 @@ class Convert {
         if (_logger.isDebug) {
           _logger.debug('''
 
-Input dir:       "${mapCurr[_config.kw.forInpDir]}"
-Input sub-dir:   "${mapCurr[_config.kw.forInpSubDir]}"
-Input name:      "${mapCurr[_config.kw.forInpName]}"
-Input extension: "${mapCurr[_config.kw.forInpExt]}"
-Input name-ext:  "${mapCurr[_config.kw.forInpNameExt]}"
-Input path:      "${mapCurr[_config.kw.forInpPath]}"
-Input sub-path:  "${mapCurr[_config.kw.forInpSubPath]}"
+Input dir:       "${mapCurr[_config.keywords.forInpDir]}"
+Input sub-dir:   "${mapCurr[_config.keywords.forInpSubDir]}"
+Input name:      "${mapCurr[_config.keywords.forInpName]}"
+Input extension: "${mapCurr[_config.keywords.forInpExt]}"
+Input name-ext:  "${mapCurr[_config.keywords.forInpNameExt]}"
+Input path:      "${mapCurr[_config.keywords.forInpPath]}"
+Input sub-path:  "${mapCurr[_config.keywords.forInpSubPath]}"
         ''');
         }
       }
@@ -400,8 +409,8 @@ Output path: "$outFilePathEx"
   ConfigResult execMapWithArgs(FlatMap map) {
     var plainArgs = _options.plainArgs;
 
-    _exeParamNames = _config.kw.getAllForExe();
-    _inpParamNames = _config.kw.getAllForInp();
+    _exeParamNames = _config.keywords.getAllForExe();
+    _inpParamNames = _config.keywords.getAllForInp();
 
     if (plainArgs.isEmpty) {
       plainArgs = [ '' ];
@@ -500,13 +509,20 @@ Output path: "$outFilePathEx"
         outFilePath = Path.join(outFilePath, outFileName);
       }
 
-      var tmpFile = Path.fileSystem.file(tmpFilePath);
+      var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
-      tmpFile.deleteIfExistsSync();
-      tmpFile.writeAsStringSync(text);
+      if (tmpFile == null) {
+        Path.fileSystem.file(outFilePath)
+          .writeAsStringSync(text);
+      }
+      else {
+        var tmpFile = Path.fileSystem.file(tmpFilePath)
+          ..deleteIfExistsSync()
+          ..writeAsStringSync(text);
 
-      if (Path.equals(inpFilePath, outFilePath)) {
-        tmpFile.renameSync(outFilePath);
+        if (Path.equals(inpFilePath, outFilePath)) {
+          tmpFile.renameSync(outFilePath);
+        }
       }
 
       return (isExpandContentOnly ? null : tmpFile);
@@ -533,8 +549,8 @@ Output path: "$outFilePathEx"
     var newMap = FlatMap();
     newMap.add(map);
 
-    var paramNameCurDir = _config.kw.forCurDir;
-    var paramNameInp = _config.kw.forInp;
+    var paramNameCurDir = _config.keywords.forCurDir;
+    var paramNameInp = _config.keywords.forInp;
 
     newMap.forEach((k, v) {
       if (k.isBlank()) {
@@ -584,7 +600,7 @@ Output path: "$outFilePathEx"
   //////////////////////////////////////////////////////////////////////////////
 
   String getCurDirName(FlatMap map, bool canReplace) {
-    var curDirName = (getValue(map, key: _config.kw.forCurDir, canReplace: canReplace));
+    var curDirName = (getValue(map, key: _config.keywords.forCurDir, canReplace: canReplace));
     curDirName = (curDirName.isBlank() ? Path.fileSystem.currentDirectory.path : Path.getFullPath(curDirName));
 
     return curDirName;
@@ -630,7 +646,7 @@ Output path: "$outFilePathEx"
       value = map[key];
     }
 
-    var isKeyCurDir = (key == _config.kw.forCurDir);
+    var isKeyCurDir = (key == _config.keywords.forCurDir);
 
     if (canReplace && (value != null) && !value.isBlank()) {
       for (String? oldValue; (oldValue != value); ) {
@@ -653,8 +669,8 @@ Output path: "$outFilePathEx"
       }
     }
 
-    if (!isKeyCurDir && (value?.contains(_config.kw.forCurDir) ?? false)) {
-      value = value?.replaceAll(_config.kw.forCurDir, curDirName);
+    if (!isKeyCurDir && (value?.contains(_config.keywords.forCurDir) ?? false)) {
+      value = value?.replaceAll(_config.keywords.forCurDir, curDirName);
     }
 
     return (value ?? '');

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:xnx/src/ext/glob.dart';
 import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/src/ext/string.dart';
 
 extension FileSystemEntityExt on FileSystemEntity {
 
@@ -28,12 +29,11 @@ extension FileSystemEntityExt on FileSystemEntity {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool tryPatternExistsSync(String entityName,
-    {bool isDirectory = false, bool isFile = false, recursive = false}) {
+  static bool tryPatternExistsSync(String entityName, {bool isDirectory = false, bool isFile = false, recursive = false}) {
     FileSystemEntity? entity;
 
     try {
-      var fullEntityName = Path.getFullPath(entityName);
+      var fullEntityName = Path.getFullPath(entityName.unquote());
       var parentName = GlobExt.dirname(fullEntityName);
       var subPattern = Path.relative(fullEntityName, from: parentName);
 
@@ -57,7 +57,6 @@ extension FileSystemEntityExt on FileSystemEntity {
     }
     catch (e) {
       // Suppressed
-      print(e);
     }
 
     return (entity != null);

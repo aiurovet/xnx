@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:xnx/src/config_key_data.dart';
 import 'package:xnx/src/config_result.dart';
 import 'package:xnx/src/config_file_loader.dart';
@@ -8,6 +9,7 @@ import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/operation.dart';
 import 'package:xnx/src/options.dart';
 import 'package:xnx/src/transformation.dart';
 
@@ -23,11 +25,15 @@ class Config {
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
+  @protected late final Expression expression;
+  @protected late final FlatMap flatMap;
+  late final Keywords keywords;
+  @protected late final Operation operation;
+  @protected late final Transformation transformation;
+
   Map all = {};
   RegExp? detectPathsRE;
-  Expression? expression;
-  FlatMap flatMap = FlatMap();
-  Keywords kw = Keywords();
+
   int lastModifiedStamp = 0;
   Options options = Options();
   String prevFlatMapStr = '';
@@ -35,7 +41,6 @@ class Config {
 
   final List<Object> _once = [];
   final Map<Object, ConfigKeyData> _trail = {};
-  late final Transformation _transformation;
   Logger _logger = Logger();
 
   //////////////////////////////////////////////////////////////////////////////
@@ -46,7 +51,12 @@ class Config {
     }
 
     options = Options(_logger);
-    _transformation = Transformation(flatMap: flatMap, keywords: kw);
+
+    flatMap = FlatMap();
+    keywords = Keywords();
+    operation = Operation(flatMap: flatMap);
+    expression = Expression(flatMap: flatMap, keywords: keywords, operation: operation);
+    transformation = Transformation(flatMap: flatMap, keywords: keywords);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -56,13 +66,13 @@ class Config {
       return false;
     }
 
-    if (!(flatMap[kw.forRun]?.isBlank() ?? true)) {
+    if (!(flatMap[keywords.forRun]?.isBlank() ?? true)) {
       return true;
     }
 
-    if (!(flatMap[kw.forCmd]?.isBlank() ?? true)) {
-      if (flatMap.containsKey(kw.forInp)) {
-        if (flatMap.containsKey(kw.forOut)) {
+    if (!(flatMap[keywords.forCmd]?.isBlank() ?? true)) {
+      if (flatMap.containsKey(keywords.forInp)) {
+        if (flatMap.containsKey(keywords.forOut)) {
           return true;
         }
       }
@@ -78,11 +88,11 @@ class Config {
       _logger.debug('$map\n');
     }
     else {
-      _logger.outInfo(map.containsKey(kw.forRun) ?
-        'Run: ${expandStraight(map, map[kw.forRun] ?? '')}\n' :
-        'Inp: ${expandStraight(map, map[kw.forInp] ?? '')}\n'
-        'Out: ${expandStraight(map, map[kw.forOut] ?? '')}\n'
-        'Cmd: ${expandStraight(map, map[kw.forCmd] ?? '')}\n'
+      _logger.outInfo(map.containsKey(keywords.forRun) ?
+        'Run: ${expandStraight(map, map[keywords.forRun] ?? '')}\n' :
+        'Inp: ${expandStraight(map, map[keywords.forInp] ?? '')}\n'
+        'Out: ${expandStraight(map, map[keywords.forOut] ?? '')}\n'
+        'Cmd: ${expandStraight(map, map[keywords.forCmd] ?? '')}\n'
       );
     }
 
@@ -107,12 +117,12 @@ class Config {
 
     var renames = <String, Object?>{};
 
-    if (all.containsKey(kw.forRename)) {
-      var map = all[kw.forRename];
+    if (all.containsKey(keywords.forRename)) {
+      var map = all[keywords.forRename];
 
       if (map is Map<String, Object?>) {
         renames.addAll(map);
-        all.remove(kw.forRename);
+        all.remove(keywords.forRename);
       }
     }
 
@@ -125,7 +135,7 @@ class Config {
     var actions = (actionKey == null ? all : all[actionKey]);
 
     _logger.information('Processing renames');
-    kw.rename(renames);
+    keywords.rename(renames);
 
     if (actions != null) {
       _logger.information('Processing actions');
@@ -142,7 +152,7 @@ class Config {
   ConfigResult execData(String? key, Object? data, ConfigFlatMapProc? execFlatMap) {
     if (data == null) {
       flatMap[key] = null;
-      return (key == kw.forStop ? ConfigResult.stop : ConfigResult.ok);
+      return (key == keywords.forStop ? ConfigResult.stop : ConfigResult.ok);
     }
 
     if (_once.contains(data)) {
@@ -156,7 +166,7 @@ class Config {
     }
 
     if (data is List) {
-      if (key == kw.forRun) { // direct execution in a loop
+      if (key == keywords.forRun) { // direct execution in a loop
         return execDataListRun(key, data, execFlatMap);
       }
       else {
@@ -165,7 +175,7 @@ class Config {
     }
 
     if (data is Map<String, Object?>) {
-      if (key == kw.forIf) {
+      if (key == keywords.forIf) {
         return execDataMapIf(data, execFlatMap);
       }
       else {
@@ -228,11 +238,11 @@ class Config {
   ConfigResult execDataMap(String? key, Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
-    if (key == kw.forOnce) {
+    if (key == keywords.forOnce) {
       _once.add(data);
     }
-    else if (key == kw.forTransform) {
-      _transformation.exec(data);
+    else if (key == keywords.forTransform) {
+      transformation.exec(data);
       return result;
     }
 
@@ -250,11 +260,11 @@ class Config {
   ConfigResult execDataMapIf(Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
-    var resolvedData = expression?.exec(data);
+    var resolvedData = expression.exec(data);
 
     if (resolvedData != null) {
-      setTrailFor(data, kw.forThen, resolvedData);
-      result = execData(kw.forThen, resolvedData, execFlatMap);
+      setTrailFor(data, keywords.forThen, resolvedData);
+      result = execData(keywords.forThen, resolvedData, execFlatMap);
       setTrailFor(data, null, null);
     }
 
@@ -283,12 +293,12 @@ class Config {
     var dataStr = data.toString().trim();
     var isEmpty = dataStr.isEmpty;
 
-    if (key == kw.forDetectPaths) {
+    if (key == keywords.forDetectPaths) {
       detectPathsRE = (isEmpty ? null : RegExp(dataStr));
       return result;
     }
 
-    if (key == kw.forStop) {
+    if (key == keywords.forStop) {
       if (!isEmpty) {
         _logger.out(flatMap.expand(dataStr));
       }
@@ -297,8 +307,8 @@ class Config {
     }
 
     if (!isEmpty) {
-      var isKeyForGlob = kw.allForGlob.contains(key);
-      var isKeyForPath = kw.allForPath.contains(key);
+      var isKeyForGlob = keywords.allForGlob.contains(key);
+      var isKeyForPath = keywords.allForPath.contains(key);
       var isDetectPaths = (detectPathsRE?.hasMatch(key) ?? false);
       var hasPath = (isKeyForGlob || isKeyForPath || isDetectPaths);
 
@@ -307,11 +317,11 @@ class Config {
       }
     }
 
-    var isCmd = (key == kw.forCmd);
-    var isRun = (key == kw.forRun);
+    var isCmd = (key == keywords.forCmd);
+    var isRun = (key == keywords.forRun);
 
     if (isCmd || isRun) {
-      flatMap[isCmd ? kw.forRun : kw.forCmd] = null;
+      flatMap[isCmd ? keywords.forRun : keywords.forCmd] = null;
     }
 
     flatMap[key] = dataStr;
@@ -335,8 +345,8 @@ class Config {
         result = execFlatMap(flatMap);
       }
 
-      flatMap[kw.forOut] = null;
-      flatMap[kw.forRun] = null;
+      flatMap[keywords.forOut] = null;
+      flatMap[keywords.forRun] = null;
     }
 
     return result;
@@ -386,7 +396,7 @@ class Config {
 
   Map<String, Object?> loadSync() {
     var lf = ConfigFileLoader(logger: _logger);
-    lf.loadJsonSync(options.configFileInfo, paramNameImport: kw.forImport, appPlainArgs: options.plainArgs);
+    lf.loadJsonSync(options.configFileInfo, paramNameImport: keywords.forImport, appPlainArgs: options.plainArgs);
 
     lastModifiedStamp = lf.lastModifiedStamp ?? 0;
 
@@ -415,11 +425,11 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   void pushExeToBottom() {
-    var key = kw.forRun;
+    var key = keywords.forRun;
     var exe = flatMap[key];
 
     if (exe == null) {
-      key = kw.forCmd;
+      key = keywords.forCmd;
       exe = flatMap[key];
     }
 

@@ -398,8 +398,8 @@ class PackOper {
             ..writeAsBytesSync(entity.content);
 
           if (cmd != null) {
-            if (((entity.mode & 0x92) != 0x92) /* at least, one of three levels is read-only */ ||
-                ((entity.mode & 0x49) != 0x00) /* at least, one of three levels is executable */) {
+            if ((entity.mode & 0x49) != 0x00) {
+              // Restore execution bits only
               cmd.exec(text: 'chmod ${entity.unixPermissions.toRadixString(8)} $toPath');
             }
           }

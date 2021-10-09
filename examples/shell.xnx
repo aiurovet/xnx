@@ -1,7 +1,7 @@
 // Portable way to define OS-specific commands
 // Used via {{-import-}} (see in sub-folders)
 {
-  "cmd": {
+  "shell": {
     // You can specify either just command names, or command names with options, or command names with options and
     // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
     "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
@@ -11,7 +11,7 @@
 
       "{{-if-}}": { "": '-e "/Applications/*.app"', "{{-then-}}": {
         "{OSTYPE}": "macOS",
-        "{svg2png}": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --default-background-color=0",
+        "{svg2png}": '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --default-background-color=0',
         "{shell}": "zsh -c"
       }, "{{-else-}}": {
         "{OSTYPE}": "Linux",

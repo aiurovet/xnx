@@ -43,9 +43,7 @@ extension FileExt on File {
     var toLastModStamp =
         (toFile?.lastModifiedStampSync() ?? toLastModifiedStamp ?? -1);
 
-    var result = (lastModStamp == toLastModStamp
-        ? 0
-        : (lastModStamp < toLastModStamp ? -1 : 1));
+    var result = (lastModStamp == toLastModStamp ? 0 : (lastModStamp < toLastModStamp ? -1 : 1));
 
     return result;
   }
@@ -89,8 +87,7 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static File? getIfExistsSync(String path,
-      {bool canThrow = true, String? description}) {
+  static File? getIfExistsSync(String path, {bool canThrow = true, String? description}) {
     final file = (path.isBlank() ? null : Path.fileSystem.file(path));
 
     if (!(file?.existsSync() ?? false)) {
@@ -149,8 +146,7 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static File? truncateIfExistsSync(String path,
-      {bool canThrow = true, String? description}) {
+  static File? truncateIfExistsSync(String path, {bool canThrow = true, String? description}) {
     final file = (path.isBlank() ? null : Path.fileSystem.file(path));
 
     if (file == null) {
@@ -172,8 +168,7 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void xferSync(String toPath,
-      {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
+  void xferSync(String toPath, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
     // Ensuring source file exists
 
     if (!tryExistsSync()) {
@@ -183,8 +178,7 @@ extension FileExt on File {
     // Sanity check
 
     if (Path.equals(path, toPath)) {
-      throw Exception(
-          'Unable to copy: source and target are the same: "$path"');
+      throw Exception('Unable to copy: source and target are the same: "$path"');
     }
 
     // Getting destination path and directory, as well as checking what's newer
@@ -215,7 +209,8 @@ extension FileExt on File {
         }
         deleteSync();
       }
-    } else if (canDo) {
+    }
+    else if (canDo) {
       if (!isSilent) {
         print('Copying file "$path"');
       }

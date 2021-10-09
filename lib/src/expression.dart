@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/flat_map.dart';
@@ -8,27 +9,25 @@ class Expression {
   static final RegExp RE_ENDS_WITH_TRUE = RegExp(r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',);
   static final RegExp RE_ENDS_WITH_FALSE = RegExp(r'(^|[\s\(\&])(false|[0]+)[\s\)[\&]*$');
 
-  final FlatMap _flatMap;
-  final Keywords _kw;
-  Operation? _operation;
+  @protected final FlatMap flatMap;
+  @protected final Keywords keywords;
+  @protected final Operation operation;
 
-  Expression(this._flatMap, this._kw) {
-    _operation = Operation(_flatMap);
-  }
+  Expression({required this.flatMap, required this.keywords, required this.operation});
 
   Object? exec(Map<String, Object?> mapIf) {
     var condition = mapIf.entries.firstWhereOrNull((x) =>
-      (x.key != _kw.forThen) &&
-      (x.key != _kw.forElse)
+      (x.key != keywords.forThen) &&
+      (x.key != keywords.forElse)
     )?.value;
 
-    var blockElse = mapIf[_kw.forElse];
+    var blockElse = mapIf[keywords.forElse];
 
     if (condition == null) {
       return blockElse;
     }
 
-    var blockThen = mapIf[_kw.forThen];
+    var blockThen = mapIf[keywords.forThen];
 
     if (blockThen == null) {
       throw Exception('Then-block not found in "$mapIf"');
@@ -78,7 +77,7 @@ class Expression {
       var isThen = true;
 
       for (var andPart in andParts) {
-        if (!(_operation?.exec(andPart.trim()) ?? false)) {
+        if (!operation.exec(andPart.trim())) {
           isThen = false;
           break;
         }

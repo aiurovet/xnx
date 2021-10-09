@@ -1,3 +1,4 @@
+import 'package:file/file.dart';
 import 'package:test/test.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
@@ -6,8 +7,38 @@ import 'package:xnx/src/pack_oper.dart';
 
 import 'helper.dart';
 
+void doneLocal() {
+  getLocalFromDir().parent.deleteIfExistsSync(recursive: true);
+  getLocalToDir().deleteIfExistsSync(recursive: true);
+}
+
+Directory getLocalFromDir() =>
+  Path.fileSystem.directory(Path.join(Path.join(Env.getHome(), 'dir'), 'sub-dir'));
+
+Directory getLocalToDir() =>
+  Path.fileSystem.directory(Path.join(Env.getHome(), 'zip'));
+
+List<Directory> initLocal() {
+  Env.init();
+
+  var fromDir = getLocalFromDir();
+  var toDir = getLocalToDir();
+
+  Path.fileSystem.directory(Path.join(fromDir.path, 'sub-sub-dir')).createSync(recursive: true);
+  Path.fileSystem.file(Path.join(fromDir.path, 'a.txt'))..createSync()..writeAsStringSync('A');
+  Path.fileSystem.file(Path.join(fromDir.path, 'b.txt'))..createSync()..writeAsStringSync('B B');
+  Path.fileSystem.file(Path.join(fromDir.path, 'c.txt'))..createSync()..writeAsStringSync('C C C');
+  Path.fileSystem.file(Path.join(fromDir.path, 'd.txt'))..createSync()..writeAsStringSync('D D D D');
+  Path.fileSystem.file(Path.join(fromDir.path, 'sub-sub-dir', 'e.csv'))..createSync()..writeAsStringSync('E E');
+
+  toDir.createSync(recursive: true);
+
+  return [fromDir, toDir];
+}
+
 void main() {
-  var isFirstArchiveRun = true;
+  var isFirstZipRun = true;
+  var isFirstTarGzRun = true;
 
   Helper.forEachMemoryFileSystem((fileSystem) {
     group('Operation', () {
@@ -111,30 +142,16 @@ void main() {
         // The "archive" package does not seem to be testable on MemoryFileSystem yet
         // So we are testing just once in the current home directory
 
-        if (!isFirstArchiveRun) {
+        if (!isFirstZipRun) {
           return;
         }
 
-        isFirstArchiveRun = false;
-
-        Env.init();
-        var home = Env.getHome();
-
-        var fromDir = Path.fileSystem.directory(Path.join(Path.join(home, 'dir'), 'sub-dir'));
-        var toDir = Path.fileSystem.directory(Path.join(home, 'zip'));
+        isFirstZipRun = false;
 
         try {
-          fromDir.createSync(recursive: true);
-          toDir.createSync(recursive: true);
-
-          Path.fileSystem.directory(Path.join(fromDir.path, 'sub-sub-dir')).createSync();
-          Path.fileSystem.file(Path.join(fromDir.path, 'a.txt')).createSync();
-          Path.fileSystem.file(Path.join(fromDir.path, 'b.txt')).createSync();
-          Path.fileSystem.file(Path.join(fromDir.path, 'c.txt')).createSync();
-          Path.fileSystem.file(Path.join(fromDir.path, 'd.txt')).createSync();
-          Path.fileSystem
-            .file(Path.join(fromDir.path, 'sub-sub-dir', 'a.csv'))
-            .createSync();
+          var dirList = initLocal();
+          var fromDir = dirList[0];
+          var toDir = dirList[1];
 
           var toPath = Path.join(toDir.path, 'test.zip');
 
@@ -160,8 +177,49 @@ void main() {
           expect(fromDir.listSync().length, 5);
         }
         finally {
-          fromDir.parent.deleteIfExistsSync(recursive: true);
-          toDir.deleteIfExistsSync(recursive: true);
+          doneLocal();
+        }
+      });
+      test('archiveSync/unarchiveSync - LFS', () {
+        // The "archive" package does not seem to be testable on MemoryFileSystem yet
+        // So we are testing just once in the current home directory
+
+        if (!isFirstTarGzRun) {
+          return;
+        }
+
+        isFirstTarGzRun = false;
+
+        try {
+          var dirList = initLocal();
+          var fromDir = dirList[0];
+          var toDir = dirList[1];
+
+          var toPath = Path.join(toDir.path, 'test.tar.gz');
+
+          PackOper.archiveSync(
+            PackType.TarGz,
+            [fromDir.parent.path, toPath],
+            isMove: true,
+            isSilent: true
+          );
+
+          expect(Path.fileSystem.file(toPath).existsSync(), true);
+          expect(fromDir.parent.existsSync(), false);
+
+          PackOper.unarchiveSync(
+            PackType.TarGz,
+            toPath,
+            fromDir.parent.path,
+            isMove: false,
+            isSilent: true
+          );
+
+          expect(Path.fileSystem.file(toPath).existsSync(), true);
+          expect(fromDir.listSync().length, 5);
+        }
+        finally {
+          doneLocal();
         }
       });
     });

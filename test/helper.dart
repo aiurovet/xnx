@@ -9,8 +9,7 @@ class Helper {
     MemoryFileSystem(style: FileSystemStyle.windows)
   ];
 
-  static void forEachMemoryFileSystem(
-      void Function(MemoryFileSystem fs) handler) {
+  static void forEachMemoryFileSystem(void Function(MemoryFileSystem fs) handler) {
     for (var fs in memoryFileSystems) {
       handler(fs);
     }

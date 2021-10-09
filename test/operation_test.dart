@@ -5,7 +5,7 @@ import 'package:xnx/src/operation.dart';
 void main() {
   group('Operation', () {
     test('parse', () {
-      var o = Operation(FlatMap());
+      var o = Operation(flatMap: FlatMap());
 
       expect(o.parse(''), OperationType.AlwaysFalse);
       expect(o.parse('  '), OperationType.AlwaysFalse);
@@ -60,7 +60,7 @@ void main() {
     });
 
     test('exec', () {
-      var o = Operation(FlatMap());
+      var o = Operation(flatMap: FlatMap());
 
       expect(o.exec(''), false);
       expect(o.exec('  '), false);

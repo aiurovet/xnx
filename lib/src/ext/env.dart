@@ -8,7 +8,8 @@ class Env {
 
   static final RegExp _RE_ENV_VAR_NAME = RegExp(
       r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(#|[0-9]+)|\$[\{](#|[0-9]+)[\}]',
-      caseSensitive: false);
+      caseSensitive: false
+  );
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -16,6 +17,7 @@ class Env {
 
   static String escape = r'\'; // for any OS
   static String escapeEscape = (escape + escape);
+
   static final String homeKey = (isWindows ? 'USERPROFILE' : 'HOME');
 
   //////////////////////////////////////////////////////////////////////////////
@@ -28,8 +30,7 @@ class Env {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String expand(String input,
-      {List<String>? args, bool canEscape = false}) {
+  static String expand(String input, {List<String>? args, bool canEscape = false}) {
     if ((args != null) && args.isEmpty) {
       args = null;
     }

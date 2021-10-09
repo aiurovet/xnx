@@ -15,8 +15,7 @@ void main() {
         expect(DirectoryExt.appendPathSeparator(sep), sep);
 
         var dir = Path.fileSystem.directory(Path.join('dir', 'sub-dir'));
-        expect(
-            DirectoryExt.appendPathSeparator(dir.path), 'dir${sep}sub-dir$sep');
+        expect(DirectoryExt.appendPathSeparator(dir.path), 'dir${sep}sub-dir$sep');
       });
       test('entityListSync', () {
         Helper.initFileSystem(fileSystem);
@@ -31,26 +30,11 @@ void main() {
         Path.fileSystem.file(Path.join(dir.path, 'd.txt')).createSync();
         Path.fileSystem.file(Path.join(dir.path, 'sub-sub-dir', 'a.csv')).createSync();
 
-        expect(
-          dir.entityListSync('',
-            checkExists: true, takeDirs: true, takeFiles: false).length,
-          1);
-        expect(
-          dir.entityListSync('',
-            checkExists: true, takeDirs: false, takeFiles: true).length,
-          4);
-        expect(
-          dir.entityListSync('',
-            checkExists: true, takeDirs: true, takeFiles: true).length,
-          5);
-        expect(
-          dir.entityListSync('*d*',
-            checkExists: true, takeDirs: true, takeFiles: true).length,
-          2);
-        expect(
-          dir.entityListSync('sub-sub-dir',
-            checkExists: true, takeDirs: true, takeFiles: true).length,
-          1);
+        expect(dir.entityListSync('', checkExists: true, takeDirs: true, takeFiles: false).length, 1);
+        expect(dir.entityListSync('', checkExists: true, takeDirs: false, takeFiles: true).length, 4);
+        expect(dir.entityListSync('', checkExists: true, takeDirs: true, takeFiles: true).length,  5);
+        expect(dir.entityListSync('*d*', checkExists: true, takeDirs: true, takeFiles: true).length, 2);
+        expect(dir.entityListSync('sub-sub-dir', checkExists: true, takeDirs: true, takeFiles: true).length, 1);
 
         dir.deleteSync(recursive: true);
       });
@@ -66,18 +50,9 @@ void main() {
         Path.fileSystem.file(Path.join(dir.path, 'c.txt')).createSync();
         Path.fileSystem.file(Path.join(dir.path, 'd.txt')).createSync();
 
-        expect(
-          DirectoryExt.entityListExSync(dir.path,
-            checkExists: true, takeDirs: true, takeFiles: false).length,
-          1);
-        expect(
-          DirectoryExt.entityListExSync(dir.path,
-            checkExists: true, takeDirs: false, takeFiles: true).length,
-          4);
-        expect(
-          DirectoryExt.entityListExSync(dir.path,
-            checkExists: true, takeDirs: true, takeFiles: true).length,
-          5);
+        expect(DirectoryExt.entityListExSync(dir.path, checkExists: true, takeDirs: true, takeFiles: false).length, 1);
+        expect(DirectoryExt.entityListExSync(dir.path, checkExists: true, takeDirs: false, takeFiles: true).length, 4);
+        expect(DirectoryExt.entityListExSync(dir.path, checkExists: true, takeDirs: true, takeFiles: true).length, 5);
 
         dir.deleteSync(recursive: true);
       });
@@ -94,18 +69,9 @@ void main() {
         Path.fileSystem.file(Path.join(dir.path, 'd.txt')).createSync();
         Path.fileSystem.file(Path.join(dir.path, 'sub-sub-dir', 'a.csv')).createSync();
 
-        expect(
-          dir.pathListSync('',
-            checkExists: true, takeDirs: true, takeFiles: false).length,
-          1);
-        expect(
-          dir.pathListSync('*.txt',
-            checkExists: true, takeDirs: false, takeFiles: true).length,
-          4);
-        expect(
-          dir.parent.pathListSync('**/*a*',
-            checkExists: true, takeDirs: true, takeFiles: true).length,
-          2);
+        expect(dir.pathListSync('', checkExists: true, takeDirs: true, takeFiles: false).length, 1);
+        expect(dir.pathListSync('*.txt', checkExists: true, takeDirs: false, takeFiles: true).length, 4);
+        expect(dir.parent.pathListSync('**/*a*', checkExists: true, takeDirs: true, takeFiles: true).length, 2);
 
         dir.deleteSync(recursive: true);
       });
