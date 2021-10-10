@@ -98,11 +98,11 @@ class ConfigFileLoader {
         var argNo = (int.tryParse(envArgNo) ?? -1);
 
         if (argNo == 0) {
-          return startCmd;
+          return startCmd.replaceAll(Env.escape, Env.escapeEscape);
         }
 
         if ((args != null) && (argNo > 0) && (argNo <= argCount)) {
-          return args[argNo - 1];
+          return args[argNo - 1].replaceAll(Env.escape, Env.escapeEscape);
         }
       }
 
@@ -240,6 +240,7 @@ class ConfigFileLoader {
 
     expandCmdLineArgs(appPlainArgs);
     _text = Env.expand(_text, canEscape: true);
+
     _data = json5Decode(_text);
     _text = '';
 

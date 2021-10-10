@@ -1,6 +1,5 @@
 import 'dart:core';
 
-import 'package:xnx/src/ext/env.dart';
 
 extension StringExt on String {
 

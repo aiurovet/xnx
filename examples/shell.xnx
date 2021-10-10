@@ -2,6 +2,8 @@
 // Used via {{-import-}} (see in sub-folders)
 {
   "shell": {
+    "{MAIN-CHROME-OPTS}": " --headless --default-background-color=0",
+
     // You can specify either just command names, or command names with options, or command names with options and
     // arguments' placeholders. But in the latter case, you need to define those placeholders in the parent file
     "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
@@ -11,11 +13,11 @@
 
       "{{-if-}}": { "": '-e "/Applications/*.app"', "{{-then-}}": {
         "{OSTYPE}": "macOS",
-        "{svg2png}": '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --default-background-color=0',
+        "{svg2png}": '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" {MAIN-CHROME-OPTS}',
         "{shell}": "zsh -c"
       }, "{{-else-}}": {
         "{OSTYPE}": "Linux",
-        "{svg2png}": "google-chrome --headless --default-background-color=0", // you can use chromium too
+        "{svg2png}": "google-chrome {MAIN-CHROME-OPTS}", // you can use chromium too
         "{shell}": "bash -c"
       } },
       "{convert}": "convert",
@@ -33,21 +35,12 @@
       "{move}": "ren",
       "{delete}": "del /F/Q/S",
       "{mkdir}": "mkdir",
-      "{svg2png}": "chrome --headless --default-background-color=0 --disable-gpu",
+      "{svg2png}": "chrome {MAIN-CHROME-OPTS} --disable-gpu",
       "{convert}": "magick convert",
       "{shell}": "cmd /c",
       "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500"
     } } } },
 
     "{this}": "$0",
-
-    "{copy-newer}": "--copy-newer",
-    "{move-newer}": "--move-newer",
-    "{zip}": "--zip",
-    "{unzip}": "--unzip",
-
-    "{rename}": "{move}",
-    "{rename-newer}": "{move-newer}",
-    "{remove}": "{delete}"
   }
 }

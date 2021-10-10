@@ -3,16 +3,19 @@
     "{{-cmd-}}": "{c}",
     "{{-cur-dir-}}": "{cur-dir}",
     "{{-can-expand-content-}}": "{can-expand-content}",
+    "{{-detect-paths-}}": "{dtp}",
     "{{-inp-}}": "{i}",
     "{{-out-}}": "{o}",
   },
 
   "{{-import-}}": "../shell.xnx",
 
-  // Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
+  // Do not enclose the output path {o} in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
   "{c}": '{svg2png} --window-size={d},{d} --screenshot={o} "file://{i}"',
 
   "{can-expand-content}": true,
+  "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
+
   "{img-src-dir}": "{cur-dir}/svg",
 
   "{t}": [ "edit", "find", "save" ],

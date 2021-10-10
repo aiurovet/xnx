@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
 import '../helper.dart';

@@ -44,9 +44,10 @@ class Env {
 
       out += inp.replaceAllMapped(_RE_ENV_VAR_NAME, (match) {
         var envVarName = (match.group(1) ?? match.group(2) ?? '');
+        var newValue = '';
 
         if (envVarName.isNotEmpty) {
-          var newValue = get(envVarName);
+          newValue = get(envVarName);
 
           if (canEscape && newValue.isNotEmpty) {
              newValue = newValue.replaceAll(escape, escapeEscape);
@@ -54,24 +55,30 @@ class Env {
 
           return newValue;
         }
+        else {
+          if (args != null) {
+            var argStr = (match.group(3) ?? match.group(4) ?? '');
 
-        if (args != null) {
-          var argStr = (match.group(3) ?? match.group(4) ?? '');
+            if (argStr == '#') {
+              newValue = args.length.toString();
+            }
+            else {
+              var argNo = int.tryParse(argStr, radix: 10);
 
-          if (argStr == '#') {
-            return args.length.toString();
-          }
-
-          var argNo = int.tryParse(argStr, radix: 10);
-
-          if (argNo != null) {
-            if ((argNo > 0) && (argNo <= args.length)) {
-              return args[argNo - 1];
+              if (argNo != null) {
+                if ((argNo > 0) && (argNo <= args.length)) {
+                  newValue = args[argNo - 1];
+                }
+              }
             }
           }
         }
 
-        return '';
+        if (canEscape && newValue.isNotEmpty) {
+          newValue = newValue.replaceAll(escape, escapeEscape);
+        }
+
+        return newValue;
       });
     }
 
