@@ -48,9 +48,9 @@ class Env {
         if (envVarName.isNotEmpty) {
           var newValue = get(envVarName);
 
-          // if (canEscape && newValue.isNotEmpty) {
-          //   newValue = newValue.escapeEscapeChar();
-          // }
+          if (canEscape && newValue.isNotEmpty) {
+             newValue = newValue.replaceAll(escape, escapeEscape);
+          }
 
           return newValue;
         }

@@ -30,6 +30,7 @@ class Path {
     }
 
     return path.trim().replaceAll(isWindowsFS ? r'/' : r'\', separator);
+    //return path.trim().replaceAll(r'\', r'/');
   }
 
   //////////////////////////////////////////////////////////////////////////////

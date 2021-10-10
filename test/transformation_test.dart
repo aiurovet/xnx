@@ -18,6 +18,7 @@ void main() {
       var now = DateTime.now();
       var nowStr = now.toIso8601String();
       var todayStr = nowStr.substring(0, 10);
+      var cmdEcho = (Env.isWindows ? 'cmd /c echo' : 'echo');
 
       Transformation(flatMap: flatMap, keywords: Keywords())
         .exec(<String, Object?>{
@@ -52,7 +53,7 @@ void main() {
           '{lastMatch}': [r'=LastMatch', 'Abcbcdefbqprcde', '[cd]'],
           '{weird}': [r'=replaceMatch', '{Env}elop', '[de]', 'ab', '/gi'],
           '{groups}': [r'=replaceMatch', 'abcdefghi', '(bc(d))|(g(h))', r'$2\$2\\${4}', '/gi'],
-          '{echo}': [r'=run', 'echo "1 2"'],
+          '{echo}': [r'=run', '$cmdEcho 1 2'],
         });
 
       expect(flatMap['{1+2}'], '3');

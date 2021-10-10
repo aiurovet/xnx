@@ -6,7 +6,7 @@
   //"{{-import-}}": "../shell.xnx",
 
   "{{-once-}}": {
-    "{{-xform-}}": {
+    "{{-transform-}}": {
       "{HOST}": ["=run", "uname -n"],
     },
   },

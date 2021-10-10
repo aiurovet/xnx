@@ -19,7 +19,7 @@ class Keywords {
   String forRename = '{{-rename-keywords-}}';
   String forStop = '{{-stop-}}';
   String forThis = '{{-this-}}';
-  String forTransform = '{{-xform-}}';
+  String forTransform = '{{-transform-}}';
 
   String forFnAdd = '=Add';
   String forFnAddDays = '=AddDays';

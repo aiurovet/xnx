@@ -281,20 +281,20 @@ class Command {
         hasPath = isLocal;
       }
 
-      if (Env.escape.isNotEmpty) {
-        var parts = arg.split(Env.escapeEscape);
-        arg = '';
+      // if (Env.escape.isNotEmpty) {
+      //   var parts = arg.split(Env.escapeEscape);
+      //   arg = '';
 
-        for (var part in parts) {
-          if (arg.isNotEmpty) {
-            arg += Env.escape;
-          }
-          arg += part
-              .replaceAll(Env.escape + 'n', '\n')
-              .replaceAll(Env.escape + 'r', '\r')
-              .replaceAll(Env.escape + 't', '\t');
-        }
-      }
+      //   for (var part in parts) {
+      //     if (arg.isNotEmpty) {
+      //       arg += Env.escape;
+      //     }
+      //     arg += part
+      //         .replaceAll(Env.escape + 'n', '\n')
+      //         .replaceAll(Env.escape + 'r', '\r')
+      //         .replaceAll(Env.escape + 't', '\t');
+      //   }
+      // }
 
       if (hasPath) {
         args.add(arg);

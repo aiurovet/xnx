@@ -20,6 +20,7 @@ class FlatMap {
   void addAll(Map<String, String> other) => map.addAll(other);
   bool containsKey(String key) => map.containsKey(key);
   void forEach(void Function(String key, String value) action) => map.forEach(action);
+  void remove(String key) => map.remove(key);
 
   /////////////////////////////////////////////////////////////////////////////
   // Getter

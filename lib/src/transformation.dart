@@ -97,7 +97,12 @@ class Transformation {
           _fail(type, 'invalid argument(s)');
         }
 
-        flatMap[key] = newValue?.toString();
+        if (newValue == null) {
+          flatMap.remove(key);
+        }
+        else {
+          flatMap[key] = newValue.toString();
+        }
       });
     }
 

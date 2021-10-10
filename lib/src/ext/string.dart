@@ -35,11 +35,6 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  // static bool isNullOrBlank(String? input) =>
-  //   ((input == null) || RE_BLANK.hasMatch(input));
-
-  //////////////////////////////////////////////////////////////////////////////
-
   static bool parseBool(String? input) =>
     ((input != null) && (input.toLowerCase() == TRUE));
 
@@ -51,14 +46,17 @@ extension StringExt on String {
     }
 
     var q = (contains('"') ? "'" : '"');
-    var result = this;
 
-    if (Env.escape.isNotEmpty && contains(q)) {
-      result = replaceAll(Env.escape, Env.escapeEscape);
-      result = result.replaceAll(q, Env.escape + q);
-    }
+    return q + this + q;
 
-    return q + result + q;
+    // var result = this;
+
+    // if (Env.escape.isNotEmpty && contains(q)) {
+    //   result = replaceAll(Env.escape, Env.escapeEscape);
+    //   result = result.replaceAll(q, Env.escape + q);
+    // }
+
+    // return q + result + q;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -72,15 +70,18 @@ extension StringExt on String {
 
     var q = this[0];
     var hasQ = (((q == "'") || (q == '"')) && (q == this[len - 1]));
-    var result = (hasQ ? substring(1, (len - 1)) : this);
 
-    if (result.contains(Env.escape)) {
-      result = result.replaceAll(Env.escape + "'", "'");
-      result = result.replaceAll(Env.escape + '"', '"');
-      result = result.replaceAll(Env.escapeEscape, Env.escape);
-    }
+    return (hasQ ? substring(1, (len - 1)) : this);
 
-    return result;
+    // var result = (hasQ ? substring(1, (len - 1)) : this);
+
+    // if (result.contains(Env.escape)) {
+    //   result = result.replaceAll(Env.escape + "'", "'");
+    //   result = result.replaceAll(Env.escape + '"', '"');
+    //   result = result.replaceAll(Env.escapeEscape, Env.escape);
+    // }
+
+    // return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
