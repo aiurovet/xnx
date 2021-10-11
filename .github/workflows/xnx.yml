@@ -73,7 +73,7 @@ jobs:
 
       ################################################################################
 
-      - name: Build the application on a POSIX-like OS
+      - name: Build the application on a POSIX-compliant OS
         if: runner.os != 'Windows'
         run: scripts/build "${{ runner.os }}"
 
@@ -83,7 +83,7 @@ jobs:
 
       ################################################################################
 
-      - name: Check build result on a POSIX-like OS
+      - name: Check build result on a POSIX-compliant OS
         if: runner.os != 'Windows'
         run: |
           ls -1 bin/${{ runner.os }}/*xnx* app
@@ -118,7 +118,7 @@ jobs:
 
       ################################################################################
 
-      - name: Cleanup on a POSIX-like OS
+      - name: Cleanup on a POSIX-compliant OS
         if: runner.os != 'Windows'
         run: rm -rf bin/${{ runner.os }}
 
@@ -134,7 +134,7 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Moving the new application package to version control'
-          add: 'app/*.zip --force'
+          add: 'app/* --force'
 #          cwd: app
 
       ################################################################################

@@ -273,57 +273,6 @@ class PackOper {
     }
 
     return toPath;
-/*
-    if (packType == null) {
-      throw Exception('Unable to determine compression type of the file "$fromPath"');
-    }
-
-    var defExtStr = _getFirstDefaultExtension(packType).toLowerCase();
-
-    if (fromPath.toLowerCase().endsWith(defExtStr)) {
-      return fromPath.substring(0, fromPath.length - defExtStr.length);
-    }
-
-    if (isPackTypeTar(packType)) {
-      defExtStr = DEFAULT_EXTENSIONS[packType]?[0] ?? '';
-    }
-    else {
-      var defExt = DEFAULT_EXTENSIONS.values.firstWhereOrNull((x) => fromPath.endsWith(x[0]));
-
-      if (defExt == null) {
-        return fromPath;
-      }
-      else {
-        return fromPath.substring(0, defExt.first.length);
-      }
-    }
-
-    if ((packType == null) || (packType == PackType.Tar) || !isPackTypeTar(packType)) {
-      return (toPath ?? fromPath);
-    }
-
-    if (toPath != null) {
-      if (Path.fileSystem.directory(toPath).existsSync()) {
-        return Path.join(toPath, Path.basenameWithoutExtension(fromPath));
-      }
-      else {
-        return toPath;
-      }
-    }
-    else if (isPackTypeTar(packType) && (packType != PackType.Tar)) {
-      var defExt = _getFirstDefaultExtension(PackType.Tar);
-      var result = Path.join(Path.dirname(fromPath), Path.basenameWithoutExtension(fromPath));
-
-      if (!result.endsWith(defExt)) {
-        result += defExt;
-      }
-
-      return result;
-    }
-    else {
-      return fromPath;
-    }
-*/
   }
 
   //////////////////////////////////////////////////////////////////////////////

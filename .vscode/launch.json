@@ -4,12 +4,19 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    { "name": "xnx - flutter_app", "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-f", "-d", "examples/flutter_app" ] },
-    { "name": "xnx - if",          "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-f", "-d", "examples/if" ] },
-    { "name": "xnx - ms_office",   "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-f", "-d", "examples/ms_office" ] },
-    { "name": "xnx - multi_conf",  "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-f", "-d", "examples/multi_conf" ] },
-    { "name": "xnx - multi_icon",  "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-f", "-d", "examples/multi_icon" ] },
-    { "name": "xnx - xunit_data",  "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-f", "-d", "examples/xunit_data" ] },
-    { "name": "xnx - mkicons",     "request": "launch", "type": "dart", "program": "bin/main.dart", "args": [ "-f", "-d", "scripts/mkicons" ] },
+    { "name": "xnx - flutter_app", "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-f", "-d", "examples/flutter_app" ], },
+    { "name": "xnx - if", "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-f", "-d", "examples/if" ], },
+    { "name": "xnx - ms_office",   "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-f", "-d", "examples/ms_office" ], },
+    { "name": "xnx - multi_conf",  "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-f", "-d", "examples/multi_conf" ], },
+    { "name": "xnx - multi_icon",  "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-f", "-d", "examples/multi_icon" ], },
+    { "name": "xnx - xunit_data",  "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-f", "-d", "examples/xunit_data" ], },
+    { "name": "xnx - mkicons",     "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-f", "-d", "scripts/mkicons" ], },
   ]
 }

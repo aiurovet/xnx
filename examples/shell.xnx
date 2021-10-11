@@ -21,20 +21,12 @@
         "{shell}": "bash -c"
       } },
       "{convert}": "convert",
-      "{copy}": "cp -pr",
-      "{move}": "mv -f",
-      "{delete}": "rm -rf",
-      "{mkdir}": "mkdir -p",
       "{sleep_0_5s}": "sleep 0.5s"
     }, "{{-else-}}": { "{{-if-}}": { "": '"${USERPROFILE}" != ""', "{{-then-}}": {
       "{HOME}": "${USERPROFILE}",
       "{USER}": "${USERNAME}",
       "{OSTYPE}": "Windows",
       "{TMPDIR}": "${TMP}",
-      "{copy}": "copy /Y",
-      "{move}": "ren",
-      "{delete}": "del /F/Q/S",
-      "{mkdir}": "mkdir",
       "{svg2png}": "chrome {MAIN-CHROME-OPTS} --disable-gpu",
       "{convert}": "magick convert",
       "{shell}": "cmd /c",

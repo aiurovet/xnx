@@ -162,7 +162,9 @@ class Convert {
     var isForced = _options.isForced;
 
     if (isExpandContentOnly) {
-      isForced = RE_EXE_SUB_FORCE.hasMatch(command);
+      if (!isForced) {
+        isForced = RE_EXE_SUB_FORCE.hasMatch(command);
+      }
 
       var cli = Command(text: command);
       var args = cli.args;
