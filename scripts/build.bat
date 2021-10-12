@@ -7,7 +7,7 @@ set OST=Windows
 set OST_LC=windows
 
 set ZIP=%APP%\%PRJ%-%OST_LC%.zip
-set BIN_OST=%BIN%\%OST%
+set BIN_OST=%BIN%\%OST%\%PRJ%
 
 rem Reset errorlevel
 ver > nul
@@ -36,6 +36,6 @@ if errorlevel 1 exit /B 1
 copy /Y "README.md" "%BIN_OST%"
 if errorlevel 1 exit /B 1
 
-"%BIN%\%OST%\%PRJ%" --zip "%BIN_OST%" "%ZIP%"
+"%BIN_OST%\%PRJ%" --zip "%BIN_OST%" "%ZIP%"
 
 exit /B 0
