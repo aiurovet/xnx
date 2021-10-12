@@ -86,15 +86,13 @@ jobs:
       - name: Check build result on a POSIX-compliant OS
         if: runner.os != 'Windows'
         run: |
-          ls -1 bin/${{ runner.os }}/*xnx* app
+          ls -1 app
 
       ################################################################################
 
       - name: Check build result on Windows
         if: runner.os == 'Windows'
-        run: |
-          Get-ChildItem -Name -Path bin\${{ runner.os }}\*xnx*
-          Get-ChildItem -Name -Path app\*
+        run: Get-ChildItem -Name -Path app\*
 
       ################################################################################
 
