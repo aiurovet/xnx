@@ -63,7 +63,7 @@ dart compile exe "${SRC}" -o "${EXE}" || exitApp 1 "Failed to compile the execut
 wc -c "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
 cp -pr "${TOP}/README.md" "${OUT}" || exitApp 1 "Failed to copy readme file to \"${OUT}\""
 ${TOP}/scripts/mkicons/mkicons "${OST}" ${@} || exitApp 1 "Failed to create app icons in \"${OUT}\""
-${EXE} --tgz "${BIN}" "${TOP}/app/${PRJ}-${OST_LC}.tar.gz"
+${EXE} --move --tgz "${BIN}" "${TOP}/app/${PRJ}-${OST_LC}.tar.gz"
 
 exitApp 0 "${APP} successfully completed"
 
