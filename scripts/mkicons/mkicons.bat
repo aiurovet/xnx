@@ -10,7 +10,7 @@ cd %~dp0..\..
 if errorlevel 1 exit /B 1
 
 set PRJ_NAME=xnx
-set PRJ_EXE=bin\Windows\%PRJ_NAME%.exe
+set PRJ_EXE=bin\Windows\%PRJ_NAME%\%PRJ_NAME%.exe
 
 if not exist "%PRJ_EXE%" (
   echo Executable file "%PRJ_EXE%" not found. Performing build.
