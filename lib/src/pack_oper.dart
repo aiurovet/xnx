@@ -164,12 +164,13 @@ class PackOper {
       return '';
     }
 
+    final toPathEx = getPackPath(packType, fromPath, toPath);
+
     if (!isSilent) {
-      print('Packing "${fromFile.path}"');
+      print('Packing to "$toPathEx"');
     }
 
     final encoder = _encodeFileSync(packType, fromFile);
-    final toPathEx = getPackPath(packType, fromPath, toPath);
     final toFile = FileExt.truncateIfExistsSync(toPathEx);
 
     if ((encoder != null) && (toFile != null)) {
@@ -177,6 +178,10 @@ class PackOper {
     }
 
     if (isMove) {
+      if (!isSilent) {
+        print('Removing "${fromFile.path}"');
+      }
+
       fromFile.delete();
     }
 
