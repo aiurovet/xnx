@@ -16,17 +16,13 @@
     "{{-stop-}}": "{stop}" // stop immediately
   },
 
-  "{{-isolated-}}": true,
-
   "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
   "{prj}": "xnx",
   "{icon-name}": "{prj}{look}",
 
   "{{-import-}}": "../../examples/shell.xnx",
 
-  "{bin-os-dir}": "{cur-dir}/../../bin/{OSTYPE}",
-
-  "{out-dir}": "{bin-os-dir}",
+  "{out-dir}": "{cur-dir}/../../bin/{OSTYPE}/{prj}",
 
   "{lnf}": [
     { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", "{win-icon-id}": "MAINICON,0" },
@@ -73,7 +69,7 @@
       "{png-dir}": "{cur-dir}/png",
       "{icon-pthp}": "{png-dir}/{icon-name}",
 
-      "{exe-pthp}": "{bin-os-dir}/{prj}",
+      "{exe-pthp}": "{out-dir}/{prj}",
 
       "{{-if-}}" : { "": '"{OSTYPE}" ==/i "Linux"', "{{-then-}}": {
         "{run}": [

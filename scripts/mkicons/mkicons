@@ -25,7 +25,7 @@ printf "\nRunning on ${OST}\n\n"
 
 ################################################################################
 
-BIN_OST="${SCR_DIR}/../bin/${OST}"
+BIN_OST="${SCR_DIR}/../bin/${OST}/${PRJ_NAME}"
 PRJ_EXE="${BIN_OST}/${PRJ_NAME}"
 
 if [ ! -f "${PRJ_EXE}" ]; then
