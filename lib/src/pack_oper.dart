@@ -352,8 +352,8 @@ class PackOper {
             ..writeAsBytesSync(entity.content);
 
           if (cmd != null) {
-            if ((entity.mode & 0x49) != 0x00) {
-              // Restore execution bits only
+            if (((entity.mode & 0x49) != 0x00) || // has at least one execution permission
+                ((entity.mode & 0x92) != 0x92)) { // doesn't have all write permissions
               cmd.exec(text: 'chmod ${entity.unixPermissions.toRadixString(8)} $toPath');
             }
           }
