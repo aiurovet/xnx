@@ -292,8 +292,8 @@ class Convert {
     var subStart = (hasInpFile ? (inpFilePath.length - Path.basename(inpFilePath).length) : 0);
     var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
-    for (var inpFilePathEx in inpFilePaths) {
-      inpFilePathEx = Path.adjust(inpFilePathEx);
+    for (var inpFilePathCurr in inpFilePaths) {
+      var inpFilePathEx = Path.adjust(inpFilePathCurr);
 
       mapCurr = expandMap(map, curDirName, inpFilePathEx);
 
@@ -399,7 +399,7 @@ Output path: "$outFilePathEx"
         isProcessed = true;
       }
       else {
-        break;
+        // File is up to date (in case of an error, execFile() throws an exception)
       }
     }
 

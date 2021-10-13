@@ -398,7 +398,7 @@ class Config {
     var lf = ConfigFileLoader(logger: _logger);
     lf.loadJsonSync(options.configFileInfo, paramNameImport: keywords.forImport, appPlainArgs: options.plainArgs);
 
-    lastModifiedStamp = lf.lastModifiedStamp ?? 0;
+    lastModifiedStamp = lf.lastModifiedStamp;
 
     var data = lf.data;
 

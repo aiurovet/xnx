@@ -42,8 +42,8 @@ class ConfigFileLoader {
   bool _isStdIn = false;
   bool get isStdIn => _isStdIn;
 
-  int? _lastModifiedStamp;
-  int? get lastModifiedStamp => _lastModifiedStamp;
+  int _lastModifiedStamp = 0;
+  int get lastModifiedStamp => _lastModifiedStamp;
 
   String _text = '';
   String get text => _text;
@@ -68,12 +68,15 @@ class ConfigFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void clear() {
+  void clear({bool isFull = true}) {
     _data = null;
     _file = null;
     _isStdIn = false;
-    _lastModifiedStamp = null;
     _text = '';
+
+    if (isFull) {
+      _lastModifiedStamp = 0;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -178,10 +181,9 @@ class ConfigFileLoader {
         return '';
       }
 
-      clear();
+      clear(isFull: false);
 
-      var result =
-          '"${getImportFileKey(keyPrefix, impPath: impPath)}": $fullText';
+      var result = '"${getImportFileKey(keyPrefix, impPath: impPath)}": $fullText';
 
       return result;
     } catch (e) {
@@ -217,6 +219,10 @@ class ConfigFileLoader {
       var elemSep = match.group(6) ?? '';
 
       var result = lf.importFiles(paramNameImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + elemSep;
+
+      if (_lastModifiedStamp < lf._lastModifiedStamp) {
+        _lastModifiedStamp = lf._lastModifiedStamp;
+      }
 
       return result;
     });
@@ -269,12 +275,19 @@ class ConfigFileLoader {
     }
     else {
       var file = Path.fileSystem.file(filePath);
-      _file = file;
+      var stat = file.statSync();
 
-      if (!file.existsSync()) {
+      if (stat.type == FileSystemEntityType.notFound) {
         throw Exception('File not found: $displayName');
       }
 
+      var fileLastModifiedStamp = stat.modified.millisecondsSinceEpoch;
+
+      if (_lastModifiedStamp < fileLastModifiedStamp) {
+        _lastModifiedStamp = fileLastModifiedStamp;
+      }
+
+      _file = file;
       _text = file.readAsStringSync();
     }
 

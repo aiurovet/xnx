@@ -1,7 +1,7 @@
 {
   "{{-rename-keywords-}}": {
     "{{-cmd-}}": "{c}",
-    "{{-cur-dir-}}": "{CD}",
+    "{{-cur-dir-}}": "{cwd}",
     "{{-inp-}}": "{i}",
     "{{-inp-dir-}}": "{i-dir}",
     "{{-inp-ext-}}": "{i-ext}",
@@ -11,7 +11,7 @@
 
   "{c}": '--expand "{i}" "{o}"',
 
-  "{i}": "{CD}/template/*settings.json",
+  "{i}": "{cwd}/template/*settings.json",
 
   "{env}": [
     { "{envTC}": "Dev",  "{envLC}": "dev"  },
