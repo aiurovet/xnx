@@ -354,7 +354,7 @@ class PackOper {
           if (cmd != null) {
             if (((entity.mode & 0x49) != 0x00) || // has at least one execution permission
                 ((entity.mode & 0x92) != 0x92)) { // doesn't have all write permissions
-              cmd.exec(text: 'chmod ${entity.unixPermissions.toRadixString(8)} $toPath');
+              cmd.exec(text: 'chmod ${(entity.unixPermissions | 0x100).toRadixString(8)} $toPath');
             }
           }
         }
