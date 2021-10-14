@@ -39,6 +39,8 @@ if errorlevel 1 exit /B 1
 copy /Y "README.md" "%BIN_OST%"
 if errorlevel 1 exit /B 1
 
-"%BIN_OST%\%PRJ%" --move --zip "%BIN_OST%" "%ZIP%"
+"%BIN%_%OST%\%PRJ%" --zip "%BIN_OST%" "%ZIP%"
+
+del /S /Q "%BIN%\%OST%"
 
 exit /B 0
