@@ -65,8 +65,8 @@ wc -c "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
 cp -pr "${TOP}/README.md" "${OUT}" || exitApp 1 "Failed to copy readme file to \"${OUT}\""
 ${TOP}/scripts/mkicons/mkicons "${OST}" ${@} || exitApp 1 "Failed to create app icons in \"${OUT}\""
 cp -pr "${XMP}" "${BIN}/${PRJ}" || exitApp 1 "Failed to copy examples"
-${EXE} --tgz "${BIN}" "${TOP}/app/${PRJ}-${OST_LC}.tar.gz" || exitApp 1 "Failed to create the app archive"
-rm -f "${TOP}/app/${PRJ}-${OST_LC}.tar" # needed under macOS
+${EXE} --move --tgz "${BIN}" "${TOP}/app/${PRJ}-${OST_LC}.tar.gz" || exitApp 1 "Failed to create the app archive"
+rm -rf "${TOP}/app/${PRJ}-${OST_LC}.tar" # need to remove tar explicitly under macOS
 
 exitApp 0 "${APP} successfully completed"
 
