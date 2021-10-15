@@ -9,6 +9,8 @@ set OST_LC=windows
 set ZIP=%APP%\%PRJ%-%OST_LC%.zip
 set BIN_OST=%BIN%\%OST%\%PRJ%
 
+if "%1" == "-k" (MOVE=--move) else (MOVE=)
+
 rem Reset errorlevel
 ver > nul
 
@@ -39,7 +41,7 @@ if errorlevel 1 exit /B 1
 copy /Y "README.md" "%BIN_OST%"
 if errorlevel 1 exit /B 1
 
-"%BIN%_%OST%\%PRJ%" --zip "%BIN_OST%" "%ZIP%"
+"%BIN%_%OST%\%PRJ%" %MOVE% --zip "%BIN_OST%" "%ZIP%"
 
 del /S /Q "%BIN%\%OST%"
 

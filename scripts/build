@@ -1,10 +1,10 @@
 #!/bin/bash
 
+set -Eeo pipefail
+
 ################################################################################
 
 PRJ="xnx"
-OST="${1}" # OS type: Linux, macOS or Windows (default: will be calculated)
-shift
 
 ################################################################################
 
@@ -17,6 +17,26 @@ function exitApp() {
   [[ "${msg}" != "" ]] && printf "\n%s\n\n" "${msg}"
 
   exit ${ret}
+}
+
+################################################################################
+
+function parseCommandLine() {
+    local opt
+
+    MOVE="--move"
+    OST=""
+
+    while getopts "k" opt; do
+        case "${opt}" in
+            k) MOVE=""
+               ;;
+        esac
+    done
+
+    shift $(($OPTIND - 1))
+
+    OST="${1}"
 }
 
 ################################################################################
@@ -34,6 +54,11 @@ function realpath() {
 APP=$(basename "${0}") || exitApp 1 "Failed to determine application name"
 TOP=$(dirname "${0}") || exitApp 1 "Failed to determine top directory"
 TOP=$(realpath "${TOP}/../") || exitApp 1
+
+parseCommandLine "${@}" || exitApp 1 "Failed to parse command-line options"
+
+[[ "${MOVE}" == "" ]] && shift
+[[ "${OST}" != "" ]] && shift
 
 ################################################################################
 
@@ -65,8 +90,7 @@ wc -c "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
 cp -pr "${TOP}/README.md" "${OUT}" || exitApp 1 "Failed to copy readme file to \"${OUT}\""
 ${TOP}/scripts/mkicons/mkicons "${OST}" ${@} || exitApp 1 "Failed to create app icons in \"${OUT}\""
 cp -pr "${XMP}" "${BIN}/${PRJ}" || exitApp 1 "Failed to copy examples"
-${EXE} --tgz "${BIN}" "${TOP}/app/${PRJ}-${OST_LC}.tar.gz" || exitApp 1 "Failed to create the app archive"
-rm -rf "${BIN}" "${TOP}/app/${PRJ}-${OST_LC}.tar" # need to remove tar explicitly under macOS
+${EXE} "${MOVE}" --tgz "${BIN}" "${TOP}/app/${PRJ}-${OST_LC}.tar.gz" || exitApp 1 "Failed to create the app archive"
 
 exitApp 0 "${APP} successfully completed"
 
