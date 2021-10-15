@@ -43,6 +43,4 @@ if errorlevel 1 exit /B 1
 
 "%BIN%_%OST%\%PRJ%" %MOVE% --zip "%BIN_OST%" "%ZIP%"
 
-del /S /Q "%BIN%\%OST%"
-
 exit /B 0
