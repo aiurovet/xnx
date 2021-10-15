@@ -9,7 +9,7 @@ set OST_LC=windows
 set ZIP=%APP%\%PRJ%-%OST_LC%.zip
 set BIN_OST=%BIN%\%OST%\%PRJ%
 
-if "%1" == "-k" (MOVE=--move) else (MOVE=)
+if "%1" == "-k" (MOVE=--move; shift) else (MOVE=)
 
 rem Reset errorlevel
 ver > nul
