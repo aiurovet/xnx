@@ -44,16 +44,16 @@ xnx [OPTIONS]
     --ungz                   just decompress a single GZip file to a single destination file, can be used with --move
     --tar                    just create a single destination archive file containing source files and/or directories, can be used with --move
     --untar                  just untar a single archive file to a destination directory, can be used with --move
-    --tbz                    just a combination of --tar and --bz2, can be used with --move
-    --untbz                  just a combination of --untar and --unbz2, can be used with --move
-    --tgz                    just a combination of --tar and --gz, can be used with --move
-    --untgz                  just a combination of --untar and --ungz, can be used with --move
-    --tzl                    just a combination of --tar and --zlib, can be used with --move
-    --untzl                  just a combination of --untar and --unzlib, can be used with --move
+    --tarbz2                 just a combination of --tar and --bz2, can be used with --move
+    --untarbz2               just a combination of --untar and --unbz2, can be used with --move
+    --targz                  just a combination of --tar and --gz, can be used with --move
+    --untargz                just a combination of --untar and --ungz, can be used with --move
+    --tarz                   just a combination of --tar and --zlib, can be used with --move
+    --untarz                 just a combination of --untar and --unzlib, can be used with --move
     --zip                    just zip source files and/or directories to a single destination archive file, can be used with with --move to delete source to delete source
     --unzip                  just unzip single archive file to destination directory, can be used with with --move to delete source to delete source
-    --zlib                   just compress a single source file to a single ZLib file, can be used with with --move to delete source to delete source
-    --unzlib                 just decompress a single ZLib file to a single destination file, can be used with with --move to delete source to delete source
+    --z                      just compress a single source file to a single ZLib file, can be used with with --move to delete source to delete source
+    --unz                    just decompress a single ZLib file to a single destination file, can be used with with --move to delete source to delete source
     --pack                   just compress source files and/or directories to a single destination archive file depending on its extension, can be used with --move
     --unpack                 just decompress a single source archive file to destination files and/or directories depending on source extension, can be used with --move
 ```

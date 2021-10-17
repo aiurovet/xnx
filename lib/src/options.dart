@@ -199,33 +199,33 @@ class Options {
     'negatable': false,
   };
   static final Map<String, Object?> CMD_TAR_BZ2 = {
-    'name': 'tbz',
+    'name': 'tarbz2',
     'help': 'just a combination of --tar and --bz2, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNTAR_BZ2 = {
-    'name': 'untbz',
+    'name': 'untarbz2',
     'help': 'just a combination of --untar and --unbz2, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_TAR_GZ = {
-    'name': 'tgz',
+    'name': 'targz',
     'help': 'just a combination of --tar and --gz, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNTAR_GZ = {
-    'name': 'untgz',
+    'name': 'untargz',
     'help': 'just a combination of --untar and --ungz, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_TAR_ZLIB = {
-    'name': 'tzl',
-    'help': 'just a combination of --tar and --zlib, can be used with --move',
+    'name': 'tarZ',
+    'help': 'just a combination of --tar and --Z, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNTAR_ZLIB = {
-    'name': 'untzl',
-    'help': 'just a combination of --untar and --unzlib, can be used with --move',
+    'name': 'untarZ',
+    'help': 'just a combination of --untar and --unZ, can be used with --move',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_ZIP = {
@@ -239,13 +239,13 @@ class Options {
     'negatable': false,
   };
   static final Map<String, Object?> CMD_ZLIB = {
-    'name': 'zlib',
-    'help': 'just compress a single source file to a single ZLib file, can be used with with --move to delete source to delete source',
+    'name': 'Z',
+    'help': 'just compress a single source file to a single Z file, can be used with with --move to delete source to delete source',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNZLIB = {
-    'name': 'unzlib',
-    'help': 'just decompress a single ZLib file to a single destination file, can be used with with --move to delete source to delete source',
+    'name': 'unZ',
+    'help': 'just decompress a single Z file to a single destination file, can be used with with --move to delete source to delete source',
     'negatable': false,
   };
 
@@ -566,14 +566,14 @@ class Options {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.TarZlib;
+        _archType = PackType.TarZ;
       }
     });
     addFlag(parser, CMD_UNTAR_ZLIB, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.TarZlib;
+        _archType = PackType.TarZ;
       }
     });
     addFlag(parser, CMD_ZIP, (value) {
@@ -594,14 +594,14 @@ class Options {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.Zlib;
+        _archType = PackType.Z;
       }
     });
     addFlag(parser, CMD_UNZLIB, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.Zlib;
+        _archType = PackType.Z;
       }
     });
     addFlag(parser, CMD_PACK, (value) {

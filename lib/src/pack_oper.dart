@@ -14,9 +14,9 @@ enum PackType {
   Tar,
   TarBz2,
   TarGz,
-  TarZlib,
+  TarZ,
   Zip,
-  Zlib,
+  Z,
 }
 
 class PackOper {
@@ -25,15 +25,15 @@ class PackOper {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final Map<PackType, List<String>> DEFAULT_EXTENSIONS = { // case-insensitive
-    PackType.Bz2: [ '.bz2', ],
-    PackType.Gz: [ '.gz', ],
-    PackType.Tar: [ '.tar', ],
-    PackType.TarBz2: [ '.tar.bz2', '.tbz', ],
-    PackType.TarGz: [ '.tar.gz', '.tgz', ],
-    PackType.TarZlib: [ '.tar.z', '.tz' ],
-    PackType.Zlib: [ '.Z', ],
-    PackType.Zip: [ '.zip', ],
+  static final Map<PackType, String> DEFAULT_EXTENSIONS = { // case-insensitive
+    PackType.Bz2: '.bz2',
+    PackType.Gz: '.gz',
+    PackType.Tar: '.tar',
+    PackType.TarBz2: '.tar.bz2',
+    PackType.TarGz: '.tar.gz',
+    PackType.TarZ: '.tar.Z',
+    PackType.Z: '.Z',
+    PackType.Zip: '.zip',
   };
 
   static const int DEFAULT_COMPRESSION = Deflate.DEFAULT_COMPRESSION;
@@ -206,15 +206,15 @@ class PackOper {
       case PackType.TarGz:
         packTypeEx = PackType.Gz;
         break;
-      case PackType.TarZlib:
-        packTypeEx = PackType.Zlib;
+      case PackType.TarZ:
+        packTypeEx = PackType.Z;
         break;
       default:
         packTypeEx = packType;
         break;
     }
 
-    return fromPath + _getFirstDefaultExtension(packTypeEx);
+    return fromPath + (DEFAULT_EXTENSIONS[packTypeEx] ?? '');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -232,16 +232,14 @@ class PackOper {
       var maxMatchLen = 0;
 
       DEFAULT_EXTENSIONS.forEach((key, value) {
-        value.forEach((currExt) {
-          final currLen = currExt.length;
+        final currLen = value.length;
 
-          if ((packTypeByExt == null) || (currLen > maxMatchLen)) {
-            if (fileName.endsWith(currExt.toLowerCase())) {
-              maxMatchLen = currLen;
-              packTypeByExt = key;
-            }
+        if ((packTypeByExt == null) || (currLen > maxMatchLen)) {
+          if (fileName.endsWith(value.toLowerCase())) {
+            maxMatchLen = currLen;
+            packTypeByExt = key;
           }
-        });
+        }
       });
     }
 
@@ -262,7 +260,7 @@ class PackOper {
     }
 
     var fileTitle = Path.basenameWithoutExtension(fromPath);
-    var extTar = DEFAULT_EXTENSIONS[PackType.Tar]?[0] ?? '';
+    var extTar = DEFAULT_EXTENSIONS[PackType.Tar] ?? '';
 
     if (isPackTypeTar(packType) && !fileTitle.toLowerCase().endsWith(extTar.toLowerCase())) {
       fileTitle += extTar;
@@ -284,7 +282,7 @@ class PackOper {
 
   static bool isPackTypeTar(PackType packType) =>
     ((packType == PackType.Tar) || (packType == PackType.TarBz2) ||
-    (packType == PackType.TarGz) || (packType == PackType.TarZlib));
+    (packType == PackType.TarGz) || (packType == PackType.TarZ));
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -455,8 +453,8 @@ class PackOper {
       case PackType.TarGz:
         result = GZipDecoder().decodeBytes(bytes);
         break;
-      case PackType.Zlib:
-      case PackType.TarZlib:
+      case PackType.Z:
+      case PackType.TarZ:
         result = ZLibDecoder().decodeBytes(bytes);
         break;
       default:
@@ -481,8 +479,8 @@ class PackOper {
       case PackType.TarGz:
         result = GZipEncoder().encode(bytes, level: compression);
         break;
-      case PackType.Zlib:
-      case PackType.TarZlib:
+      case PackType.Z:
+      case PackType.TarZ:
         result = ZLibEncoder().encode(bytes, level: compression);
         break;
       default:
@@ -490,18 +488,6 @@ class PackOper {
     }
 
     return result;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String _getFirstDefaultExtension(PackType packType) {
-    var lst = DEFAULT_EXTENSIONS[packType];
-
-    if ((lst != null) && lst.isNotEmpty) {
-      return lst[0];
-    }
-
-    throw Exception('Can\'t find the first default extension for pack type $packType');
   }
 
   //////////////////////////////////////////////////////////////////////////////
