@@ -48,7 +48,7 @@ set OSTYPE=%OST%
 call scripts\mkicons\mkicons !ARGS!
 if errorlevel 1 exit /B 1
 
-xcopy /Q /S examples "%BIN_OST%"
+xcopy /I /Q /S examples "%BIN_OST%/examples"
 if errorlevel 1 exit /B 1
 
 xcopy /Q "README.md" "%BIN_OST%"
