@@ -24,13 +24,13 @@ function exitApp() {
 function parseCommandLine() {
     local opt
 
-    OPT_MOVE="--move"
+    OPT_MOVE=1
     OPT_COMPILE=1
     OST=""
 
     while getopts "kn" opt; do
         case "${opt}" in
-            k) OPT_MOVE=""
+            k) OPT_MOVE=0
                ;;
             n) OPT_COMPILE=0
                ;;
@@ -102,7 +102,11 @@ fi
 cp -pr "${TOP}/README.md" "${OUT}" || exitApp 1 "Failed to copy readme file to \"${OUT}\""
 ${TOP}/scripts/mkicons/mkicons "${OST}" ${@} || exitApp 1 "Failed to create app icons in \"${OUT}\""
 cp -pr "${XMP}" "${BIN}/${PRJ}" || exitApp 1 "Failed to copy examples"
-${EXE} ${OPT_MOVE} --targz "${BIN}" "${TAR}.gz" || exitApp 1 "Failed to create the app archive"
+${EXE} --targz "${BIN}" "${TAR}.gz" || exitApp 1 "Failed to create the app archive"
+
+if ((${OPT_MOVE} != 0)); then
+    rm -rf "${BIN}"
+fi
 
 if [ -e "${TAR}" ]; then
     # For macOS

@@ -1,5 +1,7 @@
 @echo off
 
+setlocal EnableDelayedExpansion
+
 set PRJ=xnx
 set APP=app
 set BIN=bin
@@ -9,12 +11,18 @@ set OST_LC=windows
 set ZIP=%APP%\%PRJ%-%OST_LC%.zip
 set BIN_OST=%BIN%\%OST%\%PRJ%
 
-if "%1" == "-k" (
-    set OPT_MOVE=
-    shift
+set OPT_MOVE=1
+
+:loop
+
+if "%~1" == "-k" (
+    set OPT_MOVE=0
 ) else (
-    set OPT_MOVE=--move
+    set ARGS=!ARGS! %1
 )
+
+shift
+if "%~1" neq "" goto :loop
 
 rem Reset errorlevel
 ver > nul
@@ -22,7 +30,7 @@ ver > nul
 %~d0
 if errorlevel 1 exit /B 1
 
-cd %~dp0..
+cd %~dp0
 if errorlevel 1 exit /B 1
 
 if not exist "%BIN_OST%" (
@@ -37,7 +45,7 @@ dart compile exe "%BIN%\main.dart" -o "%BIN_OST%\%PRJ%.exe"
 if errorlevel 1 exit /B 1
 
 set OSTYPE=%OST%
-call scripts\mkicons\mkicons %*
+call scripts\mkicons\mkicons !ARGS!
 if errorlevel 1 exit /B 1
 
 copy /Y examples "%BIN_OST%"
@@ -46,6 +54,11 @@ if errorlevel 1 exit /B 1
 copy /Y "README.md" "%BIN_OST%"
 if errorlevel 1 exit /B 1
 
-"%BIN%_%OST%\%PRJ%" %OPT_MOVE% --zip "%BIN_OST%" "%ZIP%"
+"%BIN_OST%\%PRJ%" --zip "%BIN_OST%" "%ZIP%"
+if errorlevel 1 exit /B 1
+
+if %OPT_MOVE% neq 0 (
+    rmdir /Q /S "%BIN%\%OST%"
+)
 
 exit /B 0
