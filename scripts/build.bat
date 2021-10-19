@@ -3,8 +3,9 @@
 setlocal EnableDelayedExpansion
 
 set PRJ=xnx
-set PKZ=app\%PRJ%-windows.zip
 set EXE=bin\%PRJ%.exe
+set OUT=out\xnx
+set PKZ=app\%PRJ%-windows.zip
 
 %~d0
 if errorlevel 1 exit /B 1
@@ -30,11 +31,14 @@ ver > nul
 
 echo Running the build for Windows
 
-if not exist out (
-    echo Creating the output directory
-    mkdir out
-    if errorlevel 1 exit /B 1
+if exist "%OUT%" (
+    echo Removing the output directory
+    rmdir /Q /S "%OUT%"
 )
+
+echo Creating the "%OUT%"
+mkdir "%OUT%"
+if errorlevel 1 ex"%OUT%"
 
 echo Getting the latest version of the packages
 call dart pub get
@@ -45,15 +49,15 @@ dart compile exe bin\main.dart -o "%EXE%"
 if errorlevel 1 exit /B 1
 
 echo Copying the executable to the output directory
-xcopy /Q "%EXE%" out
+xcopy /Q "%EXE%" "%OUT%"
 if errorlevel 1 exit /B 1
 
 echo Copying README to the output directory
-xcopy /Q README.md out
+xcopy /Q README.md "%OUT%"
 if errorlevel 1 exit /B 1
 
 echo Copying examples to the output directory
-xcopy /I /Q /S examples out\examples
+xcopy /I /Q /S examples "%OUT%\examples"
 if errorlevel 1 exit /B 1
 
 echo Creating the icons in the output directory
@@ -61,13 +65,18 @@ echo Creating the icons in the output directory
 if errorlevel 1 exit /B 1
 
 echo Creating and compressing the application package
-"%EXE%" --move --zip out "%PKZ%"
+"%EXE%" --move --zip "%OUT%" "%PKZ%"
 if errorlevel 1 exit /B 1
 
 dir "%PKZ%"
 
-if %OPT_KEEP% equ 0 (
+if exist out (
     echo Removing the output directory
+    del /Q /S out
+)
+
+if %OPT_KEEP% equ 0 (
+    echo Removing the binary
     del /Q "%EXE%"
 )
 

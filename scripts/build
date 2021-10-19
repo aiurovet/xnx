@@ -5,6 +5,8 @@ set -Eeo pipefail
 ################################################################################
 
 PRJ="xnx"
+EXE="bin/${PRJ}"
+OUT="out/${PRJ}"
 
 ################################################################################
 
@@ -52,17 +54,22 @@ fi
 
 OS_LOWER=$(echo "${OS_TYPE}" | tr "[:upper:]" "[:lower:]")
 
+PKG="app/${PRJ}-${OS_LOWER}.tar"
+PKZ="${PKG}.gz"
+
 export OS_TYPE
 echo "Running the ${OS_TYPE} build"
 
 ################################################################################
 
-echo "Creating the output directory"
-mkdir -p out
-
-EXE="bin/${PRJ}"
-PKG="app/${PRJ}-${OS_LOWER}.tar"
-PKZ="${PKG}.gz"
+if [[ -d out ]]; then
+    echo "Cleaning the output directory"
+    rm -rf out/*
+    mkdir -p "${OUT}"
+else
+    echo "Creating the output directory"
+    mkdir -p "${OUT}"
+fi
 
 echo "Getting the latest version of the packages"
 dart pub get
@@ -71,13 +78,13 @@ echo "Compiling \"${EXE}\""
 dart compile exe bin/main.dart -o "${EXE}"
 
 echo "Copying the executable to the output directory"
-cp -p "${EXE}" out
+cp -p "${EXE}" "${OUT}"
 
 echo "Copying README to the output directory"
-cp -p README.md out
+cp -p README.md "${OUT}"
 
 echo "Copying examples to the output directory"
-cp -pr examples out
+cp -pr examples "${OUT}"
 
 echo "Creating the icons in the output directory"
 "${EXE}" -d "scripts/mkicons" ${@}
@@ -89,9 +96,14 @@ echo ""
 ls -l "${PKZ}"
 echo ""
 
-if ((${OPT_KEEP} == 0)); then
+if [[ -d out ]]; then
     echo "Removing the output directory"
     rm -rf out
+fi
+
+if ((${OPT_KEEP} == 0)); then
+    echo "Removing the binary"
+    rm -rf "${EXE}"
 fi
 
 if [ -e "${PKG}" ]; then

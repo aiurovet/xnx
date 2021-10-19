@@ -26,7 +26,7 @@
     "{OSTYPE}": "${OS_TYPE}",
   } },
 
-  "{out-dir}": "{cur-dir}/../../out",
+  "{out-dir}": "{cur-dir}/../../out/xnx",
 
   "{lnf}": [
     { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", "{win-icon-id}": "MAINICON,0" },
