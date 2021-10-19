@@ -52,6 +52,10 @@ echo Copying the executable to the output directory
 xcopy /Q "%EXE%" "%OUT%"
 if errorlevel 1 exit /B 1
 
+echo Copying installation instructions to the output directory
+xcopy /Q INSTALL.txt "%OUT%"
+if errorlevel 1 exit /B 1
+
 echo Copying README to the output directory
 xcopy /Q README.md "%OUT%"
 if errorlevel 1 exit /B 1

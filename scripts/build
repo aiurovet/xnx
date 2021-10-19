@@ -80,6 +80,9 @@ dart compile exe bin/main.dart -o "${EXE}"
 echo "Copying the executable to the output directory"
 cp -p "${EXE}" "${OUT}"
 
+echo "Copying installation instructions to the output directory"
+cp -p INSTALL.txt "${OUT}"
+
 echo "Copying README to the output directory"
 cp -p README.md "${OUT}"
 

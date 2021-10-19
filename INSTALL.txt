@@ -23,4 +23,5 @@ An example - Windows
   3. Open xnx-windows.zip
   4. Select 'xnx' and press Ctrl+C or do right mouse click and select 'Copy'
   5. Go to C:\Tools and press Ctrl+V or do right mouse click and select 'Paste'
-  6. You can use any other directories instead of %USERPROFILE%\Downloads and C:\Tools
+  6. You may also add C:\Tools\xnx to your PATH
+  7. You can use any other directories instead of %USERPROFILE%\Downloads and C:\Tools
