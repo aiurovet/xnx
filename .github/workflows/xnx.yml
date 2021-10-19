@@ -77,34 +77,34 @@ jobs:
       ################################################################################
 
       - name: Running Integration Test 1 - flutter_app
-        run: bin/${{ runner.os }}/xnx/xnx -d examples/flutter_app
+        run: out/xnx -d examples/flutter_app
 
       ################################################################################
 
       - name: Running Integration Test 2 - ms_office
-        run: bin/${{ runner.os }}/xnx/xnx -d examples/ms_office
+        run: out/xnx -d examples/ms_office
 
       ################################################################################
 
       - name: Running Integration Test 3 - multi_conf
-        run: bin/${{ runner.os }}/xnx/xnx -d examples/multi_conf
+        run: out/xnx -d examples/multi_conf
 
       ################################################################################
 
       - name: Running Integration Test 4 - multi_icon
-        run: bin/${{ runner.os }}/xnx/xnx -d examples/multi_icon
+        run: out/xnx -d examples/multi_icon
 
       ################################################################################
 
       - name: Cleaning up on a POSIX-compliant OS
         if: runner.os != 'Windows'
-        run: rm -rf bin/${{ runner.os }}
+        run: rm -rf out
 
       ################################################################################
 
       - name: Cleaning up on Windows
         if: runner.os == 'Windows'
-        run: Remove-Item -Force -Recurse -Path bin\${{ runner.os }}
+        run: Remove-Item -Force -Recurse -Path out
 
       ################################################################################
 
