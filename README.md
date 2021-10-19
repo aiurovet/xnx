@@ -1,8 +1,8 @@
-## xnx
+## xnx 0.1.0
 
 **Copyright © Alexander Iurovetski 2020 - 2021**
 
-Command-line utility to run multiple commands against the same input with various parameters, and optionally, to expand placeholders inside the input
+A command-line utility to eXpand text content by replacing placeholders with the actual data aNd to eXecute external utilities.
 
 ##### USAGE:
 

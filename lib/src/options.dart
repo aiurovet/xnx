@@ -665,6 +665,9 @@ class Options {
 
   static void printUsage(ArgParser parser, {String? error}) {
     stderr.writeln('''
+$APP_NAME 0.1.0 (C) Alexander Iurovetski 2020 - 2021
+
+A command-line utility to eXpand text content aNd to eXecute external utilities.
 
 USAGE:
 
