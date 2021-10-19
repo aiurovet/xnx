@@ -65,7 +65,7 @@ echo Creating the icons in the output directory
 if errorlevel 1 exit /B 1
 
 echo Creating and compressing the application package
-"%EXE%" --move --zip "%OUT%" "%PKZ%"
+"%EXE%" --move --zip out "%PKZ%"
 if errorlevel 1 exit /B 1
 
 dir "%PKZ%"
