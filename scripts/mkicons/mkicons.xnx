@@ -26,7 +26,7 @@
     "{OSTYPE}": "${OST}",
   } },
 
-  "{out-dir}": "{cur-dir}/../../bin/{OSTYPE}/{prj}",
+  "{out-dir}": "{cur-dir}/../../out",
 
   "{lnf}": [
     { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", "{win-icon-id}": "MAINICON,0" },

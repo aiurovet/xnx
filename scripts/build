@@ -48,22 +48,9 @@ function parseCommandLine() {
 
 ################################################################################
 
-function realpath() {
-    local old="${PWD}"
-
-    cd "${1}" &&\
-    echo "${PWD}" &&\
-    cd "${old}"
-}
-
-################################################################################
-
-APP=$(basename "${0}") || exitApp 1 "Failed to determine application name"
-TOP=$(dirname "${0}") || exitApp 1 "Failed to determine top directory"
-TOP=$(realpath "${TOP}/../") || exitApp 1
+cd $(dirname $(dirname "${0}")) || exitApp 1 "Failed to switch to the top project directory"
 
 parseCommandLine "${@}" || exitApp 1 "Failed to parse command-line options"
-
 shift ${OPT_SHIFT}
 
 ################################################################################
@@ -82,30 +69,25 @@ export OST OST_LC
 
 ################################################################################
 
-BIN="${TOP}/bin/${OST}"
-OUT="${BIN}/${PRJ}"
-SRC="${BIN}/../main.dart"
-XMP="${TOP}/examples"
+mkdir -p out || exitApp 1 "Failed to create directory \"out\""
 
-mkdir -p "${OUT}" || exitApp 1 "Failed to create directory \"${OUT}\""
-
-EXE="${OUT}/${PRJ}"
-TAR="${TOP}/app/${PRJ}-${OST_LC}.tar"
+EXE="out/${PRJ}"
+TAR="app/${PRJ}-${OST_LC}.tar"
 
 if ((${OPT_COMPILE} != 0)); then
     dart pub get || exitApp 1 "Failed to retrieve packages"
     echo "Compiling..."
-    dart compile exe "${SRC}" -o "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
+    dart compile exe "bin/main.dart" -o "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
     wc -c "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
 fi
 
-cp -pr "${TOP}/README.md" "${OUT}" || exitApp 1 "Failed to copy readme file to \"${OUT}\""
-${TOP}/scripts/mkicons/mkicons "${OST}" ${@} || exitApp 1 "Failed to create app icons in \"${OUT}\""
-cp -pr "${XMP}" "${BIN}/${PRJ}" || exitApp 1 "Failed to copy examples"
-${EXE} --targz "${BIN}" "${TAR}.gz" || exitApp 1 "Failed to create the app archive"
+cp -pr README.md out || exitApp 1 "Failed to copy the readme file to \"out\""
+#scripts/mkicons/mkicons "${OST}" ${@} || exitApp 1 "Failed to create app icons"
+cp -pr examples out || exitApp 1 "Failed to copy examples"
+${EXE} --targz out "${TAR}.gz" || exitApp 1 "Failed to create the app archive"
 
 if ((${OPT_MOVE} != 0)); then
-    rm -rf "${BIN}"
+    rm -rf out
 fi
 
 if [ -e "${TAR}" ]; then
@@ -114,6 +96,6 @@ if [ -e "${TAR}" ]; then
     rm -f "${TAR}"
 fi
 
-exitApp 0 "${APP} successfully completed"
+exitApp 0 "The build successfully completed"
 
 ################################################################################

@@ -10,25 +10,10 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
 
-#    env:
-#      OSTYPE: ${{ runner.os,, }}
-
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-        #os: [ ubuntu-latest, macos-latest ]
-        #os: [ ubuntu-latest, windows-latest ]
-        #os: [ macos-latest, windows-latest ]
-        #os: [ ubuntu-latest ]
-        #os: [ macos-latest ]
-        #os: [ windows-latest ]
-
-    # Note that this workflow uses the latest stable version of the Dart SDK.
-    # Docker images for other release channels - like dev and beta - are also
-    # available. See https://hub.docker.com/r/google/dart/ for the available
-    # images.
-    ##container:
-    ##  image:  google/dart:beta
+        #os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ windows-latest ]
 
     steps:
 
@@ -40,13 +25,13 @@ jobs:
 
       ################################################################################
 
-      - name: Post-Install Dart SDK on Linux
+      - name: Finalizing Dart SDK installation on Linux
         if: runner.os == 'Linux'
         run: sudo apt-get update
 
       ################################################################################
 
-      - name: Install ImageMagick on Windows
+      - name: Installing ImageMagick on Windows
         if: runner.os == 'Windows'
         run: |
           choco install -y imagemagick.app --no-progress
@@ -54,85 +39,79 @@ jobs:
 
       ################################################################################
 
-      - name: Install dependencies
+      - name: Installing dependencies
         run: dart pub get
 
       ################################################################################
 
-      # Uncomment this step to verify the use of 'dart format' on each commit.
-      # - name: Verify formatting
-      #   run: dart format --output=none --set-exit-if-changed .
+      - name: Analyzing the project source
+        run: dart analyze --fatal-infos
 
-      # Consider passing '--fatal-infos' for slightly stricter analysis.
-      - name: Analyze project source
-        run: dart analyze
+      ################################################################################
 
-      # Tests
-      - name: Run tests
+      - name: Running unit tests
         run: dart test
 
       ################################################################################
 
-      - name: Build the application on a POSIX-compliant OS
+      - name: Building the application on a POSIX-compliant OS
         if: runner.os != 'Windows'
         run: scripts/build -k "${{ runner.os }}"
 
-      - name: Build the application on Windows
+      - name: Building the application on Windows
         if: runner.os == 'Windows'
-        run: scripts\build -k
+        run: scripts\build /K
 
       ################################################################################
 
-      - name: Check build result on a POSIX-compliant OS
+      - name: Checking the build result on a POSIX-compliant OS
         if: runner.os != 'Windows'
-        run: |
-          ls -1 app
+        run: ls -1 app
 
       ################################################################################
 
-      - name: Check build result on Windows
+      - name: Checkinbg the build result on Windows
         if: runner.os == 'Windows'
         run: Get-ChildItem -Name -Path app\*
 
       ################################################################################
 
-      - name: Integration Test 1 - flutter_app
+      - name: Running Integration Test 1 - flutter_app
         run: bin/${{ runner.os }}/xnx/xnx -d examples/flutter_app
 
       ################################################################################
 
-      - name: Integration Test 2 - ms_office
+      - name: Running Integration Test 2 - ms_office
         run: bin/${{ runner.os }}/xnx/xnx -d examples/ms_office
 
       ################################################################################
 
-      - name: Integration Test 3 - multi_conf
+      - name: Running Integration Test 3 - multi_conf
         run: bin/${{ runner.os }}/xnx/xnx -d examples/multi_conf
 
       ################################################################################
 
-      - name: Integration Test 4 - multi_icon
+      - name: Running Integration Test 4 - multi_icon
         run: bin/${{ runner.os }}/xnx/xnx -d examples/multi_icon
 
       ################################################################################
 
-      - name: Cleanup on a POSIX-compliant OS
+      - name: Cleaning up on a POSIX-compliant OS
         if: runner.os != 'Windows'
         run: rm -rf bin/${{ runner.os }}
 
       ################################################################################
 
-      - name: Cleanup on Windows
+      - name: Cleaning up on Windows
         if: runner.os == 'Windows'
         run: Remove-Item -Force -Recurse -Path bin\${{ runner.os }}
 
       ################################################################################
 
-      - name: Push binaries and icons back to the project
+      - name: Pushing the new application package back to the version control
         uses: EndBug/add-and-commit@v7
         with:
-          message: 'Moving the new application package to version control'
+          message: 'Pushing the new application package back to the version control'
           add: 'app/* --force'
-#          cwd: app
 
       ################################################################################
