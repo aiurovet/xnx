@@ -64,18 +64,6 @@ jobs:
 
       ################################################################################
 
-      - name: Checking the build result on a POSIX-compliant OS
-        if: runner.os != 'Windows'
-        run: ls -1 app
-
-      ################################################################################
-
-      - name: Checkinbg the build result on Windows
-        if: runner.os == 'Windows'
-        run: Get-ChildItem -Name -Path app\*
-
-      ################################################################################
-
       - name: Running Integration Test 1 - flutter_app
         run: bin/xnx -d examples/flutter_app
 
@@ -108,10 +96,29 @@ jobs:
 
       ################################################################################
 
-      - name: Pushing the new application package back to the version control
+      - name: Pushing the new Linux application package back to the version control
+        if: runner.os == 'Linux'
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Pushing the new application package back to the version control'
-          add: 'app/* --force'
+          add: 'app/xnx-linux.tar.gz --force'
+
+      ################################################################################
+
+      - name: Pushing the new macOS application package back to the version control
+        if: runner.os == 'macOS'
+        uses: EndBug/add-and-commit@v7
+        with:
+          message: 'Pushing the new application package back to the version control'
+          add: 'app/xnx-macos.tar.gz --force'
+
+      ################################################################################
+
+      - name: Pushing the new Windows application package back to the version control
+        if: runner.os == 'Windows'
+        uses: EndBug/add-and-commit@v7
+        with:
+          message: 'Pushing the new application package back to the version control'
+          add: 'app/xnx-windows.zip --force'
 
       ################################################################################

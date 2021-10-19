@@ -3,7 +3,7 @@
 setlocal EnableDelayedExpansion
 
 set PRJ=xnx
-set PKG=app\%PRJ%-windows.zip
+set PKZ=app\%PRJ%-windows.zip
 set EXE=bin\%PRJ%.exe
 
 %~d0
@@ -60,11 +60,11 @@ echo Creating the icons in the output directory
 %EXE% -d scripts\mkicons !ARGS!
 if errorlevel 1 exit /B 1
 
-echo Creating the application package
-"%EXE%" --move --zip out "%PKG%"
+echo Creating and compressing the application package
+"%EXE%" --move --zip out "%PKZ%"
 if errorlevel 1 exit /B 1
 
-dir "%PKG%"
+dir "%PKZ%"
 
 if %OPT_KEEP% equ 0 (
     echo Removing the output directory
