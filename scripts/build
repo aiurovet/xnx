@@ -82,11 +82,12 @@ cp -pr examples out
 echo "Creating the icons in the output directory"
 "${EXE}" -d "scripts/mkicons" ${@}
 
-echo "Creatingand compressing the application package"
+echo "Creating and compressing the application package"
 ${EXE} --move --targz out "${PKZ}"
 
 echo ""
 ls -l "${PKZ}"
+echo ""
 
 if ((${OPT_KEEP} == 0)); then
     echo "Removing the output directory"
