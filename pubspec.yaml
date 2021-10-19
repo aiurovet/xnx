@@ -1,6 +1,6 @@
 name: xnx
 version: 0.1.0
-description: A command-line utility to eXpand text content by placeholders aNd to eXecute external utilities.
+description: A command-line utility to eXpand text content aNd to eXecute external utilities.
 # homepage: https://www.example.com
 
 environment:
