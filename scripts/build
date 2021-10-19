@@ -8,31 +8,15 @@ PRJ="xnx"
 
 ################################################################################
 
-function exitApp() {
-  local ret=${1:-0}
-  local msg="${2}"
-
-  (( ${ret} != 0 )) && msg="*** ERROR: ${msg:-Build failed}"
-
-  [[ "${msg}" != "" ]] && printf "\n%s\n\n" "${msg}"
-
-  exit ${ret}
-}
-
-################################################################################
-
 function parseCommandLine() {
     local opt
 
-    OPT_MOVE=1
-    OPT_COMPILE=1
-    OST=""
+    OPT_KEEP=0
+    OS_TYPE=""
 
-    while getopts "kn" opt; do
+    while getopts "k" opt; do
         case "${opt}" in
-            k) OPT_MOVE=0
-               ;;
-            n) OPT_COMPILE=0
+            k) OPT_KEEP=1
                ;;
         esac
     done
@@ -41,61 +25,82 @@ function parseCommandLine() {
     shift ${OPT_SHIFT}
 
     if ((${#} >= 1)); then
-        OST="${1}"
+        OS_TYPE="${1}"
         OPT_SHIFT=$((${OPT_SHIFT} + 1))
     fi
 }
 
 ################################################################################
 
-cd $(dirname $(dirname "${0}")) || exitApp 1 "Failed to switch to the top project directory"
+echo "Switching to the top project directory"
+cd $(dirname $(dirname "${0}"))
 
-parseCommandLine "${@}" || exitApp 1 "Failed to parse command-line options"
+echo "Parsing command-line parameters"
+parseCommandLine "${@}"
 shift ${OPT_SHIFT}
 
 ################################################################################
 
-if [[ "${OST}" == "" ]]; then
-    OST=$(uname -s) || exitApp 1 "Failed to retrieve OS kernel name"
+if [[ "${OS_TYPE}" == "" ]]; then
+    echo "Retrieving the default OS name"
+    OS_TYPE=$(uname -s)
 fi
 
-if [[ "${OST}" =~ "darwin" ]]; then
-    OST="macOS"
+if [[ "${OS_TYPE}" =~ "darwin" ]]; then
+    OS_TYPE="macOS"
 fi
 
-OST_LC=$(echo "${OST}" | tr "[:upper:]" "[:lower:]")
+OS_LOWER=$(echo "${OS_TYPE}" | tr "[:upper:]" "[:lower:]")
 
-export OST OST_LC
+export OS_TYPE
+echo "Running the ${OS_TYPE} build"
 
 ################################################################################
 
-mkdir -p out || exitApp 1 "Failed to create directory \"out\""
+echo "Creating the output directory"
+mkdir -p out
 
-EXE="out/${PRJ}"
-TAR="app/${PRJ}-${OST_LC}.tar"
+EXE="bin/${PRJ}"
+PKG="app/${PRJ}-${OS_LOWER}.tar"
+PKZ="${PKG}.gz"
 
-if ((${OPT_COMPILE} != 0)); then
-    dart pub get || exitApp 1 "Failed to retrieve packages"
-    echo "Compiling..."
-    dart compile exe "bin/main.dart" -o "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
-    wc -c "${EXE}" || exitApp 1 "Failed to compile the executable \"${EXE}\""
-fi
+echo "Getting the latest version of the packages"
+dart pub get
 
-cp -pr README.md out || exitApp 1 "Failed to copy the readme file to \"out\""
-#scripts/mkicons/mkicons "${OST}" ${@} || exitApp 1 "Failed to create app icons"
-cp -pr examples out || exitApp 1 "Failed to copy examples"
-${EXE} --targz out "${TAR}.gz" || exitApp 1 "Failed to create the app archive"
+echo "Compiling \"${EXE}\""
+dart compile exe bin/main.dart -o "${EXE}"
 
-if ((${OPT_MOVE} != 0)); then
+echo "Copying the executable to the output directory"
+cp -p "${EXE}" out
+
+echo "Copying README to the output directory"
+cp -p README.md out
+
+echo "Copying examples to the output directory"
+cp -pr examples out
+
+echo "Creating the icons in the output directory"
+"${EXE}" -d "scripts/mkicons" ${@}
+
+echo "Creating the application package"
+${EXE} --move --targz out "${PKZ}"
+
+echo ""
+ls -l "${PKG}"*
+
+if ((${OPT_KEEP} == 0)); then
+    echo "Removing the output directory"
     rm -rf out
 fi
 
-if [ -e "${TAR}" ]; then
+if [ -e "${PKG}" ]; then
+    echo "Removing \"${PKG}\""
     # For macOS
-    ls -l "${TAR}"
-    rm -f "${TAR}"
+    ls -l "${PKG}"
+    rm -f "${PKG}"
 fi
 
-exitApp 0 "The build successfully completed"
+echo "The build successfully completed"
+exit 0
 
 ################################################################################

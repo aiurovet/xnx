@@ -22,8 +22,8 @@
 
   "{{-import-}}": "../../examples/shell.xnx",
 
-  "{{-if-}}": { "": '"${OST}" != ""', "{{-then-}}": {
-    "{OSTYPE}": "${OST}",
+  "{{-if-}}": { "": '"${OS_TYPE}" != ""', "{{-then-}}": {
+    "{OSTYPE}": "${OS_TYPE}",
   } },
 
   "{out-dir}": "{cur-dir}/../../out",
