@@ -64,8 +64,8 @@ jobs:
 
       ################################################################################
 
-      - name: Running Integration Test 1 - flutter_app
-        run: bin/xnx -d examples/flutter_app
+      - name: Running Integration Test 1 - flutter_app_icons
+        run: bin/xnx -d examples/flutter_app_icons
 
       ################################################################################
 
