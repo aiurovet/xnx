@@ -169,17 +169,17 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void xferSync(String toPath, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
+  void xferSync(String toPath, {bool isListOnly = false, bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
     // Ensuring source file exists
 
     if (!tryExistsSync()) {
-      throw Exception('Copy failed, as source file "$path" was not found');
+      throw Exception('${isListOnly ? 'Will fail to copy' : 'Copy failed'}, as source file "$path" was not found');
     }
 
     // Sanity check
 
     if (Path.equals(path, toPath)) {
-      throw Exception('Unable to copy: source and target are the same: "$path"');
+      throw Exception('${isListOnly ? 'Will not' : 'Unable to'} copy: source and target are the same: "$path"');
     }
 
     // Getting destination path and directory, as well as checking what's newer
@@ -205,26 +205,33 @@ extension FileExt on File {
     if (isMove) {
       if (canDo) {
         if (!isSilent) {
-          print('Moving file "$path"');
+          print('${isListOnly ? 'Will move' : 'Moving'} file "$path"');
         }
-        renameSync(toPathEx);
+        if (!isListOnly) {
+          renameSync(toPathEx);
+        }
       }
       else {
         if (!isSilent) {
-          print('Deleting file "$path"');
+          print('${isListOnly ? 'Will delete' : 'Deleting'} file "$path"');
         }
-        deleteSync();
+        if (!isListOnly) {
+          deleteSync();
+        }
       }
     }
     else if (canDo) {
       if (!isSilent) {
-        print('Copying file "$path"');
+        print('${isListOnly ? 'Will copy' : 'Copying'} file "$path"');
       }
-
-      copySync(toPathEx);
+      if (!isListOnly) {
+        copySync(toPathEx);
+      }
     }
 
-    toFile.setTimeStampSync(lastModStamp);
+    if (!isListOnly) {
+      toFile.setTimeStampSync(lastModStamp);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

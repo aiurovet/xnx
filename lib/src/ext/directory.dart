@@ -130,7 +130,7 @@ extension DirectoryExt on Directory {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void xferSync(String toDirName, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
+  void xferSync(String toDirName, {bool isListOnly = false, bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
     var fromFullDirName = appendPathSeparator(Path.getFullPath(path));
     var toFullDirName = appendPathSeparator(Path.getFullPath(toDirName));
 
@@ -182,11 +182,11 @@ extension DirectoryExt on Directory {
       if (entity is Directory) {
         var toSubDirName = toDirName + entity.path.substring(dirNameLen);
 
-        entity.xferSync(toSubDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+        entity.xferSync(toSubDirName, isListOnly: isListOnly, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
       else if (entity is File) {
         var toPath = Path.join(toDirName, Path.basename(entity.path));
-        entity.xferSync(toPath, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+        entity.xferSync(toPath, isListOnly: isListOnly, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
     }
   }

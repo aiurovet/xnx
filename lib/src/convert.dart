@@ -92,6 +92,7 @@ class Convert {
     final isPrint = options.isCmdPrint;
     final isCompress = options.isCmdCompress;
     final isDecompress = options.isCmdDecompress;
+    final isListOnly = options.isListOnly;
     final isMove = options.isCmdMove;
 
     var argCount = (args.length - 1);
@@ -110,18 +111,18 @@ class Convert {
 
         if (isTar || (archType == PackType.Zip)) {
           if (isCompress) {
-            PackOper.archiveSync(archType, args, isMove: isMove, isSilent: isSilent);
+            PackOper.archiveSync(archType, args, isListOnly: isListOnly, isMove: isMove, isSilent: isSilent);
           }
           else if (arg1 != null) {
-            PackOper.unarchiveSync(archType, arg1, arg2, isMove: isMove, isSilent: isSilent);
+            PackOper.unarchiveSync(archType, arg1, arg2, isListOnly: isListOnly, isMove: isMove, isSilent: isSilent);
           }
         }
         else if (arg1 != null) {
           if (isCompress) {
-            PackOper.compressSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+            PackOper.compressSync(archType, arg1, toPath: arg2, isListOnly: isListOnly, isMove: true, isSilent: isSilent);
           }
           else {
-            PackOper.uncompressSync(archType, arg1, toPath: arg2, isMove: true, isSilent: isSilent);
+            PackOper.uncompressSync(archType, arg1, toPath: arg2, isListOnly: isListOnly, isMove: true, isSilent: isSilent);
           }
         }
       }
@@ -134,16 +135,16 @@ class Convert {
     }
     else {
       if (options.isCmdCopy || options.isCmdCopyNewer) {
-        FileOper.xferSync(args, isMove: false, isNewerOnly: options.isCmdCopyNewer, isSilent: isSilent);
+        FileOper.xferSync(args, isListOnly: isListOnly, isMove: false, isNewerOnly: options.isCmdCopyNewer, isSilent: isSilent);
       }
       else if (options.isCmdMove || options.isCmdMoveNewer) {
-        FileOper.xferSync(args, isMove: true, isNewerOnly: options.isCmdMoveNewer, isSilent: isSilent);
+        FileOper.xferSync(args, isListOnly: isListOnly, isMove: true, isNewerOnly: options.isCmdMoveNewer, isSilent: isSilent);
       }
       else if (options.isCmdCreateDir) {
-        FileOper.createDirSync(args, isSilent: isSilent);
+        FileOper.createDirSync(args, isListOnly: isListOnly, isSilent: isSilent);
       }
       else if (options.isCmdDelete) {
-        FileOper.deleteSync(args, isSilent: isSilent);
+        FileOper.deleteSync(args, isListOnly: isListOnly, isSilent: isSilent);
       }
       else {
         return false;

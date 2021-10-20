@@ -93,6 +93,9 @@ void main() {
         var srcLastMod = src.lastModifiedSync().millisecondsSinceEpoch;
 
         sleep(Duration(milliseconds: delay));
+        src.xferSync(dst.path, isMove: false, isNewerOnly: false, isSilent: true, isListOnly: true);
+        expect(dst.existsSync(), false);
+
         src.xferSync(dst.path, isMove: false, isNewerOnly: false, isSilent: true);
 
         expect(dst.lengthSync(), src.lengthSync());

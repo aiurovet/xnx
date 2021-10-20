@@ -6,9 +6,10 @@ import 'package:xnx/src/ext/file.dart';
 import 'package:xnx/src/ext/glob.dart';
 
 class FileOper {
+
   //////////////////////////////////////////////////////////////////////////////
 
-  static void createDirSync(List<String> dirNames, {bool isSilent = false}) {
+  static void createDirSync(List<String> dirNames, {bool isListOnly = false, bool isSilent = false}) {
     var dirNameLists = Path.argsToLists(dirNames, oper: 'create directory');
 
     dirNameLists[0].forEach((currDirName) {
@@ -17,16 +18,18 @@ class FileOper {
       }
 
       if (!isSilent) {
-        print('Creating dir "$currDirName"');
+        print('${isListOnly ? 'Will create' : 'Creating'} dir "$currDirName"');
       }
 
-      Path.fileSystem.directory(currDirName).createSync(recursive: true);
+      if (!isListOnly) {
+        Path.fileSystem.directory(currDirName).createSync(recursive: true);
+      }
     });
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void deleteSync(List<String> paths, {bool isSilent = false}) {
+  static void deleteSync(List<String> paths, {bool isListOnly = false, bool isSilent = false}) {
     var pathLists = Path.argsToLists(paths, oper: 'delete directory');
 
     listSync(pathLists[0], isSilent: isSilent, isSorted: true, isMinimal: false, listProc: (entities, entityNo, repeatNo, subPath) {
@@ -38,10 +41,12 @@ class FileOper {
 
       if (entity.existsSync()) {
         if (!isSilent) {
-          print('Deleting ${entity is Directory ? 'dir' : 'file'} "${entity.path}"');
+          print('${isListOnly ? 'Will delete' : 'Deleting'} ${entity is Directory ? 'dir' : 'file'} "${entity.path}"');
         }
 
-        entity.deleteSync(recursive: true);
+        if (!isListOnly) {
+          entity.deleteSync(recursive: true);
+        }
       }
 
       return true;
@@ -280,22 +285,22 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void xferSync(List<String> paths, {bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
+  static void xferSync(List<String> paths, {bool isListOnly = false, bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
     var pathLists = Path.argsToLists(paths, oper: (isMove ? 'move' : 'copy'), isLastSeparate: true);
     var toDirName = pathLists[1][0];
 
     listSync(pathLists[0], isSilent: isSilent, isSorted: true, isMinimal: true, listProc: (entities, entityNo, repeatNo, subPath) {
-      if (entityNo < 0) {
-        // empty list
+      if (entityNo < 0) { // empty list
+        throw Exception('No file or directory found: "${paths[0]}"');
       }
 
       var entity = entities[entityNo];
 
       if (entity is Directory) {
-        entity.xferSync(Path.join(toDirName, subPath), isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+        entity.xferSync(Path.join(toDirName, subPath), isListOnly: isListOnly, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
       else if (entity is File) {
-        entity.xferSync(toDirName, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+        entity.xferSync(toDirName, isListOnly: isListOnly, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
       }
 
       return true;
