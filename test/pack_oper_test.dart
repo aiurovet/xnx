@@ -3,6 +3,7 @@ import 'package:test/test.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/pack_oper.dart';
 
 import 'helper.dart';
@@ -138,7 +139,7 @@ void main() {
         expect(PackOper.isPackTypeTar(PackType.TarGz), true);
         expect(PackOper.isPackTypeTar(PackType.TarZ), true);
       });
-      test('archiveSync/unarchiveSync - LFS', () {
+      test('archiveSync/unarchiveSync - ZIP - LFS', () {
         // The "archive" package does not seem to be testable on MemoryFileSystem yet
         // So we are testing just once in the current home directory
 
@@ -159,12 +160,34 @@ void main() {
             PackType.Zip,
             [fromDir.parent.path, toPath],
             isMove: true,
+            isSilent: true,
+            isListOnly: true,
+          );
+
+          expect(Path.fileSystem.file(toPath).existsSync(), false);
+
+          PackOper.archiveSync(
+            PackType.Zip,
+            [fromDir.parent.path, toPath],
+            isMove: true,
             isSilent: true
           );
 
           expect(Path.fileSystem.file(toPath).existsSync(), true);
           expect(fromDir.parent.existsSync(), false);
 
+          PackOper.unarchiveSync(
+            PackType.Zip,
+            toPath,
+            fromDir.parent.path,
+            isMove: false,
+            isSilent: true,
+            isListOnly: true,
+          );
+
+          expect(fromDir.existsSync(), false);
+
+          expect(Path.fileSystem.file(toPath).existsSync(), true);
           PackOper.unarchiveSync(
             PackType.Zip,
             toPath,
@@ -180,7 +203,7 @@ void main() {
           doneLocal();
         }
       });
-      test('archiveSync/unarchiveSync - LFS', () {
+      test('archiveSync/unarchiveSync - TAR.GZ - LFS', () {
         // The "archive" package does not seem to be testable on MemoryFileSystem yet
         // So we are testing just once in the current home directory
 
@@ -196,6 +219,17 @@ void main() {
           var toDir = dirList[1];
 
           var toPath = Path.join(toDir.path, 'test.tar.gz');
+          FileOper.deleteSync([toPath]);
+
+          PackOper.archiveSync(
+            PackType.Gz,
+            [fromDir.parent.path, toPath],
+            isMove: true,
+            isSilent: true,
+            isListOnly: true,
+          );
+
+          expect(Path.fileSystem.file(toPath).existsSync(), false);
 
           PackOper.archiveSync(
             PackType.TarGz,
