@@ -49,7 +49,7 @@ class Convert {
 
   Config _config = Config();
   Logger _logger = Logger();
-  Options _options = Options();
+  Options options = Options();
 
   List<String> _exeParamNames = [];
   List<String> _inpParamNames = [];
@@ -67,13 +67,13 @@ class Convert {
     isProcessed = false;
 
     _config = Config(_logger);
-    _options = _config.options;
+    options = _config.options;
 
-    _options.parseArgs(args);
-    PackOper.compression = _options.compression;
+    options.parseArgs(args);
+    PackOper.compression = options.compression;
 
-    if (_options.isCmd) {
-      execBuiltin(_options.plainArgs);
+    if (options.isCmd) {
+      execBuiltin(options.plainArgs);
     }
     else {
       _config.exec(args: args, execFlatMap: execMapWithArgs);
@@ -89,21 +89,21 @@ class Convert {
       throw Exception('No argument specified for the built-in command');
     }
 
-    final isPrint = _options.isCmdPrint;
-    final isCompress = _options.isCmdCompress;
-    final isDecompress = _options.isCmdDecompress;
-    final isMove = _options.isCmdMove;
+    final isPrint = options.isCmdPrint;
+    final isCompress = options.isCmdCompress;
+    final isDecompress = options.isCmdDecompress;
+    final isMove = options.isCmdMove;
 
     var argCount = (args.length - 1);
     var arg1 = (argCount >= 0 ? args[0] : null);
     var arg2 = (argCount >= 1 ? args[1] : null);
 
     if (isPrint) {
-      Command.print(_logger, _options.plainArgs, isSilent: isSilent);
+      Command.print(_logger, options.plainArgs, isSilent: isSilent);
     }
     else if (isCompress || isDecompress) {
       final archPath = (isDecompress ? arg1 : args[argCount < 0 ? 0 : argCount]);
-      final archType = PackOper.getPackType(_options.archType, archPath);
+      final archType = PackOper.getPackType(options.archType, archPath);
 
       if (archType != null) {
         final isTar = PackOper.isPackTypeTar(archType);
@@ -133,16 +133,16 @@ class Convert {
       }
     }
     else {
-      if (_options.isCmdCopy || _options.isCmdCopyNewer) {
-        FileOper.xferSync(args, isMove: false, isNewerOnly: _options.isCmdCopyNewer, isSilent: isSilent);
+      if (options.isCmdCopy || options.isCmdCopyNewer) {
+        FileOper.xferSync(args, isMove: false, isNewerOnly: options.isCmdCopyNewer, isSilent: isSilent);
       }
-      else if (_options.isCmdMove || _options.isCmdMoveNewer) {
-        FileOper.xferSync(args, isMove: true, isNewerOnly: _options.isCmdMoveNewer, isSilent: isSilent);
+      else if (options.isCmdMove || options.isCmdMoveNewer) {
+        FileOper.xferSync(args, isMove: true, isNewerOnly: options.isCmdMoveNewer, isSilent: isSilent);
       }
-      else if (_options.isCmdCreateDir) {
+      else if (options.isCmdCreateDir) {
         FileOper.createDirSync(args, isSilent: isSilent);
       }
-      else if (_options.isCmdDelete) {
+      else if (options.isCmdDelete) {
         FileOper.deleteSync(args, isSilent: isSilent);
       }
       else {
@@ -159,7 +159,7 @@ class Convert {
     var command = expandInpNames(cmdTemplate.replaceAll(_config.keywords.forOut, outFilePath), map);
     command = command.replaceAll(_config.keywords.forCurDir, curDirName);
 
-    var isForced = _options.isForced;
+    var isForced = options.isForced;
 
     if (isExpandContentOnly) {
       if (!isForced) {
@@ -245,14 +245,14 @@ class Convert {
 
     _logger.information(command);
 
-    var canRun = (!_options.isListOnly && !isExpandContentOnly);
+    var canRun = (!options.isListOnly && !isExpandContentOnly);
 
     if (!canRun) {
       return true;
     }
 
     Command(text: command, logger: _logger)
-      .exec(canExec: !_options.isListOnly && !isExpandContentOnly);
+      .exec(canExec: !options.isListOnly && !isExpandContentOnly);
 
     tmpFile?.deleteIfExistsSync();
 
@@ -314,7 +314,7 @@ class Convert {
 
       isSubRun = RE_EXE_SUB.hasMatch(command);
       isExpandContentOnly = isSubRun && RE_EXE_SUB_EXPAND.hasMatch(command);
-      canExpandContent = !_options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false)));
+      canExpandContent = !options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false)));
 
       if (!curDirName.isBlank()) {
         if (_logger.isDebug) {
@@ -409,7 +409,7 @@ Output path: "$outFilePathEx"
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigResult execMapWithArgs(FlatMap map) {
-    var plainArgs = _options.plainArgs;
+    var plainArgs = options.plainArgs;
 
     _exeParamNames = _config.keywords.getAllForExe();
     _inpParamNames = _config.keywords.getAllForInp();
@@ -418,7 +418,7 @@ Output path: "$outFilePathEx"
       plainArgs = [ '' ];
     }
 
-    if (_options.isEach) {
+    if (options.isEach) {
       for (var i = 0, n = plainArgs.length; i < n; i++) {
         var plainArg = plainArgs[i];
 

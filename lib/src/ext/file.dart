@@ -12,25 +12,11 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int? lastModifiedStampSync() {
-    final info = statSync();
-
-    if (info.type == FileSystemEntityType.notFound) {
-      return null;
-    }
-    else {
-      return info.modified.millisecondsSinceEpoch;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   int compareLastModifiedToSync({File? toFile, DateTime? toLastModified}) {
     var toLastModStamp = (toFile?.lastModifiedStampSync() ??
         toLastModified?.millisecondsSinceEpoch);
 
-    var result =
-        compareLastModifiedStampToSync(toLastModifiedStamp: toLastModStamp);
+    var result = compareLastModifiedStampToSync(toLastModifiedStamp: toLastModStamp);
 
     return result;
   }
@@ -39,9 +25,7 @@ extension FileExt on File {
 
   int compareLastModifiedStampToSync({File? toFile, int? toLastModifiedStamp}) {
     var lastModStamp = (lastModifiedStampSync() ?? -1);
-
-    var toLastModStamp =
-        (toFile?.lastModifiedStampSync() ?? toLastModifiedStamp ?? -1);
+    var toLastModStamp = (toFile?.lastModifiedStampSync() ?? toLastModifiedStamp ?? -1);
 
     var result = (lastModStamp == toLastModStamp ? 0 : (lastModStamp < toLastModStamp ? -1 : 1));
 
@@ -106,8 +90,16 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool isNewerThanSync(File toFile) =>
-      (compareLastModifiedToSync(toFile: toFile) > 0);
+  int? lastModifiedStampSync() {
+    final info = statSync();
+
+    if (info.type == FileSystemEntityType.notFound) {
+      return null;
+    }
+    else {
+      return info.modified.millisecondsSinceEpoch;
+    }
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -143,6 +135,11 @@ extension FileExt on File {
       setLastAccessedSync(modifiedEx);
     }
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void setTimeStampSync({int? modified, FileStat? stat}) =>
+     setTimeSync(modified: ((modified == null) || (modified == 0) ? null : DateTime.fromMicrosecondsSinceEpoch(modified)), stat: stat);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -187,8 +184,13 @@ extension FileExt on File {
     var isToDirValid = isToDir;
     var toPathEx = (isToDir ? Path.join(toPath, Path.basename(path)) : toPath);
     var toDirName = (isToDir ? toPath : Path.dirname(toPath));
-    var canDo =
-        (!isNewerOnly || isNewerThanSync(Path.fileSystem.file(toPathEx)));
+
+    var lastModStamp = lastModifiedStampSync() ?? 0;
+
+    var toFile = Path.fileSystem.file(toPathEx);
+    var toLastModStamp = (toFile.lastModifiedStampSync() ?? 0);
+
+    var canDo = (!isNewerOnly || (lastModStamp < toLastModStamp));
 
     // Setting operation flag depending on whether the destination is newer or not
 
@@ -215,9 +217,13 @@ extension FileExt on File {
         print('Copying file "$path"');
       }
 
-      var fromStat = statSync();
       copySync(toPathEx);
-      Path.fileSystem.file(toPathEx).setTimeSync(stat: fromStat);
+    }
+
+    setTimeStampSync(modified: lastModStamp, stat: toFile.statSync());
+
+    if (toLastModStamp < (toFile.lastModifiedStampSync() ?? 0)) {
+      toFile.setLastModified(DateTime.fromMillisecondsSinceEpoch(lastModStamp));
     }
   }
 

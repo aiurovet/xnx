@@ -2,10 +2,14 @@
 
 setlocal EnableDelayedExpansion
 
+rem ****************************************************************************
+
 set PRJ=xnx
 set EXE=bin\%PRJ%.exe
 set OUT=out\xnx
 set PKZ=app\%PRJ%-windows.zip
+
+rem ****************************************************************************
 
 %~d0
 if errorlevel 1 exit /B 1
@@ -29,6 +33,8 @@ if "%~1" neq "" goto :loop
 rem Reset errorlevel
 ver > nul
 
+rem ****************************************************************************
+
 echo Running the build for Windows
 
 if exist "%OUT%" (
@@ -39,6 +45,8 @@ if exist "%OUT%" (
 echo Creating the "%OUT%"
 mkdir "%OUT%"
 if errorlevel 1 ex"%OUT%"
+
+rem ****************************************************************************
 
 echo Getting the latest version of the packages
 call dart pub get
@@ -72,6 +80,8 @@ echo Creating and compressing the application package
 "%EXE%" --move --zip out "%PKZ%"
 if errorlevel 1 exit /B 1
 
+rem ****************************************************************************
+
 dir "%PKZ%"
 
 if exist out (
@@ -84,4 +94,8 @@ if %OPT_KEEP% equ 0 (
     del /Q "%EXE%"
 )
 
+rem ****************************************************************************
+
 exit /B 0
+
+rem ****************************************************************************

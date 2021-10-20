@@ -26,9 +26,9 @@ bin/Linux
 bin/macOS
 bin/Windows
 out/
-examples/flutter_app/android/
-examples/flutter_app/ios/
-examples/flutter_app/web/
+examples/flutter_app_icons/android/
+examples/flutter_app_icons/ios/
+examples/flutter_app_icons/web/
 
 examples/multi_conf/out/
 

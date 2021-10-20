@@ -35,33 +35,38 @@ class Options {
   static final Map<String, Object?> APPEND_SEP = {
     'name': 'append-sep',
     'abbr': 's',
-    'help': 'append record separator "${ConfigFileLoader.RECORD_SEP}" when filtering input config file (for "${LIST_ONLY['name']}" exclusively), defines environment variable $ENV_APPEND_SEP',
+    'help': '''append record separator "${ConfigFileLoader.RECORD_SEP}" when filtering input config file (for "${LIST_ONLY['name']}" exclusively),
+the application will define environment variable $ENV_APPEND_SEP''',
     'negatable': false,
   };
   static final Map<String, Object?> COMPRESSION = {
     'name': 'compression',
     'abbr': 'p',
-    'help': 'compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2, defines environment variable $ENV_COMPRESSION',
+    'help': '''compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2,
+the application will define environment variable $ENV_COMPRESSION''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
   };
   static final Map<String, Object?> CONFIG = {
     'name': 'config',
     'abbr': 'c',
-    'help': 'configuration file in json5 format https://json5.org/\n(default extension: $FILE_TYPE_CFG)',
+    'help': '''configuration file in json5 format https://json5.org/,
+default extension: $FILE_TYPE_CFG''',
     'valueHelp': 'FILE',
     'defaultsTo': null,
   };
   static final Map<String, Object?> EACH = {
     'name': 'each',
     'abbr': 'e',
-    'help': 'treat each plain argument independently (e.g. can pass multiple filenames as arguments)\nsee also -x, --xargs',
+    'help': '''treat each plain argument independently (e.g. can pass multiple filenames as arguments)
+see also -x, --xargs''',
     'negatable': false,
   };
   static final Map<String, Object?> FORCE_CONVERT = {
     'name': 'force',
     'abbr': 'f',
-    'help': 'ignore timestamps and force conversion, defines environment variable $ENV_FORCE',
+    'help': '''ignore timestamps and force conversion,
+the application will define environment variable $ENV_FORCE''',
     'negatable': false,
   };
   static final Map<String, Object?> HELP = {
@@ -73,28 +78,45 @@ class Options {
   static final Map<String, Object?> LIST_ONLY = {
     'name': 'list-only',
     'abbr': 'l',
-    'help': 'display all commands, but do not execute those; if no command specified, then show config, defines environment variable $ENV_LIST_ONLY',
+    'help': '''display all commands, but do not execute those; if no command specified, then show config,
+the application will define environment variable $ENV_LIST_ONLY''',
     'negatable': false,
   };
   static final Map<String, Object?> QUIET = {
     'name': 'quiet',
     'abbr': 'q',
-    'help': 'quiet mode (no output, same as verbosity 0), defines environment variable $ENV_QUIET',
+    'help': '''quiet mode (no output, same as verbosity 0),
+the application will define environment variable $ENV_QUIET''',
     'negatable': false,
   };
   static final Map<String, Object?> START_DIR = {
     'name': 'dir',
     'abbr': 'd',
-    'help': 'startup directory, defines environment variable $ENV_START_DIR',
+    'help': '''startup directory,
+the application will define environment variable $ENV_START_DIR''',
     'valueHelp': 'DIR',
     'defaultsTo': null,
   };
   static final Map<String, Object?> VERBOSITY = {
     'name': 'verbosity',
     'abbr': 'v',
-    'help': 'how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug), defines environment variable $ENV_COMPRESSION\n(defaults to "${Logger.LEVELS[Logger.LEVEL_DEFAULT]}")',
+    'help': '''how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug),
+defaults to "${Logger.LEVELS[Logger.LEVEL_DEFAULT]}",
+the application will define environment variable $ENV_COMPRESSION,''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
+  };
+  static final Map<String, Object?> WAIT_ALWAYS = {
+    'name': 'wait-always',
+    'abbr': 'W',
+    'help': 'always wait for a user to press <Enter> upon completion',
+    'negatable': false,
+  };
+  static final Map<String, Object?> WAIT_ON_ERR = {
+    'name': 'wait-err',
+    'abbr': 'w',
+    'help': 'wait for a user to press <Enter> upon unsuccessful completion',
+    'negatable': false,
   };
   static final Map<String, Object?> XARGS = {
     'name': 'xargs',
@@ -110,22 +132,25 @@ class Options {
   };
   static final Map<String, Object?> CMD_PRINT = {
     'name': 'print',
-    'help': 'just print the arguments to stdout',
+    'help': 'just print the arguments to stdout\n',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_COPY = {
     'name': 'copy',
-    'help': 'just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
+    'help': '''just copy file(s) and/or directorie(s) passed as plain argument(s),
+glob patterns are allowed''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_COPY_NEWER = {
     'name': 'copy-newer',
-    'help': 'just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
+    'help': '''just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s),
+glob patterns are allowed''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_DELETE = {
     'name': 'delete',
-    'help': 'just delete file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
+    'help': '''just delete file(s) and/or directorie(s) passed as plain argument(s),
+glob patterns are allowed''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_CREATE_DIR = {
@@ -135,117 +160,137 @@ class Options {
   };
   static final Map<String, Object?> CMD_MOVE = {
     'name': 'move',
-    'help': 'just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
+    'help': '''just move file(s) and/or directorie(s) passed as plain argument(s),
+glob patterns are allowed''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_MOVE_NEWER = {
     'name': 'move-newer',
-    'help': 'just move more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)',
+    'help': '''just move more recently updated file(s) and/or directorie(s) passed as plain argument(s),
+glob patterns are allowed''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_REMOVE = {
     'name': 'remove',
-    'help': 'just the same as --delete',
+    'help': 'just the same as --delete\n',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_RENAME = {
     'name': 'rename',
-    'help': 'just the same as --move',
+    'help': 'just the same as --move\n',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_RENAME_NEWER = {
     'name': 'rename-newer',
-    'help': 'just the same as --move-newer',
+    'help': 'just the same as --move-newer\n',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_BZ2 = {
     'name': 'bz2',
-    'help': 'just compress a single source file to a single destination BZip2 file, can be used with --move',
+    'help': '''just compress a single source file to a single destination BZip2 file,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNBZ2 = {
     'name': 'unbz2',
-    'help': 'just decompress a single BZip2 file to a single destination file, can be used with --move',
+    'help': '''just decompress a single BZip2 file to a single destination file,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_GZ = {
     'name': 'gz',
-    'help': 'just compress a single source file to a single GZip file, can be used with --move',
+    'help': '''just compress a single source file to a single GZip file,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNGZ = {
     'name': 'ungz',
-    'help': 'just decompress a single GZip file to a single destination file, can be used with --move',
+    'help': '''just decompress a single GZip file to a single destination file,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_PACK = {
     'name': 'pack',
-    'help': 'just compress source files and/or directories to a single destination archive file depending on its extension, can be used with --move',
+    'help': '''just compress source files and/or directories to a single destination
+archive file depending on its extension, can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNPACK = {
     'name': 'unpack',
-    'help': 'just decompress a single source archive file to destination files and/or directories depending on source extension, can be used with --move',
+    'help': '''just decompress a single source archive file to destination files and/or
+directories depending on the source extension, can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_TAR = {
     'name': 'tar',
-    'help': 'just create a single destination archive file containing source files and/or directories, can be used with --move',
+    'help': '''just create a single destination archive file containing source files and/or
+directories, can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNTAR = {
     'name': 'untar',
-    'help': 'just untar a single archive file to a destination directory, can be used with --move',
+    'help': '''just untar a single archive file to a destination directory,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_TAR_BZ2 = {
     'name': 'tarbz2',
-    'help': 'just a combination of --tar and --bz2, can be used with --move',
+    'help': '''just a combination of --tar and --bz2,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNTAR_BZ2 = {
     'name': 'untarbz2',
-    'help': 'just a combination of --untar and --unbz2, can be used with --move',
+    'help': '''just a combination of --untar and --unbz2,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_TAR_GZ = {
     'name': 'targz',
-    'help': 'just a combination of --tar and --gz, can be used with --move',
+    'help': '''just a combination of --tar and --gz,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNTAR_GZ = {
     'name': 'untargz',
-    'help': 'just a combination of --untar and --ungz, can be used with --move',
+    'help': '''just a combination of --untar and --ungz,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_TAR_ZLIB = {
     'name': 'tarZ',
-    'help': 'just a combination of --tar and --Z, can be used with --move',
+    'help': '''just a combination of --tar and --Z,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNTAR_ZLIB = {
     'name': 'untarZ',
-    'help': 'just a combination of --untar and --unZ, can be used with --move',
+    'help': '''just a combination of --untar and --unZ,
+can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_ZIP = {
     'name': 'zip',
-    'help': 'just zip source files and/or directories to a single destination archive file, can be used with with --move to delete source to delete source',
+    'help': '''just zip source files and/or directories to a single destination
+archive file, can be used with --move to delete the source''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNZIP = {
     'name': 'unzip',
-    'help': 'just unzip single archive file to destination directory, can be used with with --move to delete source to delete source',
+    'help': '''just unzip single archive file to destination directory,
+can be used with --move to delete the source''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_ZLIB = {
     'name': 'Z',
-    'help': 'just compress a single source file to a single Z file, can be used with with --move to delete source to delete source',
+    'help': '''just compress a single source file to a single Z file,
+can be used with --move to delete the source''',
     'negatable': false,
   };
   static final Map<String, Object?> CMD_UNZLIB = {
     'name': 'unZ',
-    'help': 'just decompress a single Z file to a single destination file, can be used with with --move to delete source to delete source',
+    'help': '''just decompress a single Z file to a single destination file,
+can be used with --move to delete the source''',
     'negatable': false,
   };
 
@@ -280,6 +325,12 @@ class Options {
   
   bool _isListOnly = false;
   bool get isListOnly => _isListOnly;
+  
+  bool _isWaitAlways = false;
+  bool get isWaitAlways => _isWaitAlways;
+  
+  bool _isWaitOnErr = false;
+  bool get isWaitOnErr => _isWaitOnErr;
 
   Logger _logger = Logger();
 
@@ -391,6 +442,8 @@ class Options {
     _startDirName = '';
     _isAppendSep = false;
     _isListOnly = false;
+    _isWaitAlways = false;
+    _isWaitOnErr = false;
 
     _isCmdPrint = false;
     _isCmdCompress = false;
@@ -449,6 +502,12 @@ class Options {
     });
     addOption(parser, COMPRESSION, (value) {
       _compression = _getInt(ENV_COMPRESSION, value, defValue: PackOper.DEFAULT_COMPRESSION);
+    });
+    addFlag(parser, WAIT_ALWAYS, (value) {
+      _isWaitAlways = value;
+    });
+    addFlag(parser, WAIT_ON_ERR, (value) {
+      _isWaitOnErr = value;
     });
     addFlag(parser, CMD_PRINT, (value) {
       _isCmdPrint = value;

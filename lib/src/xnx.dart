@@ -8,6 +8,7 @@ import 'package:xnx/src/options.dart';
 
 class Xnx {
   Logger _logger = Logger();
+  late final Convert _convert;
 
   Xnx({Logger? logger}) {
     Env.init();
@@ -15,6 +16,21 @@ class Xnx {
     if (logger != null) {
       _logger = logger;
     }
+
+    _convert = Convert(_logger);
+  }
+
+  void exec(List<String> args) =>
+    _convert.exec(args);
+
+  void finish(bool isOK) {
+    if ((isOK && _convert.options.isWaitAlways) ||
+        (!isOK && _convert.options.isWaitOnErr)) {
+      stderr.writeln('\nPress <Enter> to complete...');
+      stdin.readByteSync();
+    }
+
+    exit(isOK ? 0 : 1);
   }
 
   static void main(List<String> args) {
@@ -32,11 +48,7 @@ class Xnx {
       isOK = app.onError(e.toString(), stackTrace);
     }
 
-    exit(isOK ? 0 : 1);
-  }
-
-  void exec(List<String> args) {
-    Convert(_logger).exec(args);
+    app.finish(isOK);
   }
 
   bool onError(String errMsg, StackTrace stackTrace) {

@@ -7,55 +7,90 @@ A command-line utility to eXpand text content by replacing placeholders with the
 ##### USAGE:
 
 ```
+xnx 0.1.0 (C) Alexander Iurovetski 2020 - 2021
+
+A command-line utility to eXpand text content aNd to eXecute external utilities.
+
 USAGE:
 
 xnx [OPTIONS]
 
 -h, --help                   this help screen
--q, --quiet                  quiet mode (no output, same as verbosity 0)
--v, --verbosity=<LEVEL>      how much information to show: 0-6, or: quiet, errors, normal, warnings, info, debug
-                             (defaults to "normal")
+-c, --config=<FILE>          configuration file in json5 format https://json5.org/,
+                             default extension: .xnx
+-X, --xnx                    same as -c, --config
+-d, --dir=<DIR>              startup directory,
+                             the application will define environment variable _XNX_START_DIR
+-q, --quiet                  quiet mode (no output, same as verbosity 0),
+                             the application will define environment variable _XNX_QUIET
+-v, --verbosity=<LEVEL>      how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug),
+                             defaults to "info",
+                             the application will define environment variable _XNX_COMPRESSION,
 -e, --each                   treat each plain argument independently (e.g. can pass multiple filenames as arguments)
                              see also -x, --xargs
--x, --xargs                  similar to the above, but reads arguments from stdin
+-a, --xargs                  similar to the above, but reads arguments from stdin
                              useful in a pipe with a file finding command
--c, --config=<FILE>          configuration file in json5 format
-                             (default extension: xnx)
--l, --list-only              display all commands, but do not execute those; if no command specified, then show config
--s, --append-sep             append record separator "," when filtering input config file (for "list-only" exclusively)
--f, --force                  ignore timestamps and force conversion
--d, --dir=<DIR>              startup directory
-                             (defaults to ".")
--p, --compression=<LEVEL>    compression level for archiving-related operations (1..9) excepting BZip2
-                             (defaults to "6")
+-l, --list-only              display all commands, but do not execute those; if no command specified, then show config,
+                             the application will define environment variable _XNX_LIST_ONLY
+-s, --append-sep             append record separator "," when filtering input config file (for "list-only" exclusively),
+                             the application will define environment variable _XNX_APPEND_SEP
+-f, --force                  ignore timestamps and force conversion,
+                             the application will define environment variable _XNX_FORCE
+-p, --compression=<LEVEL>    compression level for archiving-related operations (1..9) excepting BZip2,
+                             the application will define environment variable _XNX_COMPRESSION
     --print                  just print the arguments to stdout
-    --copy                   just copy file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
-    --copy-newer             just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
-    --move                   just move file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
-    --move-newer             just move more recently updated file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --copy                   just copy file(s) and/or directorie(s) passed as plain argument(s),
+                             glob patterns are allowed
+    --copy-newer             just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s),
+                             glob patterns are allowed
+    --move                   just move file(s) and/or directorie(s) passed as plain argument(s),
+                             glob patterns are allowed
+    --move-newer             just move more recently updated file(s) and/or directorie(s) passed as plain argument(s),
+                             glob patterns are allowed
     --rename                 just the same as --move
     --rename-newer           just the same as --move-newer
     --mkdir                  just create directories passed as plain arguments
-    --delete                 just delete file(s) and/or directorie(s) passed as plain argument(s) (glob patterns allowed)
+    --delete                 just delete file(s) and/or directorie(s) passed as plain argument(s),
+                             glob patterns are allowed
     --remove                 just the same as --delete
-    --bz2                    just compress a single source file to a single destination BZip2 file, can be used with --move
-    --unbz2                  just decompress a single BZip2 file to a single destination file, can be used with --move
-    --gz                     just compress a single source file to a single GZip file, can be used with --move
-    --ungz                   just decompress a single GZip file to a single destination file, can be used with --move
-    --tar                    just create a single destination archive file containing source files and/or directories, can be used with --move
-    --untar                  just untar a single archive file to a destination directory, can be used with --move
-    --tarbz2                 just a combination of --tar and --bz2, can be used with --move
-    --untarbz2               just a combination of --untar and --unbz2, can be used with --move
-    --targz                  just a combination of --tar and --gz, can be used with --move
-    --untargz                just a combination of --untar and --ungz, can be used with --move
-    --tarz                   just a combination of --tar and --zlib, can be used with --move
-    --untarz                 just a combination of --untar and --unzlib, can be used with --move
-    --zip                    just zip source files and/or directories to a single destination archive file, can be used with with --move to delete source to delete source
-    --unzip                  just unzip single archive file to destination directory, can be used with with --move to delete source to delete source
-    --z                      just compress a single source file to a single ZLib file, can be used with with --move to delete source to delete source
-    --unz                    just decompress a single ZLib file to a single destination file, can be used with with --move to delete source to delete source
-    --pack                   just compress source files and/or directories to a single destination archive file depending on its extension, can be used with --move
-    --unpack                 just decompress a single source archive file to destination files and/or directories depending on source extension, can be used with --move
+    --bz2                    just compress a single source file to a single destination BZip2 file,
+                             can be used with --move
+    --unbz2                  just decompress a single BZip2 file to a single destination file,
+                             can be used with --move
+    --gz                     just compress a single source file to a single GZip file,
+                             can be used with --move
+    --ungz                   just decompress a single GZip file to a single destination file,
+                             can be used with --move
+    --tar                    just create a single destination archive file containing source files and/or
+                             directories, can be used with --move
+    --untar                  just untar a single archive file to a destination directory,
+                             can be used with --move
+    --tarbz2                 just a combination of --tar and --bz2,
+                             can be used with --move
+    --untarbz2               just a combination of --untar and --unbz2,
+                             can be used with --move
+    --targz                  just a combination of --tar and --gz,
+                             can be used with --move
+    --untargz                just a combination of --untar and --ungz,
+                             can be used with --move
+    --tarZ                   just a combination of --tar and --Z,
+                             can be used with --move
+    --untarZ                 just a combination of --untar and --unZ,
+                             can be used with --move
+    --zip                    just zip source files and/or directories to a single destination
+                             archive file, can be used with --move to delete the source
+    --unzip                  just unzip single archive file to destination directory,
+                             can be used with --move to delete the source
+    --Z                      just compress a single source file to a single Z file,
+                             can be used with --move to delete the source
+    --unZ                    just decompress a single Z file to a single destination file,
+                             can be used with --move to delete the source
+    --pack                   just compress source files and/or directories to a single destination
+                             archive file depending on its extension, can be used with --move
+    --unpack                 just decompress a single source archive file to destination files and/or
+                             directories depending on the source extension, can be used with --move
+
+For more details, see README.md
 ```
 
 ##### DETAILS:

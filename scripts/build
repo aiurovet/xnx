@@ -93,7 +93,9 @@ echo "Creating the icons in the output directory"
 "${EXE}" -d "scripts/mkicons" ${@}
 
 echo "Creating and compressing the application package"
-${EXE} --move --targz out "${PKZ}"
+${EXE} --move --pack out "${PKZ}"
+
+################################################################################
 
 echo ""
 ls -l "${PKZ}"
@@ -113,6 +115,8 @@ if [ -e "${PKG}" ]; then
     echo "Removing \"${PKG}\" again"
     rm -f "${PKG}"
 fi
+
+################################################################################
 
 echo "The build successfully completed"
 exit 0
