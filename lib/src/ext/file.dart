@@ -103,43 +103,47 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void setTimeSync({DateTime? modified, FileStat? stat}) {
-    var modifiedEx = (stat?.modified ?? modified);
-
-    if (modifiedEx == null) {
+  void setTimeSync(DateTime? modified) {
+    if (modified == null) {
       return;
     }
 
-    setLastModifiedSync(modifiedEx);
-    setLastAccessedSync(modifiedEx);
+    var stat = statSync();
+
+    if (stat.type == FileSystemEntityType.notFound) {
+      return;
+    }
+
+    var stamp = modified.millisecondsSinceEpoch;
+
+    setLastModifiedSync(modified);
+    setLastAccessedSync(modified);
 
     var newStat = statSync();
+    var newStamp = newStat.modified.millisecondsSinceEpoch;
 
-    var stamp1 = modifiedEx.millisecondsSinceEpoch;
-    var stamp2 = newStat.modified.millisecondsSinceEpoch;
+    if (newStamp < stamp) {
+      stamp = ((newStamp + Duration.millisecondsPerSecond) - (newStamp % Duration.millisecondsPerSecond));
+      modified = DateTime.fromMillisecondsSinceEpoch(stamp);
 
-    if (stamp2 < stamp1) {
-      stamp1 = ((stamp2 + Duration.millisecondsPerSecond) - (stamp2 % Duration.millisecondsPerSecond));
-      modifiedEx = DateTime.fromMillisecondsSinceEpoch(stamp1);
-
-      setLastModifiedSync(modifiedEx);
+      setLastModifiedSync(modified);
       newStat = statSync();
-      stamp2 = newStat.modified.millisecondsSinceEpoch;
+      newStamp = newStat.modified.millisecondsSinceEpoch;
 
-      if (stamp2 < stamp1) {
-        stamp1 += Duration.millisecondsPerSecond;
-        modifiedEx = DateTime.fromMillisecondsSinceEpoch(stamp1);
-        setLastModifiedSync(modifiedEx);
+      if (newStamp < stamp) {
+        stamp += Duration.millisecondsPerSecond;
+        modified = DateTime.fromMillisecondsSinceEpoch(stamp);
+        setLastModifiedSync(modified);
       }
 
-      setLastAccessedSync(modifiedEx);
+      setLastAccessedSync(modified);
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void setTimeStampSync({int? modified, FileStat? stat}) =>
-     setTimeSync(modified: ((modified == null) || (modified == 0) ? null : DateTime.fromMicrosecondsSinceEpoch(modified)), stat: stat);
+  void setTimeStampSync(int? modified) =>
+     setTimeSync((modified == null) || (modified == 0) ? null : DateTime.fromMillisecondsSinceEpoch(modified));
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -220,11 +224,7 @@ extension FileExt on File {
       copySync(toPathEx);
     }
 
-    setTimeStampSync(modified: lastModStamp, stat: toFile.statSync());
-
-    if (toLastModStamp < (toFile.lastModifiedStampSync() ?? 0)) {
-      toFile.setLastModified(DateTime.fromMillisecondsSinceEpoch(lastModStamp));
-    }
+    toFile.setTimeStampSync(lastModStamp);
   }
 
   //////////////////////////////////////////////////////////////////////////////

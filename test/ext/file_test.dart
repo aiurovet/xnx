@@ -61,7 +61,7 @@ void main() {
 
         var file = Path.fileSystem.file('a.txt');
         file.writeAsStringSync('Test1');
-        file.setTimeSync(modified: now);
+        file.setTimeSync(now);
 
         expect((file.lastModifiedStampSync() ?? 0) >= nowMS, true);
 
@@ -90,18 +90,17 @@ void main() {
         var dst = Path.fileSystem.file('b.txt');
 
         src.writeAsStringSync('Test');
-        sleep(Duration(milliseconds: delay));
+        var srcLastMod = src.lastModifiedSync().millisecondsSinceEpoch;
 
-        src.xferSync(dst.path,
-            isMove: false, isNewerOnly: false, isSilent: true);
+        sleep(Duration(milliseconds: delay));
+        src.xferSync(dst.path, isMove: false, isNewerOnly: false, isSilent: true);
+
         expect(dst.lengthSync(), src.lengthSync());
+        expect(srcLastMod, dst.lastModifiedSync().millisecondsSinceEpoch);
 
-        var lastMod = dst.lastModifiedSync().millisecondsSinceEpoch;
-        expect(lastMod, src.lastModifiedSync().millisecondsSinceEpoch);
-
-        src.xferSync(dst.path, isMove: true, isNewerOnly: true, isSilent: true);
         sleep(Duration(milliseconds: delay));
-        expect(dst.lastModifiedSync().millisecondsSinceEpoch, lastMod);
+        src.xferSync(dst.path, isMove: true, isNewerOnly: true, isSilent: true);
+        expect(srcLastMod, dst.lastModifiedSync().millisecondsSinceEpoch);
         expect(src.existsSync(), false);
 
         dst.deleteSync();
