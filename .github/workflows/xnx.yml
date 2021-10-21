@@ -47,7 +47,7 @@ jobs:
       - name: Analyzing the project source
         run: dart analyze --fatal-infos
 
-      ################################################################################
+      ##############$PSVersionTable##################################################################
 
       - name: Running unit tests
         run: dart test

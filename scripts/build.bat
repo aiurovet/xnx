@@ -5,9 +5,15 @@ setlocal EnableDelayedExpansion
 rem ****************************************************************************
 
 set PRJ=xnx
+set VER=0.1.0
+
+rem ****************************************************************************
+
 set EXE=bin\%PRJ%.exe
-set OUT=out\xnx
-set PKZ=app\%PRJ%-windows.zip
+set OUT=out\xnx-%VER%
+set PKZ=app\%PRJ%-%VER%-windows.zip
+
+rem Select-String -Pattern "^[\s]*version\:[\s]*(.*)$" -Path .\pubspec.yaml | %{ $_.Matches[0].Groups[1].Value }
 
 rem ****************************************************************************
 
