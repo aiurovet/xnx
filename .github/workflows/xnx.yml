@@ -101,7 +101,7 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Pushing the new application package back to the version control'
-          add: 'app/xnx-linux.tar.gz --force'
+          add: 'app/xnx-*-linux.tar.gz --force'
 
       ################################################################################
 
@@ -110,7 +110,7 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Pushing the new application package back to the version control'
-          add: 'app/xnx-macos.tar.gz --force'
+          add: 'app/xnx-*-macos.tar.gz --force'
 
       ################################################################################
 
@@ -119,6 +119,6 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Pushing the new application package back to the version control'
-          add: 'app/xnx-windows.zip --force'
+          add: 'app/xnx-*-windows.zip --force'
 
       ################################################################################
