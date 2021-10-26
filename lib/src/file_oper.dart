@@ -96,10 +96,11 @@ class FileOper {
           // If we've got here, then either path contains wildcard(s), or it
           // simply does not exist
 
-          var currDirName = GlobExt.dirname(currPath);
+          var parts = GlobExt.splitPattern(currPath);
+          var currDirName = parts[0];
+          var currPattern = parts[1];
 
-          if (!currDirName.isBlank() &&
-              (currDirName != DirectoryExt.CUR_DIR_ABBR)) {
+          if (!currDirName.isBlank() && (currDirName != DirectoryExt.CUR_DIR_ABBR)) {
             if (!Path.fileSystem.directory(currDirName).existsSync()) {
               throw Exception('Top source directory was not found: "${currDir.path}"');
             }
@@ -115,8 +116,8 @@ class FileOper {
 
           // Get the list of all files and directories matching path pattern
 
-          var currFilter = GlobExt.toGlob(currPath.substring(currDirNameLen));
-          entities.addAll(currFilter.listFileSystemSync(Path.fileSystem, root: currDirName));
+          var currFilter = GlobExt.toGlob(currPattern);
+          entities.addAll(currFilter.listSync(root: currDirName));
         }
       }
 

@@ -34,8 +34,10 @@ extension FileSystemEntityExt on FileSystemEntity {
 
     try {
       var fullEntityName = Path.getFullPath(entityName.unquote());
-      var parentName = GlobExt.dirname(fullEntityName);
-      var subPattern = Path.relative(fullEntityName, from: parentName);
+
+      var parts = GlobExt.splitPattern(fullEntityName);
+      var parentName = parts[0];
+      var subPattern = parts[1];
 
       var filter = GlobExt.toGlob(subPattern);
       var lst = filter.listSync(root: parentName);

@@ -102,7 +102,7 @@ the application will define environment variable $ENV_START_DIR''',
     'abbr': 'v',
     'help': '''how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug),
 defaults to "${Logger.LEVELS[Logger.LEVEL_DEFAULT]}",
-the application will define environment variable $ENV_COMPRESSION,''',
+the application will define environment variable $ENV_VERBOSITY,''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
   };

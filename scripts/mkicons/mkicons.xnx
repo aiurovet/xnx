@@ -17,7 +17,7 @@
   },
 
   "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
-  "{prj}": "xnx",
+  "{prj}": "${1}",
   "{icon-name}": "{prj}{look}",
 
   "{{-import-}}": "../../examples/shell.xnx",
@@ -26,7 +26,7 @@
     "{OSTYPE}": "${OS_TYPE}",
   } },
 
-  "{out-dir}": "{cur-dir}/../../out/xnx",
+  "{out-dir}": "{cur-dir}/../../out/{prj}",
 
   "{lnf}": [
     { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", "{win-icon-id}": "MAINICON,0" },

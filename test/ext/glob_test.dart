@@ -6,20 +6,39 @@ import '../helper.dart';
 void main() {
   Helper.forEachMemoryFileSystem((fileSystem) {
     group('Glob', () {
-      test('dirname', () {
+      test('splitPattern', () {
         Helper.initFileSystem(fileSystem);
 
         final pathSep = Path.separator;
 
-        expect(GlobExt.dirname(''), '');
-        expect(GlobExt.dirname('*abc*.def'), '');
-        expect(GlobExt.dirname('sub-dir$pathSep*abc*.def'), 'sub-dir');
-        expect(GlobExt.dirname('../../sub-dir$pathSep*abc*.def'), '../../sub-dir');
-        expect(GlobExt.dirname('sub-dir**$pathSep*abc*.def'), '');
-        expect(GlobExt.dirname('top-dir${pathSep}sub-dir**$pathSep*abc*.def'), 'top-dir');
+        var parts = GlobExt.splitPattern('');
+        expect(parts[0], '');
+        expect(parts[1], '');
+
+        parts = GlobExt.splitPattern('*abc*.def');
+        expect(parts[0], '');
+        expect(parts[1], '*abc*.def');
+
+        parts = GlobExt.splitPattern('sub-dir$pathSep*abc*.def');
+        expect(parts[0], 'sub-dir');
+        expect(parts[1], '*abc*.def');
+
+        parts = GlobExt.splitPattern('../../sub-dir$pathSep*abc*.def');
+        expect(parts[0], '../../sub-dir');
+        expect(parts[1], '*abc*.def');
+
+        parts = GlobExt.splitPattern('sub-dir**$pathSep*abc*.def');
+        expect(parts[0], '');
+        expect(parts[1], 'sub-dir**$pathSep*abc*.def');
+
+        parts = GlobExt.splitPattern('top-dir${pathSep}sub-dir**$pathSep*abc*.def');
+        expect(parts[0], 'top-dir');
+        expect(parts[1], 'sub-dir**$pathSep*abc*.def');
 
         if (Path.isWindowsFS) {
-          expect(GlobExt.dirname('c:sub-dir$pathSep*abc*.def'), 'c:sub-dir');
+          parts = GlobExt.splitPattern('c:sub-dir$pathSep*abc*.def');
+          expect(parts[0], 'c:sub-dir');
+          expect(parts[1], '*abc*.def');
         }
       });
 

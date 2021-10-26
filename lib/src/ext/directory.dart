@@ -62,11 +62,11 @@ extension DirectoryExt on Directory {
   static List<FileSystemEntity> entityListExSync(String pattern, {bool checkExists = true, bool takeDirs = false, bool takeFiles = true}) {
     var isDir = Path.fileSystem.isDirectorySync(pattern);
 
-    var dirName = (isDir ? pattern : GlobExt.dirname(pattern));
-    var subPattern = (isDir ? '' : (dirName.length <= 1 ? pattern : pattern.substring(dirName.length + 1)));
-    var dir = Path.fileSystem.directory(dirName);
+    var parts = (isDir ? null : GlobExt.splitPattern(pattern));
+    var dirName = (parts == null ? pattern : parts[0]);
+    var subPattern = (parts == null ? '' : parts[1]);
 
-    var lst = dir.entityListSync(
+    var lst = Path.fileSystem.directory(dirName).entityListSync(
       subPattern,
       checkExists: checkExists,
       takeDirs: takeDirs,
@@ -115,8 +115,9 @@ extension DirectoryExt on Directory {
       lst = dir.pathListSync(null, checkExists: false, takeDirs: takeDirs, takeFiles: takeFiles);
     }
     else if (isGlobPattern) {
-      var dirName = GlobExt.dirname(pattern);
-      var subPattern = (dirName.length <= 1 ? pattern : pattern.substring(dirName.length + 1));
+      var parts = GlobExt.splitPattern(pattern);
+      var dirName = parts[0];
+      var subPattern = parts[1];
 
       dir = (dirName.isBlank() ? Path.fileSystem.currentDirectory : Path.fileSystem.directory(dirName));
       lst = dir.pathListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);

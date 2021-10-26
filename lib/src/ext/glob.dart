@@ -14,33 +14,6 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String dirname(String pattern, {bool isDirectoryName = false}) {
-    if (pattern.isEmpty || !pattern.contains(Path.separator)) {
-      if (Path.driveSeparator.isEmpty || !pattern.contains(Path.driveSeparator)) {
-        return '';
-      }
-    }
-
-    var dirName = '';
-    var parts = Path.dirname(pattern).split(Path.separator);
-
-    for (var part in parts) {
-      if (isGlobPattern(part)) {
-        break;
-      }
-      if (part.isEmpty) {
-        dirName += Path.separator;
-      }
-      else {
-        dirName = Path.join(dirName, part);
-      }
-    }
-
-    return dirName;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   static bool isRecursive(String? pattern) =>
     ((pattern != null) && _RE_RECURSIVE.hasMatch(pattern));
 
@@ -89,11 +62,40 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static Glob toGlob(String? pattern, {bool? isPath}) {
+  static List<String> splitPattern(String pattern, {bool isDirectoryName = false}) {
+    var dirName = '';
+
+    if (pattern.isEmpty || !pattern.contains(Path.separator)) {
+      if (Path.driveSeparator.isEmpty || !pattern.contains(Path.driveSeparator)) {
+        return [dirName, pattern];
+      }
+    }
+
+    var parts = Path.dirname(pattern).split(Path.separator);
+
+    for (var part in parts) {
+      if (isGlobPattern(part)) {
+        break;
+      }
+      if (part.isEmpty) {
+        dirName += Path.separator;
+      }
+      else {
+        dirName = Path.join(dirName, part);
+      }
+    }
+
+    return [dirName, Path.relative(pattern, from: dirName)];
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static Glob toGlob(String? pattern, {bool? isPath, FileSystem? fileSystem}) {
     var patternEx = ((pattern == null) || pattern.isBlank() ? ALL : pattern);
 
     var filter = Glob(
       Path.toPosix(patternEx),
+      context: Path.fileSystem.path,
       recursive: isRecursive(patternEx),
       caseSensitive: Path.isCaseSensitive
     );
