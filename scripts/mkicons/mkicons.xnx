@@ -16,17 +16,21 @@
     "{{-stop-}}": "{stop}" // stop immediately
   },
 
-  "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
-  "{prj}": "${1}",
+  "{{-once-}}": {
+    "{prj}": "${1}",
+    "{ver}": "${2}",
+    "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
+  },
+
   "{icon-name}": "{prj}{look}",
 
-  "{{-import-}}": "../../examples/shell.xnx",
+  "{{-import-}}": "./shell.xnx",
 
   "{{-if-}}": { "": '"${OS_TYPE}" != ""', "{{-then-}}": {
     "{OSTYPE}": "${OS_TYPE}",
   } },
 
-  "{out-dir}": "{cur-dir}/../../out/{prj}",
+  "{out-dir}": "{cur-dir}/../../out/{prj}-{ver}",
 
   "{lnf}": [
     { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", "{win-icon-id}": "MAINICON,0" },

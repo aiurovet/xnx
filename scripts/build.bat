@@ -79,7 +79,7 @@ xcopy /I /Q /S examples "%OUT%\examples"
 if errorlevel 1 exit /B 1
 
 echo Creating the icons in the output directory
-"%EXE%" -d scripts\mkicons %PRJ% !ARGS!
+"%EXE%" -d scripts\mkicons "%PRJ%" "%VER%" !ARGS!
 if errorlevel 1 exit /B 1
 
 echo Creating and compressing the application package

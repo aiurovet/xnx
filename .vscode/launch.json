@@ -19,6 +19,6 @@
     { "name": "xnx - xunit_data",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/xunit_data" ], },
     { "name": "xnx - mkicons", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-f", "-d", "scripts/mkicons", "xnx" ], },
+      "args": [ "-f", "-d", "scripts/mkicons", "xnx", "0.1.0" ], },
   ]
 }

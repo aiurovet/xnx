@@ -94,10 +94,10 @@ echo "Copying examples to the output directory"
 cp -pr examples "${OUT}"
 
 echo "Creating the icons in the output directory"
-"${EXE}" -d "scripts/mkicons" ${PRJ} ${@}
+"${EXE}" -d "scripts/mkicons" "${PRJ}" "${VER}" ${@}
 
 echo "Creating and compressing the application package"
-${EXE} --move --pack out "${PKZ}"
+"${EXE}" --move --pack out "${PKZ}"
 
 ################################################################################
 
