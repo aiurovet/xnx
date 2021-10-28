@@ -34,6 +34,20 @@ void main() {
           expect(Path.join(r'\', r'b'), r'\b');
         }
       });
+      test('getFullPath', () {
+        Helper.initFileSystem(fileSystem);
+
+        var curDir = Path.fileSystem.currentDirectory.path;
+        var sep = Path.separator;
+
+        expect(Path.equals(Path.getFullPath(''), curDir), true);
+        expect(Path.equals(Path.getFullPath('.'), curDir), true);
+        expect(Path.equals(Path.getFullPath('..'), Path.dirname(curDir)), true);
+        expect(Path.equals(Path.getFullPath('..${sep}a${sep}bc'), '${Path.dirname(curDir)}${sep}a${sep}bc'), true);
+        expect(Path.equals(Path.getFullPath('${sep}a${sep}bc'), '${sep}a${sep}bc'), true);
+        expect(Path.equals(Path.getFullPath('${sep}Abc.txt'), r'Abc.txt'), true);
+        expect(Path.equals(Path.getFullPath('$sepСаша.Текст'), '$sepСаша.Текст'), true);
+      });
     });
   });
 }

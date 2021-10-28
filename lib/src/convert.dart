@@ -315,7 +315,7 @@ class Convert {
 
       isSubRun = RE_EXE_SUB.hasMatch(command);
       isExpandContentOnly = isSubRun && RE_EXE_SUB_EXPAND.hasMatch(command);
-      canExpandContent = !options.isListOnly && (isExpandContentOnly || StringExt.parseBool(getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false)));
+      canExpandContent = !options.isListOnly && (isExpandContentOnly || getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false).parseBool());
 
       if (!curDirName.isBlank()) {
         if (_logger.isDebug) {

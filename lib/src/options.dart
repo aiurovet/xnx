@@ -831,7 +831,7 @@ For more details, see README.md
 
   bool _getBool(String envKey, Map<String, Object?> option, bool? value, {bool defValue = false}) {
     var strValue = _getValue(envKey, value?.toString());
-    var result = (strValue.isBlank() ? defValue : StringExt.parseBool(strValue));
+    var result = (strValue.isBlank() ? defValue : strValue.parseBool());
 
     var optAbbr = option['abbr']?.toString();
 

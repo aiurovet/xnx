@@ -9,10 +9,7 @@ extension StringExt on String {
 
   static const int EOT_CODE = 4;
   static final String EOT = String.fromCharCode(StringExt.EOT_CODE);
-  static const String FALSE_STR = 'false';
   static const String NEWLINE = '\n';
-  static const String TRUE = 'true';
-  static const String FALSE = 'false';
 
   static const String STDIN_DISPLAY = '<stdin>';
   static const String STDIN_PATH = '-';
@@ -34,8 +31,8 @@ extension StringExt on String {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool parseBool(String? input) =>
-    ((input != null) && (input.toLowerCase() == TRUE));
+  bool parseBool() =>
+    (toLowerCase() == 'true');
 
   //////////////////////////////////////////////////////////////////////////////
 

@@ -34,16 +34,15 @@ void main() {
       test('parseBool', () {
         Helper.initFileSystem(fileSystem);
 
-        expect(StringExt.parseBool(null), false);
-        expect(StringExt.parseBool(''), false);
-        expect(StringExt.parseBool('false'), false);
-        expect(StringExt.parseBool('0'), false);
-        expect(StringExt.parseBool('1'), false);
-        expect(StringExt.parseBool('y'), false);
-        expect(StringExt.parseBool('Y'), false);
-        expect(StringExt.parseBool('true'), true);
-        expect(StringExt.parseBool('True'), true);
-        expect(StringExt.parseBool('TRUE'), true);
+        expect(''.parseBool(), false);
+        expect('false'.parseBool(), false);
+        expect('0'.parseBool(), false);
+        expect('1'.parseBool(), false);
+        expect('y'.parseBool(), false);
+        expect('Y'.parseBool(), false);
+        expect('true'.parseBool(), true);
+        expect('True'.parseBool(), true);
+        expect('TRUE'.parseBool(), true);
       });
 
       test('quote', () {

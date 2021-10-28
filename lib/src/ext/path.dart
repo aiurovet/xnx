@@ -1,5 +1,6 @@
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:xnx/src/ext/env.dart';
 import 'string.dart';
 
 class Path {
@@ -91,8 +92,42 @@ class Path {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getFullPath(String? path) =>
-      fileSystem.path.canonicalize(Path.adjust(path));
+  static String getFullPath(String? path) {
+      var full = fileSystem.path.canonicalize(Path.adjust(path));
+
+      if (!Path.isWindowsFS || (path == null) || path.isEmpty) {
+        return full;
+      }
+
+      // Due to path canonicalization on Windows converts the original path to lower case,
+      // trying to keep the original parts of path as much as possible (at least, the basename)
+
+      var partsOfFull = full.split(Path.separator);
+      var partsOfPath = path.split(Path.separator);
+
+      var cntFull = partsOfFull.length - 1;
+      var cntPath = partsOfPath.length - 1;
+
+      var isChanged = false;
+
+      for (var curFull = cntFull, curPath = cntPath; (curFull >= 0) && (curPath >= 0); curFull--, curPath--) {
+        var partOfFull = partsOfFull[curFull];
+        var partOfPath = partsOfPath[curPath];
+
+        if (partOfFull.length != partOfPath.length) {
+          break;
+        }
+
+        if (partOfFull.toLowerCase() != partOfPath.toLowerCase()) {
+          break;
+        }
+
+        isChanged = true;
+        partsOfFull[curFull] = partOfPath;
+      }
+
+      return (isChanged ? partsOfFull.join(Path.separator) : full);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
