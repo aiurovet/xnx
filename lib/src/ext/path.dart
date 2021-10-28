@@ -1,6 +1,5 @@
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:xnx/src/ext/env.dart';
 import 'string.dart';
 
 class Path {
