@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -Eeo pipefail
+
+################################################################################
+
+SCRIPT="${0}"
+SCRIPT_DIR="$(dirname "${SCRIPT}")"
+SCRIPT_NAME="$(basename "${SCRIPT}")"
+
+################################################################################
+
+[[ ${#} < 5 ]] && printf "\nUsage: ${SCRIPT_NAME} <prj> <ver> <arc> <dtl> <pkg-dir>]\n\n" && exit 1
+
+PRJ="${1}"
+VER="${2}"
+ARC="${3}"
+DTL="${4}"
+PKG="${5}"
+
+################################################################################
+
+echo "Running ${SCRIPT_NAME}"
+
+echo "Creating directory ${PKG}/DEBIAN"
+mkdir -p "${PKG}/DEBIAN"
+
+echo "Creating the control file"
+cat <<EOT > "${PKG}/DEBIAN/control"
+Package: ${PRJ}
+Name: ${PRJ}
+Description: ${DTL}
+Author: Alexander Iurovetski
+Maintainer: Alexander Iurovetski
+Version: ${VER}
+Architecture: $(echo "${ARC}" | sed -Ee 's/^[_]+//')
+Homepage: https://github.com/aiurovet/xnx/
+Website: https://github.com/aiurovet/xnx/
+Icon: /opt/${PRJ}-${VER}/${PRJ}.png
+EOT
+
+echo "Creating the postinst file"
+cat <<EOT > "${PKG}/DEBIAN/postinst"
+#!/bin/bash
+rm -f "/usr/bin/${PRJ}"
+ln -s "/opt/${PRJ}/${VER}/${PRJ}" "/usr/bin/${PRJ}"
+EOT
+
+echo "Creating the prerm file"
+cat <<EOT > "${PKG}/DEBIAN/prerm"
+#!/bin/bash
+rm -f "/usr/bin/${PRJ}"
+EOT
+
+echo "Setting permissions on the postinst and the prerm files"
+chmod 755 "${PKG}/DEBIAN/postinst" "${PKG}/DEBIAN/prerm"
+
+echo "Building the package \"${PKG}\""
+dpkg-deb --build --root-owner-group "${PKG}"
+
+echo "Removing the output files"
+rm -rf "${PKG}"
+
+echo "Switching to the package directory"
+cd "$(dirname "${PKG}")"
+
+echo "Converting DEB to RPM"
+PKG_NAME="$(basename "${PKG}")"
+sudo alien --to-rpm --scripts --keep-version "${PKG_NAME}.deb"
+
+################################################################################

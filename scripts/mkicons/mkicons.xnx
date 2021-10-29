@@ -18,7 +18,7 @@
 
   "{{-once-}}": {
     "{prj}": "${1}",
-    "{ver}": "${2}",
+    "{out-dir}": "${2}",
     "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
   },
 
@@ -29,8 +29,6 @@
   "{{-if-}}": { "": '"${OS_TYPE}" != ""', "{{-then-}}": {
     "{OSTYPE}": "${OS_TYPE}",
   } },
-
-  "{out-dir}": "{cur-dir}/../../out/{prj}-{ver}",
 
   "{lnf}": [
     { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", "{win-icon-id}": "MAINICON,0" },

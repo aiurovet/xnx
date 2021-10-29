@@ -6,11 +6,7 @@ set -Eeo pipefail
 
 PRJ="xnx"
 VER="0.1.0"
-
-################################################################################
-
-EXE="bin/${PRJ}"
-OUT="out/${PRJ}-${VER}"
+DTL="A tool to eXpand templates aNd eXecute commands on those"
 
 ################################################################################
 
@@ -39,7 +35,8 @@ function parseCommandLine() {
 ################################################################################
 
 echo "Switching to the top project directory"
-cd $(dirname $(dirname "${0}"))
+SCRIPT_DIR="$(dirname "${0}")"
+cd "$(dirname "${SCRIPT_DIR}")"
 
 echo "Parsing command-line parameters"
 parseCommandLine "${@}"
@@ -56,24 +53,35 @@ if [[ "${OS_TYPE}" =~ "darwin" ]]; then
     OS_TYPE="macOS"
 fi
 
-OS_LOWER=$(echo "${OS_TYPE}" | tr "[:upper:]" "[:lower:]")
+OS_TYPE=macOS
 
-PKG="app/${PRJ}-${VER}-${OS_LOWER}.tar"
-PKZ="${PKG}.gz"
+OS_LOWER=$(echo "${OS_TYPE}" | tr "[:upper:]" "[:lower:]")
 
 export OS_TYPE
 echo "Running the ${OS_TYPE} build"
 
 ################################################################################
 
-if [[ -d out ]]; then
-    echo "Cleaning the output directory"
-    rm -rf out/*
-    mkdir -p "${OUT}"
+EXE="bin/${PRJ}"
+APP="app"
+
+if [[ "${OS_TYPE}" == "macOS" ]]; then
+    ARC=""
+    PKG="${APP}/${PRJ}-${VER}-${OS_LOWER}"
+    OUT="${PKG}/opt/${PRJ}/${VER}"
 else
-    echo "Creating the output directory"
-    mkdir -p "${OUT}"
+    ARC="_amd64"
+    PKG="${APP}/${PRJ}-${VER}${ARC}"
+    OUT="${PKG}/opt/${PRJ}/${VER}"
 fi
+
+################################################################################
+
+echo "Discarding the packaging directory \"${PKG}\""
+rm -rf "${PKG}"
+
+echo "Creating the output directory \"${OUT}\""
+mkdir -p "${OUT}"
 
 echo "Getting the latest version of the packages"
 dart pub get
@@ -81,29 +89,15 @@ dart pub get
 echo "Compiling \"${EXE}\""
 dart compile exe bin/main.dart -o "${EXE}"
 
-echo "Copying the executable to the output directory"
-cp -p "${EXE}" "${OUT}"
+echo "Copying the executable installation guide, readme, license and examples to the output directory"
+cp -pr "${EXE}" INSTALL.txt LICENSE.txt README.md examples "${OUT}"
 
-echo "Copying installation instructions to the output directory"
-cp -p INSTALL.txt "${OUT}"
+#echo "Creating the icons and moving those to the output directory"
+#"${EXE}" -d "scripts/mkicons" "${PRJ}" "../../${OUT}" ${@}
 
-echo "Copying README to the output directory"
-cp -p README.md "${OUT}"
-
-echo "Copying examples to the output directory"
-cp -pr examples "${OUT}"
-
-echo "Creating the icons in the output directory"
-"${EXE}" -d "scripts/mkicons" "${PRJ}" "${VER}" ${@}
-
-echo "Creating and compressing the application package"
-"${EXE}" --move --pack out "${PKZ}"
+"${SCRIPT_DIR}/pkg-${OS_LOWER}" "${PRJ}" "${VER}" "${ARC}" "${DTL}" "${PKG}"
 
 ################################################################################
-
-echo ""
-ls -l "${PKZ}"
-echo ""
 
 if [[ -d out ]]; then
     echo "Removing the output directory"
@@ -113,11 +107,6 @@ fi
 if ((${OPT_KEEP} == 0)); then
     echo "Removing the binary"
     rm -rf "${EXE}"
-fi
-
-if [ -e "${PKG}" ]; then
-    echo "Removing \"${PKG}\" again"
-    rm -f "${PKG}"
 fi
 
 ################################################################################
