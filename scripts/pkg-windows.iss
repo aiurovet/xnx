@@ -15,7 +15,7 @@ AppUpdatesURL=https://github.com/aiurovet/xnx/
 DefaultDirName={autopf}\xnx
 ChangesAssociations=yes
 DefaultGroupName=xnx
-LicenseFile=C:\Users\aiuro\IdeaProjects\xnx\LICENSE.txt
+LicenseFile=..\LICENSE.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
@@ -24,7 +24,7 @@ SolidCompression=yes
 WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64
 ChangesEnvironment=yes
-OutputDir="C:\Users\aiuro\IdeaProjects\xnx\app\Windows"
+OutputDir="..\app\Windows"
 OutputBaseFilename="xnx-0.1.0_x86_64"
 
 [Languages]
@@ -34,11 +34,11 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\aiuro\IdeaProjects\xnx\bin\xnx.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\aiuro\IdeaProjects\xnx\*.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\aiuro\IdeaProjects\xnx\*.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\aiuro\IdeaProjects\xnx\app\Windows\xnx-0.1.0_x86_64\*.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\aiuro\IdeaProjects\xnx\examples\*"; DestDir: "{app}\examples"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\bin\xnx.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\*.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\*.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\app\Windows\xnx-0.1.0_x86_64\*.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\examples\*"; DestDir: "{app}\examples"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
