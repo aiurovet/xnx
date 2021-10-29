@@ -53,8 +53,6 @@ if [[ "${OS_TYPE}" =~ "darwin" ]]; then
     OS_TYPE="macOS"
 fi
 
-OS_TYPE=macOS
-
 OS_LOWER=$(echo "${OS_TYPE}" | tr "[:upper:]" "[:lower:]")
 
 export OS_TYPE
@@ -63,7 +61,7 @@ echo "Running the ${OS_TYPE} build"
 ################################################################################
 
 EXE="bin/${PRJ}"
-APP="app"
+APP="app/${OS_TYPE}"
 
 if [[ "${OS_TYPE}" == "macOS" ]]; then
     ARC=""
@@ -92,8 +90,8 @@ dart compile exe bin/main.dart -o "${EXE}"
 echo "Copying the executable installation guide, readme, license and examples to the output directory"
 cp -pr "${EXE}" INSTALL.txt LICENSE.txt README.md examples "${OUT}"
 
-#echo "Creating the icons and moving those to the output directory"
-#"${EXE}" -d "scripts/mkicons" "${PRJ}" "../../${OUT}" ${@}
+echo "Creating the icons and moving those to the output directory"
+"${EXE}" -d "scripts/mkicons" "${PRJ}" "../../${OUT}" ${@}
 
 "${SCRIPT_DIR}/pkg-${OS_LOWER}" "${PRJ}" "${VER}" "${ARC}" "${DTL}" "${PKG}"
 
