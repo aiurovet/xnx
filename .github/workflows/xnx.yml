@@ -32,10 +32,9 @@ jobs:
 
       ################################################################################
 
-      - name: Installing packaging tools on Linux
+      - name: Installing Alien on Linux
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install dpkg-deb -y
           sudo apt-get install alien -y
           sudo apt-get update
 
