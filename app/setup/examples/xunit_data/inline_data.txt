@@ -1,1 +1,0 @@
-[InlineData("{type}", {rot}, "{stroke}", "{fill}", {dim})]

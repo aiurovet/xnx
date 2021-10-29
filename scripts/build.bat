@@ -6,14 +6,15 @@ rem ****************************************************************************
 
 set PRJ=xnx
 set VER=0.1.0
+set ARC=_x86_64
+set DTL=A tool to eXpand templates aNd eXecute commands on those
 
 rem ****************************************************************************
 
 set EXE=bin\%PRJ%.exe
-set OUT=out\xnx-%VER%
-set PKZ=app\%PRJ%-%VER%-windows.zip
-
-rem Select-String -Pattern "^[\s]*version\:[\s]*(.*)$" -Path .\pubspec.yaml | %{ $_.Matches[0].Groups[1].Value }
+set APP=app\Windows
+set PKG=%APP%\%PRJ%-%VER%%ARC%
+set OUT=%PKG%
 
 rem ****************************************************************************
 
@@ -43,14 +44,16 @@ rem ****************************************************************************
 
 echo Running the build for Windows
 
-if exist "%OUT%" (
-    echo Removing the output directory
-    rmdir /Q /S "%OUT%"
+if exist "%PKG%" (
+    echo Discarding the packaging directory "%PKG%"
+    rmdir /Q /S "%PKG%"
 )
 
-echo Creating the "%OUT%"
-mkdir "%OUT%"
-if errorlevel 1 ex"%OUT%"
+if not exist "%OUT%" (
+    echo Creating the output directory "%OUT%"
+    mkdir "%OUT%"
+    if errorlevel 1 exit /B 1
+)
 
 rem ****************************************************************************
 
@@ -62,38 +65,28 @@ echo Compiling "%EXE%"
 dart compile exe bin\main.dart -o "%EXE%"
 if errorlevel 1 exit /B 1
 
-echo Copying the executable to the output directory
-xcopy /Q "%EXE%" "%OUT%"
+echo Copying the executable installation guide, readme, license and examples to the output directory
+xcopy /I /Q "%EXE%" "%OUT%"
 if errorlevel 1 exit /B 1
-
-echo Copying installation instructions to the output directory
-xcopy /Q INSTALL.txt "%OUT%"
+xcopy /I /Q *.txt "%OUT%"
 if errorlevel 1 exit /B 1
-
-echo Copying README to the output directory
-xcopy /Q README.md "%OUT%"
+xcopy /I /Q *.md "%OUT%"
 if errorlevel 1 exit /B 1
-
-echo Copying examples to the output directory
 xcopy /I /Q /S examples "%OUT%\examples"
 if errorlevel 1 exit /B 1
 
 echo Creating the icons in the output directory
-"%EXE%" -d scripts\mkicons "%PRJ%" "%VER%" !ARGS!
+"%EXE%" -d scripts\mkicons "%PRJ%" "..\..\%OUT%" !ARGS!
 if errorlevel 1 exit /B 1
 
-echo Creating and compressing the application package
-"%EXE%" --move --zip out "%PKZ%"
+echo Compiling the setup package
+iscc "scripts\pkg-windows.iss"
 if errorlevel 1 exit /B 1
 
 rem ****************************************************************************
 
-dir "%PKZ%"
-
-if exist out (
-    echo Removing the output directory
-    del /Q /S out
-)
+echo Removing the output directory
+rmdir /Q /S "%OUT%"
 
 if %OPT_KEEP% equ 0 (
     echo Removing the binary
