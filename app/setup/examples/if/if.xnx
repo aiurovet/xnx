@@ -1,0 +1,44 @@
+// This is an example of how to use conditional branching, mostly with environment variables and other OS specifics.
+// Generally, branching is highly discouraged in favour of arrays of hash maps where you can specify every combination
+// of parameters a lot easier and much more readable way.
+
+{
+  //"{{-import-}}": "../shell.xnx",
+
+  "{{-once-}}": {
+    "{{-transform-}}": {
+      "{HOST}": ["=run", "uname -n"],
+    },
+  },
+
+  "if-regex": {
+    "{{-if-}}": { "": '"${HOME}" !~/i \/(\\.|HOME)', "{{-then-}}": {
+      "{{-run-}}": "--print Has match",
+    }, "{{-else-}}": {
+      "{{-run-}}": "--print No match"
+    }
+  } },
+
+  "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
+    "{{-if-}}": { "": '(("${HOME}" != "") || ("${USER}" != "")) && (-e "/Applications/*.app")', "{{-then-}}": {
+      "{OSTYPE}": "macOS",
+    }, "{{-else-}}": {
+      "{OSTYPE}": "Linux"
+    } },
+    "{HOME}": "${HOME}",
+    "{USER}": "${USER}",
+  }, "{{-else-}}": { "{{-if-}}": { "": '"${USERPROFILE}" != ""', "{{-then-}}": {
+    "{OSTYPE}": "Windows",
+    "{HOME}": "${USERPROFILE}",
+    "{USER}": "${USERNAME}"
+  }, "{{-else-}}": {
+    "{OSTYPE}": "?",
+    "{HOME}": "{OSTYPE}",
+    "{USER}": "{OSTYPE}"
+  } } } },
+
+  "{{-run-}}": [
+    './myscript "OS: {OSTYPE}, User: {USER}, Home: {HOME}, Host: {HOST}"',
+    '--print OS:   {OSTYPE}\nUser: {USER}\nHome: {HOME}\nHost: {HOST}'
+  ],
+}

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+
+<defs>
+    <style>
+
+        g {
+            stroke-linecap: round;
+            stroke-linejoin: round;
+		}
+
+	</style>
+</defs>
+
+<g>
+	<path d="M23,77 L23,67 L33,77 L23,77" fill="black" stroke="black" />
+	<path d="M25,64 L75,17 L85,28 L35,74 L25,64" fill="black" stroke="black" />
+
+	Sorry, your browser does not support SVG!
+</g>
+
+</svg>
