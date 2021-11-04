@@ -3,33 +3,34 @@
 set -Eeo pipefail
 
 ################################################################################
+# This script should be run from the project's top folder
+################################################################################
 
 PRJ="xnx"
 VER="0.1.0"
-DTL="A tool to eXpand templates aNd eXecute commands on those"
 
 ################################################################################
 
 function parseCommandLine() {
-    local opt
+  local opt
 
-    OPT_KEEP=0
-    OS_TYPE=""
+  OPT_KEEP=0
+  OS_TYPE=""
 
-    while getopts "k" opt; do
-        case "${opt}" in
-            k) OPT_KEEP=1
-               ;;
-        esac
-    done
+  while getopts "k" opt; do
+    case "${opt}" in
+      k) OPT_KEEP=1
+         ;;
+    esac
+  done
 
-    OPT_SHIFT=$(($OPTIND - 1))
-    shift ${OPT_SHIFT}
+  OPT_SHIFT=$(($OPTIND - 1))
+  shift ${OPT_SHIFT}
 
-    if ((${#} >= 1)); then
-        OS_TYPE="${1}"
-        OPT_SHIFT=$((${OPT_SHIFT} + 1))
-    fi
+  if ((${#} >= 1)); then
+    OS_TYPE="${1}"
+    OPT_SHIFT=$((${OPT_SHIFT} + 1))
+  fi
 }
 
 ################################################################################
@@ -45,12 +46,12 @@ shift ${OPT_SHIFT}
 ################################################################################
 
 if [[ "${OS_TYPE}" == "" ]]; then
-    echo "Retrieving the default OS name"
-    OS_TYPE=$(uname -s)
+  echo "Retrieving the default OS name"
+  OS_TYPE=$(uname -s)
 fi
 
 if [[ "${OS_TYPE}" =~ "darwin" ]]; then
-    OS_TYPE="macOS"
+  OS_TYPE="macOS"
 fi
 
 OS_LOWER=$(echo "${OS_TYPE}" | tr "[:upper:]" "[:lower:]")
@@ -62,23 +63,21 @@ echo "Running the ${OS_TYPE} build"
 
 EXE="bin/${PRJ}"
 APP="app/${OS_TYPE}"
+OUP="out/${OS_TYPE}"
+OUT="${OUP}/${PRJ}/${VER}"
 
-if [[ "${OS_TYPE}" == "macOS" ]]; then
-    ARC=""
-    PKG="${APP}/${PRJ}-${VER}-${OS_LOWER}"
-    OUT="${PKG}/opt/${PRJ}/${VER}"
-else
-    ARC="_amd64"
-    PKG="${APP}/${PRJ}-${VER}${ARC}"
-    OUT="${PKG}/opt/${PRJ}/${VER}"
-fi
+PKG="${APP}/${PRJ}-${VER}_${OS_LOWER}";
+[[ "${OS_TYPE}" != "macOS" ]] && PKG="${PKG}_amd64"
 
 ################################################################################
 
-echo "Discarding the packaging directory \"${PKG}\""
-rm -rf "${PKG}"
+if [[ -d "${APP}" ]]; then
+  echo "Creating the app directory \"${APP}\""
+  mkdir -p "${APP}"
+fi
 
-echo "Creating the output directory \"${OUT}\""
+echo "Discarding and re-creating the output directory \"${OUT}\""
+rm -f "${OUP}" # remove the parent
 mkdir -p "${OUT}"
 
 echo "Getting the latest version of the packages"
@@ -87,24 +86,32 @@ dart pub get
 echo "Compiling \"${EXE}\""
 dart compile exe bin/main.dart -o "${EXE}"
 
-echo "Copying the executable installation guide, readme, license and examples to the output directory"
-cp -pr "${EXE}" INSTALL.txt LICENSE.txt README.md examples "${OUT}"
+echo "Copying the executable, installation guide, readme, license and examples to the output directory"
+cp -pr "${EXE}" scripts/set-as-current INSTALL.md LICENSE README.md examples "${OUT}"
 
 echo "Creating the icons and moving those to the output directory"
 "${EXE}" -d "scripts/mkicons" "${PRJ}" "../../${OUT}" ${@}
 
-"${SCRIPT_DIR}/pkg-${OS_LOWER}" "${PRJ}" "${VER}" "${ARC}" "${DTL}" "${PKG}"
+################################################################################
+
+echo "Creating and compressing the application package"
+"${EXE}" --move --pack "${OUP}" "${PKG}.tar.gz"
+
+if [[ -d "${OUP}" ]]; then
+  echo "Removing the output parent directory \"${OUP}\""
+  rm -rf "${OUP}"
+fi
+
+if [[ -f "${PKG}.tar" ]]; then
+  echo "Removing \"${PKG}.tar\" again"
+  rm -f "${PKG}.tar"
+fi
 
 ################################################################################
 
-if [[ -d out ]]; then
-    echo "Removing the output directory"
-    rm -rf out
-fi
-
 if ((${OPT_KEEP} == 0)); then
-    echo "Removing the binary"
-    rm -rf "${EXE}"
+  echo "Removing the binary"
+  rm -rf "${EXE}"
 fi
 
 ################################################################################

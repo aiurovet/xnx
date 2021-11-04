@@ -2,21 +2,22 @@
 
 setlocal EnableDelayedExpansion
 
-rem ****************************************************************************
+@rem ***************************************************************************
+@rem This script should be run from the project's top folder
+@rem ***************************************************************************
 
 set PRJ=xnx
 set VER=0.1.0
-set ARC=_x86_64
-set DTL=A tool to eXpand templates aNd eXecute commands on those
 
-rem ****************************************************************************
+@rem ***************************************************************************
 
 set EXE=bin\%PRJ%.exe
 set APP=app\Windows
-set PKG=%APP%\%PRJ%-%VER%%ARC%
-set OUT=%PKG%
+set OUP=out\Windows
+set OUT=%OUP%\%PRJ%\%VER%
+set PKG=%APP%\%PRJ%-%VER%_windows_x86_64
 
-rem ****************************************************************************
+@rem ***************************************************************************
 
 %~d0
 if errorlevel 1 exit /B 1
@@ -29,33 +30,35 @@ set OPT_KEEP=0
 :loop
 
 if /I "%~1" == "/K" (
-    set OPT_KEEP=1
+  set OPT_KEEP=1
 ) else (
-    set ARGS=!ARGS! %1
+  set ARGS=!ARGS! %1
 )
 
 shift
 if "%~1" neq "" goto :loop
 
-rem Reset errorlevel
+@rem Reset errorlevel
 ver > nul
 
-rem ****************************************************************************
+@rem ***************************************************************************
 
 echo Running the build for Windows
 
-if exist "%PKG%" (
-    echo Discarding the packaging directory "%PKG%"
-    rmdir /Q /S "%PKG%"
+echo Creating the application directory "%APP%"
+mkdir "%APP%"
+if errorlevel 1 exit /B 1
+
+if exist "%OUP%" (
+  echo Discarding the output parent directory "%OUP%"
+  rmdir /Q /S "%OUP%"
 )
 
-if not exist "%OUT%" (
-    echo Creating the output directory "%OUT%"
-    mkdir "%OUT%"
-    if errorlevel 1 exit /B 1
-)
+echo Creating the output directory "%OUT%"
+mkdir "%OUT%"
+if errorlevel 1 exit /B 1
 
-rem ****************************************************************************
+@rem ***************************************************************************
 
 echo Getting the latest version of the packages
 call dart pub get
@@ -65,13 +68,27 @@ echo Compiling "%EXE%"
 dart compile exe bin\main.dart -o "%EXE%"
 if errorlevel 1 exit /B 1
 
-echo Copying the executable installation guide, readme, license and examples to the output directory
-xcopy /I /Q "%EXE%" "%OUT%"
+echo Copying the executable file to the output directory
+copy /Y "%EXE%" "%OUT%"
 if errorlevel 1 exit /B 1
-xcopy /I /Q *.txt "%OUT%"
+
+echo Copying the version switcher to the output directory
+copy /Y scripts\set-as-current.bat "%OUT%"
 if errorlevel 1 exit /B 1
-xcopy /I /Q *.md "%OUT%"
+
+echo Copying the change log
+copy /Y CHANGELOG.md "%OUT%"
 if errorlevel 1 exit /B 1
+
+echo Copying the installation guide
+copy /Y INSTALL.md "%OUT%"
+if errorlevel 1 exit /B 1
+
+echo Copying the license
+copy /Y LICENSE "%OUT%"
+if errorlevel 1 exit /B 1
+
+echo Copying the examples
 xcopy /I /Q /S examples "%OUT%\examples"
 if errorlevel 1 exit /B 1
 
@@ -79,22 +96,22 @@ echo Creating the icons in the output directory
 "%EXE%" -d scripts\mkicons "%PRJ%" "..\..\%OUT%" !ARGS!
 if errorlevel 1 exit /B 1
 
-echo Compiling the setup package
-iscc "scripts\pkg-windows.iss"
-if errorlevel 1 exit /B 1
+echo Creating and compressing the application package
+"%EXE%" --move --pack "%OUP%" "%PKG%.zip"
 
-rem ****************************************************************************
+@rem ***************************************************************************
 
-echo Removing the output directory
-rmdir /Q /S "%OUT%"
+echo Removing the output parent directory "%OUP%"
+rmdir /Q /S "%OUP%"
 
 if %OPT_KEEP% equ 0 (
-    echo Removing the binary
-    del /Q "%EXE%"
+  echo Removing the binary
+  del /Q "%EXE%"
 )
 
-rem ****************************************************************************
+@rem ***************************************************************************
 
+echo The build successfully completed
 exit /B 0
 
-rem ****************************************************************************
+@rem ***************************************************************************
