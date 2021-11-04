@@ -7,7 +7,7 @@ set -Eeo pipefail
 ################################################################################
 
 PRJ="xnx"
-VER="0.1.0"
+VER="0.1.1"
 
 ################################################################################
 
@@ -76,8 +76,12 @@ if [[ -d "${APP}" ]]; then
   mkdir -p "${APP}"
 fi
 
-echo "Discarding and re-creating the output directory \"${OUT}\""
-rm -f "${OUP}" # remove the parent
+if [[ -d "${OUP}" ]]; then
+  echo "Discarding the output parent directory \"${OUP}\""
+  rm -rf "${OUP}"
+fi
+
+echo "Creating the output directory \"${OUT}\""
 mkdir -p "${OUT}"
 
 echo "Getting the latest version of the packages"
