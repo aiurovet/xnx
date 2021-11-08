@@ -66,8 +66,8 @@ APP="app/${OS_TYPE}"
 OUP="out/${OS_TYPE}"
 OUT="${OUP}/${PRJ}/${VER}"
 
-PKG="${APP}/${PRJ}-${VER}_${OS_LOWER}";
-[[ "${OS_TYPE}" != "macOS" ]] && PKG="${PKG}_amd64"
+PKG="${APP}/${PRJ}-${VER}-${OS_LOWER}";
+[[ "${OS_TYPE}" != "macOS" ]] && PKG="${PKG}-amd64"
 
 ################################################################################
 
