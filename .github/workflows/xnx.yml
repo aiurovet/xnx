@@ -57,43 +57,31 @@ jobs:
 
       - name: Building the application on a POSIX-compliant OS
         if: runner.os != 'Windows'
-        run: scripts/build -k "${{ runner.os }}"
+        run: scripts/build "${{ runner.os }}"
 
       - name: Building the application on Windows
         if: runner.os == 'Windows'
-        run: scripts\build /K
+        run: scripts\build
 
       ################################################################################
 
       - name: Running Integration Test 1 - flutter_app_icons
-        run: bin/xnx -d examples/flutter_app_icons
+        run: xnx -d examples/flutter_app_icons
 
       ################################################################################
 
       - name: Running Integration Test 2 - ms_office
-        run: bin/xnx -d examples/ms_office
+        run: xnx -d examples/ms_office
 
       ################################################################################
 
       - name: Running Integration Test 3 - multi_conf
-        run: bin/xnx -d examples/multi_conf
+        run: xnx -d examples/multi_conf
 
       ################################################################################
 
       - name: Running Integration Test 4 - multi_icon
-        run: bin/xnx -d examples/multi_icon
-
-      ################################################################################
-
-      - name: Cleaning up on a POSIX-compliant OS
-        if: runner.os != 'Windows'
-        run: rm -f bin/xnx
-
-      ################################################################################
-
-      - name: Cleaning up on Windows
-        if: runner.os == 'Windows'
-        run: Remove-Item -Force -Path bin\xnx.exe
+        run: xnx -d examples/multi_icon
 
       ################################################################################
 
