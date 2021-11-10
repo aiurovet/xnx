@@ -66,22 +66,22 @@ jobs:
       ################################################################################
 
       - name: Running Integration Test 1 - flutter_app_icons
-        run: "bin/${{ runner.os }}/xnx" -d examples/flutter_app_icons
+        run: bin/${{runner.os}}/xnx -d examples/flutter_app_icons
 
       ################################################################################
 
       - name: Running Integration Test 2 - ms_office
-        run: "bin/${{ runner.os }}/xnx" -d examples/ms_office
+        run: bin/${{runner.os}}/xnx -d examples/ms_office
 
       ################################################################################
 
       - name: Running Integration Test 3 - multi_conf
-        run: "bin/${{ runner.os }}/xnx" -d examples/multi_conf
+        run: bin/${{runner.os}}/xnx -d examples/multi_conf
 
       ################################################################################
 
       - name: Running Integration Test 4 - multi_icon
-        run: "bin/${{ runner.os }}/xnx" -d examples/multi_icon
+        run: bin/${{runner.os}}/xnx -d examples/multi_icon
 
       ################################################################################
 
