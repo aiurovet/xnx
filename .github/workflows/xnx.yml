@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{matrix.os}}
 
     strategy:
       matrix:
@@ -57,7 +57,7 @@ jobs:
 
       - name: Building the application on a POSIX-compliant OS
         if: runner.os != 'Windows'
-        run: scripts/build "${{ runner.os }}"
+        run: scripts/build "${{runner.os}}"
 
       - name: Building the application on Windows
         if: runner.os == 'Windows'
@@ -89,7 +89,7 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Pushing the new binary back to the version control'
-          add: 'bin/${{ runner.os }}/* --force'
+          add: 'bin/${{runner.os}}/* --force'
 
       ################################################################################
 
@@ -97,6 +97,6 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           message: 'Pushing the new application package back to the version control'
-          add: 'app/${{ runner.os }}/* --force'
+          add: 'app/${{runner.os}}/* --force'
 
       ################################################################################
