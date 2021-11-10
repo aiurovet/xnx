@@ -11,10 +11,12 @@ set VER=0.1.0
 
 @rem ***************************************************************************
 
-set EXE=bin\%PRJ%.exe
 set APP=app\Windows
+set BIN=bin\Windows
 set OUP=out\Windows
 set OUT=%OUP%\%PRJ%\%VER%
+
+set EXE=%BIN%\%PRJ%.exe
 set PKG=%APP%\%PRJ%-%VER%_windows_x86_64
 
 @rem ***************************************************************************
@@ -25,19 +27,6 @@ if errorlevel 1 exit /B 1
 cd "%~dp0.."
 if errorlevel 1 exit /B 1
 
-set OPT_KEEP=0
-
-:loop
-
-if /I "%~1" == "/K" (
-  set OPT_KEEP=1
-) else (
-  set ARGS=!ARGS! %1
-)
-
-shift
-if "%~1" neq "" goto :loop
-
 @rem Reset errorlevel
 ver > nul
 
@@ -47,6 +36,10 @@ echo Running the build for Windows
 
 echo Creating the application directory "%APP%"
 mkdir "%APP%"
+if errorlevel 1 exit /B 1
+
+echo Creating the bin directory "%BIN%"
+mkdir "%BIN%"
 if errorlevel 1 exit /B 1
 
 if exist "%OUP%" (
@@ -103,11 +96,6 @@ echo Creating and compressing the application package
 
 echo Removing the output parent directory "%OUP%"
 rmdir /Q /S "%OUP%"
-
-if %OPT_KEEP% equ 0 (
-  echo Removing the binary
-  del /Q "%EXE%"
-)
 
 @rem ***************************************************************************
 
