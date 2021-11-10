@@ -18,5 +18,5 @@ dependencies:
   process_run: ^0.12.1+1
 
 dev_dependencies:
-  pedantic: ^1.8.0
+  lints: ^1.0.1
   test: ^1.6.0

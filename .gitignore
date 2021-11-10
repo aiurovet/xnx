@@ -21,22 +21,17 @@ doc/api/
 .DS_Store
 
 # Application-related
-*.zip
 bin/Linux
 bin/macOS
 bin/Windows
-out/
 examples/flutter_app_icons/android/
 examples/flutter_app_icons/ios/
 examples/flutter_app_icons/web/
-
 examples/multi_conf/out/
-
 examples/multi_icon/png/
-
 examples/ms_office/*.dir/
 examples/ms_office/out/
 examples/ms_office/unz/
 examples/web_config/
-
+out/
 scripts/mkicons/png/
