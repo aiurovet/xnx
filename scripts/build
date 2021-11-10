@@ -14,15 +14,13 @@ VER="0.1.0"
 function parseCommandLine() {
   local opt
 
-  OPT_KEEP=0
   OS_TYPE=""
 
-  while getopts "k" opt; do
-    case "${opt}" in
-      k) OPT_KEEP=1
-         ;;
-    esac
-  done
+  # while getopts "" opt; do
+  #   case "${opt}" in
+  #        ;;
+  #   esac
+  # done
 
   OPT_SHIFT=$(($OPTIND - 1))
   shift ${OPT_SHIFT}
@@ -61,19 +59,26 @@ echo "Running the ${OS_TYPE} build"
 
 ################################################################################
 
-EXE="bin/${PRJ}"
+BIN="bin/${OS_TYPE}"
 APP="app/${OS_TYPE}"
 OUP="out/${OS_TYPE}"
 OUT="${OUP}/${PRJ}/${VER}"
+
+EXE="${BIN}/${PRJ}"
 
 PKG="${APP}/${PRJ}-${VER}-${OS_LOWER}";
 [[ "${OS_TYPE}" != "macOS" ]] && PKG="${PKG}-amd64"
 
 ################################################################################
 
-if [[ -d "${APP}" ]]; then
+if [[ ! -d "${APP}" ]]; then
   echo "Creating the app directory \"${APP}\""
   mkdir -p "${APP}"
+fi
+
+if [[ ! -d "${BIN}" ]]; then
+  echo "Creating the bin directory \"${BIN}\""
+  mkdir -p "${BIN}"
 fi
 
 if [[ -d "${OUP}" ]]; then
@@ -109,13 +114,6 @@ fi
 if [[ -f "${PKG}.tar" ]]; then
   echo "Removing \"${PKG}.tar\" again"
   rm -f "${PKG}.tar"
-fi
-
-################################################################################
-
-if ((${OPT_KEEP} == 0)); then
-  echo "Removing the binary"
-  rm -rf "${EXE}"
 fi
 
 ################################################################################
