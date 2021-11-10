@@ -8,14 +8,14 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static const String ALL = '*';
+  static const String all = '*';
 
-  static final RegExp _RE_RECURSIVE = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
+  static final RegExp _rexRecursive = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
   static bool isRecursive(String? pattern) =>
-    ((pattern != null) && _RE_RECURSIVE.hasMatch(pattern));
+    ((pattern != null) && _rexRecursive.hasMatch(pattern));
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -91,7 +91,7 @@ extension GlobExt on Glob {
   //////////////////////////////////////////////////////////////////////////////
 
   static Glob toGlob(String? pattern, {bool? isPath, FileSystem? fileSystem}) {
-    var patternEx = ((pattern == null) || pattern.isBlank() ? ALL : pattern);
+    var patternEx = ((pattern == null) || pattern.isBlank() ? all : pattern);
 
     var filter = Glob(
       Path.toPosix(patternEx),

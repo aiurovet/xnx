@@ -19,13 +19,13 @@ class ConfigFileLoader {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static const String IMP_FILE_KEY_SEP = '_';
-  static const String RECORD_SEP = ',';
+  static const String impFileKeySep = '_';
+  static const String recordSep = ',';
 
-  static final String ALL_ARGS = r'${@}';
-  static final RegExp RE_CMD_LINE_ARG = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([0-9]+))|(\$\{([1-9][0-9]*)\})');
-  static final RegExp RE_IMP_FILE_KEY_BAD_CHARS = RegExp(r'[\\\/\.,;]');
-  static final RegExp RE_JSON_MAP_BRACES = RegExp(r'^[\s\{]+|[\s\}]+$');
+  static final String allArgs = r'${@}';
+  static final RegExp rexCmdLineArgs = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([0-9]+))|(\$\{([1-9][0-9]*)\})');
+  static final RegExp rexImpFileKeyBadChars = RegExp(r'[\\\/\.,;]');
+  static final RegExp rexJsonMapBraces = RegExp(r'^[\s\{]+|[\s\}]+$');
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -90,9 +90,9 @@ class ConfigFileLoader {
     var startCmd = Command.getStartCommand(escapeQuotes: true);
 
     _text = _text.replaceAll('\$\$', '\x01');
-    _text = _text.replaceAllMapped(RE_CMD_LINE_ARG, (match) {
+    _text = _text.replaceAllMapped(rexCmdLineArgs, (match) {
       if (match.group(1) != null) {
-        return ALL_ARGS; // will be expanded later
+        return allArgs; // will be expanded later
       }
 
       var envArgNo = (match.group(3) ?? match.group(5));
@@ -124,8 +124,8 @@ class ConfigFileLoader {
     }
 
     if ((impPath != null) && !impPath.isBlank()) {
-      key += IMP_FILE_KEY_SEP;
-      key += impPath.replaceAll(RE_IMP_FILE_KEY_BAD_CHARS, IMP_FILE_KEY_SEP);
+      key += impFileKeySep;
+      key += impPath.replaceAll(rexImpFileKeyBadChars, impFileKeySep);
     }
 
     return key;
@@ -158,7 +158,7 @@ class ConfigFileLoader {
               loadSync(impPathEx);
 
               if (fullText.length > 1) {
-                fullText += RECORD_SEP;
+                fullText += recordSep;
               }
 
               var key = getImportFileKey(keyPrefix, impPath: impPathEx);
@@ -166,7 +166,7 @@ class ConfigFileLoader {
               map[key] = json5Decode(text);
 
               jsonText = jsonEncode(map)
-                  .replaceAll(RE_JSON_MAP_BRACES, '');
+                  .replaceAll(rexJsonMapBraces, '');
               fullText += jsonText;
             }
 
@@ -264,8 +264,8 @@ class ConfigFileLoader {
   ConfigFileLoader loadSyncEx(ConfigFileInfo fileInfo) {
     var filePath = fileInfo.filePath;
 
-    _isStdIn = (filePath.isBlank() || (filePath == StringExt.STDIN_PATH));
-    var displayName = (_isStdIn ? StringExt.STDIN_DISPLAY : '"$filePath"');
+    _isStdIn = (filePath.isBlank() || (filePath == StringExt.stdinPath));
+    var displayName = (_isStdIn ? StringExt.stdinDisplay : '"$filePath"');
 
     _logger.information('Loading from $displayName');
 

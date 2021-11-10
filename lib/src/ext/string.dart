@@ -7,22 +7,22 @@ extension StringExt on String {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static const int EOT_CODE = 4;
-  static final String EOT = String.fromCharCode(StringExt.EOT_CODE);
-  static const String NEWLINE = '\n';
+  static const int eotCode = 4;
+  static final String eot = String.fromCharCode(StringExt.eotCode);
+  static const String newLine = '\n';
 
-  static const String STDIN_DISPLAY = '<stdin>';
-  static const String STDIN_PATH = '-';
+  static const String stdinDisplay = '<stdin>';
+  static const String stdinPath = '-';
 
-  static const String STDOUT_DISPLAY = '<stdout>';
-  static const String STDOUT_PATH = StringExt.STDIN_PATH;
+  static const String stdoutDisplay = '<stdout>';
+  static const String stdoutPath = StringExt.stdinPath;
 
-  static const String UNKNOWN = '<unknown>';
+  static const String unknown = '<unknown>';
 
-  static final RegExp RE_BLANK = RegExp(r'^[\s]*$');
-  static final RegExp RE_CMD_LINE = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
-  static final RegExp RE_INTEGER = RegExp(r'^\d+$', caseSensitive: false);
-  static final RegExp RE_PROTOCOL = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
+  static final RegExp rexBlank = RegExp(r'^[\s]*$');
+  static final RegExp rexCmdLine = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
+  static final RegExp rexInteger = RegExp(r'^\d+$', caseSensitive: false);
+  static final RegExp rexProtocol = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 

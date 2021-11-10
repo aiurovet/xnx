@@ -7,7 +7,7 @@ extension StdinExt on Stdin {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String readAsStringSync({int endByte = StringExt.EOT_CODE}) {
+  String readAsStringSync({int endByte = StringExt.eotCode}) {
     final input = <int>[];
 
     for (var isEmpty = true; ; isEmpty = false) {

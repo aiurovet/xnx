@@ -5,23 +5,23 @@ import 'package:xnx/src/ext/string.dart';
 import 'flat_map.dart';
 
 enum OperationType {
-  Unknown,
-  AlwaysFalse,
-  AlwaysTrue,
-  Equals,
-  Exists,
-  ExistsDir,
-  ExistsFile,
-  Greater,
-  GreaterOrEquals,
-  Less,
-  LessOrEquals,
-  Matches,
-  NotEquals,
-  NotExists,
-  NotExistsDir,
-  NotExistsFile,
-  NotMatches,
+  unknown,
+  alwaysFalse,
+  alwaysTrue,
+  equals,
+  exists,
+  existsDir,
+  existsFile,
+  greater,
+  greaterOrEquals,
+  less,
+  lessOrEquals,
+  matches,
+  notEquals,
+  notExists,
+  notExistsDir,
+  notExistsFile,
+  notMatches,
 }
 
 class Operation {
@@ -31,30 +31,30 @@ class Operation {
   //////////////////////////////////////////////////////////////////////////////
 
   static const Map<OperationType, OperationType> _oppositeOf = {
-    OperationType.Unknown: OperationType.Unknown,
-    OperationType.AlwaysFalse: OperationType.AlwaysTrue,
-    OperationType.AlwaysTrue: OperationType.AlwaysFalse,
-    OperationType.Equals: OperationType.NotEquals,
-    OperationType.Exists: OperationType.NotExists,
-    OperationType.ExistsDir: OperationType.NotExistsDir,
-    OperationType.ExistsFile: OperationType.NotExistsFile,
-    OperationType.Greater: OperationType.LessOrEquals,
-    OperationType.GreaterOrEquals: OperationType.Less,
-    OperationType.Less: OperationType.GreaterOrEquals,
-    OperationType.LessOrEquals: OperationType.Greater,
-    OperationType.Matches: OperationType.NotMatches,
-    OperationType.NotEquals: OperationType.Equals,
-    OperationType.NotExists: OperationType.Exists,
-    OperationType.NotExistsDir: OperationType.ExistsDir,
-    OperationType.NotExistsFile: OperationType.ExistsFile,
-    OperationType.NotMatches: OperationType.Matches,
+    OperationType.unknown: OperationType.unknown,
+    OperationType.alwaysFalse: OperationType.alwaysTrue,
+    OperationType.alwaysTrue: OperationType.alwaysFalse,
+    OperationType.equals: OperationType.notEquals,
+    OperationType.exists: OperationType.notExists,
+    OperationType.existsDir: OperationType.notExistsDir,
+    OperationType.existsFile: OperationType.notExistsFile,
+    OperationType.greater: OperationType.lessOrEquals,
+    OperationType.greaterOrEquals: OperationType.less,
+    OperationType.less: OperationType.greaterOrEquals,
+    OperationType.lessOrEquals: OperationType.greater,
+    OperationType.matches: OperationType.notMatches,
+    OperationType.notEquals: OperationType.equals,
+    OperationType.notExists: OperationType.exists,
+    OperationType.notExistsDir: OperationType.existsDir,
+    OperationType.notExistsFile: OperationType.existsFile,
+    OperationType.notMatches: OperationType.matches,
   };
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  OperationType type = OperationType.Unknown;
+  OperationType type = OperationType.unknown;
 
   bool isCaseSensitive = true;
   bool isDotAll = false;
@@ -82,26 +82,26 @@ class Operation {
 
   bool exec(String condition) {
     switch (parse(condition)) {
-      case OperationType.AlwaysFalse:
+      case OperationType.alwaysFalse:
         return false;
-      case OperationType.AlwaysTrue:
+      case OperationType.alwaysTrue:
         return true;
-      case OperationType.Equals:
-      case OperationType.Greater:
-      case OperationType.GreaterOrEquals:
-      case OperationType.Less:
-      case OperationType.LessOrEquals:
-      case OperationType.NotEquals:
+      case OperationType.equals:
+      case OperationType.greater:
+      case OperationType.greaterOrEquals:
+      case OperationType.less:
+      case OperationType.lessOrEquals:
+      case OperationType.notEquals:
         return _execCompare();
-      case OperationType.Exists:
-      case OperationType.ExistsDir:
-      case OperationType.ExistsFile:
-      case OperationType.NotExists:
-      case OperationType.NotExistsDir:
-      case OperationType.NotExistsFile:
+      case OperationType.exists:
+      case OperationType.existsDir:
+      case OperationType.existsFile:
+      case OperationType.notExists:
+      case OperationType.notExistsDir:
+      case OperationType.notExistsFile:
         return _execExists();
-      case OperationType.Matches:
-      case OperationType.NotMatches:
+      case OperationType.matches:
+      case OperationType.notMatches:
         return _execMatches();
       default:
         return false;
@@ -113,10 +113,10 @@ class Operation {
   bool _checkCompares(int from, int length) {
     switch (_condition[from]) {
       case '<':
-        type = OperationType.Less;
+        type = OperationType.less;
         break;
       case '>':
-        type = OperationType.Greater;
+        type = OperationType.greater;
         break;
       default:
         return false;
@@ -127,8 +127,8 @@ class Operation {
     for (; last < length; last++) {
       switch (_condition[last]) {
         case '=':
-          type = (type == OperationType.Less ? OperationType.LessOrEquals :
-          OperationType.GreaterOrEquals);
+          type = (type == OperationType.less ? OperationType.lessOrEquals :
+          OperationType.greaterOrEquals);
           continue;
         default:
           break;
@@ -166,7 +166,7 @@ class Operation {
       break;
     }
 
-    type = OperationType.Equals;
+    type = OperationType.equals;
 
     if (_begPos < 0) {
       _begPos = from;
@@ -185,13 +185,13 @@ class Operation {
     if (last < length) {
       switch (_condition[last]) {
         case 'd':
-          type = OperationType.ExistsDir;
+          type = OperationType.existsDir;
           break;
         case 'e':
-          type = OperationType.Exists;
+          type = OperationType.exists;
           break;
         case 'f':
-          type = OperationType.ExistsFile;
+          type = OperationType.existsFile;
           break;
         default:
           return false;
@@ -234,7 +234,7 @@ class Operation {
       }
     }
 
-    type = OperationType.Matches;
+    type = OperationType.matches;
 
     if (_begPos < 0) {
       _begPos = from;
@@ -251,7 +251,7 @@ class Operation {
     var length = _condition.length;
 
     if (length <= 0) {
-      type = OperationType.AlwaysFalse;
+      type = OperationType.alwaysFalse;
       return true;
     }
 
@@ -259,37 +259,37 @@ class Operation {
     var conditionLC = _condition.substring(from).toLowerCase();
 
     if ((from >= length) || (conditionLC == 'false')) {
-      type = OperationType.AlwaysFalse;
+      type = OperationType.alwaysFalse;
     }
     else {
       var n = num.tryParse(conditionLC);
 
       if ((n ?? -1) == 0) {
-        type = OperationType.AlwaysFalse;
+        type = OperationType.alwaysFalse;
       }
       else {
         if (conditionLC == 'true') {
-          type = OperationType.AlwaysTrue;
+          type = OperationType.alwaysTrue;
         }
         else {
           if ((n != null) && (n != 0)){
-            type = OperationType.AlwaysTrue;
+            type = OperationType.alwaysTrue;
           }
         }
       }
     }
 
     if (_isOpposite) {
-      if (type == OperationType.AlwaysFalse) {
-        type = OperationType.AlwaysTrue;
+      if (type == OperationType.alwaysFalse) {
+        type = OperationType.alwaysTrue;
       }
       else {
-        type = OperationType.AlwaysFalse;
+        type = OperationType.alwaysFalse;
       }
       _isOpposite = false;
     }
 
-    return (type != OperationType.Unknown);
+    return (type != OperationType.unknown);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -308,12 +308,12 @@ class Operation {
     }
 
     var isThen = (
-      type == OperationType.Less ? (cmpResult <  0) :
-      type == OperationType.LessOrEquals ? (cmpResult <= 0) :
-      type == OperationType.GreaterOrEquals ? (cmpResult >= 0) :
-      type == OperationType.Greater ? (cmpResult >  0) :
-      type == OperationType.Equals ? (cmpResult == 0) :
-      type == OperationType.NotEquals ? (cmpResult != 0) :
+      type == OperationType.less ? (cmpResult <  0) :
+      type == OperationType.lessOrEquals ? (cmpResult <= 0) :
+      type == OperationType.greaterOrEquals ? (cmpResult >= 0) :
+      type == OperationType.greater ? (cmpResult >  0) :
+      type == OperationType.equals ? (cmpResult == 0) :
+      type == OperationType.notEquals ? (cmpResult != 0) :
       false
     );
 
@@ -332,14 +332,14 @@ class Operation {
 
       isThen = (mask.isEmpty ? false : FileSystemEntityExt.tryPatternExistsSync(
         mask,
-        isDirectory: (type == OperationType.ExistsDir),
-        isFile: (type == OperationType.ExistsFile),
+        isDirectory: (type == OperationType.existsDir),
+        isFile: (type == OperationType.existsFile),
       ));
     }
 
-    if ((type == OperationType.NotExists) ||
-        (type == OperationType.NotExistsDir) ||
-        (type == OperationType.NotExistsFile)) {
+    if ((type == OperationType.notExists) ||
+        (type == OperationType.notExistsDir) ||
+        (type == OperationType.notExistsFile)) {
       return !isThen;
     }
 
@@ -359,7 +359,7 @@ class Operation {
       unicode: isUnicode
     ).hasMatch(operands[0] as String));
 
-    return (type == OperationType.NotMatches ? !isThen : isThen);
+    return (type == OperationType.notMatches ? !isThen : isThen);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -426,14 +426,14 @@ class Operation {
           continue;
         case ' ':
         case '\t':
-          isFound = (type != OperationType.Unknown);
+          isFound = (type != OperationType.unknown);
           continue;
       }
     }
 
-    if (type == OperationType.Unknown) {
+    if (type == OperationType.unknown) {
       var isEmpty = _condition.replaceAll('!', '').isBlank();
-      type = (isEmpty ? OperationType.AlwaysFalse : OperationType.AlwaysTrue);
+      type = (isEmpty ? OperationType.alwaysFalse : OperationType.alwaysTrue);
     }
 
     if (_isOpposite) {
@@ -459,7 +459,7 @@ class Operation {
 
     operands.clear();
 
-    type = OperationType.Unknown;
+    type = OperationType.unknown;
 
     isCaseSensitive = true;
     isDotAll = false;
@@ -472,8 +472,8 @@ class Operation {
   //////////////////////////////////////////////////////////////////////////////
 
   void _setOperands() {
-    if ((type == OperationType.AlwaysTrue) ||
-        (type == OperationType.AlwaysFalse)) {
+    if ((type == OperationType.alwaysTrue) ||
+        (type == OperationType.alwaysFalse)) {
       return;
     }
 
@@ -482,15 +482,15 @@ class Operation {
     }
 
     var isBinary = (
-      (type == OperationType.Equals) ||
-      (type == OperationType.Greater) ||
-      (type == OperationType.GreaterOrEquals) ||
-      (type == OperationType.Less) ||
-      (type == OperationType.LessOrEquals) ||
-      (type == OperationType.Equals) ||
-      (type == OperationType.Matches) ||
-      (type == OperationType.NotEquals) ||
-      (type == OperationType.NotMatches)
+      (type == OperationType.equals) ||
+      (type == OperationType.greater) ||
+      (type == OperationType.greaterOrEquals) ||
+      (type == OperationType.less) ||
+      (type == OperationType.lessOrEquals) ||
+      (type == OperationType.equals) ||
+      (type == OperationType.matches) ||
+      (type == OperationType.notEquals) ||
+      (type == OperationType.notMatches)
     );
 
     var expArgCount = (isBinary ? 2 : 1);
@@ -528,13 +528,13 @@ class Operation {
       operands.add(n2 ?? o2);
     }
 
-    if (type == OperationType.Unknown) {
+    if (type == OperationType.unknown) {
       if (((n1 != null) && (n1 == 0)) || (o1?.isEmpty ?? true)) {
         if (_isOpposite) {
-          type = OperationType.AlwaysTrue;
+          type = OperationType.alwaysTrue;
         }
         else {
-          type = OperationType.AlwaysFalse;
+          type = OperationType.alwaysFalse;
         }
       }
     }

@@ -62,14 +62,14 @@ class Xnx {
       if (errMsg.isBlank()) {
         return false;
       }
-      else if (errMsg == Options.HELP['name']) {
+      else if (errMsg == Options.help['name']) {
         return true;
       }
       else if (_logger.isSilent) {
         return false;
       }
 
-      var errDtl = (_logger.level >= Logger.LEVEL_DEBUG ? '\n\n' + stackTrace.toString() : '');
+      var errDtl = (_logger.level >= Logger.levelDebug ? '\n\n' + stackTrace.toString() : '');
       errMsg = '\n*** ERROR: $errMsg$errDtl\n';
 
       _logger.error(errMsg);

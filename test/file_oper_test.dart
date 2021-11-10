@@ -14,7 +14,8 @@ void main() {
         expect(Path.fileSystem.directory('dir2').existsSync(), false);
 
         FileOper.createDirSync(['', ' ', '\t', 'dir1', Path.join('dir2', 'dir3')], isSilent: true);
-        Path.fileSystem.file(Path.join('dir1', 'file1.txt')).createSync();
+        Path.fileSystem.file(Path.join('dir1', 'file1.txt')).createSync(recursive: true);
+        Path.fileSystem.file(Path.join('dir2', 'file2.txt')).createSync(recursive: true);
 
         expect(Path.currentDirectory.listSync().length, 2);
         expect(Path.fileSystem.directory('dir2').listSync().length, 1);
@@ -34,7 +35,8 @@ void main() {
         Helper.initFileSystem(fileSystem);
 
         FileOper.createDirSync(['', ' ', '\t', 'dir1', Path.join('dir2', 'dir3')], isSilent: true);
-        Path.fileSystem.file(Path.join('dir1', 'file1.txt')).createSync();
+        Path.fileSystem.file(Path.join('dir1', 'file1.txt')).createSync(recursive: true);
+        Path.fileSystem.file(Path.join('dir2', 'file2.txt')).createSync(recursive: true);
 
         expect(FileOper.listSync(['dir1', 'dir2'], isSilent: true).length, 4);
 

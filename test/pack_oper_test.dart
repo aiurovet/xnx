@@ -49,38 +49,38 @@ void main() {
         var fromPath = Path.join('dir', 'a.txt');
         var toPath = Path.join('dir', 'b.txt');
 
-        expect(PackOper.getPackPath(PackType.Bz2, fromPath, null), fromPath + '.bz2');
-        expect(PackOper.getPackPath(PackType.Bz2, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.Gz, fromPath, null), fromPath + '.gz');
-        expect(PackOper.getPackPath(PackType.Gz, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.Tar, fromPath, null), fromPath + '.tar');
-        expect(PackOper.getPackPath(PackType.Tar, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.TarBz2, fromPath, null), fromPath + '.bz2');
-        expect(PackOper.getPackPath(PackType.TarBz2, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.TarGz, fromPath, null), fromPath + '.gz');
-        expect(PackOper.getPackPath(PackType.TarGz, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.TarZ, fromPath, null), fromPath + '.Z');
-        expect(PackOper.getPackPath(PackType.TarZ, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.Zip, fromPath, null), fromPath + '.zip');
-        expect(PackOper.getPackPath(PackType.Zip, fromPath, toPath), toPath);
+        expect(PackOper.getPackPath(PackType.bz2, fromPath, null), fromPath + '.bz2');
+        expect(PackOper.getPackPath(PackType.bz2, fromPath, toPath), toPath);
+        expect(PackOper.getPackPath(PackType.gz, fromPath, null), fromPath + '.gz');
+        expect(PackOper.getPackPath(PackType.gz, fromPath, toPath), toPath);
+        expect(PackOper.getPackPath(PackType.tar, fromPath, null), fromPath + '.tar');
+        expect(PackOper.getPackPath(PackType.tar, fromPath, toPath), toPath);
+        expect(PackOper.getPackPath(PackType.tarBz2, fromPath, null), fromPath + '.bz2');
+        expect(PackOper.getPackPath(PackType.tarBz2, fromPath, toPath), toPath);
+        expect(PackOper.getPackPath(PackType.tarGz, fromPath, null), fromPath + '.gz');
+        expect(PackOper.getPackPath(PackType.tarGz, fromPath, toPath), toPath);
+        expect(PackOper.getPackPath(PackType.tarZ, fromPath, null), fromPath + '.Z');
+        expect(PackOper.getPackPath(PackType.tarZ, fromPath, toPath), toPath);
+        expect(PackOper.getPackPath(PackType.zip, fromPath, null), fromPath + '.zip');
+        expect(PackOper.getPackPath(PackType.zip, fromPath, toPath), toPath);
       });
       test('getPackType - by pack type', () {
         Helper.initFileSystem(fileSystem);
 
-        expect(PackOper.getPackType(PackType.Bz2, null), PackType.Bz2);
-        expect(PackOper.getPackType(PackType.Bz2, 'a.txt'), PackType.Bz2);
-        expect(PackOper.getPackType(PackType.Gz, null), PackType.Gz);
-        expect(PackOper.getPackType(PackType.Gz, 'a.txt'), PackType.Gz);
-        expect(PackOper.getPackType(PackType.Tar, null), PackType.Tar);
-        expect(PackOper.getPackType(PackType.Tar, 'a.txt'), PackType.Tar);
-        expect(PackOper.getPackType(PackType.TarBz2, null), PackType.TarBz2);
-        expect(PackOper.getPackType(PackType.TarBz2, 'a.txt'), PackType.TarBz2);
-        expect(PackOper.getPackType(PackType.TarGz, null), PackType.TarGz);
-        expect(PackOper.getPackType(PackType.TarGz, 'a.txt'), PackType.TarGz);
-        expect(PackOper.getPackType(PackType.TarZ, null), PackType.TarZ);
-        expect(PackOper.getPackType(PackType.TarZ, 'a.txt'), PackType.TarZ);
-        expect(PackOper.getPackType(PackType.Zip, null), PackType.Zip);
-        expect(PackOper.getPackType(PackType.Zip, 'a.txt'), PackType.Zip);
+        expect(PackOper.getPackType(PackType.bz2, null), PackType.bz2);
+        expect(PackOper.getPackType(PackType.bz2, 'a.txt'), PackType.bz2);
+        expect(PackOper.getPackType(PackType.gz, null), PackType.gz);
+        expect(PackOper.getPackType(PackType.gz, 'a.txt'), PackType.gz);
+        expect(PackOper.getPackType(PackType.tar, null), PackType.tar);
+        expect(PackOper.getPackType(PackType.tar, 'a.txt'), PackType.tar);
+        expect(PackOper.getPackType(PackType.tarBz2, null), PackType.tarBz2);
+        expect(PackOper.getPackType(PackType.tarBz2, 'a.txt'), PackType.tarBz2);
+        expect(PackOper.getPackType(PackType.tarGz, null), PackType.tarGz);
+        expect(PackOper.getPackType(PackType.tarGz, 'a.txt'), PackType.tarGz);
+        expect(PackOper.getPackType(PackType.tarZ, null), PackType.tarZ);
+        expect(PackOper.getPackType(PackType.tarZ, 'a.txt'), PackType.tarZ);
+        expect(PackOper.getPackType(PackType.zip, null), PackType.zip);
+        expect(PackOper.getPackType(PackType.zip, 'a.txt'), PackType.zip);
       });
       test('getPackType - by file type', () {
         Helper.initFileSystem(fileSystem);
@@ -90,15 +90,15 @@ void main() {
         expect(PackOper.getPackType(null, null), null);
         expect(PackOper.getPackType(null, path), null);
 
-        expect(PackOper.getPackType(null, path + '.bz2'), PackType.Bz2);
-        expect(PackOper.getPackType(null, path + '.tar.bz2'), PackType.TarBz2);
+        expect(PackOper.getPackType(null, path + '.bz2'), PackType.bz2);
+        expect(PackOper.getPackType(null, path + '.tar.bz2'), PackType.tarBz2);
 
-        expect(PackOper.getPackType(null, path + '.gz'), PackType.Gz);
-        expect(PackOper.getPackType(null, path + '.tar.gz'), PackType.TarGz);
+        expect(PackOper.getPackType(null, path + '.gz'), PackType.gz);
+        expect(PackOper.getPackType(null, path + '.tar.gz'), PackType.tarGz);
 
-        expect(PackOper.getPackType(null, path + '.z'), PackType.Z);
-        expect(PackOper.getPackType(null, path + '.Z'), PackType.Z);
-        expect(PackOper.getPackType(null, path + '.tar.Z'), PackType.TarZ);
+        expect(PackOper.getPackType(null, path + '.z'), PackType.z);
+        expect(PackOper.getPackType(null, path + '.Z'), PackType.z);
+        expect(PackOper.getPackType(null, path + '.tar.Z'), PackType.tarZ);
       });
       test('getUnpackPath', () {
         Helper.initFileSystem(fileSystem);
@@ -109,35 +109,35 @@ void main() {
         var fromPath = Path.join(dirName, 'a.txt');
         var toPath = Path.join(dirName, 'b.txt');
 
-        expect(PackOper.getUnpackPath(PackType.Bz2, fromPath + '.bz2', null), fromPath);
-        expect(PackOper.getUnpackPath(PackType.Bz2, fromPath + '.bz2', toPath), toPath);
+        expect(PackOper.getUnpackPath(PackType.bz2, fromPath + '.bz2', null), fromPath);
+        expect(PackOper.getUnpackPath(PackType.bz2, fromPath + '.bz2', toPath), toPath);
         expect(PackOper.getUnpackPath(null, fromPath + '.bz2', null), fromPath);
         expect(PackOper.getUnpackPath(null, fromPath + '.bz2', dirName), fromPath);
 
-        expect(PackOper.getUnpackPath(PackType.TarZ, fromPath + '.tar.Z', null), fromPath + '.tar');
-        expect(PackOper.getUnpackPath(PackType.TarZ, fromPath + '.tar.Z', toPath), toPath);
+        expect(PackOper.getUnpackPath(PackType.tarZ, fromPath + '.tar.Z', null), fromPath + '.tar');
+        expect(PackOper.getUnpackPath(PackType.tarZ, fromPath + '.tar.Z', toPath), toPath);
         expect(PackOper.getUnpackPath(null, fromPath + '.tar.Z', null), fromPath + '.tar');
         expect(PackOper.getUnpackPath(null, fromPath + '.tar.Z', dirName), fromPath + '.tar');
 
-        expect(PackOper.getUnpackPath(PackType.TarGz, fromPath + '.tar.gz', null), fromPath + '.tar');
-        expect(PackOper.getUnpackPath(PackType.TarGz, fromPath + '.tar.gz', toPath), toPath);
+        expect(PackOper.getUnpackPath(PackType.tarGz, fromPath + '.tar.gz', null), fromPath + '.tar');
+        expect(PackOper.getUnpackPath(PackType.tarGz, fromPath + '.tar.gz', toPath), toPath);
         expect(PackOper.getUnpackPath(null, fromPath + '.tar.gz', null), fromPath + '.tar');
         expect(PackOper.getUnpackPath(null, fromPath + '.tar.gz', dirName), fromPath + '.tar');
       });
       test('isPackTypeTar', () {
         Helper.initFileSystem(fileSystem);
 
-        expect(PackOper.isPackTypeTar(PackType.Bz2), false);
-        expect(PackOper.isPackTypeTar(PackType.Gz), false);
+        expect(PackOper.isPackTypeTar(PackType.bz2), false);
+        expect(PackOper.isPackTypeTar(PackType.gz), false);
 
-        expect(PackOper.isPackTypeTar(PackType.Zip), false);
-        expect(PackOper.isPackTypeTar(PackType.Z), false);
+        expect(PackOper.isPackTypeTar(PackType.zip), false);
+        expect(PackOper.isPackTypeTar(PackType.z), false);
 
-        expect(PackOper.isPackTypeTar(PackType.Tar), true);
-        expect(PackOper.isPackTypeTar(PackType.TarBz2), true);
+        expect(PackOper.isPackTypeTar(PackType.tar), true);
+        expect(PackOper.isPackTypeTar(PackType.tarBz2), true);
 
-        expect(PackOper.isPackTypeTar(PackType.TarGz), true);
-        expect(PackOper.isPackTypeTar(PackType.TarZ), true);
+        expect(PackOper.isPackTypeTar(PackType.tarGz), true);
+        expect(PackOper.isPackTypeTar(PackType.tarZ), true);
       });
       test('archiveSync/unarchiveSync - ZIP - LFS', () {
         // The "archive" package does not seem to be testable on MemoryFileSystem yet
@@ -157,7 +157,7 @@ void main() {
           var toPath = Path.join(toDir.path, 'test.zip');
 
           PackOper.archiveSync(
-            PackType.Zip,
+            PackType.zip,
             [fromDir.parent.path, toPath],
             isMove: true,
             isSilent: true,
@@ -167,7 +167,7 @@ void main() {
           expect(Path.fileSystem.file(toPath).existsSync(), false);
 
           PackOper.archiveSync(
-            PackType.Zip,
+            PackType.zip,
             [fromDir.parent.path, toPath],
             isMove: true,
             isSilent: true
@@ -177,7 +177,7 @@ void main() {
           expect(fromDir.parent.existsSync(), false);
 
           PackOper.unarchiveSync(
-            PackType.Zip,
+            PackType.zip,
             toPath,
             fromDir.parent.path,
             isMove: false,
@@ -189,7 +189,7 @@ void main() {
 
           expect(Path.fileSystem.file(toPath).existsSync(), true);
           PackOper.unarchiveSync(
-            PackType.Zip,
+            PackType.zip,
             toPath,
             fromDir.parent.path,
             isMove: false,
@@ -222,7 +222,7 @@ void main() {
           FileOper.deleteSync([toPath]);
 
           PackOper.archiveSync(
-            PackType.Gz,
+            PackType.gz,
             [fromDir.parent.path, toPath],
             isMove: true,
             isSilent: true,
@@ -232,7 +232,7 @@ void main() {
           expect(Path.fileSystem.file(toPath).existsSync(), false);
 
           PackOper.archiveSync(
-            PackType.TarGz,
+            PackType.tarGz,
             [fromDir.parent.path, toPath],
             isMove: true,
             isSilent: true
@@ -242,7 +242,7 @@ void main() {
           expect(fromDir.parent.existsSync(), false);
 
           PackOper.unarchiveSync(
-            PackType.TarGz,
+            PackType.tarGz,
             toPath,
             fromDir.parent.path,
             isMove: false,

@@ -17,277 +17,277 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static const String HELP_MIN = '-?';
+  static const String helpMin = '-?';
 
-  static const String ENV_APP_KEY_PREFIX = '_XNX_';
-  static const String ENV_USR_KEY_PREFIX = 'XNX_';
+  static const String envAppKeyPrefix = '_XNX_';
+  static const String envUsrKeyPrefix = 'XNX_';
 
-  static const String ENV_APPEND_SEP = '${ENV_APP_KEY_PREFIX}APPEND_SEP';
-  static const String ENV_COMPRESSION = '${ENV_APP_KEY_PREFIX}COMPRESSION';
-  static const String ENV_FORCE = '${ENV_APP_KEY_PREFIX}FORCE';
-  static const String ENV_LIST_ONLY = '${ENV_APP_KEY_PREFIX}LIST_ONLY';
-  static const String ENV_QUIET = '${ENV_APP_KEY_PREFIX}QUIET';
-  static const String ENV_START_DIR = '${ENV_APP_KEY_PREFIX}START_DIR';
-  static const String ENV_VERBOSITY = '${ENV_APP_KEY_PREFIX}VERBOSITY';
+  static const String envAppendSep = '${envAppKeyPrefix}APPEND_SEP';
+  static const String envCompression = '${envAppKeyPrefix}COMPRESSION';
+  static const String envForce = '${envAppKeyPrefix}FORCE';
+  static const String envListOnly = '${envAppKeyPrefix}LIST_ONLY';
+  static const String envQuiet = '${envAppKeyPrefix}QUIET';
+  static const String envStartDir = '${envAppKeyPrefix}START_DIR';
+  static const String envVerbosity = '${envAppKeyPrefix}VERBOSITY';
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final Map<String, Object?> APPEND_SEP = {
+  static final Map<String, Object?> appendSep = {
     'name': 'append-sep',
     'abbr': 's',
-    'help': '''append record separator "${ConfigFileLoader.RECORD_SEP}" when filtering input config file (for "${LIST_ONLY['name']}" exclusively),
-the application will define environment variable $ENV_APPEND_SEP''',
+    'help': '''append record separator "${ConfigFileLoader.recordSep}" when filtering input config file (for "${listOnly['name']}" exclusively),
+the application will define environment variable $envAppendSep''',
     'negatable': false,
   };
-  static final Map<String, Object?> COMPRESSION = {
+  static final Map<String, Object?> compressionLevel = {
     'name': 'compression',
     'abbr': 'p',
     'help': '''compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2,
-the application will define environment variable $ENV_COMPRESSION''',
+the application will define environment variable $envCompression''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
   };
-  static final Map<String, Object?> CONFIG = {
+  static final Map<String, Object?> config = {
     'name': 'config',
     'abbr': 'c',
     'help': '''configuration file in json5 format https://json5.org/,
-default extension: $FILE_TYPE_CFG''',
+default extension: $fileTypeCfg''',
     'valueHelp': 'FILE',
     'defaultsTo': null,
   };
-  static final Map<String, Object?> EACH = {
+  static final Map<String, Object?> each = {
     'name': 'each',
     'abbr': 'e',
     'help': '''treat each plain argument independently (e.g. can pass multiple filenames as arguments)
 see also -x, --xargs''',
     'negatable': false,
   };
-  static final Map<String, Object?> FORCE_CONVERT = {
+  static final Map<String, Object?> forceConvert = {
     'name': 'force',
     'abbr': 'f',
     'help': '''ignore timestamps and force conversion,
-the application will define environment variable $ENV_FORCE''',
+the application will define environment variable $envForce''',
     'negatable': false,
   };
-  static final Map<String, Object?> HELP = {
+  static final Map<String, Object?> help = {
     'name': 'help',
     'abbr': 'h',
     'help': 'this help screen',
     'negatable': false,
   };
-  static final Map<String, Object?> LIST_ONLY = {
+  static final Map<String, Object?> listOnly = {
     'name': 'list-only',
     'abbr': 'l',
     'help': '''display all commands, but do not execute those; if no command specified, then show config,
-the application will define environment variable $ENV_LIST_ONLY''',
+the application will define environment variable $envListOnly''',
     'negatable': false,
   };
-  static final Map<String, Object?> QUIET = {
+  static final Map<String, Object?> quiet = {
     'name': 'quiet',
     'abbr': 'q',
     'help': '''quiet mode (no output, same as verbosity 0),
-the application will define environment variable $ENV_QUIET''',
+the application will define environment variable $envQuiet''',
     'negatable': false,
   };
-  static final Map<String, Object?> START_DIR = {
+  static final Map<String, Object?> startDir = {
     'name': 'dir',
     'abbr': 'd',
     'help': '''startup directory,
-the application will define environment variable $ENV_START_DIR''',
+the application will define environment variable $envStartDir''',
     'valueHelp': 'DIR',
     'defaultsTo': null,
   };
-  static final Map<String, Object?> VERBOSITY = {
+  static final Map<String, Object?> verbosity = {
     'name': 'verbosity',
     'abbr': 'v',
     'help': '''how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug),
-defaults to "${Logger.LEVELS[Logger.LEVEL_DEFAULT]}",
-the application will define environment variable $ENV_VERBOSITY,''',
+defaults to "${Logger.levels[Logger.levelDefault]}",
+the application will define environment variable $envVerbosity,''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
   };
-  static final Map<String, Object?> WAIT_ALWAYS = {
+  static final Map<String, Object?> waitAlways = {
     'name': 'wait-always',
     'abbr': 'W',
     'help': 'always wait for a user to press <Enter> upon completion',
     'negatable': false,
   };
-  static final Map<String, Object?> WAIT_ON_ERR = {
+  static final Map<String, Object?> waitOnErr = {
     'name': 'wait-err',
     'abbr': 'w',
     'help': 'wait for a user to press <Enter> upon unsuccessful completion',
     'negatable': false,
   };
-  static final Map<String, Object?> XARGS = {
+  static final Map<String, Object?> xargs = {
     'name': 'xargs',
     'abbr': 'a',
     'help': 'similar to the above, but reads arguments from stdin\nuseful in a pipe with a file finding command',
     'negatable': false,
   };
-  static final Map<String, Object?> XNX = {
+  static final Map<String, Object?> xnx = {
     'name': 'xnx',
     'abbr': 'X',
     'help': 'same as -c, --config',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_PRINT = {
+  static final Map<String, Object?> cmdPrint = {
     'name': 'print',
     'help': 'just print the arguments to stdout\n',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_COPY = {
+  static final Map<String, Object?> cmdCopy = {
     'name': 'copy',
     'help': '''just copy file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_COPY_NEWER = {
+  static final Map<String, Object?> cmdCopyNewer = {
     'name': 'copy-newer',
     'help': '''just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_DELETE = {
+  static final Map<String, Object?> cmdDelete = {
     'name': 'delete',
     'help': '''just delete file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_CREATE_DIR = {
+  static final Map<String, Object?> cmdCreateDir = {
     'name': 'mkdir',
     'help': 'just create directories passed as plain arguments',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_MOVE = {
+  static final Map<String, Object?> cmdMove = {
     'name': 'move',
     'help': '''just move file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_MOVE_NEWER = {
+  static final Map<String, Object?> cmdMoveNewer = {
     'name': 'move-newer',
     'help': '''just move more recently updated file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_REMOVE = {
+  static final Map<String, Object?> cmdRemove = {
     'name': 'remove',
     'help': 'just the same as --delete\n',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_RENAME = {
+  static final Map<String, Object?> cmdRename = {
     'name': 'rename',
     'help': 'just the same as --move\n',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_RENAME_NEWER = {
+  static final Map<String, Object?> cmdRenameNewer = {
     'name': 'rename-newer',
     'help': 'just the same as --move-newer\n',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_BZ2 = {
+  static final Map<String, Object?> cmdBz2 = {
     'name': 'bz2',
     'help': '''just compress a single source file to a single destination BZip2 file,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNBZ2 = {
+  static final Map<String, Object?> cmdUnBz2 = {
     'name': 'unbz2',
     'help': '''just decompress a single BZip2 file to a single destination file,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_GZ = {
+  static final Map<String, Object?> cmdGz = {
     'name': 'gz',
     'help': '''just compress a single source file to a single GZip file,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNGZ = {
+  static final Map<String, Object?> cmdUnGz = {
     'name': 'ungz',
     'help': '''just decompress a single GZip file to a single destination file,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_PACK = {
+  static final Map<String, Object?> cmdPack = {
     'name': 'pack',
     'help': '''just compress source files and/or directories to a single destination
 archive file depending on its extension, can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNPACK = {
+  static final Map<String, Object?> cmdUnPack = {
     'name': 'unpack',
     'help': '''just decompress a single source archive file to destination files and/or
 directories depending on the source extension, can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_TAR = {
+  static final Map<String, Object?> cmdTar = {
     'name': 'tar',
     'help': '''just create a single destination archive file containing source files and/or
 directories, can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNTAR = {
+  static final Map<String, Object?> cmdUnTar = {
     'name': 'untar',
     'help': '''just untar a single archive file to a destination directory,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_TAR_BZ2 = {
+  static final Map<String, Object?> cmdTarBz2 = {
     'name': 'tarbz2',
     'help': '''just a combination of --tar and --bz2,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNTAR_BZ2 = {
+  static final Map<String, Object?> cmdUnTarBz2 = {
     'name': 'untarbz2',
     'help': '''just a combination of --untar and --unbz2,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_TAR_GZ = {
+  static final Map<String, Object?> cmdTarGz = {
     'name': 'targz',
     'help': '''just a combination of --tar and --gz,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNTAR_GZ = {
+  static final Map<String, Object?> cmdUnTarGz = {
     'name': 'untargz',
     'help': '''just a combination of --untar and --ungz,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_TAR_ZLIB = {
+  static final Map<String, Object?> cmdTarZ = {
     'name': 'tarZ',
     'help': '''just a combination of --tar and --Z,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNTAR_ZLIB = {
+  static final Map<String, Object?> cmdUnTarZ = {
     'name': 'untarZ',
     'help': '''just a combination of --untar and --unZ,
 can be used with --move''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_ZIP = {
+  static final Map<String, Object?> cmdZip = {
     'name': 'zip',
     'help': '''just zip source files and/or directories to a single destination
 archive file, can be used with --move to delete the source''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNZIP = {
+  static final Map<String, Object?> cmdUnZip = {
     'name': 'unzip',
     'help': '''just unzip single archive file to destination directory,
 can be used with --move to delete the source''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_ZLIB = {
+  static final Map<String, Object?> cmdZ = {
     'name': 'Z',
     'help': '''just compress a single source file to a single Z file,
 can be used with --move to delete the source''',
     'negatable': false,
   };
-  static final Map<String, Object?> CMD_UNZLIB = {
+  static final Map<String, Object?> cmdUnZ = {
     'name': 'unZ',
     'help': '''just decompress a single Z file to a single destination file,
 can be used with --move to delete the source''',
@@ -296,19 +296,19 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final String APP_NAME = 'xnx';
-  static final String FILE_TYPE_CFG = '.$APP_NAME';
-  static final String FILE_MASK_CFG = '${GlobExt.ALL}$FILE_TYPE_CFG';
+  static final String appName = 'xnx';
+  static final String fileTypeCfg = '.$appName';
+  static final String fileMaskCfg = '${GlobExt.all}$fileTypeCfg';
 
-  static final RegExp RE_OPT_CONFIG = RegExp('^[\\-]([\\-](${CONFIG['name']}|${XNX['name']})|${CONFIG['abbr']})([\\=]|\$)', caseSensitive: true);
-  static final RegExp RE_OPT_START_DIR = RegExp('^[\\-]([\\-]${START_DIR['name']}|${START_DIR['abbr']})([\\=]|\$)', caseSensitive: true);
+  static final RegExp rexOptConfig = RegExp('^[\\-]([\\-](${config['name']}|${xnx['name']})|${config['abbr']})([\\=]|\$)', caseSensitive: true);
+  static final RegExp rexOptStartDir = RegExp('^[\\-]([\\-]${startDir['name']}|${startDir['abbr']})([\\=]|\$)', caseSensitive: true);
 
   //////////////////////////////////////////////////////////////////////////////
 
   bool _asXargs = false;
   bool get asXargs => _asXargs;
 
-  int _compression = PackOper.DEFAULT_COMPRESSION;
+  int _compression = PackOper.defaultCompression;
   int get compression => _compression;
 
   ConfigFileInfo _configFileInfo = ConfigFileInfo();
@@ -419,10 +419,10 @@ can be used with --move to delete the source''',
 
   String getConfigFullPath(List<String> args) {
     for (var arg in args) {
-      if (RE_OPT_CONFIG.hasMatch(arg)) {
+      if (rexOptConfig.hasMatch(arg)) {
         return Path.getFullPath(_configFileInfo.filePath);
       }
-      if (RE_OPT_START_DIR.hasMatch(arg)) {
+      if (rexOptStartDir.hasMatch(arg)) {
         break;
       }
     }
@@ -454,223 +454,223 @@ can be used with --move to delete the source''',
 
     final parser = ArgParser();
 
-    addFlag(parser, HELP, (value) {
+    addFlag(parser, help, (value) {
       isHelp = value;
     });
-    addOption(parser, CONFIG, (value) {
+    addOption(parser, config, (value) {
       if (configPath.isBlank()) {
         configPath = value ?? '';
       }
     });
-    addOption(parser, XNX, (value) {
+    addOption(parser, xnx, (value) {
       if (configPath.isBlank()) {
         configPath = value ?? '';
       }
     });
-    addOption(parser, START_DIR, (value) {
-      dirName = _getString(ENV_START_DIR, value, isPath: true);
+    addOption(parser, startDir, (value) {
+      dirName = _getString(envStartDir, value, isPath: true);
 
       if (!dirName.isBlank()) {
         dirName = Path.getFullPath(dirName);
       }
     });
-    addFlag(parser, QUIET, (value) {
-      if (_getBool(ENV_QUIET, QUIET, value)) {
-        _logger.level = Logger.LEVEL_SILENT;
+    addFlag(parser, quiet, (value) {
+      if (_getBool(envQuiet, quiet, value)) {
+        _logger.level = Logger.levelSilent;
       }
     });
-    addOption(parser, VERBOSITY, (value) {
+    addOption(parser, verbosity, (value) {
       if (value != null) {
-        var v = _getString(ENV_VERBOSITY, value);
+        var v = _getString(envVerbosity, value);
         _logger.levelAsString = v;
       }
     });
-    addFlag(parser, EACH, (value) {
+    addFlag(parser, each, (value) {
       _isEach = value;
     });
-    addFlag(parser, XARGS, (value) {
+    addFlag(parser, xargs, (value) {
       _asXargs = value;
     });
-    addFlag(parser, LIST_ONLY, (value) {
-      _isListOnly = _getBool(ENV_LIST_ONLY, LIST_ONLY, value);
+    addFlag(parser, listOnly, (value) {
+      _isListOnly = _getBool(envListOnly, listOnly, value);
     });
-    addFlag(parser, APPEND_SEP, (value) {
-      _isAppendSep = _getBool(ENV_APPEND_SEP, APPEND_SEP, value);
+    addFlag(parser, appendSep, (value) {
+      _isAppendSep = _getBool(envAppendSep, appendSep, value);
     });
-    addFlag(parser, FORCE_CONVERT, (value) {
-      _isForced = _getBool(ENV_FORCE, FORCE_CONVERT, value);
+    addFlag(parser, forceConvert, (value) {
+      _isForced = _getBool(envForce, forceConvert, value);
     });
-    addOption(parser, COMPRESSION, (value) {
-      _compression = _getInt(ENV_COMPRESSION, value, defValue: PackOper.DEFAULT_COMPRESSION);
+    addOption(parser, compressionLevel, (value) {
+      _compression = _getInt(envCompression, value, defValue: PackOper.defaultCompression);
     });
-    addFlag(parser, WAIT_ALWAYS, (value) {
+    addFlag(parser, waitAlways, (value) {
       _isWaitAlways = value;
     });
-    addFlag(parser, WAIT_ON_ERR, (value) {
+    addFlag(parser, waitOnErr, (value) {
       _isWaitOnErr = value;
     });
-    addFlag(parser, CMD_PRINT, (value) {
+    addFlag(parser, cmdPrint, (value) {
       _isCmdPrint = value;
     });
-    addFlag(parser, CMD_COPY, (value) {
+    addFlag(parser, cmdCopy, (value) {
       _isCmdCopy = value;
     });
-    addFlag(parser, CMD_COPY_NEWER, (value) {
+    addFlag(parser, cmdCopyNewer, (value) {
       _isCmdCopyNewer = value;
     });
-    addFlag(parser, CMD_MOVE, (value) {
+    addFlag(parser, cmdMove, (value) {
       if (value) {
         _isCmdMove = value;
       }
     });
-    addFlag(parser, CMD_MOVE_NEWER, (value) {
+    addFlag(parser, cmdMoveNewer, (value) {
       if (value) {
         _isCmdMoveNewer = value;
       }
     });
-    addFlag(parser, CMD_RENAME, (value) {
+    addFlag(parser, cmdRename, (value) {
       if (value) {
         _isCmdMove = value;
       }
     });
-    addFlag(parser, CMD_RENAME_NEWER, (value) {
+    addFlag(parser, cmdRenameNewer, (value) {
       if (value) {
         _isCmdMoveNewer = value;
       }
     });
-    addFlag(parser, CMD_CREATE_DIR, (value) {
+    addFlag(parser, cmdCreateDir, (value) {
       _isCmdCreate = value;
     });
-    addFlag(parser, CMD_DELETE, (value) {
+    addFlag(parser, cmdDelete, (value) {
       if (value) {
         _isCmdDelete = value;
       }
     });
-    addFlag(parser, CMD_REMOVE, (value) {
+    addFlag(parser, cmdRemove, (value) {
       if (value) {
         _isCmdDelete = value;
       }
     });
-    addFlag(parser, CMD_BZ2, (value) {
+    addFlag(parser, cmdBz2, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.Bz2;
+        _archType = PackType.bz2;
       }
     });
-    addFlag(parser, CMD_UNBZ2, (value) {
+    addFlag(parser, cmdUnBz2, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.Bz2;
+        _archType = PackType.bz2;
       }
     });
-    addFlag(parser, CMD_GZ, (value) {
+    addFlag(parser, cmdGz, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.Gz;
+        _archType = PackType.gz;
       }
     });
-    addFlag(parser, CMD_UNGZ, (value) {
+    addFlag(parser, cmdUnGz, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.Gz;
+        _archType = PackType.gz;
       }
     });
-    addFlag(parser, CMD_TAR, (value) {
+    addFlag(parser, cmdTar, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.Tar;
+        _archType = PackType.tar;
       }
     });
-    addFlag(parser, CMD_UNTAR, (value) {
+    addFlag(parser, cmdUnTar, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.Tar;
+        _archType = PackType.tar;
       }
     });
-    addFlag(parser, CMD_TAR_BZ2, (value) {
+    addFlag(parser, cmdTarBz2, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.TarBz2;
+        _archType = PackType.tarBz2;
       }
     });
-    addFlag(parser, CMD_UNTAR_BZ2, (value) {
+    addFlag(parser, cmdUnTarBz2, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.TarBz2;
+        _archType = PackType.tarBz2;
       }
     });
-    addFlag(parser, CMD_TAR_GZ, (value) {
+    addFlag(parser, cmdTarGz, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.TarGz;
+        _archType = PackType.tarGz;
       }
     });
-    addFlag(parser, CMD_UNTAR_GZ, (value) {
+    addFlag(parser, cmdUnTarGz, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.TarGz;
+        _archType = PackType.tarGz;
       }
     });
-    addFlag(parser, CMD_TAR_ZLIB, (value) {
+    addFlag(parser, cmdTarZ, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.TarZ;
+        _archType = PackType.tarZ;
       }
     });
-    addFlag(parser, CMD_UNTAR_ZLIB, (value) {
+    addFlag(parser, cmdUnTarZ, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.TarZ;
+        _archType = PackType.tarZ;
       }
     });
-    addFlag(parser, CMD_ZIP, (value) {
+    addFlag(parser, cmdZip, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.Zip;
+        _archType = PackType.zip;
       }
     });
-    addFlag(parser, CMD_UNZIP, (value) {
+    addFlag(parser, cmdUnZip, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.Zip;
+        _archType = PackType.zip;
       }
     });
-    addFlag(parser, CMD_ZLIB, (value) {
+    addFlag(parser, cmdZ, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
-        _archType = PackType.Z;
+        _archType = PackType.z;
       }
     });
-    addFlag(parser, CMD_UNZLIB, (value) {
+    addFlag(parser, cmdUnZ, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
-        _archType = PackType.Z;
+        _archType = PackType.z;
       }
     });
-    addFlag(parser, CMD_PACK, (value) {
+    addFlag(parser, cmdPack, (value) {
       if (value) {
         _isCmdCompress = value;
         _isCmdDecompress = !value;
         _archType = null;
       }
     });
-    addFlag(parser, CMD_UNPACK, (value) {
+    addFlag(parser, cmdUnPack, (value) {
       if (value) {
         _isCmdCompress = !value;
         _isCmdDecompress = value;
@@ -679,10 +679,10 @@ can be used with --move to delete the source''',
     });
 
     if (!_logger.hasLevel) {
-      _logger.level = Logger.LEVEL_DEFAULT;
+      _logger.level = Logger.levelDefault;
     }
 
-    if (args.isEmpty || args.contains(HELP_MIN)) {
+    if (args.isEmpty || args.contains(helpMin)) {
       printUsage(parser);
     }
 
@@ -724,20 +724,20 @@ can be used with --move to delete the source''',
 
   static void printUsage(ArgParser parser, {String? error}) {
     stderr.writeln('''
-$APP_NAME 0.1.0 (C) Alexander Iurovetski 2020 - 2021
+$appName 0.1.0 (C) Alexander Iurovetski 2020 - 2021
 
 A command-line utility to eXpand text content aNd to eXecute external utilities.
 
 USAGE:
 
-$APP_NAME [OPTIONS]
+$appName [OPTIONS]
 
 ${parser.usage}
 
 For more details, see README.md
       ''');
 
-    throw Exception(error?.isBlank() ?? true ? HELP['name'] ?? '' : error);
+    throw Exception(error?.isBlank() ?? true ? help['name'] ?? '' : error);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -770,7 +770,7 @@ For more details, see README.md
 
     if (configPath != null) {
       if (Path.extension(configPath).isBlank()) {
-        configPath += FILE_TYPE_CFG;
+        configPath += fileTypeCfg;
       }
       configPath = Path.getFullPath(configPath);
     }
@@ -802,7 +802,7 @@ For more details, see README.md
       var fileName = Path.basename(_startDirName);
 
       if (fileName.isNotEmpty && !fileName.contains(Path.separator)) {
-        configPath = Path.join(_startDirName, fileName + FILE_TYPE_CFG);
+        configPath = Path.join(_startDirName, fileName + fileTypeCfg);
       }
     }
 
@@ -814,7 +814,7 @@ For more details, see README.md
       if (files.isNotEmpty) {
         var paths = files.map((x) => x.path).toList()..sort();
 
-        configPath = paths.firstWhereOrNull((x) => Path.extension(x) == FILE_TYPE_CFG);
+        configPath = paths.firstWhereOrNull((x) => Path.extension(x) == fileTypeCfg);
 
         isConfigPathFound = !(configPath?.isBlank() ?? true);
       }
@@ -862,7 +862,7 @@ For more details, see README.md
       strValue = Path.getFullPath(strValue);
     }
 
-    Env.set(envKey, '$strValue', defValue: '');
+    Env.set(envKey, strValue, defValue: '');
 
     return strValue;
   }

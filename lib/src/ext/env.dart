@@ -3,10 +3,10 @@ import 'package:file/file.dart';
 import 'package:xnx/src/ext/path.dart';
 
 class Env {
-  static const _DOLLAR = r'$';
-  static const _DOLLAR_DOLLAR = r'$$';
+  static const _dollar = r'$';
+  static const _dollarDollar = r'$$';
 
-  static final RegExp _RE_ENV_VAR_NAME = RegExp(
+  static final RegExp _rexEnvVarName = RegExp(
       r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(#|[0-9]+)|\$[\{](#|[0-9]+)[\}]',
       caseSensitive: false
   );
@@ -37,12 +37,12 @@ class Env {
 
     var out = '';
 
-    for (var inp in input.split(_DOLLAR_DOLLAR)) {
+    for (var inp in input.split(_dollarDollar)) {
       if (out.isNotEmpty) {
-        out += _DOLLAR;
+        out += _dollar;
       }
 
-      out += inp.replaceAllMapped(_RE_ENV_VAR_NAME, (match) {
+      out += inp.replaceAllMapped(_rexEnvVarName, (match) {
         var envVarName = (match.group(1) ?? match.group(2) ?? '');
         var newValue = '';
 

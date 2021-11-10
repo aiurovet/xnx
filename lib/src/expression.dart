@@ -6,8 +6,8 @@ import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/operation.dart';
 
 class Expression {
-  static final RegExp RE_ENDS_WITH_TRUE = RegExp(r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',);
-  static final RegExp RE_ENDS_WITH_FALSE = RegExp(r'(^|[\s\(\&])(false|[0]+)[\s\)[\&]*$');
+  static final RegExp rexEndsWithTrue = RegExp(r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',);
+  static final RegExp rexEndsWithFalse = RegExp(r'(^|[\s\(\&])(false|[0]+)[\s\)[\&]*$');
 
   @protected final FlatMap flatMap;
   @protected final Keywords keywords;
@@ -54,11 +54,11 @@ class Expression {
 
       var before = condition.substring(0, start);
 
-      if (RE_ENDS_WITH_FALSE.hasMatch(before)) {
+      if (rexEndsWithFalse.hasMatch(before)) {
         return false;
       }
 
-      if (RE_ENDS_WITH_TRUE.hasMatch(before)) {
+      if (rexEndsWithTrue.hasMatch(before)) {
         return true;
       }
 

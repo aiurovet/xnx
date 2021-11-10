@@ -9,37 +9,37 @@ import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/ext/string.dart';
 
 enum TransformationType {
-  Unknown,
-  Add,
-  AddDays,
-  AddMonths,
-  AddYears,
-  Date,
-  Div,
-  EndOfMonth,
-  FileSize,
-  Index,
-  LastIndex,
-  LastMatch,
-  LastModified,
-  Match,
-  Local,
-  Lower,
-  Max,
-  Min,
-  Mod,
-  Mul,
-  Now,
-  Replace,
-  ReplaceMatch,
-  Run,
-  Sub,
-  Substr,
-  StartOfMonth,
-  Time,
-  Today,
-  Upper,
-  Utc,
+  unknown,
+  add,
+  addDays,
+  addMonths,
+  addYears,
+  date,
+  div,
+  endOfMonth,
+  fileSize,
+  indexOf,
+  lastIndexOf,
+  lastMatch,
+  lastModified,
+  match,
+  local,
+  lower,
+  max,
+  min,
+  mod,
+  mul,
+  now,
+  replace,
+  replaceMatch,
+  run,
+  sub,
+  substr,
+  startOfMonth,
+  time,
+  today,
+  upper,
+  utc,
 }
 
 class Transformation {
@@ -48,7 +48,7 @@ class Transformation {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final RegExp _RE_GROUP = RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
+  static final RegExp _rexGroup = RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
 
   //////////////////////////////////////////////////////////////////////////////
   // Protected members
@@ -72,7 +72,7 @@ class Transformation {
         var name = _toName(todo[0]);
         var type = nameTypeMap[name];
 
-        if ((type != null) && (type != TransformationType.Unknown)) {
+        if ((type != null) && (type != TransformationType.unknown)) {
           return _exec(type, todo, offset: offset);
         }
       }
@@ -84,10 +84,10 @@ class Transformation {
     else if (todo is Map<String, Object?>) {
       todo.forEach((key, value) {
         var name = key.replaceAll(' ', '').toLowerCase();
-        var type = nameTypeMap[name] ?? TransformationType.Unknown;
+        var type = nameTypeMap[name] ?? TransformationType.unknown;
         Object? newValue;
 
-        if (type == TransformationType.Unknown) {
+        if (type == TransformationType.unknown) {
           newValue = exec(value);
         }
         else if (value is List<Object?>) {
@@ -113,46 +113,46 @@ class Transformation {
 
   Object? _exec(TransformationType type, List<Object?> todo, {int offset = 0}) {
     switch (type) {
-      case TransformationType.Add:
-      case TransformationType.Div:
-      case TransformationType.Max:
-      case TransformationType.Min:
-      case TransformationType.Mod:
-      case TransformationType.Mul:
-      case TransformationType.Sub:
+      case TransformationType.add:
+      case TransformationType.div:
+      case TransformationType.max:
+      case TransformationType.min:
+      case TransformationType.mod:
+      case TransformationType.mul:
+      case TransformationType.sub:
         return _execMath(type, todo, offset: offset);
-      case TransformationType.AddDays:
-      case TransformationType.AddMonths:
-      case TransformationType.AddYears:
-      case TransformationType.Date:
-      case TransformationType.EndOfMonth:
-      case TransformationType.Local:
-      case TransformationType.StartOfMonth:
-      case TransformationType.Time:
-      case TransformationType.Utc:
+      case TransformationType.addDays:
+      case TransformationType.addMonths:
+      case TransformationType.addYears:
+      case TransformationType.date:
+      case TransformationType.endOfMonth:
+      case TransformationType.local:
+      case TransformationType.startOfMonth:
+      case TransformationType.time:
+      case TransformationType.utc:
         return _execDateTime(type, todo, offset: offset);
-      case TransformationType.FileSize:
-      case TransformationType.LastModified:
+      case TransformationType.fileSize:
+      case TransformationType.lastModified:
         return _execFile(type, todo, offset: offset);
-      case TransformationType.Index:
-      case TransformationType.LastIndex:
+      case TransformationType.indexOf:
+      case TransformationType.lastIndexOf:
         return _execIndex(type, todo, offset: offset);
-      case TransformationType.LastMatch:
-      case TransformationType.Match:
+      case TransformationType.lastMatch:
+      case TransformationType.match:
         return _execMatch(type, todo, offset: offset);
-      case TransformationType.Run:
+      case TransformationType.run:
         return _execRun(type, todo, offset: offset);
-      case TransformationType.Now:
-      case TransformationType.Today:
+      case TransformationType.now:
+      case TransformationType.today:
         return _execDateTimeNow(type, todo, offset: offset);
-      case TransformationType.Replace:
+      case TransformationType.replace:
         return _execReplace(type, todo, offset: offset);
-      case TransformationType.ReplaceMatch:
+      case TransformationType.replaceMatch:
         return _execReplaceMatch(type, todo, offset: offset);
-      case TransformationType.Substr:
+      case TransformationType.substr:
         return _execSubstring(type, todo, offset: offset);
-      case TransformationType.Lower:
-      case TransformationType.Upper:
+      case TransformationType.lower:
+      case TransformationType.upper:
         return _execToCase(type, todo, offset: offset);
       default:
         return null;
@@ -173,34 +173,34 @@ class Transformation {
     var hasTime = ((value.hour != 0) || (value.minute != 0) || (value.second != 0) || (value.millisecond != 0));
 
     switch (type) {
-      case TransformationType.AddDays:
+      case TransformationType.addDays:
         value = (addUnits > 0 ? value.add(Duration(days: addUnits)) : value.subtract(Duration(days: -addUnits)));
         break;
-      case TransformationType.AddMonths:
+      case TransformationType.addMonths:
         value = DateTime(value.year, value.month + addUnits, value.day, value.hour, value.minute, value.second, value.millisecond);
         break;
-      case TransformationType.AddYears:
+      case TransformationType.addYears:
         value = DateTime(value.year + addUnits, value.month, value.day, value.hour, value.minute, value.second, value.millisecond);
         break;
-      case TransformationType.Date:
+      case TransformationType.date:
         hasTime = false;
         break;
-      case TransformationType.EndOfMonth:
+      case TransformationType.endOfMonth:
         hasTime = false;
         value = DateTime(value.year, value.month + 1, 1).subtract(Duration(days: 1));
         break;
-      case TransformationType.Local:
+      case TransformationType.local:
         value = DateTime.fromMillisecondsSinceEpoch(value.millisecondsSinceEpoch, isUtc: true).toLocal();
         break;
-      case TransformationType.StartOfMonth:
+      case TransformationType.startOfMonth:
         hasTime = false;
         value = DateTime(value.year, value.month, 1);
         break;
-      case TransformationType.Time:
+      case TransformationType.time:
         hasDate = false;
         hasTime = true;
         break;
-      case TransformationType.Utc:
+      case TransformationType.utc:
         value = value.toUtc();
         break;
       default:
@@ -234,7 +234,7 @@ class Transformation {
     var nowStr = now.toIso8601String();
 
     switch (type) {
-      case TransformationType.Today:
+      case TransformationType.today:
         return nowStr.substring(0, 10);
       default:
         return nowStr;
@@ -259,9 +259,9 @@ class Transformation {
     var isFile = (isFound && ((stat.type != FileSystemEntityType.directory)));
 
     switch (type) {
-      case TransformationType.FileSize:
+      case TransformationType.fileSize:
         return FileExt.formatSize((isFile ? stat.size : -1), format ?? '');
-      case TransformationType.LastModified:
+      case TransformationType.lastModified:
         return (isFound ? stat.modified.toIso8601String() : '');
       default:
         return null;
@@ -283,9 +283,9 @@ class Transformation {
       var endPos = inpStr.length;
 
       switch (type) {
-        case TransformationType.Index:
+        case TransformationType.indexOf:
           return (inpStr.indexOf(fndStr, (begPos <= 0 ? 0 : begPos)) + 1).toString();
-        case TransformationType.LastIndex:
+        case TransformationType.lastIndexOf:
           return (inpStr.lastIndexOf(fndStr, ((begPos > 0) && (begPos <= endPos) ? begPos : endPos)) + 1).toString();
         default:
           break;
@@ -310,10 +310,10 @@ class Transformation {
 
       if (regExp != null) {
         switch (type) {
-          case TransformationType.Match:
+          case TransformationType.match:
             var match = regExp.firstMatch(inpStr);
             return ((match?.start ?? -1) + 1).toString();
-          case TransformationType.LastMatch:
+          case TransformationType.lastMatch:
             var allMatches = regExp.allMatches(inpStr);
             if (allMatches.isNotEmpty) {
               return (allMatches.last.start + 1).toString();
@@ -348,19 +348,19 @@ class Transformation {
     }
 
     switch (type) {
-      case TransformationType.Add:
+      case TransformationType.add:
         return (n1 + n2).toString();
-      case TransformationType.Div:
+      case TransformationType.div:
         return (n1 / n2).toString();
-      case TransformationType.Max:
+      case TransformationType.max:
         return (n1 >= n2 ? n1 : n2).toString();
-      case TransformationType.Min:
+      case TransformationType.min:
         return (n1 <= n2 ? n1 : n2).toString();
-      case TransformationType.Mod:
+      case TransformationType.mod:
         return (n1 % n2).toString();
-      case TransformationType.Mul:
+      case TransformationType.mul:
         return (n1 * n2).toString();
-      case TransformationType.Sub:
+      case TransformationType.sub:
         return (n1 - n2).toString();
       default:
         return null;
@@ -442,7 +442,7 @@ class Transformation {
   //////////////////////////////////////////////////////////////////////////////
 
   String _execReplaceMatchProc(Match match, String dstStr) {
-    return dstStr.replaceAllMapped(_RE_GROUP, (groupMatch) {
+    return dstStr.replaceAllMapped(_rexGroup, (groupMatch) {
       var s = groupMatch[1];
 
       if ((s != null) && s.isNotEmpty) {
@@ -526,9 +526,9 @@ class Transformation {
     inpStr = flatMap.expand(inpStr);
 
     switch (type) {
-      case TransformationType.Lower:
+      case TransformationType.lower:
         return inpStr.toLowerCase();
-      case TransformationType.Upper:
+      case TransformationType.upper:
         return inpStr.toUpperCase();
       default:
         return null;
@@ -544,36 +544,36 @@ class Transformation {
 
   void _initNameTypeMap() {
     nameTypeMap.clear();
-    nameTypeMap[_toName(keywords.forFnAdd)] = TransformationType.Add;
-    nameTypeMap[_toName(keywords.forFnAddDays)] = TransformationType.AddDays;
-    nameTypeMap[_toName(keywords.forFnAddMonths)] = TransformationType.AddMonths;
-    nameTypeMap[_toName(keywords.forFnAddYears)] = TransformationType.AddYears;
-    nameTypeMap[_toName(keywords.forFnDate)] = TransformationType.Date;
-    nameTypeMap[_toName(keywords.forFnDiv)] = TransformationType.Div;
-    nameTypeMap[_toName(keywords.forFnEndOfMonth)] = TransformationType.EndOfMonth;
-    nameTypeMap[_toName(keywords.forFnFileSize)] = TransformationType.FileSize;
-    nameTypeMap[_toName(keywords.forFnIndex)] = TransformationType.Index;
-    nameTypeMap[_toName(keywords.forFnMatch)] = TransformationType.Match;
-    nameTypeMap[_toName(keywords.forFnLastIndex)] = TransformationType.LastIndex;
-    nameTypeMap[_toName(keywords.forFnLastMatch)] = TransformationType.LastMatch;
-    nameTypeMap[_toName(keywords.forFnLastModified)] = TransformationType.LastModified;
-    nameTypeMap[_toName(keywords.forFnLocal)] = TransformationType.Local;
-    nameTypeMap[_toName(keywords.forFnLower)] = TransformationType.Lower;
-    nameTypeMap[_toName(keywords.forFnMax)] = TransformationType.Max;
-    nameTypeMap[_toName(keywords.forFnMin)] = TransformationType.Min;
-    nameTypeMap[_toName(keywords.forFnMod)] = TransformationType.Mod;
-    nameTypeMap[_toName(keywords.forFnMul)] = TransformationType.Mul;
-    nameTypeMap[_toName(keywords.forFnNow)] = TransformationType.Now;
-    nameTypeMap[_toName(keywords.forFnReplace)] = TransformationType.Replace;
-    nameTypeMap[_toName(keywords.forFnReplaceMatch)] = TransformationType.ReplaceMatch;
-    nameTypeMap[_toName(keywords.forFnRun)] = TransformationType.Run;
-    nameTypeMap[_toName(keywords.forFnStartOfMonth)] = TransformationType.StartOfMonth;
-    nameTypeMap[_toName(keywords.forFnSub)] = TransformationType.Sub;
-    nameTypeMap[_toName(keywords.forFnSubstr)] = TransformationType.Substr;
-    nameTypeMap[_toName(keywords.forFnTime)] = TransformationType.Time;
-    nameTypeMap[_toName(keywords.forFnToday)] = TransformationType.Today;
-    nameTypeMap[_toName(keywords.forFnUpper)] = TransformationType.Upper;
-    nameTypeMap[_toName(keywords.forFnUtc)] = TransformationType.Utc;
+    nameTypeMap[_toName(keywords.forFnAdd)] = TransformationType.add;
+    nameTypeMap[_toName(keywords.forFnAddDays)] = TransformationType.addDays;
+    nameTypeMap[_toName(keywords.forFnAddMonths)] = TransformationType.addMonths;
+    nameTypeMap[_toName(keywords.forFnAddYears)] = TransformationType.addYears;
+    nameTypeMap[_toName(keywords.forFnDate)] = TransformationType.date;
+    nameTypeMap[_toName(keywords.forFnDiv)] = TransformationType.div;
+    nameTypeMap[_toName(keywords.forFnEndOfMonth)] = TransformationType.endOfMonth;
+    nameTypeMap[_toName(keywords.forFnFileSize)] = TransformationType.fileSize;
+    nameTypeMap[_toName(keywords.forFnIndex)] = TransformationType.indexOf;
+    nameTypeMap[_toName(keywords.forFnMatch)] = TransformationType.match;
+    nameTypeMap[_toName(keywords.forFnLastIndex)] = TransformationType.lastIndexOf;
+    nameTypeMap[_toName(keywords.forFnLastMatch)] = TransformationType.lastMatch;
+    nameTypeMap[_toName(keywords.forFnLastModified)] = TransformationType.lastModified;
+    nameTypeMap[_toName(keywords.forFnLocal)] = TransformationType.local;
+    nameTypeMap[_toName(keywords.forFnLower)] = TransformationType.lower;
+    nameTypeMap[_toName(keywords.forFnMax)] = TransformationType.max;
+    nameTypeMap[_toName(keywords.forFnMin)] = TransformationType.min;
+    nameTypeMap[_toName(keywords.forFnMod)] = TransformationType.mod;
+    nameTypeMap[_toName(keywords.forFnMul)] = TransformationType.mul;
+    nameTypeMap[_toName(keywords.forFnNow)] = TransformationType.now;
+    nameTypeMap[_toName(keywords.forFnReplace)] = TransformationType.replace;
+    nameTypeMap[_toName(keywords.forFnReplaceMatch)] = TransformationType.replaceMatch;
+    nameTypeMap[_toName(keywords.forFnRun)] = TransformationType.run;
+    nameTypeMap[_toName(keywords.forFnStartOfMonth)] = TransformationType.startOfMonth;
+    nameTypeMap[_toName(keywords.forFnSub)] = TransformationType.sub;
+    nameTypeMap[_toName(keywords.forFnSubstr)] = TransformationType.substr;
+    nameTypeMap[_toName(keywords.forFnTime)] = TransformationType.time;
+    nameTypeMap[_toName(keywords.forFnToday)] = TransformationType.today;
+    nameTypeMap[_toName(keywords.forFnUpper)] = TransformationType.upper;
+    nameTypeMap[_toName(keywords.forFnUtc)] = TransformationType.utc;
   }
 
   //////////////////////////////////////////////////////////////////////////////

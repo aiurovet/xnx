@@ -9,14 +9,14 @@ import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/file_oper.dart';
 
 enum PackType {
-  Bz2,
-  Gz,
-  Tar,
-  TarBz2,
-  TarGz,
-  TarZ,
-  Zip,
-  Z,
+  bz2,
+  gz,
+  tar,
+  tarBz2,
+  tarGz,
+  tarZ,
+  zip,
+  z,
 }
 
 class PackOper {
@@ -25,24 +25,24 @@ class PackOper {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final Map<PackType, String> DEFAULT_EXTENSIONS = { // case-insensitive
-    PackType.Bz2: '.bz2',
-    PackType.Gz: '.gz',
-    PackType.Tar: '.tar',
-    PackType.TarBz2: '.tar.bz2',
-    PackType.TarGz: '.tar.gz',
-    PackType.TarZ: '.tar.Z',
-    PackType.Z: '.Z',
-    PackType.Zip: '.zip',
+  static final Map<PackType, String> defaultExtensions = { // case-insensitive
+    PackType.bz2: '.bz2',
+    PackType.gz: '.gz',
+    PackType.tar: '.tar',
+    PackType.tarBz2: '.tar.bz2',
+    PackType.tarGz: '.tar.gz',
+    PackType.tarZ: '.tar.Z',
+    PackType.z: '.Z',
+    PackType.zip: '.zip',
   };
 
-  static const int DEFAULT_COMPRESSION = Deflate.DEFAULT_COMPRESSION;
+  static const int defaultCompression = Deflate.DEFAULT_COMPRESSION;
 
   //////////////////////////////////////////////////////////////////////////////
   // Configuration
   //////////////////////////////////////////////////////////////////////////////
 
-  static int compression = DEFAULT_COMPRESSION;
+  static int compression = defaultCompression;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -59,9 +59,9 @@ class PackOper {
       throw Exception('Destination path is not defined');
     }
 
-    final isZip = (packType == PackType.Zip);
+    final isZip = (packType == PackType.zip);
     final isTar = isPackTypeTar(packType);
-    final isTarPacked = (isTar && (packType != PackType.Tar));
+    final isTarPacked = (isTar && (packType != PackType.tar));
 
     var toPathEx = (isTarPacked ? getUnpackPath(packType, toPath, null) :  toPath);
     var toFile = Path.fileSystem.file(toPathEx);
@@ -204,7 +204,7 @@ class PackOper {
 
   static String getPackPath(PackType packType, String fromPath, String? toPath) {
     if (toPath != null) {
-      if ((packType == PackType.Zip) || (!toPath.isBlank() && (toPath != fromPath))) {
+      if ((packType == PackType.zip) || (!toPath.isBlank() && (toPath != fromPath))) {
         return toPath;
       }
     }
@@ -212,21 +212,21 @@ class PackOper {
     PackType packTypeEx;
 
     switch (packType) {
-      case PackType.TarBz2:
-        packTypeEx = PackType.Bz2;
+      case PackType.tarBz2:
+        packTypeEx = PackType.bz2;
         break;
-      case PackType.TarGz:
-        packTypeEx = PackType.Gz;
+      case PackType.tarGz:
+        packTypeEx = PackType.gz;
         break;
-      case PackType.TarZ:
-        packTypeEx = PackType.Z;
+      case PackType.tarZ:
+        packTypeEx = PackType.z;
         break;
       default:
         packTypeEx = packType;
         break;
     }
 
-    return fromPath + (DEFAULT_EXTENSIONS[packTypeEx] ?? '');
+    return fromPath + (defaultExtensions[packTypeEx] ?? '');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -243,7 +243,7 @@ class PackOper {
     if (!fileName.isBlank()) {
       var maxMatchLen = 0;
 
-      DEFAULT_EXTENSIONS.forEach((key, value) {
+      defaultExtensions.forEach((key, value) {
         final currLen = value.length;
 
         if ((packTypeByExt == null) || (currLen > maxMatchLen)) {
@@ -267,12 +267,12 @@ class PackOper {
       throw Exception('Undefined uncompressed type');
     }
 
-    if (packType == PackType.Tar) {
+    if (packType == PackType.tar) {
       throw Exception('File "$fromPath" is not compressed');
     }
 
     var fileTitle = Path.basenameWithoutExtension(fromPath);
-    var extTar = DEFAULT_EXTENSIONS[PackType.Tar] ?? '';
+    var extTar = defaultExtensions[PackType.tar] ?? '';
 
     if (isPackTypeTar(packType) && !fileTitle.toLowerCase().endsWith(extTar.toLowerCase())) {
       fileTitle += extTar;
@@ -293,20 +293,20 @@ class PackOper {
   //////////////////////////////////////////////////////////////////////////////
 
   static bool isPackTypeTar(PackType packType) =>
-    ((packType == PackType.Tar) || (packType == PackType.TarBz2) ||
-    (packType == PackType.TarGz) || (packType == PackType.TarZ));
+    ((packType == PackType.tar) || (packType == PackType.tarBz2) ||
+    (packType == PackType.tarGz) || (packType == PackType.tarZ));
 
   //////////////////////////////////////////////////////////////////////////////
 
   static void unarchiveSync(PackType packType, String fromPath, String? toDirName, {bool isListOnly = false, bool isMove = false, bool isSilent = false}) {
     final isTar = isPackTypeTar(packType);
-    final isZip = (packType == PackType.Zip);
+    final isZip = (packType == PackType.zip);
 
     if (!isTar && !isZip) {
       throw Exception('Archive type is not supported: "$packType"');
     }
 
-    final isTarPack = (isTar && (packType != PackType.Tar));
+    final isTarPack = (isTar && (packType != PackType.tar));
     String fromPathEx;
 
     if (isTarPack) {
@@ -330,7 +330,7 @@ class PackOper {
     }
 
     final toDirExisted = toDir.existsSync();
-    final archive = _decodeArchSync((isTarPack ? PackType.Tar : packType), fromFileEx);
+    final archive = _decodeArchSync((isTarPack ? PackType.tar : packType), fromFileEx);
 
     if (archive == null) {
       return;
@@ -448,10 +448,10 @@ class PackOper {
   static Archive? _decodeArchSync(PackType packType, File file) {
     final bytes = file.readAsBytesSync();
 
-    if (packType == PackType.Tar) {
+    if (packType == PackType.tar) {
       return TarDecoder().decodeBytes(bytes);
     }
-    else if (packType == PackType.Zip) {
+    else if (packType == PackType.zip) {
       return ZipDecoder().decodeBytes(bytes);
     }
     else {
@@ -466,16 +466,16 @@ class PackOper {
     List<int> result;
 
     switch (packType) {
-      case PackType.Bz2:
-      case PackType.TarBz2:
+      case PackType.bz2:
+      case PackType.tarBz2:
         result = BZip2Decoder().decodeBytes(bytes);
         break;
-      case PackType.Gz:
-      case PackType.TarGz:
+      case PackType.gz:
+      case PackType.tarGz:
         result = GZipDecoder().decodeBytes(bytes);
         break;
-      case PackType.Z:
-      case PackType.TarZ:
+      case PackType.z:
+      case PackType.tarZ:
         result = ZLibDecoder().decodeBytes(bytes);
         break;
       default:
@@ -492,16 +492,16 @@ class PackOper {
     List<int>? result;
 
     switch (packType) {
-      case PackType.Bz2:
-      case PackType.TarBz2:
+      case PackType.bz2:
+      case PackType.tarBz2:
         result = BZip2Encoder().encode(bytes);
         break;
-      case PackType.Gz:
-      case PackType.TarGz:
+      case PackType.gz:
+      case PackType.tarGz:
         result = GZipEncoder().encode(bytes, level: compression);
         break;
-      case PackType.Z:
-      case PackType.TarZ:
+      case PackType.z:
+      case PackType.tarZ:
         result = ZLibEncoder().encode(bytes, level: compression);
         break;
       default:

@@ -13,9 +13,9 @@ class Command {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static const _BREAK_CHARS = ' \t|&<>';
-  static const _LOCAL_PRINT = r'--print';
-  static const _OPTION_CHARS = r'-+';
+  static const _breakChars = ' \t|&<>';
+  static const _localPrint = r'--print';
+  static const _optionChars = r'-+';
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -36,10 +36,7 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Command({String? path, List<String>? args, String? text, bool isSync = true, bool isToVar = false, Logger? logger}) {
-    this.isSync = isSync;
-    this.isToVar = isToVar;
-
+  Command({String? path, List<String>? args, String? text, this.isSync = true, this.isToVar = false, Logger? logger}) {
     _logger = logger;
 
     if (text?.isNotEmpty ?? false) {
@@ -74,7 +71,7 @@ class Command {
 
     var outLines = '';
 
-    if (isLocal && args.isNotEmpty && (args[0] == _LOCAL_PRINT)) {
+    if (isLocal && args.isNotEmpty && (args[0] == _localPrint)) {
       return print(_logger, args.sublist(1), isToVar: isToVar);
     }
 
@@ -277,7 +274,7 @@ class Command {
       var firstChar = arg[0];
 
       if (!hasPath) {
-        isLocal = _OPTION_CHARS.contains(firstChar);
+        isLocal = _optionChars.contains(firstChar);
         hasPath = isLocal;
       }
 
@@ -327,7 +324,7 @@ class Command {
         continue;
       }
 
-      var brkPos = _BREAK_CHARS.indexOf(curChr);
+      var brkPos = _breakChars.indexOf(curChr);
 
       if (brkPos < 0) {
         continue;

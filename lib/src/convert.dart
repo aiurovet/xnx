@@ -24,13 +24,13 @@ class Convert {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static const String FILE_TYPE_TMP = '.tmp';
+  static const String fileTypeTmp = '.tmp';
 
-  static final RegExp RE_EXE_SUB = RegExp(r'^[\s]*[\-]');
-  static final RegExp RE_EXE_SUB_EXPAND = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
-  static final RegExp RE_EXE_SUB_FORCE = RegExp(r'(^|[\s])(-f|--force)([\s]|$)');
-  static final RegExp RE_EXE_SUB_PRINT = RegExp(r'(^|[\s])(--print)([\s]|$)');
-  static final RegExp RE_IS_SHELL_CMD = RegExp(r'[\$\(\)\[\]\<\>\`\&\|]');
+  static final RegExp rexExeSub = RegExp(r'^[\s]*[\-]');
+  static final RegExp rexExeSubExpand = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
+  static final RegExp rexExeSubForce = RegExp(r'(^|[\s])(-f|--force)([\s]|$)');
+  static final RegExp rexExeSubPrint = RegExp(r'(^|[\s])(--print)([\s]|$)');
+  static final RegExp rexIsShellCmd = RegExp(r'[\$\(\)\[\]\<\>\`\&\|]');
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -109,7 +109,7 @@ class Convert {
       if (archType != null) {
         final isTar = PackOper.isPackTypeTar(archType);
 
-        if (isTar || (archType == PackType.Zip)) {
+        if (isTar || (archType == PackType.zip)) {
           if (isCompress) {
             PackOper.archiveSync(archType, args, isListOnly: isListOnly, isMove: isMove, isSilent: isSilent);
           }
@@ -164,7 +164,7 @@ class Convert {
 
     if (isExpandContentOnly) {
       if (!isForced) {
-        isForced = RE_EXE_SUB_FORCE.hasMatch(command);
+        isForced = rexExeSubForce.hasMatch(command);
       }
 
       var cli = Command(text: command);
@@ -265,7 +265,7 @@ class Convert {
   bool execMap(List<String> plainArgs, FlatMap map) {
     var mapCurr = FlatMap();
 
-    map[ConfigFileLoader.ALL_ARGS] = (plainArgs.isEmpty ? '' : plainArgs.map((x) => x.quote()).join(' '));
+    map[ConfigFileLoader.allArgs] = (plainArgs.isEmpty ? '' : plainArgs.map((x) => x.quote()).join(' '));
     curDirName = getCurDirName(map, true);
 
     var inpFilePath = getValue(map, key: _config.keywords.forInp, canReplace: true);
@@ -313,8 +313,8 @@ class Convert {
         command = getValue(mapCurr, key: _config.keywords.forCmd, canReplace: false);
       }
 
-      isSubRun = RE_EXE_SUB.hasMatch(command);
-      isExpandContentOnly = isSubRun && RE_EXE_SUB_EXPAND.hasMatch(command);
+      isSubRun = rexExeSub.hasMatch(command);
+      isExpandContentOnly = isSubRun && rexExeSubExpand.hasMatch(command);
       canExpandContent = !options.isListOnly && (isExpandContentOnly || getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false).parseBool());
 
       if (!curDirName.isBlank()) {
@@ -327,7 +327,7 @@ class Convert {
 
       if (command.isBlank()) {
         if (_config.options.isListOnly) {
-          _logger.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.RECORD_SEP : ''));
+          _logger.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.recordSep : ''));
         }
         return true;
       }
@@ -335,8 +335,8 @@ class Convert {
       var outFilePath = Path.adjust(getValue(mapCurr, key: _config.keywords.forOut, canReplace: true));
       var hasOutFile = outFilePath.isNotEmpty;
 
-      isStdIn = (inpFilePath == StringExt.STDIN_PATH);
-      isStdOut = (outFilePath == StringExt.STDOUT_PATH);
+      isStdIn = (inpFilePath == StringExt.stdinPath);
+      isStdOut = (outFilePath == StringExt.stdoutPath);
 
       var outFilePathEx = (hasOutFile ? outFilePath : inpFilePathEx);
 
@@ -391,7 +391,7 @@ Output path: "$outFilePathEx"
       }
 
       if (isStdOut && !isExpandContentOnly) {
-        throw Exception('Command execution is not supported for the output to ${StringExt.STDOUT_DISPLAY}. Use pipe and a separate configuration file per each output.');
+        throw Exception('Command execution is not supported for the output to ${StringExt.stdoutDisplay}. Use pipe and a separate configuration file per each output.');
       }
 
       var isOK = execFile(command.replaceAll(inpFilePath, inpFilePathEx), inpFilePathEx, outFilePathEx, mapCurr);
@@ -589,7 +589,7 @@ Output path: "$outFilePathEx"
       }
       else {
         var tmpFileName = (Path.basenameWithoutExtension(outFilePath) +
-            FILE_TYPE_TMP + Path.extension(inpFilePath));
+            fileTypeTmp + Path.extension(inpFilePath));
         var tmpDirName = Path.dirname(outFilePath);
 
         return Path.join(tmpDirName, tmpFileName);
@@ -624,7 +624,7 @@ Output path: "$outFilePathEx"
 
     var lst = <String>[];
 
-    if (filePath == StringExt.STDIN_PATH) {
+    if (filePath == StringExt.stdinPath) {
       lst.add(filePath);
     }
     else {
@@ -682,7 +682,7 @@ Output path: "$outFilePathEx"
   //////////////////////////////////////////////////////////////////////////////
 
   bool isShellCommand(String command) =>
-      RE_IS_SHELL_CMD.hasMatch(command);
+      rexIsShellCmd.hasMatch(command);
 
   //////////////////////////////////////////////////////////////////////////////
 

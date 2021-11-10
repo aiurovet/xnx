@@ -11,8 +11,9 @@ class FileOper {
 
   static void createDirSync(List<String> dirNames, {bool isListOnly = false, bool isSilent = false}) {
     var dirNameLists = Path.argsToLists(dirNames, oper: 'create directory');
+    var dirNameList = dirNameLists[0];
 
-    dirNameLists[0].forEach((currDirName) {
+    for (var currDirName in dirNameList) {
       if (currDirName.isBlank() || Path.fileSystem.file(currDirName).existsSync()) {
         return;
       }
@@ -24,7 +25,7 @@ class FileOper {
       if (!isListOnly) {
         Path.fileSystem.directory(currDirName).createSync(recursive: true);
       }
-    });
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -100,7 +101,7 @@ class FileOper {
           var currDirName = parts[0];
           var currPattern = parts[1];
 
-          if (!currDirName.isBlank() && (currDirName != DirectoryExt.CUR_DIR_ABBR)) {
+          if (!currDirName.isBlank() && (currDirName != DirectoryExt.curDirAbbr)) {
             if (!Path.fileSystem.directory(currDirName).existsSync()) {
               throw Exception('Top source directory was not found: "${currDir.path}"');
             }
@@ -136,7 +137,7 @@ class FileOper {
         _removeSubPaths(entities, isFast: (sortProc == null));
       }
 
-      dirNameLen -= _shortenSubPaths(entities, (DirectoryExt.CUR_DIR_ABBR + Path.separator));
+      dirNameLen -= _shortenSubPaths(entities, (DirectoryExt.curDirAbbr + Path.separator));
 
       if (dirNameLen < 0) {
         dirNameLen = 0;
