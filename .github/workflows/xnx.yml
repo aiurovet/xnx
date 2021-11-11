@@ -25,14 +25,7 @@ jobs:
 
       ################################################################################
 
-      - name: Finalizing Dart SDK installation on Linux
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-
-      ################################################################################
-
-      - name: Installing ImageMagick on Windows
+      - name: Installing ImageMagick for Windows
         if: runner.os == 'Windows'
         run: |
           choco install -y imagemagick.app --no-progress
@@ -55,11 +48,11 @@ jobs:
 
       ################################################################################
 
-      - name: Building the application on a POSIX-compliant OS
+      - name: Building the application for a POSIX-compliant OS
         if: runner.os != 'Windows'
         run: scripts/build -o "${{runner.os}}"
 
-      - name: Building the application on Windows
+      - name: Building the application for Windows
         if: runner.os == 'Windows'
         run: scripts\build
 

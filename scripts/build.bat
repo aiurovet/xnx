@@ -3,12 +3,14 @@
 setlocal EnableDelayedExpansion
 
 @rem ***************************************************************************
-@rem This script should be run from the project's top folder
+@rem The entry point
 @rem ***************************************************************************
 
 set PRJ=xnx
 set VER=0.1.0
 
+@rem ***************************************************************************
+@rem Initialising directory paths
 @rem ***************************************************************************
 
 set APP=app\Windows
@@ -16,9 +18,15 @@ set BIN=bin\Windows
 set OUP=out\Windows
 set OUT=%OUP%\%PRJ%\%VER%
 
+@rem ***************************************************************************
+@rem Initialising file paths
+@rem ***************************************************************************
+
 set EXE=%BIN%\%PRJ%.exe
 set PKG=%APP%\%PRJ%-%VER%_windows_x86_64
 
+@rem ***************************************************************************
+@rem Switching to the project's top directory
 @rem ***************************************************************************
 
 %~d0
@@ -27,8 +35,12 @@ if errorlevel 1 exit /B 1
 cd "%~dp0.."
 if errorlevel 1 exit /B 1
 
-@rem Reset errorlevel
-ver > nul
+@echo Switched to the project's top directory "%CD%"
+
+@echo Parsing the script's command-line arguments and grabbing possible extra ones
+
+if not "%~1" == "" shift
+set ARGS=%*
 
 @rem ***************************************************************************
 
@@ -73,24 +85,24 @@ echo Copying the version switcher to the output directory
 copy /Y scripts\set-as-current.bat "%OUT%"
 if errorlevel 1 exit /B 1
 
-echo Copying the change log
+echo Copying the change log to the output directory
 copy /Y CHANGELOG.md "%OUT%"
 if errorlevel 1 exit /B 1
 
-echo Copying the installation guide
+echo Copying the installation guide to the output directory
 copy /Y INSTALL.md "%OUT%"
 if errorlevel 1 exit /B 1
 
-echo Copying the license
+echo Copying the license to the output directory
 copy /Y LICENSE "%OUT%"
 if errorlevel 1 exit /B 1
 
-echo Copying the examples
+echo Copying the examples to the output directory
 xcopy /I /Q /S examples "%OUT%\examples"
 if errorlevel 1 exit /B 1
 
 echo Creating the icons in the output directory
-"%EXE%" -d scripts\mkicons "%PRJ%" "..\..\%OUT%" !ARGS!
+"%EXE%" -d scripts\mkicons "%PRJ%" "..\..\%OUT%" %ARGS%
 if errorlevel 1 exit /B 1
 
 echo Creating and compressing the application package

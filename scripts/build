@@ -11,31 +11,13 @@ VER="0.1.0"
 
 ################################################################################
 
-function parseCommandLine() {
-  local opt
-
-  OS_TYPE=""
-
-  while getopts "o:" opt; do
-    case "${opt}" in
-      o) OS_TYPE="${OPTARG}"
-         ;;
-    esac
-  done
-
-  OPT_SHIFT=$(($OPTIND - 1))
-  shift ${OPT_SHIFT}
-}
-
-################################################################################
-
 echo "Switching to the top project directory"
 SCRIPT_DIR="$(dirname "${0}")"
 cd "$(dirname "${SCRIPT_DIR}")"
 
-echo "Parsing command-line parameters"
-parseCommandLine "${@}"
-shift ${OPT_SHIFT}
+echo "Parsing command-line arguments (no options)"
+OS_TYPE="${1}"
+(( ${#} >= 2)) && shift 2 || shift
 
 ################################################################################
 
