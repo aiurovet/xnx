@@ -34,13 +34,17 @@ ver > nul
 
 echo Running the build for Windows
 
-echo Creating the application directory "%APP%"
-mkdir "%APP%"
-if errorlevel 1 exit /B 1
+if not exist "%APP%" (
+  echo Creating the application directory "%APP%"
+  mkdir "%APP%"
+  if errorlevel 1 exit /B 1
+)
 
-echo Creating the bin directory "%BIN%"
-mkdir "%BIN%"
-if errorlevel 1 exit /B 1
+if not exist "%BIN%" (
+  echo Creating the bin directory "%BIN%"
+  mkdir "%BIN%"
+  if errorlevel 1 exit /B 1
+)
 
 if exist "%OUP%" (
   echo Discarding the output parent directory "%OUP%"
