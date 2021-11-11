@@ -57,7 +57,7 @@ jobs:
 
       - name: Building the application on a POSIX-compliant OS
         if: runner.os != 'Windows'
-        run: scripts/build "${{runner.os}}"
+        run: scripts/build -o "${{runner.os}}"
 
       - name: Building the application on Windows
         if: runner.os == 'Windows'

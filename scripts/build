@@ -16,20 +16,15 @@ function parseCommandLine() {
 
   OS_TYPE=""
 
-  # while getopts "" opt; do
-  #   case "${opt}" in
-  #     )
-  #        ;;
-  #   esac
-  # done
+  while getopts "o:" opt; do
+    case "${opt}" in
+      o) OS_TYPE="${OPTARG}"
+         ;;
+    esac
+  done
 
   OPT_SHIFT=$(($OPTIND - 1))
   shift ${OPT_SHIFT}
-
-  if ((${#} >= 1)); then
-    OS_TYPE="${1}"
-    OPT_SHIFT=$((${OPT_SHIFT} + 1))
-  fi
 }
 
 ################################################################################
