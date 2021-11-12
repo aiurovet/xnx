@@ -127,7 +127,8 @@ the application will define environment variable $envVerbosity,''',
   static final Map<String, Object?> xnx = {
     'name': 'xnx',
     'abbr': 'X',
-    'help': 'same as -c, --config',
+    'help': 'same as -c, --config=<FILE>',
+    'valueHelp': 'FILE',
     'negatable': false,
   };
   static final Map<String, Object?> cmdPrint = {
@@ -258,14 +259,14 @@ can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdTarZ = {
-    'name': 'tarZ',
+    'name': 'tarz',
     'help': '''just a combination of --tar and --Z,
 can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdUnTarZ = {
-    'name': 'untarZ',
-    'help': '''just a combination of --untar and --unZ,
+    'name': 'untarz',
+    'help': '''just a combination of --untar and --unz,
 can be used with --move''',
     'negatable': false,
   };
@@ -282,13 +283,13 @@ can be used with --move to delete the source''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdZ = {
-    'name': 'Z',
+    'name': 'z',
     'help': '''just compress a single source file to a single Z file,
 can be used with --move to delete the source''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdUnZ = {
-    'name': 'unZ',
+    'name': 'unz',
     'help': '''just decompress a single Z file to a single destination file,
 can be used with --move to delete the source''',
     'negatable': false,
@@ -455,7 +456,9 @@ can be used with --move to delete the source''',
     final parser = ArgParser();
 
     addFlag(parser, help, (value) {
-      isHelp = value;
+      if (value) {
+        printUsage(parser);
+      }
     });
     addOption(parser, config, (value) {
       if (configPath.isBlank()) {
@@ -689,6 +692,7 @@ can be used with --move to delete the source''',
     try {
       var result = parser.parse(args);
 
+
       if (!isCmd) {
         setConfigPathAndStartDirName(configPath, dirName);
       }
@@ -722,8 +726,9 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void printUsage(ArgParser parser, {String? error}) {
-    stderr.writeln('''
+  void printUsage(ArgParser parser, {String? error}) {
+    if (!_logger.isSilent) {
+      stderr.writeln('''
 $appName 0.1.0 (C) Alexander Iurovetski 2020 - 2021
 
 A command-line utility to eXpand text content aNd to eXecute external utilities.
@@ -735,7 +740,9 @@ $appName [OPTIONS]
 ${parser.usage}
 
 For more details, see README.md
-      ''');
+'''
+      );
+    }
 
     throw Exception(error?.isBlank() ?? true ? help['name'] ?? '' : error);
   }

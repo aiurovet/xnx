@@ -23,7 +23,7 @@ set OUT=%OUP%\%PRJ%\%VER%
 @rem ***************************************************************************
 
 set EXE=%BIN%\%PRJ%.exe
-set PKG=%APP%\%PRJ%-%VER%_windows_x86_64
+set PKG=%APP%\%PRJ%-%VER%-windows-x86_64
 
 @rem ***************************************************************************
 @rem Switching to the project's top directory
