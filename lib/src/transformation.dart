@@ -337,14 +337,14 @@ class Transformation {
     var n1 = _toNum(o1);
 
     if (n1 == null) {
-      _fail(type, 'Bad argument #1: $o1');
+      _fail(type, 'Bad 1st argument: $o1');
     }
 
     var o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var n2 = _toNum(o2);
 
     if (n2 == null) {
-      _fail(type, 'Bad argument #2: $o2');
+      _fail(type, 'Bad 2nd argument: $o2');
     }
 
     switch (type) {
