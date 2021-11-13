@@ -1,6 +1,6 @@
 // Generate icons for this application using itself
 // The file designed for runs primarily on Linux
-// Requires: Google Chrome, ImageMagick's convert, png2icns as well as InkScape for Wine
+// Requires: Google Chrome as well as iconutil (macOS only) and ImageMagick's convert (Windows only)
 
 {
   "{{-rename-keywords-}}": {
@@ -65,6 +65,10 @@
         { "{dim}": 1024, "{offset}": 128, },
       ],
 
+      "{{-transform-}}": {
+        "{scale}": [ "=Div", "{dim}", "100" ],
+      },
+
       "{inp}": "{cur-dir}/{prj}.svg",
       "{out}": "{cur-dir}/png/{icon-name}_{dim}x{dim}.png",
       "{cmd}": '{svg2png} --window-size={dim},{dim} --screenshot={out} "file://{inp}"'
@@ -102,7 +106,7 @@
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "": '"{OSTYPE}" ==/i "Windows"', "{{-then-}}": {
         "{run}": [
-          '{convert} +antialias "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{out-dir}/{icon-name}.ico"',
+          '{convert} "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{out-dir}/{icon-name}.ico"',
         ]
       } } } } } }
     },

@@ -17,7 +17,7 @@ cd "$(dirname "${SCRIPT_DIR}")"
 
 echo "Parsing command-line arguments (no options)"
 OS_TYPE="${1}"
-(( ${#} >= 2)) && shift 2 || shift
+(( ${#} >= 2)) && shift 2 || shift ${#}
 
 ################################################################################
 

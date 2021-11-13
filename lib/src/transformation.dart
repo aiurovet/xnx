@@ -105,6 +105,9 @@ class Transformation {
         }
       });
     }
+    else if (todo != null) {
+      return flatMap.expand(todo.toString());
+    }
 
     return todo;
   }
@@ -164,11 +167,11 @@ class Transformation {
   String? _execDateTime(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var valueStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    var addUnitsStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var valueStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var addUnitsStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    var value = ((valueStr == null) || valueStr.isBlank() ? DateTime.now() : DateTime.parse(valueStr));
-    var addUnits = (addUnitsStr == null ? 0 : int.tryParse(addUnitsStr) ?? 0);
+    var value = (valueStr.isBlank() ? DateTime.now() : DateTime.parse(valueStr));
+    var addUnits = (addUnitsStr.isBlank() ? 0 : int.tryParse(addUnitsStr) ?? 0);
     var hasDate = true;
     var hasTime = ((value.hour != 0) || (value.minute != 0) || (value.second != 0) || (value.millisecond != 0));
 
@@ -222,8 +225,7 @@ class Transformation {
   String? _execDateTimeNow(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var format = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    format = flatMap.expand(format);
+    var format = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
     var now = DateTime.now();
 
@@ -246,8 +248,8 @@ class Transformation {
   String? _execFile(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var fileName = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    var format = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var fileName = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var format = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
     var stat = Path.fileSystem.file(fileName).statSync();
 
@@ -260,7 +262,7 @@ class Transformation {
 
     switch (type) {
       case TransformationType.fileSize:
-        return FileExt.formatSize((isFile ? stat.size : -1), format ?? '');
+        return FileExt.formatSize((isFile ? stat.size : -1), format);
       case TransformationType.lastModified:
         return (isFound ? stat.modified.toIso8601String() : '');
       default:
@@ -273,12 +275,11 @@ class Transformation {
   String? _execIndex(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    var fndStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var fndStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if ((inpStr != null) && inpStr.isNotEmpty &&
-        (fndStr != null) && fndStr.isNotEmpty) {
-      var begStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    if (inpStr.isNotEmpty && fndStr.isNotEmpty) {
+      var begStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString() ?? '');
       var begPos = (_toInt(begStr) ?? 1) - 1;
       var endPos = inpStr.length;
 
@@ -300,12 +301,11 @@ class Transformation {
   String? _execMatch(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    var patStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var patStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if ((inpStr != null) && inpStr.isNotEmpty &&
-        (patStr != null) && patStr.isNotEmpty) {
-      var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    if (inpStr.isNotEmpty && patStr.isNotEmpty) {
+      var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
       var regExp = _toRegExp(patStr, flgStr);
 
       if (regExp != null) {
@@ -333,18 +333,18 @@ class Transformation {
   String? _execMath(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var o1 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var o1 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var n1 = _toNum(o1);
 
     if (n1 == null) {
-      _fail(type, 'Bad argument #1');
+      _fail(type, 'Bad argument #1: $o1');
     }
 
-    var o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var n2 = _toNum(o2);
 
     if (n2 == null) {
-      _fail(type, 'Bad argument #2');
+      _fail(type, 'Bad argument #2: $o2');
     }
 
     switch (type) {
@@ -372,21 +372,15 @@ class Transformation {
   String? _execReplace(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    var srcStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    var dstStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var srcStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var dstStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if (inpStr == null) {
-      _fail(type, 'undefined input string (1st param)');
+    if (srcStr.isEmpty) {
+      _fail(type, 'search string (2nd param) should not be empty');
     }
 
-    if (srcStr == null) {
-      _fail(type, 'undefined search string (2nd param)');
-    }
-
-    inpStr = flatMap.expand(inpStr);
-
-    return inpStr.replaceAll(srcStr, dstStr ?? '');
+    return inpStr.replaceAll(srcStr, dstStr);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -394,20 +388,20 @@ class Transformation {
   String? _execReplaceMatch(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if ((inpStr == null) || inpStr.isEmpty) {
-      return '';
+    if (inpStr.isEmpty) {
+      return inpStr;
     }
 
-    var srcPat = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var srcPat = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if ((srcPat == null) || srcPat.isEmpty) {
+    if (srcPat.isEmpty) {
       _fail(type, 'undefined search pattern (2nd param)');
     }
 
     var dstStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-    var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
     var regExp = _toRegExp(srcPat, flgStr);
 
@@ -415,9 +409,7 @@ class Transformation {
       _fail(type, 'invalid regular expression $srcPat');
     }
 
-    var isGlobal = flgStr?.contains('g') ?? false;
-
-    inpStr = flatMap.expand(inpStr);
+    var isGlobal = flgStr.contains('g');
 
     String resStr;
 
@@ -472,7 +464,7 @@ class Transformation {
   String? _execRun(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var txt = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var txt = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var cmd = Command(text: txt, isToVar: true);
 
     return cmd.exec();
@@ -483,16 +475,16 @@ class Transformation {
   String? _execSubstring(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    var begStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
-    var lenStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var begStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var lenStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if (inpStr == null) {
-      _fail(type, 'undefined input string (1st param)');
+    if (begStr.isEmpty) {
+      _fail(type, 'undefined offset (2nd param)');
     }
 
-    if (begStr == null) {
-      _fail(type, 'undefined offset (2nd param)');
+    if (lenStr.isEmpty) {
+      _fail(type, 'undefined length (3rd param)');
     }
 
     var begVal = _toInt(begStr) ?? 0;
@@ -503,7 +495,6 @@ class Transformation {
     }
 
     --begVal;
-    inpStr = flatMap.expand(inpStr);
 
     if (lenVal <= 0) {
       lenVal = (inpStr.length - begVal);
@@ -517,13 +508,11 @@ class Transformation {
   String? _execToCase(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
-    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString());
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if (inpStr == null) {
-      _fail(type, 'undefined input string');
+    if (inpStr.isEmpty) {
+      return inpStr;
     }
-
-    inpStr = flatMap.expand(inpStr);
 
     switch (type) {
       case TransformationType.lower:
