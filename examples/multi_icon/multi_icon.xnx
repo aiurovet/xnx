@@ -10,7 +10,8 @@
 
   "{{-import-}}": "../shell.xnx",
 
-  // Do not enclose the output path {o} in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
+  // Do not enclose the output path {o} in quotes, as this will not work.
+  // So try to avoid paths containing spaces (existing bug in Chromium)
   "{c}": '{svg2png} --window-size={d},{d} --screenshot={o} "file://{i}"',
 
   "{can-expand-content}": true,

@@ -17,18 +17,24 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static final String appName = 'xnx';
+  static final String appVersion = '0.1.0';
+  static final String fileTypeCfg = '.$appName';
+  static final String fileMaskCfg = '${GlobExt.all}$fileTypeCfg';
   static const String helpMin = '-?';
 
-  static const String envAppKeyPrefix = '_XNX_';
-  static const String envUsrKeyPrefix = 'XNX_';
+  static const String _envAppKeyPrefix = '_XNX_';
 
-  static const String envAppendSep = '${envAppKeyPrefix}APPEND_SEP';
-  static const String envCompression = '${envAppKeyPrefix}COMPRESSION';
-  static const String envForce = '${envAppKeyPrefix}FORCE';
-  static const String envListOnly = '${envAppKeyPrefix}LIST_ONLY';
-  static const String envQuiet = '${envAppKeyPrefix}QUIET';
-  static const String envStartDir = '${envAppKeyPrefix}START_DIR';
-  static const String envVerbosity = '${envAppKeyPrefix}VERBOSITY';
+  static const String _envAppendSep = '${_envAppKeyPrefix}APPEND_SEP';
+  static const String _envCompression = '${_envAppKeyPrefix}COMPRESSION';
+  static const String _envForce = '${_envAppKeyPrefix}FORCE';
+  static const String _envListOnly = '${_envAppKeyPrefix}LIST_ONLY';
+  static const String _envQuiet = '${_envAppKeyPrefix}QUIET';
+  static const String _envStartDir = '${_envAppKeyPrefix}START_DIR';
+  static const String _envVerbosity = '${_envAppKeyPrefix}VERBOSITY';
+
+  static final RegExp _rexOptConfig = RegExp('^[\\-]([\\-](${config['name']}|${xnx['name']})|${config['abbr']})([\\=]|\$)', caseSensitive: true);
+  static final RegExp _rexOptStartDir = RegExp('^[\\-]([\\-]${startDir['name']}|${startDir['abbr']})([\\=]|\$)', caseSensitive: true);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -36,14 +42,14 @@ class Options {
     'name': 'append-sep',
     'abbr': 's',
     'help': '''append record separator "${ConfigFileLoader.recordSep}" when filtering input config file (for "${listOnly['name']}" exclusively),
-the application will define environment variable $envAppendSep''',
+the application will define environment variable $_envAppendSep''',
     'negatable': false,
   };
   static final Map<String, Object?> compressionLevel = {
     'name': 'compression',
     'abbr': 'p',
     'help': '''compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2,
-the application will define environment variable $envCompression''',
+the application will define environment variable $_envCompression''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
   };
@@ -66,7 +72,7 @@ see also -x, --xargs''',
     'name': 'force',
     'abbr': 'f',
     'help': '''ignore timestamps and force conversion,
-the application will define environment variable $envForce''',
+the application will define environment variable $_envForce''',
     'negatable': false,
   };
   static final Map<String, Object?> help = {
@@ -79,21 +85,21 @@ the application will define environment variable $envForce''',
     'name': 'list-only',
     'abbr': 'l',
     'help': '''display all commands, but do not execute those; if no command specified, then show config,
-the application will define environment variable $envListOnly''',
+the application will define environment variable $_envListOnly''',
     'negatable': false,
   };
   static final Map<String, Object?> quiet = {
     'name': 'quiet',
     'abbr': 'q',
     'help': '''quiet mode (no output, same as verbosity 0),
-the application will define environment variable $envQuiet''',
+the application will define environment variable $_envQuiet''',
     'negatable': false,
   };
   static final Map<String, Object?> startDir = {
     'name': 'dir',
     'abbr': 'd',
     'help': '''startup directory,
-the application will define environment variable $envStartDir''',
+the application will define environment variable $_envStartDir''',
     'valueHelp': 'DIR',
     'defaultsTo': null,
   };
@@ -102,7 +108,7 @@ the application will define environment variable $envStartDir''',
     'abbr': 'v',
     'help': '''how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug),
 defaults to "${Logger.levels[Logger.levelDefault]}",
-the application will define environment variable $envVerbosity,''',
+the application will define environment variable $_envVerbosity,''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
   };
@@ -297,15 +303,6 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final String appName = 'xnx';
-  static final String fileTypeCfg = '.$appName';
-  static final String fileMaskCfg = '${GlobExt.all}$fileTypeCfg';
-
-  static final RegExp rexOptConfig = RegExp('^[\\-]([\\-](${config['name']}|${xnx['name']})|${config['abbr']})([\\=]|\$)', caseSensitive: true);
-  static final RegExp rexOptStartDir = RegExp('^[\\-]([\\-]${startDir['name']}|${startDir['abbr']})([\\=]|\$)', caseSensitive: true);
-
-  //////////////////////////////////////////////////////////////////////////////
-
   bool _asXargs = false;
   bool get asXargs => _asXargs;
 
@@ -420,10 +417,10 @@ can be used with --move to delete the source''',
 
   String getConfigFullPath(List<String> args) {
     for (var arg in args) {
-      if (rexOptConfig.hasMatch(arg)) {
+      if (_rexOptConfig.hasMatch(arg)) {
         return Path.getFullPath(_configFileInfo.filePath);
       }
-      if (rexOptStartDir.hasMatch(arg)) {
+      if (_rexOptStartDir.hasMatch(arg)) {
         break;
       }
     }
@@ -471,20 +468,20 @@ can be used with --move to delete the source''',
       }
     });
     addOption(parser, startDir, (value) {
-      dirName = _getString(envStartDir, value, isPath: true);
+      dirName = _getString(_envStartDir, value, isPath: true);
 
       if (!dirName.isBlank()) {
         dirName = Path.getFullPath(dirName);
       }
     });
     addFlag(parser, quiet, (value) {
-      if (_getBool(envQuiet, quiet, value)) {
+      if (_getBool(_envQuiet, quiet, value)) {
         _logger.level = Logger.levelSilent;
       }
     });
     addOption(parser, verbosity, (value) {
       if (value != null) {
-        var v = _getString(envVerbosity, value);
+        var v = _getString(_envVerbosity, value);
         _logger.levelAsString = v;
       }
     });
@@ -495,16 +492,16 @@ can be used with --move to delete the source''',
       _asXargs = value;
     });
     addFlag(parser, listOnly, (value) {
-      _isListOnly = _getBool(envListOnly, listOnly, value);
+      _isListOnly = _getBool(_envListOnly, listOnly, value);
     });
     addFlag(parser, appendSep, (value) {
-      _isAppendSep = _getBool(envAppendSep, appendSep, value);
+      _isAppendSep = _getBool(_envAppendSep, appendSep, value);
     });
     addFlag(parser, forceConvert, (value) {
-      _isForced = _getBool(envForce, forceConvert, value);
+      _isForced = _getBool(_envForce, forceConvert, value);
     });
     addOption(parser, compressionLevel, (value) {
-      _compression = _getInt(envCompression, value, defValue: PackOper.defaultCompression);
+      _compression = _getInt(_envCompression, value, defValue: PackOper.defaultCompression);
     });
     addFlag(parser, waitAlways, (value) {
       _isWaitAlways = value;
@@ -729,7 +726,7 @@ can be used with --move to delete the source''',
   void printUsage(ArgParser parser, {String? error}) {
     if (!_logger.isSilent) {
       stderr.writeln('''
-$appName 0.1.0 (C) Alexander Iurovetski 2020 - 2021
+$appName $appVersion (C) Alexander Iurovetski 2020 - 2021
 
 A command-line utility to eXpand text content aNd to eXecute external utilities.
 

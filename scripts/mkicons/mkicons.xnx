@@ -70,6 +70,11 @@
       },
 
       "{inp}": "{cur-dir}/{prj}.svg",
+
+      "{{-if-}}": { "": '({dim} == 48) && ("{look}" == "_dark")', "{{-then-}}": {
+        "{run}": '--expand "{inp}" "{icon-name}_{dim}x{dim}.svg"',
+      } },
+
       "{out}": "{cur-dir}/png/{icon-name}_{dim}x{dim}.png",
       "{cmd}": '{svg2png} --window-size={dim},{dim} --screenshot={out} "file://{inp}"'
     },
