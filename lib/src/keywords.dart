@@ -27,6 +27,7 @@ class Keywords {
   String forFnAddYears = '=AddYears';
   String forFnDate = '=Date';
   String forFnDiv = '=Div';
+  String forFnDivInt = '=IDiv';
   String forFnEndOfMonth = '=EndOfMonth';
   String forFnFileSize = '=FileSize';
   String forFnIndex = '=Index';

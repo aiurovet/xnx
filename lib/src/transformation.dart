@@ -16,6 +16,7 @@ enum TransformationType {
   addYears,
   date,
   div,
+  divInt,
   endOfMonth,
   fileSize,
   indexOf,
@@ -118,6 +119,7 @@ class Transformation {
     switch (type) {
       case TransformationType.add:
       case TransformationType.div:
+      case TransformationType.divInt:
       case TransformationType.max:
       case TransformationType.min:
       case TransformationType.mod:
@@ -332,16 +334,17 @@ class Transformation {
 
   String? _execMath(TransformationType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
+    var isInt = (type == TransformationType.divInt);
 
     var o1 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-    var n1 = _toNum(o1);
+    var n1 = _toNum(o1, isInt: isInt);
 
     if (n1 == null) {
       _fail(type, 'Bad 1st argument: $o1');
     }
 
     var o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-    var n2 = _toNum(o2);
+    var n2 = _toNum(o2, isInt: isInt);
 
     if (n2 == null) {
       _fail(type, 'Bad 2nd argument: $o2');
@@ -352,6 +355,8 @@ class Transformation {
         return (n1 + n2).toString();
       case TransformationType.div:
         return (n1 / n2).toString();
+      case TransformationType.divInt:
+        return (n1 / n2).toStringAsFixed(0);
       case TransformationType.max:
         return (n1 >= n2 ? n1 : n2).toString();
       case TransformationType.min:
@@ -539,6 +544,7 @@ class Transformation {
     nameTypeMap[_toName(keywords.forFnAddYears)] = TransformationType.addYears;
     nameTypeMap[_toName(keywords.forFnDate)] = TransformationType.date;
     nameTypeMap[_toName(keywords.forFnDiv)] = TransformationType.div;
+    nameTypeMap[_toName(keywords.forFnDivInt)] = TransformationType.divInt;
     nameTypeMap[_toName(keywords.forFnEndOfMonth)] = TransformationType.endOfMonth;
     nameTypeMap[_toName(keywords.forFnFileSize)] = TransformationType.fileSize;
     nameTypeMap[_toName(keywords.forFnIndex)] = TransformationType.indexOf;
@@ -577,8 +583,8 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  num? _toNum(String? input) =>
-    (input == null ? null : num.tryParse(input));
+  num? _toNum(String? input, {bool isInt = false}) =>
+    (input == null ? null : (isInt ? int.tryParse(input) : num.tryParse(input)));
 
   //////////////////////////////////////////////////////////////////////////////
 

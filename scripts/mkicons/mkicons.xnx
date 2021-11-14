@@ -70,9 +70,10 @@
       },
 
       "{inp}": "{cur-dir}/{prj}.svg",
+      "{sample}": "{cur-dir}/{icon-name}_{dim}x{dim}.svg",
 
-      "{{-if-}}": { "": '({dim} == 48) && ("{look}" == "_dark")', "{{-then-}}": {
-        "{run}": '--expand "{inp}" "{icon-name}_{dim}x{dim}.svg"',
+      "{{-if-}}": { "": '({dim} == 48) && ({look} == _dark) && ({sample} -fol {inp})', "{{-then-}}": {
+        "{run}": '--expand "{inp}" "{sample}"',
       } },
 
       "{out}": "{cur-dir}/png/{icon-name}_{dim}x{dim}.png",

@@ -1,5 +1,7 @@
+import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
+import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
 
 import 'flat_map.dart';
@@ -12,6 +14,10 @@ enum OperationType {
   exists,
   existsDir,
   existsFile,
+  fileEquals,
+  fileNewer,
+  fileNotEquals,
+  fileOlder,
   greater,
   greaterOrEquals,
   less,
@@ -38,6 +44,10 @@ class Operation {
     OperationType.exists: OperationType.notExists,
     OperationType.existsDir: OperationType.notExistsDir,
     OperationType.existsFile: OperationType.notExistsFile,
+    OperationType.fileEquals: OperationType.fileNotEquals,
+    OperationType.fileNewer: OperationType.fileOlder,
+    OperationType.fileNotEquals: OperationType.fileEquals,
+    OperationType.fileOlder: OperationType.fileNewer,
     OperationType.greater: OperationType.lessOrEquals,
     OperationType.greaterOrEquals: OperationType.less,
     OperationType.less: OperationType.greaterOrEquals,
@@ -93,6 +103,11 @@ class Operation {
       case OperationType.lessOrEquals:
       case OperationType.notEquals:
         return _execCompare();
+      case OperationType.fileEquals:
+      case OperationType.fileNewer:
+      case OperationType.fileNotEquals:
+      case OperationType.fileOlder:
+        return _execFileCompare();
       case OperationType.exists:
       case OperationType.existsDir:
       case OperationType.existsFile:
@@ -179,11 +194,18 @@ class Operation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _checkExists(int from, int length) {
+  bool _checkFileOper(int from, int length) {
     var last = from + 1;
+    var operEnd = last;
 
     if (last < length) {
-      switch (_condition[last]) {
+      operEnd = _condition.indexOf(' ', last);
+
+      if (operEnd < 0) {
+        operEnd = length;
+      }
+
+      switch (_condition.substring(last, operEnd)) {
         case 'd':
           type = OperationType.existsDir;
           break;
@@ -192,6 +214,18 @@ class Operation {
           break;
         case 'f':
           type = OperationType.existsFile;
+          break;
+        case 'feq':
+          type = OperationType.fileEquals;
+          break;
+        case 'fne':
+          type = OperationType.fileNotEquals;
+          break;
+        case 'fnw':
+          type = OperationType.fileNewer;
+          break;
+        case 'fol':
+          type = OperationType.fileOlder;
           break;
         default:
           return false;
@@ -202,7 +236,7 @@ class Operation {
       _begPos = from;
     }
 
-    _endPos = last + 1;
+    _endPos = operEnd;
 
     return true;
   }
@@ -322,6 +356,39 @@ class Operation {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  bool _execFileCompare() {
+    var path1 = flatMap.expand(operands[0]?.toString());
+    var path2 = flatMap.expand(operands[1]?.toString());
+
+    var stat1 = _getStat(path1);
+    var stat2 = _getStat(path2);
+
+    var isFound1 = (stat1.type != FileSystemEntityType.notFound);
+    var isFound2 = (stat2.type != FileSystemEntityType.notFound);
+
+    if (isFound1 && isFound2 && (stat1.type != stat2.type)) {
+      _fail('Failed to compare ${stat1.type} $path1 to ${stat2.type} $path2');
+    }
+
+    var time1 = (isFound1 ? stat1.modified.millisecondsSinceEpoch : -1);
+    var time2 = (isFound2 ? stat2.modified.millisecondsSinceEpoch : -1);
+
+    switch (type) {
+      case OperationType.fileEquals:
+        return (time1 == time2);
+      case OperationType.fileNewer:
+        return (time1 > time2);
+      case OperationType.fileNotEquals:
+        return (time1 != time2);
+      case OperationType.fileOlder:
+        return (time1 < time2);
+      default:
+        return false;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   bool _execExists() {
     var mask = (operands[0] as String);
 
@@ -366,6 +433,19 @@ class Operation {
 
   Never _fail(String condition, [String? details]) =>
     throw Exception('Invalid condition $condition${details?.isNotEmpty ?? false ? ': $details' : ''}');
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  FileStat _getStat(String path) {
+    var file = Path.fileSystem.file(path);
+    var stat = file.statSync();
+
+    if (stat.type == FileSystemEntityType.link) {
+      stat = _getStat(file.resolveSymbolicLinksSync());
+    }
+
+    return stat;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -422,7 +502,7 @@ class Operation {
           isFound = _checkCompares(curPos, length);
           continue;
         case '-':
-          isFound = _checkExists(curPos, length);
+          isFound = _checkFileOper(curPos, length);
           continue;
         case ' ':
         case '\t':
@@ -482,6 +562,10 @@ class Operation {
     }
 
     var isBinary = (
+      (type == OperationType.fileEquals) ||
+      (type == OperationType.fileNewer) ||
+      (type == OperationType.fileNotEquals) ||
+      (type == OperationType.fileOlder) ||
       (type == OperationType.equals) ||
       (type == OperationType.greater) ||
       (type == OperationType.greaterOrEquals) ||

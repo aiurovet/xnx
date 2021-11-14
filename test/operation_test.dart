@@ -1,6 +1,9 @@
 import 'package:test/test.dart';
+import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/operation.dart';
+
+import 'helper.dart';
 
 void main() {
   group('Operation', () {
@@ -57,9 +60,46 @@ void main() {
       expect((o.parse('a!~/u') == OperationType.notMatches) && o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && o.isUnicode, true);
       expect((o.parse('a!~/u') == OperationType.notMatches) && o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && o.isUnicode, true);
       expect((o.parse('a!~/umsi') == OperationType.notMatches) && !o.isCaseSensitive && o.isDotAll && o.isMultiLine && o.isUnicode, true);
+
+      expect((o.parse('-d abc.def') == OperationType.existsDir), true);
+      expect((o.parse('-e abc.def') == OperationType.exists), true);
+      expect((o.parse('-f abc.def') == OperationType.existsFile), true);
+      expect((o.parse('a1.txt -feq s2.txt') == OperationType.fileEquals), true);
+      expect((o.parse('a1.txt -fne s2.txt') == OperationType.fileNotEquals), true);
+      expect((o.parse('a1.txt -fnw') == OperationType.fileNewer), true);
+      expect((o.parse('a1.txt -fnw a2.txt') == OperationType.fileNewer), true);
+      expect((o.parse('a1.txt -fol a2.txt') == OperationType.fileOlder), true);
     });
 
-    test('exec', () {
+    test('exec - file', () {
+      Helper.forEachMemoryFileSystem((fileSystem) {
+        Helper.initFileSystem(fileSystem);
+
+        var o = Operation(flatMap: FlatMap());
+
+        Path.fileSystem.directory('dir1').createSync();
+        Helper.shortSleep();
+
+        Path.fileSystem.directory('dir2').createSync();
+        Helper.shortSleep();
+        
+        expect(o.exec('dir1 -fol dir2'), true);
+
+        Path.fileSystem.file('file1')..createSync()..writeAsStringSync('A');
+        Helper.shortSleep();
+
+        Path.fileSystem.file('file2')..createSync()..writeAsStringSync('Ab');
+        Helper.shortSleep();
+
+        expect(o.exec('file1 -fnw file3'), true);
+        expect(o.exec('file1 -fol file2'), true);
+        expect(o.exec('file3 -fol file2'), true);
+
+        expect(() => o.exec('file1 -fol dir2'), throwsException);
+      });
+    });
+
+    test('exec - non-file', () {
       var o = Operation(flatMap: FlatMap());
 
       expect(o.exec(''), false);

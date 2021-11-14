@@ -52,8 +52,8 @@ class Config {
 
     options = Options(_logger);
 
-    flatMap = FlatMap();
     keywords = Keywords();
+    flatMap = FlatMap(keywords: keywords);
     operation = Operation(flatMap: flatMap);
     expression = Expression(flatMap: flatMap, keywords: keywords, operation: operation);
     transformation = Transformation(flatMap: flatMap, keywords: keywords);

@@ -8,37 +8,40 @@
   "{{-once-}}": {
     "{{-transform-}}": {
       "{HOST}": ["=run", "uname -n"],
+      "{div}": [ '=div', '123', '100', ],
+      "{idiv}": [ '=idiv', '123', '100', ],
     },
   },
 
   "if-regex": {
     "{{-if-}}": { "": '"${HOME}" !~/i \/(\\.|HOME)', "{{-then-}}": {
-      "{{-run-}}": "--print Has match",
+      "{{-run-}}": '--print "Has match"',
     }, "{{-else-}}": {
-      "{{-run-}}": "--print No match"
+      "{{-run-}}": '--print "No match"',
     }
   } },
 
   "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
     "{{-if-}}": { "": '(("${HOME}" != "") || ("${USER}" != "")) && (-e "/Applications/*.app")', "{{-then-}}": {
-      "{OSTYPE}": "macOS",
+      "{OSTYPE}": 'macOS',
     }, "{{-else-}}": {
-      "{OSTYPE}": "Linux"
+      "{OSTYPE}": 'Linux',
     } },
-    "{HOME}": "${HOME}",
-    "{USER}": "${USER}",
+    "{HOME}": '${HOME}',
+    "{USER}": '${USER}',
   }, "{{-else-}}": { "{{-if-}}": { "": '"${USERPROFILE}" != ""', "{{-then-}}": {
-    "{OSTYPE}": "Windows",
-    "{HOME}": "${USERPROFILE}",
-    "{USER}": "${USERNAME}"
+    "{OSTYPE}": 'Windows',
+    "{HOME}": '${USERPROFILE}',
+    "{USER}": '${USERNAME}',
   }, "{{-else-}}": {
-    "{OSTYPE}": "?",
-    "{HOME}": "{OSTYPE}",
-    "{USER}": "{OSTYPE}"
+    "{OSTYPE}": '?',
+    "{HOME}": '{OSTYPE}',
+    "{USER}": '{OSTYPE}',
   } } } },
 
   "{{-run-}}": [
     './myscript "OS: {OSTYPE}, User: {USER}, Home: {HOME}, Host: {HOST}"',
-    '--print OS:   {OSTYPE}\nUser: {USER}\nHome: {HOME}\nHost: {HOST}'
+    '--print "OS:   {OSTYPE}\nUser: {USER}\nHome: {HOME}\nHost: {HOST}"',
+    '--print "Div float: {div}\nDiv int:   {idiv}"',
   ],
 }

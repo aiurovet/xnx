@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
 
 class Helper {
+  static const defaultDelay = 10; // milliseconds
+
   static final List<MemoryFileSystem> memoryFileSystems = [
     MemoryFileSystem(style: FileSystemStyle.posix),
     MemoryFileSystem(style: FileSystemStyle.windows)
@@ -25,4 +29,7 @@ class Helper {
       print('FS: ${getFileSystemStyleName(Path.fileSystem)}');
     }
   }
+
+  static void shortSleep([int delay = defaultDelay]) =>
+    sleep(Duration(milliseconds: delay));
 }

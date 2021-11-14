@@ -785,14 +785,11 @@ For more details, see README.md
     }
 
     if (dirName != null) {
-      _logger.information('Setting current directory to: "$dirName"');
-      Path.fileSystem.currentDirectory = dirName;
+      _startDirName = dirName;
+      Path.fileSystem.currentDirectory = _startDirName; // to resolve the config path later
     }
 
-    if (dirName != null) {
-      _startDirName = dirName;
-    }
-    else if ((configPath != null)) {
+    if (configPath != null) {
       dirName = Path.dirname(configPath);
       _startDirName = Path.getFullPath(dirName);
     }

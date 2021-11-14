@@ -1,4 +1,6 @@
 import 'package:meta/meta.dart';
+import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/src/keywords.dart';
 
 class FlatMap {
 
@@ -6,6 +8,7 @@ class FlatMap {
   // Internals
   /////////////////////////////////////////////////////////////////////////////
 
+  @protected final Keywords? keywords;
   @protected final Map<String, String> map = {};
 
   /////////////////////////////////////////////////////////////////////////////
@@ -21,6 +24,10 @@ class FlatMap {
   bool containsKey(String key) => map.containsKey(key);
   void forEach(void Function(String key, String value) action) => map.forEach(action);
   void remove(String key) => map.remove(key);
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  FlatMap({this.keywords});
 
   /////////////////////////////////////////////////////////////////////////////
   // Getter
@@ -57,6 +64,11 @@ class FlatMap {
     }
 
     var safeValue = value;
+    var forCurDir = keywords?.forCurDir ?? '';
+
+    if (forCurDir.isNotEmpty) {
+      safeValue = safeValue.replaceAll(forCurDir, Path.currentDirectory.path);
+    }
 
     for (var oldValue = ''; oldValue != safeValue;) {
       oldValue = safeValue;
