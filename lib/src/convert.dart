@@ -8,7 +8,6 @@ import 'package:xnx/src/config_file_loader.dart';
 import 'package:xnx/src/config.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/file_oper.dart';
-import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/options.dart';
 import 'package:xnx/src/pack_oper.dart';
