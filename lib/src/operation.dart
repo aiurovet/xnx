@@ -329,15 +329,18 @@ class Operation {
   //////////////////////////////////////////////////////////////////////////////
 
   bool _execCompare() {
-    var o1 = operands[0];
-    var o2 = operands[1];
+    var o1 = _expandString(operands[0]);
+    var o2 = _expandString(operands[1]);
+
+    var n1 = num.tryParse(o1);
+    var n2 = num.tryParse(o2);
 
     var cmpResult = 0;
 
-    if ((o1 is num) && (o2 is num)) {
-      cmpResult = ((o1 - o2) as int);
+    if ((n1 != null) && (n2 != null)) {
+      cmpResult = (n1 < n2 ? -1 : (n1 > n2 ? 1 : 0));
     }
-    else if ((o1 is String) && (o2 is String)) {
+    else {
       cmpResult = (isCaseSensitive ? o1 : o1.toLowerCase()).compareTo(isCaseSensitive ? o2 : o2.toLowerCase());
     }
 
@@ -357,8 +360,8 @@ class Operation {
   //////////////////////////////////////////////////////////////////////////////
 
   bool _execFileCompare() {
-    var path1 = flatMap.expand(operands[0]?.toString());
-    var path2 = flatMap.expand(operands[1]?.toString());
+    var path1 = _expandString(operands[0], canUnquote: true);
+    var path2 = _expandString(operands[1], canUnquote: true);
 
     var stat1 = _getStat(path1);
     var stat2 = _getStat(path2);
@@ -390,13 +393,11 @@ class Operation {
   //////////////////////////////////////////////////////////////////////////////
 
   bool _execExists() {
-    var mask = (operands[0] as String);
+    var mask = _expandString(operands[0], canUnquote: true);
 
     var isThen = true;
 
     if (mask.isNotEmpty) {
-      mask = flatMap.expand(mask);
-
       isThen = (mask.isEmpty ? false : FileSystemEntityExt.tryPatternExistsSync(
         mask,
         isDirectory: (type == OperationType.existsDir),
@@ -416,17 +417,30 @@ class Operation {
   //////////////////////////////////////////////////////////////////////////////
 
   bool _execMatches() {
-    var pattern = (operands[1] as String);
+    var inp = _expandString(operands[0]);
+    var pat = _expandString(operands[1]);
 
-    var isThen = (pattern.isEmpty ? false : RegExp(
-      pattern,
+    var isThen = (pat.isEmpty ? false : RegExp(
+      pat,
       caseSensitive: isCaseSensitive,
       dotAll: isDotAll,
       multiLine: isMultiLine,
       unicode: isUnicode
-    ).hasMatch(operands[0] as String));
+    ).hasMatch(inp));
 
     return (type == OperationType.notMatches ? !isThen : isThen);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String _expandString(Object? input, {bool canUnquote = false}) {
+    var result = flatMap.expand(input?.toString());
+
+    if (canUnquote) {
+      result = result.unquote();
+    }
+
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
