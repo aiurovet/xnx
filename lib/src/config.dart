@@ -189,13 +189,20 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigResult execDataList(String? key, List data, ConfigFlatMapProc? execFlatMap) {
+    var isCmd = (key == keywords.forCmd);
+
     for (var childData in data) {
       if (childData == null) {
         continue;
       }
 
       setTrailFor(data, key, childData);
+      var oldOut = (isCmd ? flatMap[keywords.forOut] : null);
       var result = execData(null, topData, execFlatMap);
+
+      if (isCmd && (oldOut != null) && (flatMap[keywords.forOut] == null)) {
+        flatMap[keywords.forOut] = oldOut;
+      }
 
       if ((result != ConfigResult.ok) && (result != ConfigResult.okEndOfList)) {
         return result;

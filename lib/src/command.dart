@@ -64,7 +64,7 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String exec({String? text, bool canExec = true}) {
+  String exec({String? text, bool canExec = true, bool canShow = true}) {
     if (text != null) {
       parse(text);
     }
@@ -79,7 +79,9 @@ class Command {
       return outLines;
     }
 
-    _logger?.information(toString());
+    if (canShow) {
+      _logger?.information(toString());
+    }
 
     if (!canExec) {
       return outLines;

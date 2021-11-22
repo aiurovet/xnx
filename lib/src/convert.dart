@@ -253,7 +253,7 @@ class Convert {
     }
 
     Command(text: command, logger: _logger)
-      .exec(canExec: !options.isListOnly && !isExpandContentOnly);
+      .exec(canExec: !options.isListOnly && !isExpandContentOnly, canShow: false);
 
     tmpFile?.deleteIfExistsSync();
 
