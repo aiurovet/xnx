@@ -8,7 +8,7 @@ import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/ext/string.dart';
 
-enum TransformationType {
+enum FunctionType {
   unknown,
   add,
   addDays,
@@ -43,7 +43,7 @@ enum TransformationType {
   utc,
 }
 
-class Transformation {
+class Functions {
 
   //////////////////////////////////////////////////////////////////////////////
   // Constants
@@ -57,11 +57,11 @@ class Transformation {
 
   @protected final FlatMap flatMap;
   @protected final Keywords keywords;
-  @protected final Map<String, TransformationType> nameTypeMap = {};
+  @protected final Map<String, FunctionType> nameTypeMap = {};
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Transformation({required this.flatMap, required this.keywords}) {
+  Functions({required this.flatMap, required this.keywords}) {
     _initNameTypeMap();
   }
 
@@ -73,7 +73,7 @@ class Transformation {
         var name = _toName(todo[0]);
         var type = nameTypeMap[name];
 
-        if ((type != null) && (type != TransformationType.unknown)) {
+        if ((type != null) && (type != FunctionType.unknown)) {
           return _exec(type, todo, offset: offset);
         }
       }
@@ -85,10 +85,10 @@ class Transformation {
     else if (todo is Map<String, Object?>) {
       todo.forEach((key, value) {
         var name = key.replaceAll(' ', '').toLowerCase();
-        var type = nameTypeMap[name] ?? TransformationType.unknown;
+        var type = nameTypeMap[name] ?? FunctionType.unknown;
         Object? newValue;
 
-        if (type == TransformationType.unknown) {
+        if (type == FunctionType.unknown) {
           newValue = exec(value);
         }
         else if (value is List<Object?>) {
@@ -115,49 +115,49 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Object? _exec(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  Object? _exec(FunctionType type, List<Object?> todo, {int offset = 0}) {
     switch (type) {
-      case TransformationType.add:
-      case TransformationType.div:
-      case TransformationType.divInt:
-      case TransformationType.max:
-      case TransformationType.min:
-      case TransformationType.mod:
-      case TransformationType.mul:
-      case TransformationType.sub:
+      case FunctionType.add:
+      case FunctionType.div:
+      case FunctionType.divInt:
+      case FunctionType.max:
+      case FunctionType.min:
+      case FunctionType.mod:
+      case FunctionType.mul:
+      case FunctionType.sub:
         return _execMath(type, todo, offset: offset);
-      case TransformationType.addDays:
-      case TransformationType.addMonths:
-      case TransformationType.addYears:
-      case TransformationType.date:
-      case TransformationType.endOfMonth:
-      case TransformationType.local:
-      case TransformationType.startOfMonth:
-      case TransformationType.time:
-      case TransformationType.utc:
+      case FunctionType.addDays:
+      case FunctionType.addMonths:
+      case FunctionType.addYears:
+      case FunctionType.date:
+      case FunctionType.endOfMonth:
+      case FunctionType.local:
+      case FunctionType.startOfMonth:
+      case FunctionType.time:
+      case FunctionType.utc:
         return _execDateTime(type, todo, offset: offset);
-      case TransformationType.fileSize:
-      case TransformationType.lastModified:
+      case FunctionType.fileSize:
+      case FunctionType.lastModified:
         return _execFile(type, todo, offset: offset);
-      case TransformationType.indexOf:
-      case TransformationType.lastIndexOf:
+      case FunctionType.indexOf:
+      case FunctionType.lastIndexOf:
         return _execIndex(type, todo, offset: offset);
-      case TransformationType.lastMatch:
-      case TransformationType.match:
+      case FunctionType.lastMatch:
+      case FunctionType.match:
         return _execMatch(type, todo, offset: offset);
-      case TransformationType.run:
+      case FunctionType.run:
         return _execRun(type, todo, offset: offset);
-      case TransformationType.now:
-      case TransformationType.today:
+      case FunctionType.now:
+      case FunctionType.today:
         return _execDateTimeNow(type, todo, offset: offset);
-      case TransformationType.replace:
+      case FunctionType.replace:
         return _execReplace(type, todo, offset: offset);
-      case TransformationType.replaceMatch:
+      case FunctionType.replaceMatch:
         return _execReplaceMatch(type, todo, offset: offset);
-      case TransformationType.substr:
+      case FunctionType.substr:
         return _execSubstring(type, todo, offset: offset);
-      case TransformationType.lower:
-      case TransformationType.upper:
+      case FunctionType.lower:
+      case FunctionType.upper:
         return _execToCase(type, todo, offset: offset);
       default:
         return null;
@@ -166,7 +166,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execDateTime(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execDateTime(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var valueStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -178,34 +178,34 @@ class Transformation {
     var hasTime = ((value.hour != 0) || (value.minute != 0) || (value.second != 0) || (value.millisecond != 0));
 
     switch (type) {
-      case TransformationType.addDays:
+      case FunctionType.addDays:
         value = (addUnits > 0 ? value.add(Duration(days: addUnits)) : value.subtract(Duration(days: -addUnits)));
         break;
-      case TransformationType.addMonths:
+      case FunctionType.addMonths:
         value = DateTime(value.year, value.month + addUnits, value.day, value.hour, value.minute, value.second, value.millisecond);
         break;
-      case TransformationType.addYears:
+      case FunctionType.addYears:
         value = DateTime(value.year + addUnits, value.month, value.day, value.hour, value.minute, value.second, value.millisecond);
         break;
-      case TransformationType.date:
+      case FunctionType.date:
         hasTime = false;
         break;
-      case TransformationType.endOfMonth:
+      case FunctionType.endOfMonth:
         hasTime = false;
         value = DateTime(value.year, value.month + 1, 1).subtract(Duration(days: 1));
         break;
-      case TransformationType.local:
+      case FunctionType.local:
         value = DateTime.fromMillisecondsSinceEpoch(value.millisecondsSinceEpoch, isUtc: true).toLocal();
         break;
-      case TransformationType.startOfMonth:
+      case FunctionType.startOfMonth:
         hasTime = false;
         value = DateTime(value.year, value.month, 1);
         break;
-      case TransformationType.time:
+      case FunctionType.time:
         hasDate = false;
         hasTime = true;
         break;
-      case TransformationType.utc:
+      case FunctionType.utc:
         value = value.toUtc();
         break;
       default:
@@ -224,7 +224,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execDateTimeNow(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execDateTimeNow(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var format = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -238,7 +238,7 @@ class Transformation {
     var nowStr = now.toIso8601String();
 
     switch (type) {
-      case TransformationType.today:
+      case FunctionType.today:
         return nowStr.substring(0, 10);
       default:
         return nowStr;
@@ -247,7 +247,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execFile(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execFile(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var fileName = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -263,9 +263,9 @@ class Transformation {
     var isFile = (isFound && ((stat.type != FileSystemEntityType.directory)));
 
     switch (type) {
-      case TransformationType.fileSize:
+      case FunctionType.fileSize:
         return FileExt.formatSize((isFile ? stat.size : -1), format);
-      case TransformationType.lastModified:
+      case FunctionType.lastModified:
         return (isFound ? stat.modified.toIso8601String() : '');
       default:
         return null;
@@ -274,7 +274,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execIndex(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execIndex(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -286,9 +286,9 @@ class Transformation {
       var endPos = inpStr.length;
 
       switch (type) {
-        case TransformationType.indexOf:
+        case FunctionType.indexOf:
           return (inpStr.indexOf(fndStr, (begPos <= 0 ? 0 : begPos)) + 1).toString();
-        case TransformationType.lastIndexOf:
+        case FunctionType.lastIndexOf:
           return (inpStr.lastIndexOf(fndStr, ((begPos > 0) && (begPos <= endPos) ? begPos : endPos)) + 1).toString();
         default:
           break;
@@ -300,7 +300,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execMatch(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execMatch(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -312,10 +312,10 @@ class Transformation {
 
       if (regExp != null) {
         switch (type) {
-          case TransformationType.match:
+          case FunctionType.match:
             var match = regExp.firstMatch(inpStr);
             return ((match?.start ?? -1) + 1).toString();
-          case TransformationType.lastMatch:
+          case FunctionType.lastMatch:
             var allMatches = regExp.allMatches(inpStr);
             if (allMatches.isNotEmpty) {
               return (allMatches.last.start + 1).toString();
@@ -332,9 +332,9 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execMath(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execMath(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
-    var isInt = (type == TransformationType.divInt);
+    var isInt = (type == FunctionType.divInt);
 
     var o1 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var n1 = _toNum(o1, isInt: isInt);
@@ -351,21 +351,21 @@ class Transformation {
     }
 
     switch (type) {
-      case TransformationType.add:
+      case FunctionType.add:
         return (n1 + n2).toString();
-      case TransformationType.div:
+      case FunctionType.div:
         return (n1 / n2).toString();
-      case TransformationType.divInt:
+      case FunctionType.divInt:
         return (n1 / n2).toStringAsFixed(0);
-      case TransformationType.max:
+      case FunctionType.max:
         return (n1 >= n2 ? n1 : n2).toString();
-      case TransformationType.min:
+      case FunctionType.min:
         return (n1 <= n2 ? n1 : n2).toString();
-      case TransformationType.mod:
+      case FunctionType.mod:
         return (n1 % n2).toString();
-      case TransformationType.mul:
+      case FunctionType.mul:
         return (n1 * n2).toString();
-      case TransformationType.sub:
+      case FunctionType.sub:
         return (n1 - n2).toString();
       default:
         return null;
@@ -374,7 +374,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execReplace(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execReplace(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -390,7 +390,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execReplaceMatch(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execReplaceMatch(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -466,7 +466,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execRun(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execRun(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var txt = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -477,7 +477,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execSubstring(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execSubstring(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -510,7 +510,7 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? _execToCase(TransformationType type, List<Object?> todo, {int offset = 0}) {
+  String? _execToCase(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -520,9 +520,9 @@ class Transformation {
     }
 
     switch (type) {
-      case TransformationType.lower:
+      case FunctionType.lower:
         return inpStr.toLowerCase();
-      case TransformationType.upper:
+      case FunctionType.upper:
         return inpStr.toUpperCase();
       default:
         return null;
@@ -531,44 +531,44 @@ class Transformation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Never _fail(TransformationType type, String msg) =>
-    throw Exception('Invalid transformation "$type": $msg');
+  Never _fail(FunctionType type, String msg) =>
+    throw Exception('Invalid function "$type": $msg');
 
   //////////////////////////////////////////////////////////////////////////////
 
   void _initNameTypeMap() {
     nameTypeMap.clear();
-    nameTypeMap[_toName(keywords.forFnAdd)] = TransformationType.add;
-    nameTypeMap[_toName(keywords.forFnAddDays)] = TransformationType.addDays;
-    nameTypeMap[_toName(keywords.forFnAddMonths)] = TransformationType.addMonths;
-    nameTypeMap[_toName(keywords.forFnAddYears)] = TransformationType.addYears;
-    nameTypeMap[_toName(keywords.forFnDate)] = TransformationType.date;
-    nameTypeMap[_toName(keywords.forFnDiv)] = TransformationType.div;
-    nameTypeMap[_toName(keywords.forFnDivInt)] = TransformationType.divInt;
-    nameTypeMap[_toName(keywords.forFnEndOfMonth)] = TransformationType.endOfMonth;
-    nameTypeMap[_toName(keywords.forFnFileSize)] = TransformationType.fileSize;
-    nameTypeMap[_toName(keywords.forFnIndex)] = TransformationType.indexOf;
-    nameTypeMap[_toName(keywords.forFnMatch)] = TransformationType.match;
-    nameTypeMap[_toName(keywords.forFnLastIndex)] = TransformationType.lastIndexOf;
-    nameTypeMap[_toName(keywords.forFnLastMatch)] = TransformationType.lastMatch;
-    nameTypeMap[_toName(keywords.forFnLastModified)] = TransformationType.lastModified;
-    nameTypeMap[_toName(keywords.forFnLocal)] = TransformationType.local;
-    nameTypeMap[_toName(keywords.forFnLower)] = TransformationType.lower;
-    nameTypeMap[_toName(keywords.forFnMax)] = TransformationType.max;
-    nameTypeMap[_toName(keywords.forFnMin)] = TransformationType.min;
-    nameTypeMap[_toName(keywords.forFnMod)] = TransformationType.mod;
-    nameTypeMap[_toName(keywords.forFnMul)] = TransformationType.mul;
-    nameTypeMap[_toName(keywords.forFnNow)] = TransformationType.now;
-    nameTypeMap[_toName(keywords.forFnReplace)] = TransformationType.replace;
-    nameTypeMap[_toName(keywords.forFnReplaceMatch)] = TransformationType.replaceMatch;
-    nameTypeMap[_toName(keywords.forFnRun)] = TransformationType.run;
-    nameTypeMap[_toName(keywords.forFnStartOfMonth)] = TransformationType.startOfMonth;
-    nameTypeMap[_toName(keywords.forFnSub)] = TransformationType.sub;
-    nameTypeMap[_toName(keywords.forFnSubstr)] = TransformationType.substr;
-    nameTypeMap[_toName(keywords.forFnTime)] = TransformationType.time;
-    nameTypeMap[_toName(keywords.forFnToday)] = TransformationType.today;
-    nameTypeMap[_toName(keywords.forFnUpper)] = TransformationType.upper;
-    nameTypeMap[_toName(keywords.forFnUtc)] = TransformationType.utc;
+    nameTypeMap[_toName(keywords.forFnAdd)] = FunctionType.add;
+    nameTypeMap[_toName(keywords.forFnAddDays)] = FunctionType.addDays;
+    nameTypeMap[_toName(keywords.forFnAddMonths)] = FunctionType.addMonths;
+    nameTypeMap[_toName(keywords.forFnAddYears)] = FunctionType.addYears;
+    nameTypeMap[_toName(keywords.forFnDate)] = FunctionType.date;
+    nameTypeMap[_toName(keywords.forFnDiv)] = FunctionType.div;
+    nameTypeMap[_toName(keywords.forFnDivInt)] = FunctionType.divInt;
+    nameTypeMap[_toName(keywords.forFnEndOfMonth)] = FunctionType.endOfMonth;
+    nameTypeMap[_toName(keywords.forFnFileSize)] = FunctionType.fileSize;
+    nameTypeMap[_toName(keywords.forFnIndex)] = FunctionType.indexOf;
+    nameTypeMap[_toName(keywords.forFnMatch)] = FunctionType.match;
+    nameTypeMap[_toName(keywords.forFnLastIndex)] = FunctionType.lastIndexOf;
+    nameTypeMap[_toName(keywords.forFnLastMatch)] = FunctionType.lastMatch;
+    nameTypeMap[_toName(keywords.forFnLastModified)] = FunctionType.lastModified;
+    nameTypeMap[_toName(keywords.forFnLocal)] = FunctionType.local;
+    nameTypeMap[_toName(keywords.forFnLower)] = FunctionType.lower;
+    nameTypeMap[_toName(keywords.forFnMax)] = FunctionType.max;
+    nameTypeMap[_toName(keywords.forFnMin)] = FunctionType.min;
+    nameTypeMap[_toName(keywords.forFnMod)] = FunctionType.mod;
+    nameTypeMap[_toName(keywords.forFnMul)] = FunctionType.mul;
+    nameTypeMap[_toName(keywords.forFnNow)] = FunctionType.now;
+    nameTypeMap[_toName(keywords.forFnReplace)] = FunctionType.replace;
+    nameTypeMap[_toName(keywords.forFnReplaceMatch)] = FunctionType.replaceMatch;
+    nameTypeMap[_toName(keywords.forFnRun)] = FunctionType.run;
+    nameTypeMap[_toName(keywords.forFnStartOfMonth)] = FunctionType.startOfMonth;
+    nameTypeMap[_toName(keywords.forFnSub)] = FunctionType.sub;
+    nameTypeMap[_toName(keywords.forFnSubstr)] = FunctionType.substr;
+    nameTypeMap[_toName(keywords.forFnTime)] = FunctionType.time;
+    nameTypeMap[_toName(keywords.forFnToday)] = FunctionType.today;
+    nameTypeMap[_toName(keywords.forFnUpper)] = FunctionType.upper;
+    nameTypeMap[_toName(keywords.forFnUtc)] = FunctionType.utc;
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@ class Keywords {
   String forRename = '{{-rename-keywords-}}';
   String forStop = '{{-stop-}}';
   String forThis = '{{-this-}}';
-  String forTransform = '{{-transform-}}';
+  String forFunctions = '{{-func-}}';
 
   String forFnAdd = '=Add';
   String forFnAddDays = '=AddDays';
@@ -159,8 +159,8 @@ class Keywords {
       else if (k == forThis) {
         forThis = s;
       }
-      else if (k == forTransform) {
-        forTransform = s;
+      else if (k == forFunctions) {
+        forFunctions = s;
       }
 
       // Pre-defined conditions

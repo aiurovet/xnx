@@ -11,7 +11,7 @@ import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/operation.dart';
 import 'package:xnx/src/options.dart';
-import 'package:xnx/src/transformation.dart';
+import 'package:xnx/src/functions.dart';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +29,7 @@ class Config {
   @protected late final FlatMap flatMap;
   late final Keywords keywords;
   @protected late final Operation operation;
-  @protected late final Transformation transformation;
+  @protected late final Functions functions;
 
   Map all = {};
   RegExp? detectPathsRE;
@@ -56,7 +56,7 @@ class Config {
     flatMap = FlatMap(keywords: keywords);
     operation = Operation(flatMap: flatMap);
     expression = Expression(flatMap: flatMap, keywords: keywords, operation: operation);
-    transformation = Transformation(flatMap: flatMap, keywords: keywords);
+    functions = Functions(flatMap: flatMap, keywords: keywords);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -212,6 +212,10 @@ class Config {
     setTrailFor(data, null, null);
     flatMap[key] = null;
 
+    if (isCmd) {
+      flatMap[keywords.forOut] = null;
+    }
+
     return ConfigResult.okEndOfList;
   }
 
@@ -248,8 +252,8 @@ class Config {
     if (key == keywords.forOnce) {
       _once.add(data);
     }
-    else if (key == keywords.forTransform) {
-      transformation.exec(data);
+    else if (key == keywords.forFunctions) {
+      functions.exec(data);
       return result;
     }
 

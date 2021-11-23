@@ -4,12 +4,12 @@ import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
-import 'package:xnx/src/transformation.dart';
+import 'package:xnx/src/functions.dart';
 
 import 'helper.dart';
 
 void main() {
-  group('Transformation', () {
+  group('Functions', () {
     test('execNonFile', () {
       Env.init();
 
@@ -20,7 +20,7 @@ void main() {
       var todayStr = nowStr.substring(0, 10);
       var cmdEcho = (Env.isWindows ? 'cmd /c echo' : 'echo');
 
-      Transformation(flatMap: flatMap, keywords: Keywords())
+      Functions(flatMap: flatMap, keywords: Keywords())
         .exec(<String, Object?>{
           '{1+2}': [r'=add', 1, 2],
           '{4*3}': [r'=mul', 4, 3],
@@ -100,7 +100,7 @@ void main() {
 
         var flatMap = FlatMap();
 
-        Transformation(flatMap: flatMap, keywords: Keywords())
+        Functions(flatMap: flatMap, keywords: Keywords())
           .exec(<String, Object?>{
             '{dirSize}': [r'=fileSize', 'dir1'],
             '{fileSize}': [r'=fileSize', file.path],
