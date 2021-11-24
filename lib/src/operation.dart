@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/logger.dart';
 
 import 'flat_map.dart';
 
@@ -78,6 +79,7 @@ class Operation {
   //////////////////////////////////////////////////////////////////////////////
 
   @protected final FlatMap flatMap;
+  @protected final Logger logger;
 
   var _condition = '';
   var _isOpposite = false;
@@ -86,7 +88,7 @@ class Operation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Operation({required this.flatMap});
+  Operation({required this.flatMap, required this.logger});
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -354,6 +356,10 @@ class Operation {
       false
     );
 
+    if (logger.isDebug) {
+      logger.debug('$type\n...op1: $o1\n...op2: $o2\n${isThen ? 'true' : 'false'}\n');
+    }
+
     return isThen;
   }
 
@@ -375,19 +381,30 @@ class Operation {
 
     var time1 = (isFound1 ? stat1.modified.millisecondsSinceEpoch : -1);
     var time2 = (isFound2 ? stat2.modified.millisecondsSinceEpoch : -1);
+    var isThen = false;
 
     switch (type) {
       case OperationType.fileEquals:
-        return (time1 == time2);
+        isThen = (time1 == time2);
+        break;
       case OperationType.fileNewer:
-        return (time1 > time2);
+        isThen = (time1 > time2);
+        break;
       case OperationType.fileNotEquals:
-        return (time1 != time2);
+        isThen = (time1 != time2);
+        break;
       case OperationType.fileOlder:
-        return (time1 < time2);
+        isThen = (time1 < time2);
+        break;
       default:
-        return false;
+        break;
     }
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...path1: $path1\n...path2: $path2\n${isThen ? 'true' : 'false'}\n');
+    }
+
+    return isThen;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -411,6 +428,10 @@ class Operation {
       return !isThen;
     }
 
+    if (logger.isDebug) {
+      logger.debug('$type\n...mask: $mask\n${isThen ? 'true' : 'false'}\n');
+    }
+
     return isThen;
   }
 
@@ -427,6 +448,11 @@ class Operation {
       multiLine: isMultiLine,
       unicode: isUnicode
     ).hasMatch(inp));
+
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:   "$inp"\n...pattern: "$pat"\n${isThen ? 'true' : 'false'}\n');
+    }
 
     return (type == OperationType.notMatches ? !isThen : isThen);
   }

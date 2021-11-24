@@ -7,6 +7,7 @@ import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/logger.dart';
 
 enum FunctionType {
   unknown,
@@ -14,10 +15,14 @@ enum FunctionType {
   addDays,
   addMonths,
   addYears,
+  baseName,
+  baseNameNoExt,
   date,
+  dirName,
   div,
   divInt,
   endOfMonth,
+  extension,
   fileSize,
   indexOf,
   lastIndexOf,
@@ -57,11 +62,12 @@ class Functions {
 
   @protected final FlatMap flatMap;
   @protected final Keywords keywords;
+  @protected final Logger logger;
   @protected final Map<String, FunctionType> nameTypeMap = {};
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Functions({required this.flatMap, required this.keywords}) {
+  Functions({required this.flatMap, required this.keywords, required this.logger}) {
     _initNameTypeMap();
   }
 
@@ -136,6 +142,10 @@ class Functions {
       case FunctionType.time:
       case FunctionType.utc:
         return _execDateTime(type, todo, offset: offset);
+      case FunctionType.baseName:
+      case FunctionType.baseNameNoExt:
+      case FunctionType.dirName:
+      case FunctionType.extension:
       case FunctionType.fileSize:
       case FunctionType.lastModified:
         return _execFile(type, todo, offset: offset);
@@ -209,17 +219,23 @@ class Functions {
         value = value.toUtc();
         break;
       default:
-        return null;
+        break;
     }
 
-    valueStr = value.toIso8601String();
+    String? resStr = value.toIso8601String();
 
     if (hasDate) {
-      return (hasTime ? valueStr : valueStr.substring(0, 10));
+      resStr = (hasTime ? resStr : resStr.substring(0, 10));
     }
     else {
-      return (hasTime ? valueStr.substring(11) : null);
+      resStr = (hasTime ? resStr.substring(11) : null);
     }
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:   $valueStr\n...add:     $addUnits\n...hasDate: $hasDate\n...hasTime: $hasTime\n...result:  $resStr\n');
+    }
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -236,13 +252,21 @@ class Functions {
     }
 
     var nowStr = now.toIso8601String();
+    var resStr = nowStr;
 
     switch (type) {
       case FunctionType.today:
-        return nowStr.substring(0, 10);
+        resStr = nowStr.substring(0, 10);
+        break;
       default:
-        return nowStr;
+        break;
     }
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...result: $resStr\n');
+    }
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -262,14 +286,36 @@ class Functions {
     var isFound = ((stat.type != FileSystemEntityType.notFound));
     var isFile = (isFound && ((stat.type != FileSystemEntityType.directory)));
 
+    String? resStr;
+
     switch (type) {
+      case FunctionType.baseName:
+        resStr = Path.basename(fileName);
+        break;
+      case FunctionType.baseNameNoExt:
+        resStr = Path.basenameWithoutExtension(fileName);
+        break;
+      case FunctionType.dirName:
+        resStr = Path.dirname(fileName);
+        break;
+      case FunctionType.extension:
+        resStr = Path.extension(fileName);
+        break;
       case FunctionType.fileSize:
-        return FileExt.formatSize((isFile ? stat.size : -1), format);
+        resStr = FileExt.formatSize((isFile ? stat.size : -1), format);
+        break;
       case FunctionType.lastModified:
-        return (isFound ? stat.modified.toIso8601String() : '');
+        resStr = (isFound ? stat.modified.toIso8601String() : '');
+        break;
       default:
-        return null;
+        break;
     }
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:  $fileName\n...format: $format\n...result: $resStr\n');
+    }
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -279,23 +325,31 @@ class Functions {
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var fndStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var begPos = 0;
+    var resStr = '0';
 
     if (inpStr.isNotEmpty && fndStr.isNotEmpty) {
       var begStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString() ?? '');
-      var begPos = (_toInt(begStr) ?? 1) - 1;
+      begPos = (_toInt(begStr) ?? 1) - 1;
       var endPos = inpStr.length;
 
       switch (type) {
         case FunctionType.indexOf:
-          return (inpStr.indexOf(fndStr, (begPos <= 0 ? 0 : begPos)) + 1).toString();
+          resStr = (inpStr.indexOf(fndStr, (begPos <= 0 ? 0 : begPos)) + 1).toString();
+          break;
         case FunctionType.lastIndexOf:
-          return (inpStr.lastIndexOf(fndStr, ((begPos > 0) && (begPos <= endPos) ? begPos : endPos)) + 1).toString();
+          resStr = (inpStr.lastIndexOf(fndStr, ((begPos > 0) && (begPos <= endPos) ? begPos : endPos)) + 1).toString();
+          break;
         default:
           break;
       }
     }
 
-    return '0';
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:  $inpStr\n...find:   $fndStr\n...from:    $begPos\n...result: $resStr\n');
+    }
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -305,6 +359,7 @@ class Functions {
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var patStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var resStr = '0';
 
     if (inpStr.isNotEmpty && patStr.isNotEmpty) {
       var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
@@ -314,11 +369,12 @@ class Functions {
         switch (type) {
           case FunctionType.match:
             var match = regExp.firstMatch(inpStr);
-            return ((match?.start ?? -1) + 1).toString();
+            resStr = ((match?.start ?? -1) + 1).toString();
+            break;
           case FunctionType.lastMatch:
             var allMatches = regExp.allMatches(inpStr);
             if (allMatches.isNotEmpty) {
-              return (allMatches.last.start + 1).toString();
+              resStr = (allMatches.last.start + 1).toString();
             }
             break;
           default:
@@ -327,7 +383,11 @@ class Functions {
       }
     }
 
-    return '0';
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:  $inpStr\n...pattern: $patStr\n...result: $resStr\n');
+    }
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -350,26 +410,42 @@ class Functions {
       _fail(type, 'Bad 2nd argument: $o2');
     }
 
+    String? resStr;
+
     switch (type) {
       case FunctionType.add:
-        return (n1 + n2).toString();
+        resStr = (n1 + n2).toString();
+        break;
       case FunctionType.div:
-        return (n1 / n2).toString();
+        resStr = (n1 / n2).toString();
+        break;
       case FunctionType.divInt:
-        return (n1 / n2).toStringAsFixed(0);
+        resStr = (n1 / n2).toStringAsFixed(0);
+        break;
       case FunctionType.max:
-        return (n1 >= n2 ? n1 : n2).toString();
+        resStr = (n1 >= n2 ? n1 : n2).toString();
+        break;
       case FunctionType.min:
-        return (n1 <= n2 ? n1 : n2).toString();
+        resStr = (n1 <= n2 ? n1 : n2).toString();
+        break;
       case FunctionType.mod:
-        return (n1 % n2).toString();
+        resStr = (n1 % n2).toString();
+        break;
       case FunctionType.mul:
-        return (n1 * n2).toString();
+        resStr = (n1 * n2).toString();
+        break;
       case FunctionType.sub:
-        return (n1 - n2).toString();
+        resStr = (n1 - n2).toString();
+        break;
       default:
-        return null;
+        break;
     }
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...op1:    $o1\n...op2:    $o2\n...result: $resStr\n');
+    }
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -385,7 +461,13 @@ class Functions {
       _fail(type, 'search string (2nd param) should not be empty');
     }
 
-    return inpStr.replaceAll(srcStr, dstStr);
+    var resStr = inpStr.replaceAll(srcStr, dstStr);
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:  $inpStr\n...from:   $srcStr\n...to:     $dstStr\n...result: $resStr\n');
+    }
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -433,6 +515,10 @@ class Functions {
       resStr = inpStr.replaceFirst(regExp, dstStr);
     }
 
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:   $inpStr\n...pattern: $srcPat\n...flags:   $flgStr\n...to:      $dstStr\n...result:  $resStr\n');
+    }
+
     return resStr;
   }
 
@@ -472,6 +558,10 @@ class Functions {
     var txt = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var cmd = Command(text: txt, isToVar: true);
 
+    if (logger.isDebug) {
+      logger.debug('$type\n...command: ${cmd.toString()}\n');
+    }
+
     return cmd.exec();
   }
 
@@ -505,7 +595,14 @@ class Functions {
       lenVal = (inpStr.length - begVal);
     }
 
-    return inpStr.substring(begVal, begVal + lenVal);
+    var endVal = begVal + lenVal;
+    var resStr = inpStr.substring(begVal, endVal);
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:  $inpStr\n...beg:    $begVal\n...end:    $endVal\n...result: $resStr\n');
+    }
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -519,14 +616,24 @@ class Functions {
       return inpStr;
     }
 
+    String? resStr;
+
     switch (type) {
       case FunctionType.lower:
-        return inpStr.toLowerCase();
+        resStr = inpStr.toLowerCase();
+        break;
       case FunctionType.upper:
-        return inpStr.toUpperCase();
+        resStr = inpStr.toUpperCase();
+        break;
       default:
-        return null;
+        break;
     }
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:  $inpStr\n...result: $resStr\n');
+    } 
+
+    return resStr;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -542,10 +649,14 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnAddDays)] = FunctionType.addDays;
     nameTypeMap[_toName(keywords.forFnAddMonths)] = FunctionType.addMonths;
     nameTypeMap[_toName(keywords.forFnAddYears)] = FunctionType.addYears;
+    nameTypeMap[_toName(keywords.forFnBaseName)] = FunctionType.baseName;
+    nameTypeMap[_toName(keywords.forFnBaseNameNoExt)] = FunctionType.baseNameNoExt;
     nameTypeMap[_toName(keywords.forFnDate)] = FunctionType.date;
+    nameTypeMap[_toName(keywords.forFnDirName)] = FunctionType.dirName;
     nameTypeMap[_toName(keywords.forFnDiv)] = FunctionType.div;
     nameTypeMap[_toName(keywords.forFnDivInt)] = FunctionType.divInt;
     nameTypeMap[_toName(keywords.forFnEndOfMonth)] = FunctionType.endOfMonth;
+    nameTypeMap[_toName(keywords.forFnExtension)] = FunctionType.extension;
     nameTypeMap[_toName(keywords.forFnFileSize)] = FunctionType.fileSize;
     nameTypeMap[_toName(keywords.forFnIndex)] = FunctionType.indexOf;
     nameTypeMap[_toName(keywords.forFnMatch)] = FunctionType.match;

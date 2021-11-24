@@ -5,6 +5,7 @@ import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/functions.dart';
+import 'package:xnx/src/logger.dart';
 
 import 'helper.dart';
 
@@ -15,12 +16,13 @@ void main() {
 
       var flatMap = FlatMap();
 
+      var logger = Logger();
       var now = DateTime.now();
       var nowStr = now.toIso8601String();
       var todayStr = nowStr.substring(0, 10);
       var cmdEcho = (Env.isWindows ? 'cmd /c echo' : 'echo');
 
-      Functions(flatMap: flatMap, keywords: Keywords())
+      Functions(flatMap: flatMap, keywords: Keywords(), logger: logger)
         .exec(<String, Object?>{
           '{1+2}': [r'=add', 1, 2],
           '{4*3}': [r'=mul', 4, 3],
@@ -91,6 +93,7 @@ void main() {
       Helper.forEachMemoryFileSystem((fileSystem) {
         Helper.initFileSystem(fileSystem);
 
+        var logger = Logger();
         var minDateTimeStr = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch).toIso8601String();
         FileOper.createDirSync(['dir1', Path.join('dir2', 'dir3')], isSilent: true);
 
@@ -100,15 +103,23 @@ void main() {
 
         var flatMap = FlatMap();
 
-        Functions(flatMap: flatMap, keywords: Keywords())
+        Functions(flatMap: flatMap, keywords: Keywords(), logger: logger)
           .exec(<String, Object?>{
+            '{baseName}': [r'=baseName', file.path],
+            '{baseNameNoExt}': [r'=baseNameNoExt', file.path],
+            '{dirName}': [r'=dirName', file.path],
             '{dirSize}': [r'=fileSize', 'dir1'],
+            '{extension}': [r'=extension', file.path],
             '{fileSize}': [r'=fileSize', file.path],
             '{fileSizeK}': [r'=fileSize', file.path, 'K'],
             '{lastModifiedDir}': [r'=lastModified', 'dir1'],
             '{lastModifiedFile}': [r'=lastModified', file.path],
           });
 
+        expect(flatMap['{baseName}'], Path.basename(file.path));
+        expect(flatMap['{baseNameNoExt}'], Path.basenameWithoutExtension(file.path));
+        expect(flatMap['{dirName}'], Path.dirname(file.path));
+        expect(flatMap['{extension}'], Path.extension(file.path));
         expect(flatMap['{dirSize}'], '-1');
         expect(flatMap['{fileSize}'], '5120.00');
         expect(flatMap['{fileSizeK}'], '5.00');

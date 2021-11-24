@@ -1,6 +1,7 @@
 import 'package:test/test.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/flat_map.dart';
+import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/operation.dart';
 
 import 'helper.dart';
@@ -8,7 +9,7 @@ import 'helper.dart';
 void main() {
   group('Operation', () {
     test('parse', () {
-      var o = Operation(flatMap: FlatMap());
+      var o = Operation(flatMap: FlatMap(), logger: Logger());
 
       expect(o.parse(''), OperationType.alwaysFalse);
       expect(o.parse('  '), OperationType.alwaysFalse);
@@ -75,7 +76,7 @@ void main() {
       Helper.forEachMemoryFileSystem((fileSystem) {
         Helper.initFileSystem(fileSystem);
 
-        var o = Operation(flatMap: FlatMap());
+        var o = Operation(flatMap: FlatMap(), logger: Logger());
 
         Path.fileSystem.directory('dir1').createSync();
         Helper.shortSleep();
@@ -100,7 +101,7 @@ void main() {
     });
 
     test('exec - non-file', () {
-      var o = Operation(flatMap: FlatMap());
+      var o = Operation(flatMap: FlatMap(), logger: Logger());
 
       expect(o.exec(''), false);
       expect(o.exec('  '), false);

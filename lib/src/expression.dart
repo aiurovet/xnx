@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
+import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/operation.dart';
 
 class Expression {
@@ -11,9 +12,10 @@ class Expression {
 
   @protected final FlatMap flatMap;
   @protected final Keywords keywords;
+  @protected final Logger logger;
   @protected final Operation operation;
 
-  Expression({required this.flatMap, required this.keywords, required this.operation});
+  Expression({required this.flatMap, required this.keywords, required this.operation, required this.logger});
 
   Object? exec(Map<String, Object?> mapIf) {
     var condition = mapIf.entries.firstWhereOrNull((x) =>
@@ -34,6 +36,10 @@ class Expression {
     }
 
     var isThen = _exec(condition as String);
+
+    if (logger.isDebug) {
+      logger.debug('Condition: $condition\n...${isThen ? 'true' : 'false'}\n');
+    }
 
     return (isThen ? blockThen : blockElse);
   }

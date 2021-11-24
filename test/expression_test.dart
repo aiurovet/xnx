@@ -6,6 +6,7 @@ import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
+import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/operation.dart';
 
 import 'helper.dart';
@@ -50,7 +51,8 @@ void main() {
         init(fileSystem);
 
         var flatMap = FlatMap();
-        var x = Expression(flatMap: flatMap, keywords: Keywords(), operation: Operation(flatMap: flatMap));
+        var logger = Logger();
+        var x = Expression(flatMap: flatMap, keywords: Keywords(), operation: Operation(flatMap: flatMap, logger: logger), logger: logger);
 
         expect(x.exec(setIf('false')), blockElse);
         expect(x.exec(setIf('true')), blockThen);

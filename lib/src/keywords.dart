@@ -25,10 +25,14 @@ class Keywords {
   String forFnAddDays = '=AddDays';
   String forFnAddMonths = '=AddMonths';
   String forFnAddYears = '=AddYears';
+  String forFnBaseName = '=BaseName';
+  String forFnBaseNameNoExt = '=BaseNameNoExt';
   String forFnDate = '=Date';
+  String forFnDirName = '=DirName';
   String forFnDiv = '=Div';
   String forFnDivInt = '=IDiv';
   String forFnEndOfMonth = '=EndOfMonth';
+  String forFnExtension = '=Extension';
   String forFnFileSize = '=FileSize';
   String forFnIndex = '=Index';
   String forFnMatch = '=Match';

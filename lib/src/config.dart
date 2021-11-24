@@ -54,9 +54,9 @@ class Config {
 
     keywords = Keywords();
     flatMap = FlatMap(keywords: keywords);
-    operation = Operation(flatMap: flatMap);
-    expression = Expression(flatMap: flatMap, keywords: keywords, operation: operation);
-    functions = Functions(flatMap: flatMap, keywords: keywords);
+    operation = Operation(flatMap: flatMap, logger: _logger);
+    expression = Expression(flatMap: flatMap, keywords: keywords, operation: operation, logger: _logger);
+    functions = Functions(flatMap: flatMap, keywords: keywords, logger: _logger);
   }
 
   //////////////////////////////////////////////////////////////////////////////
