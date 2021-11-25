@@ -6,7 +6,6 @@ import 'package:xnx/src/command.dart';
 import 'package:xnx/src/config_result.dart';
 import 'package:xnx/src/config_file_loader.dart';
 import 'package:xnx/src/config.dart';
-import 'package:xnx/src/ext/glob.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/logger.dart';
