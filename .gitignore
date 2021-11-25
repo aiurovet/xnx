@@ -29,6 +29,7 @@ examples/multi_icon/png/
 examples/ms_office/*.dir/
 examples/ms_office/out/
 examples/ms_office/unz/
+examples/site_env/ReleaseFiles/
 examples/web_config/
 out/
 scripts/mkicons/png/

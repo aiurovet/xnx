@@ -6,6 +6,7 @@ import 'package:xnx/src/command.dart';
 import 'package:xnx/src/config_result.dart';
 import 'package:xnx/src/config_file_loader.dart';
 import 'package:xnx/src/config.dart';
+import 'package:xnx/src/ext/glob.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/logger.dart';
@@ -297,6 +298,30 @@ class Convert {
       var inpFilePathEx = Path.adjust(inpFilePathCurr);
 
       mapCurr = expandMap(map, curDirName, inpFilePathEx);
+
+      if (!_config.take.isEmpty && _config.take.finalize(
+          maskPattern: getValue(mapCurr, value: _config.take.maskPattern, canReplace: true),
+          regexPattern: getValue(mapCurr, value: _config.take.regexPattern, canReplace: true),
+        )) {
+        if (!_config.take.hasMatch(inpFilePathEx)) {
+          if (_logger.isDebug) {
+            _logger.debug('Does not match the take pattern: "$inpFilePathCurr"');
+          }
+          continue;
+        }
+      }
+
+      if (!_config.skip.isEmpty && _config.skip.finalize(
+          maskPattern: getValue(mapCurr, value: _config.skip.maskPattern, canReplace: true),
+          regexPattern: getValue(mapCurr, value: _config.skip.regexPattern, canReplace: true),
+        )) {
+        if (_config.skip.hasMatch(inpFilePathEx)) {
+          if (_logger.isDebug) {
+            _logger.debug('Matches the skip pattern: "$inpFilePathCurr"');
+          }
+          continue;
+        }
+      }
 
       var detectPathsPattern = getValue(mapCurr, key: _config.keywords.forDetectPaths, canReplace: true);
 

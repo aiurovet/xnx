@@ -12,6 +12,7 @@ import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/operation.dart';
 import 'package:xnx/src/options.dart';
 import 'package:xnx/src/functions.dart';
+import 'package:xnx/src/path_filter.dart';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -33,6 +34,8 @@ class Config {
 
   Map all = {};
   RegExp? detectPathsRE;
+  PathFilter skip = PathFilter();
+  PathFilter take = PathFilter();
 
   int lastModifiedStamp = 0;
   Options options = Options();
@@ -189,6 +192,14 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigResult execDataList(String? key, List data, ConfigFlatMapProc? execFlatMap) {
+    if (key == keywords.forOnce) {
+      _once.add(data);
+    }
+    else if (key == keywords.forFunc) {
+      functions.exec(data);
+      return ConfigResult.ok;
+    }
+
     var isCmd = (key == keywords.forCmd);
 
     for (var childData in data) {
@@ -252,7 +263,15 @@ class Config {
     if (key == keywords.forOnce) {
       _once.add(data);
     }
-    else if (key == keywords.forFunctions) {
+    else if (key == keywords.forSkip) {
+      skip.init(isNot: (data['isNot'] as bool?), isPath: (data['isPath'] as bool?), mask: (data['mask'] as String?), regex: (data['regex'] as String?));
+      return result;
+    }
+    else if (key == keywords.forTake) {
+      take.init(isNot: (data['isNot'] as bool?), isPath: (data['isPath'] as bool?), mask: (data['mask'] as String?), regex: (data['regex'] as String?));
+      return result;
+    }
+    else if (key == keywords.forFunc) {
       functions.exec(data);
       return result;
     }

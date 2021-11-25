@@ -4,6 +4,7 @@ class Keywords {
   String forCmd = '{{-cmd-}}';
   String forCurDir = '{{-cur-dir-}}';
   String forDetectPaths = '{{-detect-paths-}}';
+  String forFunc = '{{-func-}}';
   String forInp = '{{-inp-}}';
   String forInpDir = '{{-inp-dir-}}';
   String forInpExt = '{{-inp-ext-}}';
@@ -17,9 +18,10 @@ class Keywords {
   String forOut = '{{-out-}}';
   String forRun = '{{-run-}}';
   String forRename = '{{-rename-keywords-}}';
+  String forSkip = '{{-skip-}}';
   String forStop = '{{-stop-}}';
+  String forTake = '{{-take-}}';
   String forThis = '{{-this-}}';
-  String forFunctions = '{{-func-}}';
 
   String forFnAdd = '=Add';
   String forFnAddDays = '=AddDays';
@@ -163,8 +165,8 @@ class Keywords {
       else if (k == forThis) {
         forThis = s;
       }
-      else if (k == forFunctions) {
-        forFunctions = s;
+      else if (k == forFunc) {
+        forFunc = s;
       }
 
       // Pre-defined conditions

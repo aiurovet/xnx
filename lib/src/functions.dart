@@ -76,11 +76,14 @@ class Functions {
   Object? exec(Object? todo, {int offset = 0}) {
     if (todo is List) {
       if (todo.isNotEmpty) {
-        var name = _toName(todo[0]);
-        var type = nameTypeMap[name];
+        var first = todo[0];
 
-        if ((type != null) && (type != FunctionType.unknown)) {
-          return _exec(type, todo, offset: offset);
+        if ((first is String)) {
+          var type = nameTypeMap[_toName(first)];
+
+          if ((type != null) && (type != FunctionType.unknown)) {
+            return _exec(type, todo, offset: offset);
+          }
         }
       }
 
@@ -578,15 +581,11 @@ class Functions {
       _fail(type, 'undefined offset (2nd param)');
     }
 
-    if (lenStr.isEmpty) {
-      _fail(type, 'undefined length (3rd param)');
-    }
-
     var begVal = _toInt(begStr) ?? 0;
     var lenVal = _toInt(lenStr) ?? 0;
 
     if (begVal <= 0) {
-      _fail(type, 'The offset (2nd param) is not a number');
+      _fail(type, 'The offset (2nd param) is not a number: $begStr');
     }
 
     --begVal;
@@ -684,8 +683,19 @@ class Functions {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  int? _toInt(String? input) =>
-    (input == null ? null : int.tryParse(input));
+  int? _toInt(String? input) {
+    if (input == null) {
+      return null;
+    }
+    
+    var n = num.tryParse(input);
+
+    if (n == null) {
+      return null;
+    }
+
+    return ((n % 1) == 0 ? n.floor() : null);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
