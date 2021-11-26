@@ -1,38 +1,32 @@
 {
-  "{x1}": {
-    "{{-if-}}": { "": '("${HOME}" != "")', "{{-then-}}": {
-        "{HOME}": "${HOME}",
-      }, "{{-else-}}": {
-        "{HOME}": "${USERPROFILE}",
-    } },
-  },
- 
+
   "{{-detect-paths-}}": "^\\{.*-dir\\}$",
  
   "{{-once-}}": {
-    "{top-dir}": '{HOME}/IdeaProjects/xnx/examples/site_env',
-    "{rls-dir}": '{top-dir}/ReleaseFiles',
-    "{{-run-}}": [ '--delete "{rls-dir}"', '--mkdir "{rls-dir}"', ],
-    "{{-cur-dir-}}": '{rls-dir}',
+    "{rls-dir}": './ReleaseFiles',
+    "{{-if-}}": { "": '-d "{rls-dir}"', "{{-then-}}": {
+       "{{-run-}}": '--delete "{rls-dir}"',
+    } },
+    "{{-run-}}": '--mkdir "{rls-dir}"',
   },
  
-  "{all-envs}": "dev,test,train,prod",
+  "{all-envs}": "dev,qa,training,prod",
   "{all-sites}": "au,nz,uk,us",
   "{site}": [ "au", "nz", "uk", "us", ],
-  "{env-dir}": [ "01-dev", "02-test", "03-train", "04-prod", ],
+  "{env-dir}": [ "01-dev", "02-qa", "03-training", "04-prod", ],
 
   "{{-func-}}": [
     { "{env}": [ "=Substr", "{env-dir}", 4 ], },
-    { "{other-envs}": [ "=Replace", ",{all-envs},", ",{env},", "," ], },
-    { "{other-sites}": [ "=Replace", ",{all-sites},", ",{site},", "," ], },
+    { "{other-envs}": [ "=ReplaceMatch", [ "=Replace", ",{all-envs},", ",{env},", "," ], "^,+(.*),+$", "$1" ] },
+    { "{other-sites}": [ "=ReplaceMatch", [ "=Replace", ",{all-sites},", ",{site},", "," ], "^,+(.*),+$", "$1" ] },
   ],
 
-  "{out-dir}": "{site}/{env-dir}",
-  "{inp-dir}": "{top-dir}/_NewFiles_",
+  "{out-dir}": "{rls-dir}/{site}/{env-dir}",
+  "{inp-dir}": "./_NewFiles_",
  
   "{{-out-}}": "{out-dir}/{{-inp-name-ext-}}",
-  "{{-inp-}}": "{inp-dir}/**",
-  "{{-take-}}": { regex: "[\\d]{2}_({site}|{site}-{env}|{env})_.*", isPath: false, isNot: false, },
+  "{{-inp-}}": "{inp-dir}/**_{,{site}_,{site}-{env}_,{env}_}*",
+  "{{-skip-}}": { mask: "*{{other-envs},{other-sites}}*", isPath: false, isNot: false, },
  
   "{{-cmd-}}": [
     '--mkdir "{out-dir}"',

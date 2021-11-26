@@ -21,27 +21,8 @@
     }
   } },
 
-  "{{-if-}}": { "": '"${HOME}" != ""', "{{-then-}}": {
-    "{{-if-}}": { "": '(("${HOME}" != "") || ("${USER}" != "")) && (-e "/Applications/*.app")', "{{-then-}}": {
-      "{OSTYPE}": 'macOS',
-    }, "{{-else-}}": {
-      "{OSTYPE}": 'Linux',
-    } },
-    "{HOME}": '${HOME}',
-    "{USER}": '${USER}',
-  }, "{{-else-}}": { "{{-if-}}": { "": '"${USERPROFILE}" != ""', "{{-then-}}": {
-    "{OSTYPE}": 'Windows',
-    "{HOME}": '${USERPROFILE}',
-    "{USER}": '${USERNAME}',
-  }, "{{-else-}}": {
-    "{OSTYPE}": '?',
-    "{HOME}": '{OSTYPE}',
-    "{USER}": '{OSTYPE}',
-  } } } },
-
   "{{-run-}}": [
-    './myscript "OS: {OSTYPE}, User: {USER}, Home: {HOME}, Host: {HOST}"',
-    '--print "OS:   {OSTYPE}\nUser: {USER}\nHome: {HOME}\nHost: {HOST}"',
-    '--print "Div float: {div}\nDiv int:   {idiv}"',
+    './myecho "OS Name: <${OS}> OS Full: <${OS_FULL}>, User: <${USER}>, Home: <${HOME}>, Temp: ${TEMP}, Host: <${HOST}>, Locale: <${LOCALE}>"',
+    '--print "OS Name: <${OS}>\nOS Full: <${OS_FULL}>\nUser: <${USER}>\nHome: <${HOME}>\nTemp: <${TEMP}>\nHost: <${HOST}>,\nLocale: <${LOCALE}>"',
   ],
 }

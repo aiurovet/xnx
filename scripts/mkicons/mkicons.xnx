@@ -17,8 +17,8 @@
   },
 
   "{{-once-}}": {
-    "{prj}": "${1}",
-    "{out-dir}": "${2}",
+    "{prj}": "$~1",
+    "{out-dir}": "$~2",
 
     "{dtp}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
   },
@@ -32,8 +32,8 @@
   } },
 
   "{lnf}": [
-    { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", "{win-icon-id}": "MAINICON,0" },
-    { "{look}": "_dark", "{icon-stroke}": "white", "{icon-fill}": "black", "{win-icon-id}": "DARKICON,1" }
+    { "{look}": "", "{icon-stroke}": "black", "{icon-fill}": "white", },
+    { "{look}": "_dark", "{icon-stroke}": "white", "{icon-fill}": "black", }
   ],
 
   "{R}": [
@@ -88,11 +88,11 @@
 
       "{exe-pthp}": "{out-dir}/{prj}",
 
-      "{{-if-}}" : { "": '"{OSTYPE}" ==/i "Linux"', "{{-then-}}": {
+      "{{-if-}}" : { "": '"${OS}" ==/i "linux"', "{{-then-}}": {
         "{run}": [
           '--move "{icon-pthp}_96x96.png" "{out-dir}/{icon-name}.png"'
         ]
-      }, "{{-else-}}" : { "{{-if-}}" : { "": '"{OSTYPE}" ==/i "macOS"', "{{-then-}}": {
+      }, "{{-else-}}" : { "{{-if-}}" : { "": '"${OS}" ==/i "macos"', "{{-then-}}": {
         "{png-dir-mac}": "{png-dir}.iconset",
         "{run}": [
           '--copy "{icon-pthp}_32x32.png" "{png-dir}/icon_16x16@2x.png"',
@@ -110,7 +110,7 @@
           '--move "{png-dir}" "{png-dir-mac}"',
           'iconutil --convert icns -o "{out-dir}/{icon-name}.icns" "{png-dir-mac}"'
         ]
-      }, "{{-else-}}" : { "{{-if-}}" : { "": '"{OSTYPE}" ==/i "Windows"', "{{-then-}}": {
+      }, "{{-else-}}" : { "{{-if-}}" : { "": '"${OS}" ==/i "windows"', "{{-then-}}": {
         "{run}": [
           '{convert} "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{out-dir}/{icon-name}.ico"',
         ]

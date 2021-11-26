@@ -189,14 +189,14 @@ Configuration file is expected in JSON format with the following guidelines:
      expanded, but in configuration file only. If you\'d like to expand those
      in input file(s), simply assign that to some placeholder, then use that
      placehloder. For the sake of source code portability, the environment
-     variables are required strictly in POSIX form: $\*, $@, $1,
-     $2, ..., $ABC_123_DEF4 or ${\*}, ${@}, ${1}, ${2}, ..., ${ABC_123_DEF4}
+     variables are required in the form of: $\*, $@, $~1,
+     $~2, ..., $ABC_123_DEF4 or ${\*}, ${@}, ${~1}, ${~2}, ..., ${ABC_123_DEF4}
      (under Windows though, environment variables will be considered case-
      insensitive). You can escape expansion by escaping with \ or doubling
      the dollar sign: \$ABC or $$ABC. In the former case nothing will change,
      but in the latter case, it will be replaced with a single dollar sign.
-     Special placeholder $\* or $@ or ${\*} or ${@} is used to indicate an
-     array of all optionless arguments, so the whole process will be repeated
+     The special placeholders $\*, $@, ${\*} and ${@} are used to indicate
+     an array of all optionless arguments, so the whole process will be repeated
      for each such argument. 
 
 2.7. Directory separator char in file paths is also required to be specified in

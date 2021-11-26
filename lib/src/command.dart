@@ -94,6 +94,7 @@ class Command {
 
     var oldCurDir = Path.fileSystem.currentDirectory;
     var oldLocEnv = Env.getAllLocal();
+
     var fullEnv = Env.getAll();
 
     try {
@@ -279,21 +280,6 @@ class Command {
         isLocal = _optionChars.contains(firstChar);
         hasPath = isLocal;
       }
-
-      // if (Env.escape.isNotEmpty) {
-      //   var parts = arg.split(Env.escapeEscape);
-      //   arg = '';
-
-      //   for (var part in parts) {
-      //     if (arg.isNotEmpty) {
-      //       arg += Env.escape;
-      //     }
-      //     arg += part
-      //         .replaceAll(Env.escape + 'n', '\n')
-      //         .replaceAll(Env.escape + 'r', '\r')
-      //         .replaceAll(Env.escape + 't', '\t');
-      //   }
-      // }
 
       if (hasPath) {
         args.add(arg);

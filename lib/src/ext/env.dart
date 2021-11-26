@@ -7,7 +7,7 @@ class Env {
   static const _dollarDollar = r'$$';
 
   static final RegExp _rexEnvVarName = RegExp(
-      r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(#|[0-9]+)|\$[\{](#|[0-9]+)[\}]',
+      r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(#|~[0-9]+)|\$[\{](#|~[0-9]+)[\}]',
       caseSensitive: false
   );
 
@@ -19,6 +19,7 @@ class Env {
   static String escapeEscape = (escape + escape);
 
   static final String homeKey = (isWindows ? 'USERPROFILE' : 'HOME');
+  static final String userKey = (isWindows ? 'USERNAME' : 'USER');
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -114,15 +115,25 @@ class Env {
   //////////////////////////////////////////////////////////////////////////////
 
   static String getHome() => get(homeKey);
-
-  //////////////////////////////////////////////////////////////////////////////
-
   static Directory getHomeDirectory() => Path.fileSystem.directory(getHome());
+  static String getOs() => Platform.operatingSystem;
+  static String getUser() => get(userKey);
 
   //////////////////////////////////////////////////////////////////////////////
 
   static void init({FileSystem? fileSystem}) {
     Path.init(fileSystem);
+
+    if (isWindows) {
+      set('HOME', Env.getHome());
+      set('USER', Env.getUser());
+    }
+
+    set('HOST', Platform.localHostname);
+    set('LOCALE', Platform.localeName);
+    set('OS', Platform.operatingSystem);
+    set('OS_FULL', Platform.operatingSystemVersion);
+    set('TEMP', Path.fileSystem.systemTempDirectory.path);
   }
 
   //////////////////////////////////////////////////////////////////////////////

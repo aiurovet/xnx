@@ -23,7 +23,7 @@ class ConfigFileLoader {
   static const String recordSep = ',';
 
   static final String allArgs = r'${@}';
-  static final RegExp rexCmdLineArgs = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$([0-9]+))|(\$\{([1-9][0-9]*)\})');
+  static final RegExp rexCmdLineArgs = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$~([0-9]+))|(\$\{~([1-9][0-9]*)\})');
   static final RegExp rexImpFileKeyBadChars = RegExp(r'[\\\/\.,;]');
   static final RegExp rexJsonMapBraces = RegExp(r'^[\s\{]+|[\s\}]+$');
 
