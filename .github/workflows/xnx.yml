@@ -84,8 +84,8 @@ jobs:
       - name: Checking Integration Test 5 - site_env - for POSIX-compliant OS
         if: runner.os != 'Windows'
         run: |
-          ls -l examples/site_env/ReleaseFiles/au/01-dev
-          ls -1 examples/site_env/ReleaseFiles/au/01-dev | wc -l | grep -i "^4$"
+          ls -1 examples/site_env/ReleaseFiles/au/01-dev | wc -l
+          ls -1 examples/site_env/ReleaseFiles/au/01-dev | wc -l | grep -i "^[\s]*4[\s]*$"
 
       - name: Checking Integration Test 5 - site_env - for Windows
         if: runner.os == 'Windows'
