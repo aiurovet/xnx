@@ -82,9 +82,11 @@ jobs:
         run: bin/${{runner.os}}/xnx -d examples/site_env
 
       - name: Checking Integration Test 5 - site_env - for POSIX-compliant OS
+        if: runner.os != 'Windows'
         run: ls -1 examples/site_env/ReleaseFiles/au/01-dev | wc -l | grep -Pi "^4$"
 
       - name: Checking Integration Test 5 - site_env - for Windows
+        if: runner.os == 'Windows'
         run: (Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev).Count | Select-String -Quiet -Pattern "^4$"
 
       ################################################################################
