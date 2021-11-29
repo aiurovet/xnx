@@ -13,16 +13,22 @@
     },
   },
 
-  "if-regex": {
-    "{{-if-}}": { "": '"${HOME}" !~/i \/(\\.|HOME)', "{{-then-}}": {
-      "{{-run-}}": '--print "Has match"',
-    }, "{{-else-}}": {
-      "{{-run-}}": '--print "No match"',
-    }
+  "{{-if-}}-1": { "": '"${HOME}" !~/i \/(\\.|HOME)', "{{-then-}}": {
+    "{{-run-}}": '--print "Has match"',
+  }, "{{-else-}}": {
+    "{{-run-}}": '--print "No match"',
+  } },
+
+  "{{-if-}}-2": { "": '1==1', "{{-then-}}": {
+    "{{-run-}}": '--print "Second if"',
   } },
 
   "{{-run-}}": [
     './myecho "OS Name: <${OS}> OS Full: <${OS_FULL}>, User: <${USER}>, Home: <${HOME}>, Temp: ${TEMP}, Host: <${HOST}>, Locale: <${LOCALE}>"',
     '--print "OS Name: <${OS}>\nOS Full: <${OS_FULL}>\nUser: <${USER}>\nHome: <${HOME}>\nTemp: <${TEMP}>\nHost: <${HOST}>,\nLocale: <${LOCALE}>"',
+  ],
+
+  "{{-run-}}^2": [
+    '--print "Extra run"',
   ],
 }

@@ -24,7 +24,7 @@ void main() {
         Env.set('XNX_A', 'A');
         Env.set('XNX_B', 'B');
         expect(Env.expand('a \$XNX_A \$XNX_B \$XNX_C d'), 'a A B  d');
-        expect(Env.expand('a \$XNX_A \$XNX_B\x01 \$#\$1 \$2 \$\$XNX_C \$ d', args: [ 'a1', 'a2' ]), 'a A B\x01 2a1 a2 \$XNX_C \$ d');
+        expect(Env.expand('a \$XNX_A \$XNX_B\x01 \$#\$~1 \$~2 \$\$XNX_C \$ d', args: [ 'a1', 'a2' ]), 'a A B\x01 2a1 a2 \$XNX_C \$ d');
       });
 
       test('get', () {

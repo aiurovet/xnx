@@ -64,7 +64,7 @@ class Env {
               newValue = args.length.toString();
             }
             else {
-              var argNo = int.tryParse(argStr, radix: 10);
+              var argNo = int.tryParse(argStr.substring(1), radix: 10);
 
               if (argNo != null) {
                 if ((argNo > 0) && (argNo <= args.length)) {

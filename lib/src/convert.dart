@@ -673,7 +673,7 @@ Output path: "$outFilePathEx"
       value = map[key];
     }
 
-    var isKeyCurDir = (key == _config.keywords.forCurDir);
+    var isKeyCurDir = key?.startsWith(_config.keywords.forCurDir) ?? false;
 
     if (canReplace && (value != null) && !value.isBlank()) {
       for (String? oldValue; (oldValue != value); ) {

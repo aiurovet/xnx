@@ -154,8 +154,9 @@ class Config {
 
   ConfigResult execData(String? key, Object? data, ConfigFlatMapProc? execFlatMap) {
     if (data == null) {
-      flatMap[key] = null;
-      return (key == keywords.forStop ? ConfigResult.stop : ConfigResult.ok);
+      var keyEx = keywords.refine(key);
+      flatMap[keyEx] = null;
+      return (keyEx == keywords.forStop ? ConfigResult.stop : ConfigResult.ok);
     }
 
     if (_once.contains(data)) {
@@ -169,7 +170,7 @@ class Config {
     }
 
     if (data is List) {
-      if (key == keywords.forRun) { // direct execution in a loop
+      if (key?.startsWith(keywords.forRun) ?? false) { // direct execution in a loop
         return execDataListRun(key, data, execFlatMap);
       }
       else {
@@ -178,7 +179,7 @@ class Config {
     }
 
     if (data is Map<String, Object?>) {
-      if (key == keywords.forIf) {
+      if (key?.startsWith(keywords.forIf) ?? false) {
         return execDataMapIf(data, execFlatMap);
       }
       else {
@@ -192,15 +193,19 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigResult execDataList(String? key, List data, ConfigFlatMapProc? execFlatMap) {
-    if (key == keywords.forOnce) {
-      _once.add(data);
-    }
-    else if (key == keywords.forFunc) {
-      functions.exec(data);
-      return ConfigResult.ok;
-    }
+    var isCmd = false;
 
-    var isCmd = (key == keywords.forCmd);
+    if (key != null) {
+      if (key.startsWith(keywords.forOnce)) {
+        _once.add(data);
+      }
+      else if (key.startsWith(keywords.forFunc)) {
+        functions.exec(data);
+        return ConfigResult.ok;
+      }
+
+      isCmd = (key.startsWith(keywords.forCmd));
+    }
 
     for (var childData in data) {
       if (childData == null) {
@@ -221,10 +226,13 @@ class Config {
     }
 
     setTrailFor(data, null, null);
-    flatMap[key] = null;
 
     if (isCmd) {
+      flatMap[keywords.forCmd] = null;
       flatMap[keywords.forOut] = null;
+    }
+    else {
+      flatMap[keywords.refine(key)] = null;
     }
 
     return ConfigResult.okEndOfList;
@@ -237,6 +245,7 @@ class Config {
       return ConfigResult.stop;
     }
 
+    var keyEx = keywords.refine(key);
     var result = ConfigResult.ok;
 
     for (var childData in data) {
@@ -244,7 +253,7 @@ class Config {
         continue;
       }
 
-      flatMap[key] = childData.toString().trim();
+      flatMap[keyEx] = childData.toString().trim();
       result = execDataRun(execFlatMap);
 
       if (result != ConfigResult.ok) {
@@ -260,20 +269,22 @@ class Config {
   ConfigResult execDataMap(String? key, Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
-    if (key == keywords.forOnce) {
-      _once.add(data);
-    }
-    else if (key == keywords.forSkip) {
-      skip.init(isNot: (data['isNot'] as bool?), isPath: (data['isPath'] as bool?), mask: (data['mask'] as String?), regex: (data['regex'] as String?));
-      return result;
-    }
-    else if (key == keywords.forTake) {
-      take.init(isNot: (data['isNot'] as bool?), isPath: (data['isPath'] as bool?), mask: (data['mask'] as String?), regex: (data['regex'] as String?));
-      return result;
-    }
-    else if (key == keywords.forFunc) {
-      functions.exec(data);
-      return result;
+    if (key != null) {
+      if (key.startsWith(keywords.forOnce)) {
+        _once.add(data);
+      }
+      else if (key.startsWith(keywords.forSkip)) {
+        skip.init(isNot: (data['isNot'] as bool?), isPath: (data['isPath'] as bool?), mask: (data['mask'] as String?), regex: (data['regex'] as String?));
+        return result;
+      }
+      else if (key.startsWith(keywords.forTake)) {
+        take.init(isNot: (data['isNot'] as bool?), isPath: (data['isPath'] as bool?), mask: (data['mask'] as String?), regex: (data['regex'] as String?));
+        return result;
+      }
+      else if (key.startsWith(keywords.forFunc)) {
+        functions.exec(data);
+        return result;
+      }
     }
 
     data.forEach((childKey, childData) {
@@ -313,22 +324,23 @@ class Config {
       return ConfigResult.ok;
     }
 
+    var keyEx = keywords.refine(key) ?? '';
     var result = ConfigResult.ok;
 
     if ((data is num) && ((data % 1) == 0)) {
-      flatMap[key] = data.toStringAsFixed(0);
+      flatMap[keyEx] = data.toStringAsFixed(0);
       return result;
     }
 
     var dataStr = data.toString().trim();
     var isEmpty = dataStr.isEmpty;
 
-    if (key == keywords.forDetectPaths) {
+    if (keyEx == keywords.forDetectPaths) {
       detectPathsRE = (isEmpty ? null : RegExp(dataStr));
       return result;
     }
 
-    if (key == keywords.forStop) {
+    if (keyEx == keywords.forStop) {
       if (!isEmpty) {
         _logger.out(flatMap.expand(dataStr));
       }
@@ -337,9 +349,9 @@ class Config {
     }
 
     if (!isEmpty) {
-      var isKeyForGlob = keywords.allForGlob.contains(key);
-      var isKeyForPath = keywords.allForPath.contains(key);
-      var isDetectPaths = (detectPathsRE?.hasMatch(key) ?? false);
+      var isKeyForGlob = keywords.allForGlob.contains(keyEx);
+      var isKeyForPath = keywords.allForPath.contains(keyEx);
+      var isDetectPaths = (detectPathsRE?.hasMatch(keyEx) ?? false);
       var hasPath = (isKeyForGlob || isKeyForPath || isDetectPaths);
 
       if (hasPath) {
@@ -347,14 +359,14 @@ class Config {
       }
     }
 
-    var isCmd = (key == keywords.forCmd);
-    var isRun = (key == keywords.forRun);
+    var isCmd = (keyEx == keywords.forCmd);
+    var isRun = !isCmd && (keyEx == keywords.forRun);
 
     if (isCmd || isRun) {
       flatMap[isCmd ? keywords.forRun : keywords.forCmd] = null;
     }
 
-    flatMap[key] = dataStr;
+    flatMap[keyEx] = dataStr;
 
     if (canRun()) {
       result = execDataRun(execFlatMap);

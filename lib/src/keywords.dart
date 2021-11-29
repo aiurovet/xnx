@@ -1,5 +1,11 @@
 
 class Keywords {
+
+  //////////////////////////////////////////////////////////////////////////////
+  // All of these keys are searched using 'statsWith' rather than 'equals', as
+  // they are allowed not to be unique per map
+  //////////////////////////////////////////////////////////////////////////////
+
   String forCanExpandContent = '{{-can-expand-content-}}';
   String forCmd = '{{-cmd-}}';
   String forCurDir = '{{-cur-dir-}}';
@@ -16,8 +22,8 @@ class Keywords {
   String forImport = '{{-import-}}';
   String forOnce = '{{-once-}}';
   String forOut = '{{-out-}}';
-  String forRun = '{{-run-}}';
   String forRename = '{{-rename-keywords-}}';
+  String forRun = '{{-run-}}';
   String forSkip = '{{-skip-}}';
   String forStop = '{{-stop-}}';
   String forTake = '{{-take-}}';
@@ -74,9 +80,9 @@ class Keywords {
   // Pre-defined conditional operators
   //////////////////////////////////////////////////////////////////////////////
 
-  String? forIf = '{{-if-}}';
-  String? forThen = '{{-then-}}';
-  String? forElse = '{{-else-}}';
+  String forIf = '{{-if-}}';
+  String forThen = '{{-then-}}';
+  String forElse = '{{-else-}}';
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -100,6 +106,52 @@ class Keywords {
       forCmd,
       forRun,
     ];
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String? refine(String? key) {
+    if (key == null) { return key; }
+
+    // Frequency level 1
+    
+    if (key.startsWith(forOnce)) { return forOnce; }
+    if (key.startsWith(forFunc)) { return forFunc; }
+    if (key.startsWith(forCmd)) { return forCmd; }
+
+    // Frequency level 2
+
+    if (key.startsWith(forIf)) { return forIf; }
+    if (key.startsWith(forCurDir)) { return forCurDir; }
+    if (key.startsWith(forRun)) { return forRun; }
+    if (key.startsWith(forDetectPaths)) { return forDetectPaths; }
+
+    // Frequency level 3
+
+    if (key.startsWith(forSkip)) { return forSkip; }
+    if (key.startsWith(forStop)) { return forStop; }
+    if (key.startsWith(forTake)) { return forTake; }
+
+    // Frequency level 4
+
+    if (key.startsWith(forInp)) { return forInp; }
+    if (key.startsWith(forInpDir)) { return forInpDir; }
+    if (key.startsWith(forInpExt)) { return forInpExt; }
+    if (key.startsWith(forInpName)) { return forInpName; }
+    if (key.startsWith(forInpNameExt)) { return forInpNameExt; }
+    if (key.startsWith(forInpPath)) { return forInpPath; }
+    if (key.startsWith(forInpSubDir)) { return forInpSubDir; }
+    if (key.startsWith(forInpSubPath)) { return forInpSubPath; }
+    if (key.startsWith(forOut)) { return forOut; }
+
+    // Frequency level 5
+
+    if (key.startsWith(forCanExpandContent)) { return forCanExpandContent; }
+    if (key.startsWith(forImport)) { return forImport; }
+    if (key.startsWith(forRename)) { return forRename; }
+    if (key.startsWith(forThis)) { return forThis; }
+
+    return key;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -209,13 +261,5 @@ class Keywords {
       forOut,
       forCurDir,
     ]);
-
-    // Resolve dependencies - If
-
-    if ((forIf == null) || ((forThen == null) && (forElse == null))) {
-      forIf = null;
-      forThen = null;
-      forElse = null;
-    }
   }
 }
