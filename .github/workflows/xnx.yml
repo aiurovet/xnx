@@ -83,11 +83,15 @@ jobs:
 
       - name: Checking Integration Test 5 - site_env - for POSIX-compliant OS
         if: runner.os != 'Windows'
-        run: ls -1 examples/site_env/ReleaseFiles/au/01-dev | wc -l | grep -i "^4$"
+        run: |
+          ls -l examples/site_env/ReleaseFiles/au/01-dev
+          ls -1 examples/site_env/ReleaseFiles/au/01-dev | wc -l | grep -i "^4$"
 
       - name: Checking Integration Test 5 - site_env - for Windows
         if: runner.os == 'Windows'
-        run: (Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev).Count | Select-String -Quiet -Pattern "^4$"
+        run: |
+          Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev
+          (Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev).Count | Select-String -Quiet -Pattern "^4$"
 
       ################################################################################
 
