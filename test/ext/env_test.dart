@@ -41,6 +41,10 @@ void main() {
         expect(Env.getAll().length, Platform.environment.length);
         Env.set('XNX_A', 'A');
         expect(Env.getAll().length, Platform.environment.length + 1);
+
+        Env.set(Env.homeKey, 'A');
+        var fullEnv = Env.getAll();
+        expect(fullEnv[Env.homeKey], 'A');
       });
 
       test('getAllLocal', () {
@@ -79,7 +83,8 @@ void main() {
         expect(Env.get('XNX_A'), 'C');
         Env.set('Xnx_A', 'A');
         expect(Env.get('XNX_A'), Env.isWindows ? 'A' : 'C');
-        expect(() => Env.set(Env.homeKey, 'A'), throwsException);
+        Env.set(Env.homeKey, 'A');
+        expect(Env.get(Env.homeKey), 'A');
       });
     });
   });

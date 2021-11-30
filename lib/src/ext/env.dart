@@ -104,8 +104,8 @@ class Env {
 
   static Map<String, String> getAll({bool isLocalOnly = false}) =>
       <String, String>{}
-        ..addAll(_local)
-        ..addAll(Platform.environment);
+        ..addAll(Platform.environment)
+        ..addAll(_local);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -141,15 +141,16 @@ class Env {
   static void set<T>(String key, T value, {T? defValue}) {
     var keyEx = (isWindows ? key.toUpperCase() : key);
 
-    if (Platform.environment.containsKey(keyEx)) {
-      throw Exception('Changing system environment is prohibited');
-    }
-
     if ((value == null) && (defValue == null)) {
       _local.remove(keyEx);
     }
     else {
-      _local[keyEx] = ((value ?? defValue)?.toString() ?? '');
+      var sysValue = Platform.environment[keyEx];
+      var newValue = ((value ?? defValue)?.toString() ?? '');
+
+      if (newValue != sysValue) {
+        _local[keyEx] = newValue;
+      }
     }
   }
 
