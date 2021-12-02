@@ -244,16 +244,8 @@ class Convert {
       command = command.replaceAll(inpFilePath, tmpFilePath);
     }
 
-    _logger.information(command);
-
-    var canRun = (!options.isListOnly && !isExpandContentOnly);
-
-    if (!canRun) {
-      return true;
-    }
-
     Command(text: command, logger: _logger)
-      .exec(canExec: !options.isListOnly && !isExpandContentOnly, canShow: false);
+      .exec(canExec: !options.isListOnly && !isExpandContentOnly, canShow: true);
 
     tmpFile?.deleteIfExistsSync();
 
@@ -316,7 +308,7 @@ class Convert {
         )) {
         if (_config.skip.hasMatch(inpFilePathEx)) {
           if (_logger.isDebug) {
-            _logger.debug('Matches the skip pattern: "$inpFilePathCurr"');
+            _logger.debug('Skipping: "$inpFilePathCurr" (matches ${_config.skip.regexPattern ?? _config.skip.maskPattern})');
           }
           continue;
         }

@@ -244,8 +244,8 @@ class ConfigFileLoader {
       loadImportsSync(paramNameImport);
     }
 
-    expandCmdLineArgs(appPlainArgs);
-    _text = Env.expand(_text, canEscape: true);
+    //expandCmdLineArgs(appPlainArgs);
+    _text = Env.expand(_text, args: appPlainArgs, canEscape: true);
 
     _data = json5Decode(_text);
     _text = '';

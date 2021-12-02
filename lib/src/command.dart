@@ -79,7 +79,7 @@ class Command {
       return outLines;
     }
 
-    if (canShow) {
+    if (canShow && !isLocal) {
       _logger?.information(toString());
     }
 

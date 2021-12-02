@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:file/file.dart';
 import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/src/ext/string.dart';
 
 class Env {
   static const _dollar = r'$';
   static const _dollarDollar = r'$$';
 
   static final RegExp _rexEnvVarName = RegExp(
-      r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(#|~[0-9]+)|\$[\{](#|~[0-9]+)[\}]',
+      r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(\*|\@|#|~[0-9]+)|\$[\{](\*|\@|#|~[0-9]+)[\}]',
       caseSensitive: false
   );
 
@@ -60,17 +61,28 @@ class Env {
           if (args != null) {
             var argStr = (match.group(3) ?? match.group(4) ?? '');
 
+            switch (argStr) {
+              case '*':
+              case '@':
+                newValue = args.map((x) => x.quote()).join(' ');
+                break;
+              case '#':
+                newValue = args.length.toString();
+                break;
+              default:
+                var argNo = int.tryParse(argStr.substring(1), radix: 10);
+
+                if (argNo != null) {
+                  if ((argNo > 0) && (argNo <= args.length)) {
+                    newValue = args[argNo - 1];
+                  }
+                }
+                break;
+            }
+
             if (argStr == '#') {
-              newValue = args.length.toString();
             }
             else {
-              var argNo = int.tryParse(argStr.substring(1), radix: 10);
-
-              if (argNo != null) {
-                if ((argNo > 0) && (argNo <= args.length)) {
-                  newValue = args[argNo - 1];
-                }
-              }
             }
           }
         }

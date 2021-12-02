@@ -4,7 +4,7 @@
  
   "{{-once-}}": {
     "{rls-dir}": './ReleaseFiles',
-    "{{-if-}}": { "": '-d "{rls-dir}"', "{{-then-}}": {
+    "{{-if-}}": { "": '" $@ " ~/i [\\s]clean[\\s]', "{{-then-}}": {
        "{{-run-}}": '--delete "{rls-dir}"',
     } },
     "{{-run-}}": '--mkdir "{rls-dir}"',
@@ -25,8 +25,8 @@
   "{inp-dir}": "./_NewFiles_",
  
   "{{-out-}}": "{out-dir}/{{-inp-name-ext-}}",
-  "{{-inp-}}": "{inp-dir}/**_{,{site}_,{site}-{env}_,{env}_}*",
-  "{{-skip-}}": { mask: "*{{other-envs},{other-sites}}*", isPath: false, isNot: false, },
+  "{{-inp-}}": "{inp-dir}/**[_-]{,{site}[_-],{site}-{env}[_-],{env}[_-]}*",
+  "{{-skip-}}": { mask: "*[_-]{{other-envs},{other-sites}}[_-]*", isPath: false, isNot: false, },
  
   "{{-cmd-}}": [
     '--mkdir "{out-dir}"',
