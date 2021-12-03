@@ -475,7 +475,7 @@ Output path: "$outFilePathEx"
 
       var isDone = true;
 
-      map.forEach((k, v) {
+      effectiveMap.forEach((k, v) {
         if (text.contains(k)) {
           isDone = false;
         }
