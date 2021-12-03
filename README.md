@@ -128,14 +128,14 @@ For more details, see README.md
      program\'s output. In this case, put a dash instead of a filename for
      input:
 
-     { ... "{inp}": "-" ...  } 
+     { ... "{{-inp-}}": "-" ...  } 
 
 1.5. The program also allows you to print the result of expansion to stdout
      rather than to file. In this case, put a dash instead of a filename for
      input (and you won't be able to configure any external command, but rather
      will be confined to the use of a mere pipe):
 
-     { ... "{out}": "-" ... }
+     { ... "{{-out-}}": "-" ... }
 
 ##### Configuration file format (see full sample file below)
 
@@ -230,36 +230,33 @@ See the details of the imported file `shell.xnx` beyond this configuration
 // A sample configuration file to generate PNG icons for Flutter app (all needed platforms and sizes)
 
 {
-  "{{-rename-keywords-}}": {
-    "{{-cmd-}}": "{c}",
-    "{{-cur-dir-}}": "{cur-dir}",
-    "{{-can-expand-content-}}": "{can-expand-content}",
-    "{{-inp-}}": "{i}",
-    "{{-out-}}": "{o}",
-  },
-
   "{{-import-}}": "../shell.xnx",
 
-  "{can-expand-content}": true,
+  "{{-can-expand-content-}}": true,
+
+  "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
   // Terribly slow
-  // { "{c}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={o} \"file://{i}\"" },
+  // { "{{-cmd-}}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
 
   // Sometimes fails to display svg properly,
-  // { "{c}": "wkhtmltoimage --format png \"{i}\" \"{o}\"" },
+  // { "{{-cmd-}}": "wkhtmltoimage --format png \"{{-inp-}}\" \"{{-out-}}\"" },
 
   // Not the best quality
-  // { "{c}": "convert \"{i}\" \"{o}\"" },
+  // { "{{-cmd-}}": "convert \"{{-inp-}}\" \"{{-out-}}\"" },
 
   // Not the best quality
-  // { "{c}": "inkscape -z -e \"{o}\" -w {d} -h {d} \"{i}\"" },
+  // { "{{-cmd-}}": "inkscape -z -e \"{{-out-}}\" -w {d} -h {d} \"{{-inp-}}\"" },
 
-  // The most accurate. Do not enclose the output path in quotes, as this will not work, hence avoid spaces (existing bug in Chromium)
-  "{c}": "{svg2png} --window-size={d},{d} --screenshot={o} \"file://{i}\"",
+  // The most accurate
+  // Do not enclose the output path {{-out-}} in quotes, as this will not work.
+  // So try to avoid paths containing spaces (existing bug in Chromium)
 
-  "{img-src-dir}": "{cur-dir}/assets/images",
+  "{{-cmd-}}": '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
 
-  "{i}": "{img-src-dir}/app{m}.svg",
+  "{img-src-dir}": "{{-cur-dir-}}/_assets/images",
+
+  "{{-inp-}}": "{img-src-dir}/app{m}.svg",
 
   "{R}": [
     {
@@ -276,7 +273,7 @@ See the details of the imported file `shell.xnx` beyond this configuration
         { "{d}":  192, "{r}": "xxxh" }
       ],
 
-      "{o}": "{cur-dir}/android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
+      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
     },
 
     {
@@ -309,15 +306,15 @@ See the details of the imported file `shell.xnx` beyond this configuration
         { "{d}":  167, "{r}": 83.5, "{k}": 2 }
       ],
 
-      "{o}": "{cur-dir}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
+      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
     },
 
     {
       "{m}": "",
 
       "{dim}": [
-        { "{d}": [ 16, 32, ], "{o}":  "{cur-dir}/web/icons/favicon-{d}x{d}.png" },
-        { "{d}": 180, "{o}":  "{cur-dir}/web/icons/apple-touch-icon.png" }
+        { "{d}": [ 16, 32, ], "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{d}x{d}.png" },
+        { "{d}": 180, "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png" }
       ],
     }
   ]

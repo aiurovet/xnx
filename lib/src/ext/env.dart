@@ -8,7 +8,7 @@ class Env {
   static const _dollarDollar = r'$$';
 
   static final RegExp _rexEnvVarName = RegExp(
-      r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(\*|\@|#|~[0-9]+)|\$[\{](\*|\@|#|~[0-9]+)[\}]',
+      r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(~?\*|~?\@|~?#|~[0-9]+)|\$[\{](~?\*|~?\@|~?#|~[0-9]+)[\}]',
       caseSensitive: false
   );
 
@@ -64,9 +64,12 @@ class Env {
             switch (argStr) {
               case '*':
               case '@':
+              case '~*':
+              case '~@':
                 newValue = args.map((x) => x.quote()).join(' ');
                 break;
               case '#':
+              case '~#':
                 newValue = args.length.toString();
                 break;
               default:
@@ -78,11 +81,6 @@ class Env {
                   }
                 }
                 break;
-            }
-
-            if (argStr == '#') {
-            }
-            else {
             }
           }
         }

@@ -1,17 +1,7 @@
 {
-  "{{-rename-keywords-}}": {
-    "{{-cmd-}}": "{c}",
-    "{{-cur-dir-}}": "{cur-dir}",
-    "{{-inp-}}": "{i}",
-    "{{-inp-dir-}}": "{i-dir}",
-    "{{-inp-ext-}}": "{i-ext}",
-    "{{-inp-name-}}": "{i-name}",
-    "{{-out-}}": "{o}"
-  },
+  "{{-cmd-}}": '--expand "{{-inp-}}" "{{-out-}}"',
 
-  "{c}": '--expand "{i}" "{o}"',
-
-  "{i}": "{cur-dir}/template/*settings.json",
+  "{{-inp-}}": "{{-cur-dir-}}/template/*settings.json",
 
   "{env}": [
     { "{envTC}": "Dev",  "{envLC}": "dev"  },
@@ -23,5 +13,5 @@
   // too: just export those before calling xnx and use here
   // in a UNIX-like format: $HOME, ${USERPROFILE}, $MY_VAR
 
-  "{o}": "{i-dir}/../out/{i-name}-{envTC}{i-ext}",
+  "{{-out-}}": "{{-inp-dir-}}/../out/{inp-name}-{envTC}{{-inp-ext-}}",
 }

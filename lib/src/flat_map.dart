@@ -15,6 +15,7 @@ class FlatMap {
   // Interface
   /////////////////////////////////////////////////////////////////////////////
 
+  Map<String, String> get data => map;
   Iterable<MapEntry<String, String>> get entries => map.entries;
   bool get isEmpty => map.isEmpty;
   bool get isNotEmpty => map.isNotEmpty;
@@ -24,6 +25,7 @@ class FlatMap {
   bool containsKey(String key) => map.containsKey(key);
   void forEach(void Function(String key, String value) action) => map.forEach(action);
   void remove(String key) => map.remove(key);
+  void removeWhere(bool Function(String key, String value) test) => map.removeWhere(test);
 
   /////////////////////////////////////////////////////////////////////////////
 

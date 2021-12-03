@@ -1,49 +1,28 @@
 // A sample configuration file to perform search and replace in MS Office documents
 
 {
-  "{{-rename-keywords-}}": {
-    // {{-import-}}: this key can't be renamed, and the value should not contain any placeholders
-    "{{-cmd-}}": "{cmd}",
-    "{{-cur-dir-}}": "{cur-dir}",
-    "{{-can-expand-content-}}": "{can-expand-content}",
-    "{{-drop-}}": "{drop}",
-    "{{-expand-content-}}": "{expand-content}",
-
-    "{{-inp-}}": "{inp}",
-    "{{-inp-dir-}}": "{inp-dir}",
-    "{{-inp-ext-}}": "{inp-ext}",
-    "{{-inp-name-}}": "{inp-name}",
-    "{{-inp-name-ext-}}": "{inp-name-ext}",
-    "{{-inp-path-}}": "{inp-path}",
-    "{{-inp-sub-dir-}}": "{inp-sub-dir}",
-    "{{-inp-sub-path-}}": "{inp-sub-path}",
-    "{{-out-}}": "{out}",
-    "{{-run-}}": "{run}",
-    "{{-this-}}": "{this}",
-  },
-
-  "{can-expand-content}": false,
+  "{{-can-expand-content-}}": false,
   "{compression}": 6, // just to show the capability; 6 is the default
 
-  "{unz-dir}":  "{cur-dir}/unz/{inp-name-ext}.dir",
-  "{out-file}": "{cur-dir}/out/{inp-name}-<last-name>-<given-names>{inp-ext}",
+  "{unz-dir}":  "{{-cur-dir-}}/unz/{{-inp-name-ext-}}.dir",
+  "{out-file}": "{{-cur-dir-}}/out/{{-inp-name-}}-<last-name>-<given-names>{{-inp-ext-}}",
 
-  "{cfg-curr}": "{cur-dir}/unz/ms_office_curr.xnx",
+  "{cfg-curr}": "{{-cur-dir-}}/unz/ms_office_curr.xnx",
 
   "{R}": [
     {
       // Go through all MS Office input files
-      "{inp}": "{cur-dir}/inp/*",
+      "{{-inp-}}": "{{-cur-dir-}}/inp/*",
 
       // Import data
       "{{-import-}}": "ms_office_data.xnx?path=$.data.*",
 
-      "{run}": [
+      "{{-run-}}": [
         // Expand template config file
         '--expand "ms_office_tmpl.xnx" "{cfg-curr}" --force',
 
         // Decompress the input file (the archive)
-        '--unzip "{inp}" "{unz-dir}"',
+        '--unzip "{{-inp-}}" "{unz-dir}"',
 
         // Expand placeholders in every file extracted from the archive
         '--xnx "{cfg-curr}" --dir "{unz-dir}"',
@@ -54,7 +33,7 @@
     },
     {
       // Remove all possible temporary directories and files
-      "{run}": '--delete "{cur-dir}/unz"',
+      "{{-run-}}": '--delete "{{-cur-dir-}}/unz"',
     }
   ]
 }

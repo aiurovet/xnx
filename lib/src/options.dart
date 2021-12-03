@@ -17,10 +17,12 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final String appName = 'xnx';
-  static final String appVersion = '0.1.0';
-  static final String fileTypeCfg = '.$appName';
-  static final String fileMaskCfg = '${GlobExt.all}$fileTypeCfg';
+  static const String appName = 'xnx';
+  static const String appConfigName = '$appName$fileTypeAppCfg';
+  static const String appVersion = '0.1.0';
+  static const String fileTypeAppCfg = '.config';
+  static const String fileTypeCfg = '.$appName';
+  static const String fileMaskCfg = '${GlobExt.all}$fileTypeCfg';
   static const String helpMin = '-?';
 
   static const String _envAppKeyPrefix = '_XNX_';
@@ -33,11 +35,16 @@ class Options {
   static const String _envStartDir = '${_envAppKeyPrefix}START_DIR';
   static const String _envVerbosity = '${_envAppKeyPrefix}VERBOSITY';
 
-  static final RegExp _rexOptConfig = RegExp('^[\\-]([\\-](${config['name']}|${xnx['name']})|${config['abbr']})([\\=]|\$)', caseSensitive: true);
-  static final RegExp _rexOptStartDir = RegExp('^[\\-]([\\-]${startDir['name']}|${startDir['abbr']})([\\=]|\$)', caseSensitive: true);
-
   //////////////////////////////////////////////////////////////////////////////
 
+  static final Map<String, Object?> appConfig = {
+    'name': 'app-config',
+    'abbr': 'c',
+    'help': '''$appName application configuration file in JSON5 format https://json5.org/,
+defaults to $appConfigName in the directory where $fileTypeCfg file is from''',
+    'valueHelp': 'FILE',
+    'defaultsTo': null,
+  };
   static final Map<String, Object?> appendSep = {
     'name': 'append-sep',
     'abbr': 's',
@@ -53,19 +60,11 @@ the application will define environment variable $_envCompression''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
   };
-  static final Map<String, Object?> config = {
-    'name': 'config',
-    'abbr': 'c',
-    'help': '''configuration file in json5 format https://json5.org/,
-default extension: $fileTypeCfg''',
-    'valueHelp': 'FILE',
-    'defaultsTo': null,
-  };
   static final Map<String, Object?> each = {
     'name': 'each',
     'abbr': 'e',
     'help': '''treat each plain argument independently (e.g. can pass multiple filenames as arguments)
-see also -x, --xargs''',
+see also -x/--xargs''',
     'negatable': false,
   };
   static final Map<String, Object?> forceConvert = {
@@ -127,15 +126,17 @@ the application will define environment variable $_envVerbosity,''',
   static final Map<String, Object?> xargs = {
     'name': 'xargs',
     'abbr': 'a',
-    'help': 'similar to the above, but reads arguments from stdin\nuseful in a pipe with a file finding command',
+    'help': '''similar to -e/--each, but reads arguments from stdin
+useful in a pipe with a file path finding command''',
     'negatable': false,
   };
   static final Map<String, Object?> xnx = {
     'name': 'xnx',
-    'abbr': 'X',
-    'help': 'same as -c, --config=<FILE>',
+    'abbr': 'x',
+    'help': '''the actual JSON5 file to process, see https://json5.org/,
+default extension: $fileTypeCfg''',
     'valueHelp': 'FILE',
-    'negatable': false,
+    'defaultsTo': null,
   };
   static final Map<String, Object?> cmdPrint = {
     'name': 'print',
@@ -303,6 +304,9 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
+  String _appConfigPath = '';
+  String get appConfigPath => _appConfigPath;
+
   bool _asXargs = false;
   bool get asXargs => _asXargs;
 
@@ -415,27 +419,13 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String getConfigFullPath(List<String> args) {
-    for (var arg in args) {
-      if (_rexOptConfig.hasMatch(arg)) {
-        return Path.getFullPath(_configFileInfo.filePath);
-      }
-      if (_rexOptStartDir.hasMatch(arg)) {
-        break;
-      }
-    }
-
-    return Path.getFullPath(Path.join(startDirName, configFileInfo.filePath));
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
   void parseArgs(List<String> args) {
     var configPath = '';
     var errMsg = '';
     var dirName = '';
     var isHelp = false;
 
+    _appConfigPath = '';
     _configFileInfo.init();
     _startDirName = '';
     _isAppendSep = false;
@@ -457,10 +447,8 @@ can be used with --move to delete the source''',
         printUsage(parser);
       }
     });
-    addOption(parser, config, (value) {
-      if (configPath.isBlank()) {
-        configPath = value ?? '';
-      }
+    addOption(parser, appConfig, (value) {
+      _appConfigPath = value ?? '';
     });
     addOption(parser, xnx, (value) {
       if (configPath.isBlank()) {
@@ -763,6 +751,49 @@ For more details, see README.md
 
   ///////////////////////////////////////////////////////////4///////////////////
 
+  void setAppConfigPath() {
+    if (_appConfigPath.isNotEmpty) {
+      var stat = Path.fileSystem.statSync(_appConfigPath);
+
+      if (stat.type == FileSystemEntityType.file) {
+        return;
+      }
+
+      if (stat.type == FileSystemEntityType.directory) {
+        _appConfigPath = Path.join(_appConfigPath, appConfigName);
+
+        if (Path.fileSystem.file(_appConfigPath).existsSync()) {
+          return;
+        }
+      }
+    }
+
+    var configDirName = Path.dirname(_configFileInfo.filePath);
+    _appConfigPath = Path.join(configDirName, appConfigName);
+
+    if (Path.fileSystem.file(_appConfigPath).existsSync()) {
+      return;
+    }
+
+    if (!Path.equals(_startDirName, configDirName)) {
+      _appConfigPath = Path.join(_startDirName, appConfigName);
+
+      if (Path.fileSystem.file(_appConfigPath).existsSync()) {
+        return;
+      }
+    }
+
+    _appConfigPath = Path.join(Path.dirname(Platform.script.path), appConfigName);
+
+    if (Path.fileSystem.file(_appConfigPath).existsSync()) {
+      return;
+    }
+
+    _appConfigPath = '';
+  }
+
+  ///////////////////////////////////////////////////////////4///////////////////
+
   void setConfigPathAndStartDirName(String? configPath, String? dirName) {
     if ((configPath != null) && configPath.isBlank()) {
       configPath = null;
@@ -826,6 +857,8 @@ For more details, see README.md
     }
 
     _configFileInfo = ConfigFileInfo(configPath);
+
+    setAppConfigPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////

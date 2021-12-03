@@ -54,8 +54,7 @@ class Config {
     }
 
     options = Options(_logger);
-
-    keywords = Keywords();
+    keywords = Keywords(options: options, logger: _logger);
     flatMap = FlatMap(keywords: keywords);
     operation = Operation(flatMap: flatMap, logger: _logger);
     expression = Expression(flatMap: flatMap, keywords: keywords, operation: operation, logger: _logger);
@@ -104,50 +103,24 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   bool exec({List<String>? args, ConfigFlatMapProc? execFlatMap}) {
-    _logger.information('Loading configuration data');
+    _logger.information('Loading actions');
 
-    var tmpAll = loadSync();
+    var all = loadSync();
 
-    if (tmpAll is Map) {
-      all = tmpAll;
-    }
-    else {
+    if (all.isEmpty) {
       _logger.information('Nothing found');
       return false;
     }
-
-    _logger.information('Processing configuration data');
-
-    var renames = <String, Object?>{};
-
-    if (all.containsKey(keywords.forRename)) {
-      var map = all[keywords.forRename];
-
-      if (map is Map<String, Object?>) {
-        renames.addAll(map);
-        all.remove(keywords.forRename);
-      }
-    }
-
-    String? actionKey;
-
-    if (all.length == 1) {
-      actionKey = all.keys.first;
-    }
-
-    var actions = (actionKey == null ? all : all[actionKey]);
-
-    _logger.information('Processing renames');
-    keywords.rename(renames);
-
-    if (actions != null) {
+    else {
+      keywords.load(options);
+      
       _logger.information('Processing actions');
 
-      topData = actions;
+      topData = all;
       execData(null, topData, execFlatMap);
-    }
 
-    return true;
+      return true;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

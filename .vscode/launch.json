@@ -13,7 +13,7 @@
     { "name": "xnx - ms_office",   "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/ms_office" ], },
     { "name": "xnx - multi_conf",  "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-f", "-d", "examples/multi_conf" ], },
+      "args": [ "-f", "-d", "examples/multi_conf", ], },
     { "name": "xnx - multi_icon",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/multi_icon" ], },
     { "name": "xnx - site_env", "request": "launch", "type": "dart", "program": "bin/main.dart",

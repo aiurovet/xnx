@@ -428,8 +428,8 @@ Output path: "$outFilePathEx"
   ConfigResult execMapWithArgs(FlatMap map) {
     var plainArgs = options.plainArgs;
 
-    _exeParamNames = _config.keywords.getAllForExe();
-    _inpParamNames = _config.keywords.getAllForInp();
+    _exeParamNames = _config.keywords.allForExe;
+    _inpParamNames = _config.keywords.allForInp;
 
     if (plainArgs.isEmpty) {
       plainArgs = [ '' ];
@@ -456,17 +456,20 @@ Output path: "$outFilePathEx"
   //////////////////////////////////////////////////////////////////////////////
 
   File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, FlatMap map) {
-    var text = '';
+    // Load the input as a text string
 
-    if (inpFile == null) {
-      text = stdin.readAsStringSync();
-    }
-    else {
-      text = inpFile.readAsStringSync();
-    }
+    var text = (inpFile == null ? stdin.readAsStringSync() : inpFile.readAsStringSync());
+
+    // Remove keywords
+
+    var effectiveMap = <String, String>{}
+      ..addAll(map.data)
+      ..removeWhere((k, v) => _config.keywords.allForExpand.contains(k));
+
+    // Expand data
 
     for (; ;) {
-      map.forEach((k, v) {
+      effectiveMap.forEach((k, v) {
         text = text.replaceAll(k, v);
       });
 

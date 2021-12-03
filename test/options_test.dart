@@ -18,11 +18,11 @@ void main() {
 
         Path.fileSystem.file('a.xnx').createSync();
 
-        o.parseArgs(['-p', '6', '-q', '--config', 'a']);
+        o.parseArgs(['-p', '6', '-q', '--xnx', 'a']);
         expect(o.configFileInfo.filePath, Path.getFullPath('a.xnx'));
         expect(Env.get('_XNX_COMPRESSION'), '6');
 
-        o.parseArgs(['-p', '7', '-q', '--config', 'a']);
+        o.parseArgs(['-p', '7', '-q', '--xnx', 'a']);
         expect(o.compression, 7);
 
         o.parseArgs(['-q', '--config', 'a']);

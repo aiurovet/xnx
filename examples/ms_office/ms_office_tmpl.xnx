@@ -1,13 +1,6 @@
 // This is a template file used to expand to the actual configuration, which
 // in turn, will be used to expand XML files extracted from an MS Office file
 {
-  "{{-rename-keywords-}}": {
-    "{{-expand-content-}}": "{expand-content}",
-    "{{-inp-}}": "{i}",
-    "{{-out-}}": "{o}",
-    "{{-run-}}": "{r}",
-  },
-
   "data": [
     {
       "{last-name}": "<last-name>",
@@ -21,9 +14,9 @@
       "{pronoun-att}": "<pronoun-att>",
       "{disease}": "<disease>",
       "{dr-full-name}": "<dr-full-name>",
-      "{i}": "**",
+      "{{-inp-}}": "**",
     }
   ],
 
-  "{r}": '--expand "{i}"',
+  "{{-run-}}": '--expand "{{-inp-}}"',
 }
