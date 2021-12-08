@@ -20,6 +20,10 @@ extension StringExt on String {
   static const String unknown = '<unknown>';
 
   static final RegExp rexBlank = RegExp(r'^[\s]*$');
+
+  // Taken from https://stackoverflow.com/questions/24518020/comprehensive-regexp-to-remove-javascript-comments/24518413#24518413
+  static final RegExp rexComments = RegExp(r"""/((["'])(?:\\[\s\S]|.)*?\2|(?:[^\w\s]|^)\s*\/(?![*\/])(?:\\.|\[(?:\\.|.)\]|.)*?\/(?=[gmiy]{0,4}\s*(?![*\/])(?:\W|$)))|\/\/.*?$|\/\*[\s\S]*?\*\/""", multiLine: true);
+
   static final RegExp rexCmdLine = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
   static final RegExp rexInteger = RegExp(r'^\d+$', caseSensitive: false);
   static final RegExp rexProtocol = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
@@ -33,6 +37,9 @@ extension StringExt on String {
 
   bool parseBool() =>
     (toLowerCase() == 'true');
+
+  String removeComments() =>
+    replaceAll(rexComments, r'$1');
 
   //////////////////////////////////////////////////////////////////////////////
 

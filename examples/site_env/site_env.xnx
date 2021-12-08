@@ -1,13 +1,13 @@
 {
 
-  detectPaths: "^\\{.*-dir\\}$",
+  "{{-detect-paths-}}": "^\\{.*-dir\\}$",
  
-  once: {
+  "{{-once-}}": {
     "{rls-dir}": './ReleaseFiles',
     "{{-if-}}": { "": '" $@ " ~/i [\\s]clean[\\s]', "{{-then-}}": {
-       run: '--delete "{rls-dir}"',
+       "{{-run-}}": '--delete "{rls-dir}"',
     } },
-    run: '--mkdir "{rls-dir}"',
+    "{{-run-}}": '--mkdir "{rls-dir}"',
   },
  
   "{all-envs}": "dev,qa,training,prod",
@@ -15,7 +15,7 @@
   "{site}": [ "au", "nz", "uk", "us", ],
   "{env-dir}": [ "01-dev", "02-qa", "03-training", "04-prod", ],
 
-  func: [
+  "{{-func-}}": [
     { "{env}": [ "=Substr", "{env-dir}", 4 ], },
     { "{other-envs}": [ "=ReplaceMatch", [ "=Replace", ",{all-envs},", ",{env},", "," ], "^,+(.*),+$", "$1" ] },
     { "{other-sites}": [ "=ReplaceMatch", [ "=Replace", ",{all-sites},", ",{site},", "," ], "^,+(.*),+$", "$1" ] },
@@ -26,9 +26,9 @@
  
   "{{-out-}}": "{out-dir}/{{-inp-name-ext-}}",
   "{{-inp-}}": "{inp-dir}/**[_-]{,{site}[_-],{site}-{env}[_-],{env}[_-]}*",
-  skip: { mask: "*[_-]{{other-envs},{other-sites}}[_-]*", isPath: false, isNot: false, },
+  "{{-skip-}}": { mask: "*[_-]{{other-envs},{other-sites}}[_-]*", isPath: false, isNot: false, },
  
-  cmd: [
+  "{{-cmd-}}": [
     '--mkdir "{out-dir}"',
     '--copy "{{-inp-}}" "{{-out-}}"',
   ],

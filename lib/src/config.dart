@@ -411,8 +411,8 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   Map<String, Object?> loadSync() {
-    var lf = ConfigFileLoader(logger: _logger);
-    lf.loadJsonSync(options.configFileInfo, paramNameImport: keywords.forImport, appPlainArgs: options.plainArgs);
+    var lf = ConfigFileLoader(keywords: keywords, logger: _logger);
+    lf.loadJsonSync(options.configFileInfo, appPlainArgs: options.plainArgs);
 
     lastModifiedStamp = lf.lastModifiedStamp;
 

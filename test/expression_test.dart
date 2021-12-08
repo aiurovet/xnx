@@ -16,15 +16,17 @@ import 'helper.dart';
 final blockThen = [true];
 final blockElse = [false];
 
-final keyIf = '{{-if-}}';
+final keywords = Keywords();
+final keyIf = keywords.forIf;
 final keyCondition = '';
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
-var mapIf = { keyIf: {
+var mapIf = { keywords.forIf: {
   keyCondition: 'false',
-  '{{-then-}}': blockThen,
-  '{{-else-}}': blockElse
+  keywords.forThen: blockThen,
+  keywords.forElse: blockElse
 }};
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 {
-  cmd: '--expand "{{-inp-}}" "{{-out-}}"',
+  "{{-cmd-}}": '--expand "{{-inp-}}" "{{-out-}}"',
 
   "{{-inp-}}": "{{-cur-dir-}}/template/*settings.json",
 

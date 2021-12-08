@@ -767,6 +767,7 @@ For more details, see README.md
 
   void setAppConfigPath() {
     if (_appConfigPath.isNotEmpty) {
+      _appConfigPath = Path.getFullPath(_appConfigPath);
       var stat = Path.fileSystem.statSync(_appConfigPath);
 
       if (stat.type == FileSystemEntityType.file) {

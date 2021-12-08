@@ -5,8 +5,8 @@
   "version": "0.1.0",
   "configurations": [
 
-    { "name": "ad-hoc --find", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "--find", ".", ], },
+    { "name": "ad-hoc -c", "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-c ../../", "-f", "-d", "examples/multi_conf", ], },
     { "name": "help", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "--help", ], },
     { "name": "xnx - flutter_app_icons", "request": "launch", "type": "dart", "program": "bin/main.dart",
@@ -19,7 +19,7 @@
       "args": [ "-f", "-d", "examples/multi_conf", ], },
     { "name": "xnx - multi_icon",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/multi_icon" ], },
-    { "name": "xnx - site_env", "request": "launch", "type": "dart", "program": "bin/main.dart",
+    { "name": "xnx - site_env clean", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/site_env", "Clean", ], },
     { "name": "xnx - xunit_data",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/xunit_data" ], },

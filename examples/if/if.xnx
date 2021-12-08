@@ -3,32 +3,32 @@
 // of parameters a lot easier and much more readable way.
 
 {
-  //import: "../shell.xnx",
+  //"{{-import-}}": "../shell.xnx",
 
-  once: {
-    func: {
+  "{{-once-}}": {
+    "{{-func-}}": {
       "{HOSTINFO}": ["=run", "uname -a"],
       "{div}": [ '=div', '123', '100', ],
       "{idiv}": [ '=idiv', '123', '100', ],
     },
   },
 
-  if: { "": '"${HOME}" !~/i \/(\\.|HOME)', "{{-then-}}": {
-    run: '--print "Has match"',
+  "{{-if-}}": { "": '"${HOME}" !~/i \/(\\.|HOME)', "{{-then-}}": {
+    "{{-run-}}": '--print "Has match"',
   }, "{{-else-}}": {
-    run: '--print "No match"',
+    "{{-run-}}": '--print "No match"',
   } },
 
-  if: { "": 'true', "{{-then-}}": {
-    run: '--print "Second if"',
+  "{{-if-}}": { "": 'true', "{{-then-}}": {
+    "{{-run-}}": '--print "Second if"',
   } },
 
-  run: [
+  "{{-run-}}": [
     './myecho "OS Name: <${OS}> OS Full: <${OS_FULL}>, User: <${USER}>, Home: <${HOME}>, Temp: ${TEMP}, Host: <${HOST}>, Locale: <${LOCALE}>"',
     '--print "OS Name: <${OS}>\nOS Full: <${OS_FULL}>\nUser: <${USER}>\nHome: <${HOME}>\nTemp: <${TEMP}>\nHost: <${HOST}>,\nLocale: <${LOCALE}>"',
   ],
 
-  run_2: [
+  "{{-run-}}": [
     '--print "Run #2"',
   ],
 }

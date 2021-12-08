@@ -232,9 +232,9 @@ See the details of the imported file `shell.xnx` beyond this configuration
 {
   import: "../shell.xnx",
 
-  canExpandContent: true,
+  {{-can-expand-content-}}: true,
 
-  detectPaths: "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
+  '{{-detect-paths-}}': "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
   // Terribly slow
   // { cmd: "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },

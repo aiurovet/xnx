@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:meta/meta.dart';
 import 'package:file/file.dart';
 
 import 'package:json5/json5.dart';
@@ -9,6 +10,7 @@ import 'package:xnx/src/command.dart';
 import 'package:xnx/src/config_file_info.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/ext/file.dart';
 import 'package:xnx/src/ext/stdin.dart';
@@ -49,16 +51,26 @@ class ConfigFileLoader {
   String get text => _text;
 
   //////////////////////////////////////////////////////////////////////////////
+  // Internals
+  //////////////////////////////////////////////////////////////////////////////
+
+  @protected late final Keywords keywords;
+
+  //////////////////////////////////////////////////////////////////////////////
   // Construction
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader({bool isStdIn = false, File? file, String? text, Logger? logger}) {
+  ConfigFileLoader({bool isStdIn = false, File? file, String? text, Keywords? keywords, Logger? logger}) {
     _file = file;
     _isStdIn = isStdIn;
     _lastModifiedStamp = (file?.lastModifiedStampSync() ?? 0);
 
     if (text != null) {
       _text = text;
+    }
+
+    if (keywords != null) {
+      this.keywords = keywords;
     }
 
     if (logger != null) {
@@ -186,20 +198,21 @@ class ConfigFileLoader {
       var result = '"${getImportFileKey(keyPrefix, impPath: impPath)}": $fullText';
 
       return result;
-    } catch (e) {
+    }
+    catch (e) {
       throw Exception('Failed to parse file: "$impPath"\n\n${e.toString()}');
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader loadImportsSync(String? paramNameImport) {
-    if ((paramNameImport == null) || paramNameImport.isBlank()) {
+  ConfigFileLoader loadImportsSync() {
+    if (keywords.forImport.isBlank()) {
       return this;
     }
 
-    var paramPattern = RegExp.escape(paramNameImport);
-    var pattern = "('$paramPattern'|\"$paramPattern\")";
+    var paramPattern = RegExp.escape(keywords.forImport);
+    var pattern = "('$paramPattern[^']*'|\"$paramPattern[^\"]*\")";
     pattern += r'\s*:\s*((\"(.*?)\")|(\[[^\]]+\]))\s*([,\]\}]|\/\/|\/\*)';
 
     var regExp = RegExp(pattern);
@@ -208,7 +221,7 @@ class ConfigFileLoader {
       return this;
     }
 
-    var lf = ConfigFileLoader(logger: _logger);
+    var lf = ConfigFileLoader(keywords: keywords, logger: _logger);
 
     _text = _text.replaceAll(r'\\', '\x01');
     _text = _text.replaceAll('\'', '\x02');
@@ -218,7 +231,7 @@ class ConfigFileLoader {
       var impPathsSerialized = match.group(5);
       var elemSep = match.group(6) ?? '';
 
-      var result = lf.importFiles(paramNameImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + elemSep;
+      var result = lf.importFiles(keywords.forImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + elemSep;
 
       if (_lastModifiedStamp < lf._lastModifiedStamp) {
         _lastModifiedStamp = lf._lastModifiedStamp;
@@ -237,11 +250,11 @@ class ConfigFileLoader {
   // Methods
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {String? paramNameImport, List<String>? appPlainArgs}) {
+  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {List<String>? appPlainArgs}) {
     loadSyncEx(fileInfo);
 
-    if (!(paramNameImport?.isBlank() ?? true)) {
-      loadImportsSync(paramNameImport);
+    if (!keywords.forImport.isBlank()) {
+      loadImportsSync();
     }
 
     //expandCmdLineArgs(appPlainArgs);
@@ -291,6 +304,8 @@ class ConfigFileLoader {
       _text = file.readAsStringSync();
     }
 
+    _text = makeRepeatableKeysUnique(_text);
+
     if (fileInfo.jsonPath.isEmpty) {
       _data = json5Decode(_text);
       _text = jsonEncode(_data);
@@ -310,6 +325,30 @@ class ConfigFileLoader {
     }
 
     return this;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String makeRepeatableKeysUnique(String text) {
+    if (keywords.rexRepeatable.pattern.isEmpty) {
+      return text;
+    }
+
+    var i = 0;
+
+    var result = text
+      .replaceAll(r'\\', '\x01')
+      .replaceAll(r"\'", '\x02')
+      .replaceAll(r'\"', '\x03')
+      .replaceAllMapped(keywords.rexRepeatable, (match) {
+        return '${match.group(1)}^${(++i).toString().padLeft(5, '0')}${match.group(2)}';
+      })
+      .replaceAll('\x03', r'\"')
+      .replaceAll('\x02', r"\'")
+      .replaceAll('\x01', r'\\')
+    ;
+
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////

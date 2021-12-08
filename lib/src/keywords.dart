@@ -12,11 +12,11 @@ class Keywords {
   // they are allowed not to be unique per map
   //////////////////////////////////////////////////////////////////////////////
 
-  String forCanExpandContent = 'canExpandContent';
-  String forCmd = 'cmd';
+  String forCanExpandContent = '{{-can-expand-content-}}';
+  String forCmd = '{{-cmd-}}';
   String forCurDir = '{{-cur-dir-}}';
-  String forDetectPaths = 'detectPaths';
-  String forFunc = 'func';
+  String forDetectPaths = '{{-detectPaths-}}';
+  String forFunc = '{{-func-}}';
   String forInp = '{{-inp-}}';
   String forInpDir = '{{-inp-dir-}}';
   String forInpExt = '{{-inp-ext-}}';
@@ -25,13 +25,13 @@ class Keywords {
   String forInpPath = '{{-inp-path-}}';
   String forInpSubDir = '{{-inp-sub-dir-}}';
   String forInpSubPath = '{{-inp-sub-path-}}';
-  String forImport = 'import';
-  String forOnce = 'once';
+  String forImport = '{{-import-}}';
+  String forOnce = '{{-once-}}';
   String forOut = '{{-out-}}';
-  String forRun = 'run';
-  String forSkip = 'skip';
-  String forStop = 'stop';
-  String forTake = 'take';
+  String forRun = '{{-run-}}';
+  String forSkip = '{{-skip-}}';
+  String forStop = '{{-stop-}}';
+  String forTake = '{{-take-}}';
   String forThis = '{{-this-}}';
 
   String forFnAdd = '=Add';
@@ -74,6 +74,8 @@ class Keywords {
   // Derived
   //////////////////////////////////////////////////////////////////////////////
 
+  RegExp rexRepeatable = RegExp('');
+
   final allForExe = <String>[];
   final allForExpand = <String>[];
   final allForGlob = <String>[];
@@ -108,9 +110,9 @@ class Keywords {
     if (options != null) {
       this.options = options;
     }
-  }
 
-  //////////////////////////////////////////////////////////////////////////////
+    _initRepeatable();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -124,69 +126,71 @@ class Keywords {
 
       var node = data['keywords'];
 
-      forIf = node['if'] ?? forIf;
-      forIf = node['then'] ?? forThen;
-      forIf = node['else'] ?? forElse;
+      forIf = node['kwIf'] ?? forIf;
+      forIf = node['kwThen'] ?? forThen;
+      forIf = node['kwElse'] ?? forElse;
 
-      forCanExpandContent = node['canExpandContent'] ?? forCanExpandContent;
-      forCmd = node['cmd'] ?? forCmd;
-      forCurDir = node['curDir'] ?? forCurDir;
-      forDetectPaths = node['detectPaths'] ?? forDetectPaths;
-      forFunc = node['func'] ?? forFunc;
-      forInp = node['inp'] ?? forInp;
-      forInpDir = node['inpDir'] ?? forInpDir;
-      forInpExt = node['inpExt'] ?? forInpExt;
-      forInpName = node['inpName'] ?? forInpName;
-      forInpNameExt = node['inpNameExt'] ?? forInpNameExt;
-      forInpPath = node['inpPath'] ?? forInpPath;
-      forInpSubDir = node['inpSubDir'] ?? forInpSubDir;
-      forInpSubPath = node['inpSubPath'] ?? forInpSubPath;
-      forImport = node['import'] ?? forImport;
-      forOnce = node['once'] ?? forOnce;
-      forOut = node['out'] ?? forOut;
-      forRun = node['run'] ?? forRun;
-      forSkip = node['skip'] ?? forSkip;
-      forStop = node['stop'] ?? forStop;
-      forTake = node['take'] ?? forTake;
-      forThis = node['this'] ?? forThis;
+      forCanExpandContent = node['kwCanExpandContent'] ?? forCanExpandContent;
+      forCmd = node['kwCmd'] ?? forCmd;
+      forCurDir = node['kwCurDir'] ?? forCurDir;
+      forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
+      forFunc = node['kwFunc'] ?? forFunc;
+      forInp = node['kwInp'] ?? forInp;
+      forInpDir = node['kwInpDir'] ?? forInpDir;
+      forInpExt = node['kwInpExt'] ?? forInpExt;
+      forInpName = node['kwInpName'] ?? forInpName;
+      forInpNameExt = node['kwInpNameExt'] ?? forInpNameExt;
+      forInpPath = node['kwInpPath'] ?? forInpPath;
+      forInpSubDir = node['kwInpSubDir'] ?? forInpSubDir;
+      forInpSubPath = node['kwInpSubPath'] ?? forInpSubPath;
+      forImport = node['kwImport'] ?? forImport;
+      forOnce = node['kwOnce'] ?? forOnce;
+      forOut = node['kwOut'] ?? forOut;
+      forRun = node['kwRun'] ?? forRun;
+      forSkip = node['kwSkip'] ?? forSkip;
+      forStop = node['kwStop'] ?? forStop;
+      forTake = node['kwTake'] ?? forTake;
+      forThis = node['kwThis'] ?? forThis;
+
+      _initRepeatable();
 
       node = data['functions'];
 
-      forFnAdd = node['=Add'] ?? forFnAdd;
-      forFnAddDays = node['=AddDays'] ?? forFnAddDays;
-      forFnAddMonths = node['=AddMonths'] ?? forFnAddMonths;
-      forFnAddYears = node['=AddYears'] ?? forFnAddYears;
-      forFnBaseName = node['=BaseName'] ?? forFnBaseName;
-      forFnBaseNameNoExt = node['=BaseNameNoExt'] ?? forFnBaseNameNoExt;
-      forFnDate = node['=Date'] ?? forFnDate;
-      forFnDirName = node['=DirName'] ?? forFnDirName;
-      forFnDiv = node['=Div'] ?? forFnDiv;
-      forFnDivInt = node['=IDiv'] ?? forFnDivInt;
-      forFnEndOfMonth = node['=EndOfMonth'] ?? forFnEndOfMonth;
-      forFnExtension = node['=Extension'] ?? forFnExtension;
-      forFnFileSize = node['=FileSize'] ?? forFnFileSize;
-      forFnIndex = node['=Index'] ?? forFnIndex;
-      forFnMatch = node['=Match'] ?? forFnLastIndex;
-      forFnLastIndex = node['=LastIndex'] ?? forFnLastIndex;
-      forFnLastMatch = node['=LastMatch'] ?? forFnMatch;
-      forFnLastModified = node['=LastModified'] ?? forFnLastModified;
-      forFnLocal = node['=Local'] ?? forFnLocal;
-      forFnLower = node['=Lower'] ?? forFnLower;
-      forFnMax = node['=Max'] ?? forFnMax;
-      forFnMin = node['=Min'] ?? forFnMin;
-      forFnMod = node['=Mod'] ?? forFnMod;
-      forFnMul = node['=Mul'] ?? forFnMul;
-      forFnNow = node['=Now'] ?? forFnNow;
-      forFnReplace = node['=Replace'] ?? forFnReplace;
-      forFnReplaceMatch = node['=ReplaceMatch'] ?? forFnReplaceMatch;
-      forFnRun = node['=Run'] ?? forFnRun;
-      forFnStartOfMonth = node['=StartOfMonth'] ?? forFnStartOfMonth;
-      forFnSub = node['=Sub'] ?? forFnSub;
-      forFnSubstr = node['=Substr'] ?? forFnSubstr;
-      forFnTime = node['=Time'] ?? forFnTime;
-      forFnToday = node['=Today'] ?? forFnToday;
-      forFnUpper = node['=Upper'] ?? forFnUpper;
-      forFnUtc = node['=Utc'] ?? forFnUtc;
+      forFnAdd = node['fnAdd'] ?? forFnAdd;
+      forFnAddDays = node['fnAddDays'] ?? forFnAddDays;
+      forFnAddMonths = node['fnAddMonths'] ?? forFnAddMonths;
+      forFnAddYears = node['fnAddYears'] ?? forFnAddYears;
+      forFnBaseName = node['fnBaseName'] ?? forFnBaseName;
+      forFnBaseNameNoExt = node['fnBaseNameNoExt'] ?? forFnBaseNameNoExt;
+      forFnDate = node['fnDate'] ?? forFnDate;
+      forFnDirName = node['fnDirName'] ?? forFnDirName;
+      forFnDiv = node['fnDiv'] ?? forFnDiv;
+      forFnDivInt = node['fnIDiv'] ?? forFnDivInt;
+      forFnEndOfMonth = node['fnEndOfMonth'] ?? forFnEndOfMonth;
+      forFnExtension = node['fnExtension'] ?? forFnExtension;
+      forFnFileSize = node['fnFileSize'] ?? forFnFileSize;
+      forFnIndex = node['fnIndex'] ?? forFnIndex;
+      forFnMatch = node['fnMatch'] ?? forFnLastIndex;
+      forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
+      forFnLastMatch = node['fnLastMatch'] ?? forFnMatch;
+      forFnLastModified = node['fnLastModified'] ?? forFnLastModified;
+      forFnLocal = node['fnLocal'] ?? forFnLocal;
+      forFnLower = node['fnLower'] ?? forFnLower;
+      forFnMax = node['fnMax'] ?? forFnMax;
+      forFnMin = node['fnMin'] ?? forFnMin;
+      forFnMod = node['fnMod'] ?? forFnMod;
+      forFnMul = node['fnMul'] ?? forFnMul;
+      forFnNow = node['fnNow'] ?? forFnNow;
+      forFnReplace = node['fnReplace'] ?? forFnReplace;
+      forFnReplaceMatch = node['fnReplaceMatch'] ?? forFnReplaceMatch;
+      forFnRun = node['fnRun'] ?? forFnRun;
+      forFnStartOfMonth = node['fnStartOfMonth'] ?? forFnStartOfMonth;
+      forFnSub = node['fnSub'] ?? forFnSub;
+      forFnSubstr = node['fnSubstr'] ?? forFnSubstr;
+      forFnTime = node['fnTime'] ?? forFnTime;
+      forFnToday = node['fnToday'] ?? forFnToday;
+      forFnUpper = node['fnUpper'] ?? forFnUpper;
+      forFnUtc = node['fnUtc'] ?? forFnUtc;
     }
 
     _initDerived();
@@ -268,4 +272,12 @@ class Keywords {
       forOut, forCurDir,
     ]);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void _initRepeatable() =>
+    rexRepeatable = RegExp('(${RegExp.escape(forCanExpandContent)}|${RegExp.escape(forCmd)}|${RegExp.escape(forDetectPaths)}|${RegExp.escape(forFunc)}|${RegExp.escape(forIf)}|${RegExp.escape(forImport)}|${RegExp.escape(forOnce)}|${RegExp.escape(forRun)}|${RegExp.escape(forStop)}|${RegExp.escape(forThis)})(\\s*[\'"]\\:)', caseSensitive: false);
+
+  //////////////////////////////////////////////////////////////////////////////
+
 }
