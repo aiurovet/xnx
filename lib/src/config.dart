@@ -289,6 +289,7 @@ class Config {
 
   ConfigResult execDataPlain(String? key, Object data, ConfigFlatMapProc? execFlatMap) {
     if (key == null) {
+      _logger.error('The key is null');
       return ConfigResult.stop;
     }
 
@@ -315,7 +316,7 @@ class Config {
 
     if (keyEx == keywords.forStop) {
       if (!isEmpty) {
-        _logger.out(flatMap.expand(dataStr));
+        _logger.error(flatMap.expand(dataStr));
       }
 
       return ConfigResult.stop;

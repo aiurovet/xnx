@@ -1,29 +1,29 @@
 // A sample configuration file to generate PNG icons for Flutter app (all needed platforms and sizes)
 
 {
-  "{{-import-}}": "../shell.xnx",
+  import: "../shell.xnx",
 
-  "{{-can-expand-content-}}": true,
+  canExpandContent: true,
 
-  "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
+  detectPaths: "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
   // Terribly slow
-  // { "{{-cmd-}}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
+  // { cmd: "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
 
   // Sometimes fails to display svg properly,
-  // { "{{-cmd-}}": "wkhtmltoimage --format png \"{{-inp-}}\" \"{{-out-}}\"" },
+  // { cmd: "wkhtmltoimage --format png \"{{-inp-}}\" \"{{-out-}}\"" },
 
   // Not the best quality
-  // { "{{-cmd-}}": "convert \"{{-inp-}}\" \"{{-out-}}\"" },
+  // { cmd: "convert \"{{-inp-}}\" \"{{-out-}}\"" },
 
   // Not the best quality
-  // { "{{-cmd-}}": "inkscape -z -e \"{{-out-}}\" -w {d} -h {d} \"{{-inp-}}\"" },
+  // { cmd: "inkscape -z -e \"{{-out-}}\" -w {d} -h {d} \"{{-inp-}}\"" },
 
   // The most accurate
   // Do not enclose the output path {{-out-}} in quotes, as this will not work.
   // So try to avoid paths containing spaces (existing bug in Chromium)
 
-  "{{-cmd-}}": '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
+  cmd: '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
 
   "{img-src-dir}": "{{-cur-dir-}}/_assets/images",
 

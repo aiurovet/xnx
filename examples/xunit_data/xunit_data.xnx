@@ -7,5 +7,5 @@
 
   "{{-inp-}}": "inline_data.txt",
   "{{-out-}}": "-",
-  "{{-run-}}": '--expand "{{-inp-}}" "{{-out-}}"'
+  run: '--expand "{{-inp-}}" "{{-out-}}"'
 }

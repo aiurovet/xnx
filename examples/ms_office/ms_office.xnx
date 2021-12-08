@@ -1,7 +1,7 @@
 // A sample configuration file to perform search and replace in MS Office documents
 
 {
-  "{{-can-expand-content-}}": false,
+  canExpandContent: false,
   "{compression}": 6, // just to show the capability; 6 is the default
 
   "{unz-dir}":  "{{-cur-dir-}}/unz/{{-inp-name-ext-}}.dir",
@@ -15,9 +15,9 @@
       "{{-inp-}}": "{{-cur-dir-}}/inp/*",
 
       // Import data
-      "{{-import-}}": "ms_office_data.xnx?path=$.data.*",
+      import: "ms_office_data.xnx?path=$.data.*",
 
-      "{{-run-}}": [
+      run: [
         // Expand template config file
         '--expand "ms_office_tmpl.xnx" "{cfg-curr}" --force',
 
@@ -33,7 +33,7 @@
     },
     {
       // Remove all possible temporary directories and files
-      "{{-run-}}": '--delete "{{-cur-dir-}}/unz"',
+      run: '--delete "{{-cur-dir-}}/unz"',
     }
   ]
 }

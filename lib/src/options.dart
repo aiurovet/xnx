@@ -138,9 +138,15 @@ default extension: $fileTypeCfg''',
     'valueHelp': 'FILE',
     'defaultsTo': null,
   };
+  static final Map<String, Object?> cmdFind = {
+    'name': 'find',
+    'help': '''just find recursively all files and sub-directories matching the glob pattern
+in a given or the current directory and print those to stdout''',
+    'negatable': false,
+  };
   static final Map<String, Object?> cmdPrint = {
     'name': 'print',
-    'help': 'just print the arguments to stdout\n',
+    'help': 'just print the arguments to stdout',
     'negatable': false,
   };
   static final Map<String, Object?> cmdCopy = {
@@ -180,17 +186,17 @@ glob patterns are allowed''',
   };
   static final Map<String, Object?> cmdRemove = {
     'name': 'remove',
-    'help': 'just the same as --delete\n',
+    'help': 'just the same as --delete',
     'negatable': false,
   };
   static final Map<String, Object?> cmdRename = {
     'name': 'rename',
-    'help': 'just the same as --move\n',
+    'help': 'just the same as --move',
     'negatable': false,
   };
   static final Map<String, Object?> cmdRenameNewer = {
     'name': 'rename-newer',
-    'help': 'just the same as --move-newer\n',
+    'help': 'just the same as --move-newer',
     'negatable': false,
   };
   static final Map<String, Object?> cmdBz2 = {
@@ -345,6 +351,7 @@ can be used with --move to delete the source''',
   //////////////////////////////////////////////////////////////////////////////
 
   bool get isCmd => (
+    _isCmdFind ||
     _isCmdPrint ||
     _isCmdCopy || _isCmdCopyNewer ||
     _isCmdDelete || _isCmdCreate ||
@@ -371,6 +378,9 @@ can be used with --move to delete the source''',
 
   bool _isCmdDelete = false;
   bool get isCmdDelete => _isCmdDelete;
+
+  bool _isCmdFind = false;
+  bool get isCmdFind => _isCmdFind;
 
   bool _isCmdPrint = false;
   bool get isCmdPrint => _isCmdPrint;
@@ -433,6 +443,7 @@ can be used with --move to delete the source''',
     _isWaitAlways = false;
     _isWaitOnErr = false;
 
+    _isCmdFind = false;
     _isCmdPrint = false;
     _isCmdCompress = false;
     _isCmdDecompress = false;
@@ -496,6 +507,9 @@ can be used with --move to delete the source''',
     });
     addFlag(parser, waitOnErr, (value) {
       _isWaitOnErr = value;
+    });
+    addFlag(parser, cmdFind, (value) {
+      _isCmdFind = value;
     });
     addFlag(parser, cmdPrint, (value) {
       _isCmdPrint = value;

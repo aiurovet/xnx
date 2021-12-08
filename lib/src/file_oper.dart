@@ -56,6 +56,42 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static void findSync(List<String> paths, {bool isSilent = false}) {
+    var pathLists = Path.argsToLists(paths, oper: 'find files for');
+    var pathList = pathLists[0];
+
+    for (var i = 0, n = pathList.length; i < n; i++) {
+      var path = pathList[i];
+      path = Path.getFullPath(path);
+
+      if (!GlobExt.isGlobPattern(path) && Path.fileSystem.directory(path).existsSync()) {
+        path = Path.join(path, GlobExt.all);
+      }
+
+      pathList[i] = path;
+    }
+
+    var isMinimal = !GlobExt.isRecursive(pathList[0]);
+
+    listSync(pathList, isSilent: isSilent, isSorted: true, isMinimal: isMinimal, listProc: (entities, entityNo, repeatNo, subPath) {
+      if (entityNo < 0) {
+        return true;
+      }
+
+      var entity = entities[entityNo];
+
+      if (entity.existsSync()) {
+        if (!isSilent) {
+          print('${entity.path}${entity is Directory ? Path.separator : ''}');
+        }
+      }
+
+      return true;
+    });
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static List<FileSystemEntity> listSync(List<String> paths, {
       int repeats = 1, bool isSorted = true, bool isMinimal = false, bool isSilent = false,
       bool Function(List<FileSystemEntity> entities, int entityNo, int repeatNo, String? subPath)? listProc,

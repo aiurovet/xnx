@@ -107,7 +107,7 @@ For more details, see README.md
      the program will expand those depending on the OS it is run under. This
      applies to {{-cur-dir-}}, {{-inp-}}, {{-out-}} as well as any other key,
      which matches the regular expression pattern in {{-detect-paths-}}. This
-     does not apply to {{-cmd-}} by default, as the forward slashes might
+     does not apply to cmd by default, as the forward slashes might
      represent command-line option character(s) under Windows.
 
 1.2. If the path to config file (option -c, --config) is not absolute, then its
@@ -230,29 +230,29 @@ See the details of the imported file `shell.xnx` beyond this configuration
 // A sample configuration file to generate PNG icons for Flutter app (all needed platforms and sizes)
 
 {
-  "{{-import-}}": "../shell.xnx",
+  import: "../shell.xnx",
 
-  "{{-can-expand-content-}}": true,
+  canExpandContent: true,
 
-  "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
+  detectPaths: "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
   // Terribly slow
-  // { "{{-cmd-}}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
+  // { cmd: "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
 
   // Sometimes fails to display svg properly,
-  // { "{{-cmd-}}": "wkhtmltoimage --format png \"{{-inp-}}\" \"{{-out-}}\"" },
+  // { cmd: "wkhtmltoimage --format png \"{{-inp-}}\" \"{{-out-}}\"" },
 
   // Not the best quality
-  // { "{{-cmd-}}": "convert \"{{-inp-}}\" \"{{-out-}}\"" },
+  // { cmd: "convert \"{{-inp-}}\" \"{{-out-}}\"" },
 
   // Not the best quality
-  // { "{{-cmd-}}": "inkscape -z -e \"{{-out-}}\" -w {d} -h {d} \"{{-inp-}}\"" },
+  // { cmd: "inkscape -z -e \"{{-out-}}\" -w {d} -h {d} \"{{-inp-}}\"" },
 
   // The most accurate
   // Do not enclose the output path {{-out-}} in quotes, as this will not work.
   // So try to avoid paths containing spaces (existing bug in Chromium)
 
-  "{{-cmd-}}": '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
+  cmd: '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
 
   "{img-src-dir}": "{{-cur-dir-}}/_assets/images",
 

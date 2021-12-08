@@ -172,7 +172,7 @@ class Path {
 
     if (pathCount <= 0) {
       if (hasOper) {
-        throw Exception('Nothing to $oper');
+        throw Exception('No argument to $oper');
       }
       else {
         return [];

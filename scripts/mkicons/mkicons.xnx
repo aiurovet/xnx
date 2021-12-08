@@ -3,16 +3,16 @@
 // Requires: Google Chrome as well as iconutil (macOS only) and ImageMagick's convert (Windows only)
 
 {
-  "{{-once-}}": {
+  once: {
     "{prj}": "$~1",
     "{out-dir}": "$~2",
 
-    "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
+    detectPaths: "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
   },
 
   "{icon-name}": "{prj}{look}",
 
-  "{{-import-}}": "./shell.xnx",
+  import: "./shell.xnx",
 
   "{{-if-}}": { "": '"${OS_TYPE}" != ""', "{{-then-}}": {
     "{OSTYPE}": "${OS_TYPE}",
@@ -26,7 +26,7 @@
   "{R}": [
     // Ensure directory structure matches expectations
     {
-      "{{-run-}}": [
+      run: [
         // Remove possible remnants from the previous run
         "--delete out png svg",
         // Ensure temporary and the OS-specific output and icon directories are created
@@ -35,8 +35,8 @@
     },
 
     {
-      "{{-run-}}": null,
-      "{{-can-expand-content-}}": true,
+      run: null,
+      canExpandContent: true,
       "{drw-transform}": "translate({offset} {offset}) scale(0.75)",
 
       "{param}": [
@@ -52,7 +52,7 @@
         { "{dim}": 1024, "{offset}": 128, },
       ],
 
-      "{{-func-}}": {
+      func: {
         "{scale}": [ "=Div", "{dim}", "100" ],
       },
 
@@ -60,11 +60,11 @@
       "{sample}": "{{-cur-dir-}}/{icon-name}_{dim}x{dim}.svg",
 
       "{{-if-}}": { "": '({dim} == 48) && ({look} == _dark) && ({sample} -fol {{-inp-}})', "{{-then-}}": {
-        "{{-run-}}": '--expand "{{-inp-}}" "{sample}"',
+        run: '--expand "{{-inp-}}" "{sample}"',
       } },
 
       "{{-out-}}": "{{-cur-dir-}}/png/{icon-name}_{dim}x{dim}.png",
-      "{{-cmd-}}": '{svg2png} --window-size={dim},{dim} --screenshot={{-out-}} "file://{{-inp-}}"'
+      cmd: '{svg2png} --window-size={dim},{dim} --screenshot={{-out-}} "file://{{-inp-}}"'
     },
 
     {
@@ -76,12 +76,12 @@
       "{exe-pthp}": "{out-dir}/{prj}",
 
       "{{-if-}}" : { "": '"${OS}" ==/i "linux"', "{{-then-}}": {
-        "{{-run-}}": [
+        run: [
           '--move "{icon-pthp}_96x96.png" "{out-dir}/{icon-name}.png"'
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "": '"${OS}" ==/i "macos"', "{{-then-}}": {
         "{png-dir-mac}": "{png-dir}.iconset",
-        "{{-run-}}": [
+        run: [
           '--copy "{icon-pthp}_32x32.png" "{png-dir}/icon_16x16@2x.png"',
           '--move "{icon-pthp}_64x64.png" "{png-dir}/icon_32x32@2x.png"',
           '--copy "{icon-pthp}_256x256.png" "{png-dir}/icon_128x128@2x.png"',
@@ -98,14 +98,14 @@
           'iconutil --convert icns -o "{out-dir}/{icon-name}.icns" "{png-dir-mac}"'
         ]
       }, "{{-else-}}" : { "{{-if-}}" : { "": '"${OS}" ==/i "windows"', "{{-then-}}": {
-        "{{-run-}}": [
+        run: [
           '{convert} "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{out-dir}/{icon-name}.ico"',
         ]
       } } } } } }
     },
 
     {
-      "{{-run-}}": "--delete png svg",
+      run: "--delete png svg",
     },
   ]
 }

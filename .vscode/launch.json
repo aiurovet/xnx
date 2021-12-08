@@ -4,6 +4,9 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=0.1.0
   "version": "0.1.0",
   "configurations": [
+
+    { "name": "ad-hoc --find", "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "--find", ".", ], },
     { "name": "help", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "--help", ], },
     { "name": "xnx - flutter_app_icons", "request": "launch", "type": "dart", "program": "bin/main.dart",

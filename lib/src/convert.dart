@@ -146,6 +146,9 @@ class Convert {
       else if (options.isCmdDelete) {
         FileOper.deleteSync(args, isListOnly: isListOnly, isSilent: isSilent);
       }
+      else if (options.isCmdFind) {
+        FileOper.findSync(args, isSilent: isSilent);
+      }
       else {
         return false;
       }

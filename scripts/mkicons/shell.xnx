@@ -1,4 +1,4 @@
-// Portable (OS-independent) commands, used via {{-import-}} (see in sub-folders)
+// Portable (OS-independent) commands, used via import (see in sub-folders)
 {
   "shell": {
     "{MAIN-CHROME-OPTS}": " --headless --default-background-color=0",

@@ -1,12 +1,12 @@
 {
-  "{{-import-}}": "../shell.xnx",
+  import: "../shell.xnx",
 
   // Do not enclose the output path {{-out-}} in quotes, as this will not work.
   // So try to avoid paths containing spaces (existing bug in Chromium)
-  "{{-cmd-}}": '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
+  cmd: '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
 
-  "{{-can-expand-content-}}": true,
-  "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
+  canExpandContent: true,
+  detectPaths: "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
   "{img-src-dir}": "{{-cur-dir-}}/svg",
 

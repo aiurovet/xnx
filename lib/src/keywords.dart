@@ -12,11 +12,11 @@ class Keywords {
   // they are allowed not to be unique per map
   //////////////////////////////////////////////////////////////////////////////
 
-  String forCanExpandContent = '{{-can-expand-content-}}';
-  String forCmd = '{{-cmd-}}';
+  String forCanExpandContent = 'canExpandContent';
+  String forCmd = 'cmd';
   String forCurDir = '{{-cur-dir-}}';
-  String forDetectPaths = '{{-detect-paths-}}';
-  String forFunc = '{{-func-}}';
+  String forDetectPaths = 'detectPaths';
+  String forFunc = 'func';
   String forInp = '{{-inp-}}';
   String forInpDir = '{{-inp-dir-}}';
   String forInpExt = '{{-inp-ext-}}';
@@ -25,13 +25,13 @@ class Keywords {
   String forInpPath = '{{-inp-path-}}';
   String forInpSubDir = '{{-inp-sub-dir-}}';
   String forInpSubPath = '{{-inp-sub-path-}}';
-  String forImport = '{{-import-}}';
-  String forOnce = '{{-once-}}';
+  String forImport = 'import';
+  String forOnce = 'once';
   String forOut = '{{-out-}}';
-  String forRun = '{{-run-}}';
-  String forSkip = '{{-skip-}}';
-  String forStop = '{{-stop-}}';
-  String forTake = '{{-take-}}';
+  String forRun = 'run';
+  String forSkip = 'skip';
+  String forStop = 'stop';
+  String forTake = 'take';
   String forThis = '{{-this-}}';
 
   String forFnAdd = '=Add';
