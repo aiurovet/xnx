@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:file/file.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'file_system_entity.dart';

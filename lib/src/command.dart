@@ -1,6 +1,4 @@
-import 'dart:cli';
 import 'dart:io';
-import 'package:process_run/shell.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
@@ -23,7 +21,6 @@ class Command {
 
   List<String> args = [];
   bool isLocal = false;
-  bool isSync = true;
   bool isShellRequired = false;
   bool isToVar = false;
   String path = '';
@@ -36,7 +33,7 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Command({String? path, List<String>? args, String? text, this.isSync = true, this.isToVar = false, Logger? logger}) {
+  Command({String? path, List<String>? args, String? text, this.isToVar = false, Logger? logger}) {
     _logger = logger;
 
     if (text?.isNotEmpty ?? false) {
@@ -88,7 +85,6 @@ class Command {
     }
 
     ProcessResult? result;
-    List<ProcessResult>? results;
     var errMsg = '';
     var isSuccess = false;
 
@@ -108,28 +104,13 @@ class Command {
           throw Exception('Executable is not defined for $args');
         }
 
-        if (isSync && !isShellRequired) {
-          result = Process.runSync(path, args,
-            environment: fullEnv,
-            runInShell: false,
-            workingDirectory: Path.currentDirectory.path
-          );
+        result = Process.runSync(path, args,
+          environment: fullEnv,
+          runInShell: isShellRequired,
+          workingDirectory: Path.currentDirectory.path
+        );
 
-          isSuccess = (result.exitCode == 0);
-        }
-        else {
-          results = waitFor<List<ProcessResult>>(Shell(
-            environment: fullEnv,
-            verbose: (_logger?.isInfo ?? false),
-            commandVerbose: false,
-            commentVerbose: false,
-            runInShell: isShellRequired,
-            workingDirectory: Path.currentDirectory.path
-          ).run(path));
-
-          result = (results.isEmpty ? null : results[0]);
-          isSuccess = !results.any((x) => (x.exitCode != 0));
-        }
+        isSuccess = (result.exitCode == 0);
       }
     }
     on Error catch (e) {
@@ -140,15 +121,8 @@ class Command {
     }
 
     if (!isLocal && (result != null)) {
-      if (isSync) {
-        if (result.stdout?.isNotEmpty ?? false) {
-          outLines = result.stdout;
-        }
-      }
-      else if (results != null) {
-        if (results.outLines.isNotEmpty) {
-          outLines = results.outLines.toString();
-        }
+      if (result.stdout?.isNotEmpty ?? false) {
+        outLines = result.stdout;
       }
 
       if (isSuccess) {
@@ -158,14 +132,8 @@ class Command {
         }
       }
       else {
-        if (isSync) {
-          _logger?.error('Exit code: ${result.exitCode}');
-          _logger?.error('\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
-        }
-        else if ((results != null) && results.isNotEmpty) {
-          _logger?.error('Exit codes: ${results.map((x) => x.exitCode).join(', ')}');
-          _logger?.error('\n*** Errors:\n\n${results.errLines}');
-        }
+        _logger?.error('Exit code: ${result.exitCode}');
+        _logger?.error('\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
       }
     }
 

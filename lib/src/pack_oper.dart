@@ -341,7 +341,7 @@ class PackOper {
         toDir.createSync(recursive: true);
       }
 
-      final cmd = (Env.isWindows || isTar || isListOnly ? null : Command(isSync: true, isToVar: true));
+      final cmd = (Env.isWindows || isTar || isListOnly ? null : Command(isToVar: true));
 
       for (final entity in archive) {
         final toPath = Path.join(toDirName, entity.name);
