@@ -98,7 +98,7 @@ copy /Y LICENSE "%OUT%"
 if errorlevel 1 exit /B 1
 
 echo Copying the application configuration file to the output directory
-xcopy /I /Q /S %PRJ%.config "%OUT%"
+xcopy /Y "%PRJ%.config" "%OUT%"
 if errorlevel 1 exit /B 1
 
 echo Copying the examples to the output directory
