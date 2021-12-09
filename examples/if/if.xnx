@@ -13,13 +13,13 @@
     },
   },
 
-  "{{-if-}}": { "": '"${HOME}" !~/i \/(\\.|HOME)', "{{-then-}}": {
+  "{{-if-}}": { '"${HOME}" !~/i \/(\\.|HOME)': {
     "{{-run-}}": '--print "Has match"',
   }, "{{-else-}}": {
     "{{-run-}}": '--print "No match"',
   } },
 
-  "{{-if-}}": { "": 'true', "{{-then-}}": {
+  "{{-if-}}": { 'true': {
     "{{-run-}}": '--print "Second if"',
   } },
 

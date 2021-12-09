@@ -3,8 +3,8 @@
   "shell": {
     "{MAIN-CHROME-OPTS}": " --headless --default-background-color=0",
 
-    "{{-if-}}": { "": '("${OS}" ==/i "linux") || ("${OS}" ==/i "macos")', "{{-then-}}": {
-      "{{-if-}}": { "": '"${OS}" ==/i "linux"', "{{-then-}}": {
+    "{{-if-}}": { '("${OS}" ==/i "linux") || ("${OS}" ==/i "macos")': {
+      "{{-if-}}": { '"${OS}" ==/i "linux"': {
         "{svg2png}": "google-chrome {MAIN-CHROME-OPTS}", // you can use chromium too
         "{shell}": "bash -c"
       }, "{{-else-}}": {
@@ -13,13 +13,11 @@
       } },
       "{convert}": "convert",
       "{sleep_0_5s}": "sleep 0.5s"
-    }, "{{-else-}}": { "{{-if-}}": { "": '"${USER}" != ""', "{{-then-}}": {
+    }, "{{-else-}}": { "{{-if-}}": { '"${USER}" != ""': {
       "{svg2png}": "chrome {MAIN-CHROME-OPTS} --disable-gpu",
       "{convert}": "magick convert",
       "{shell}": "cmd /c",
       "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500"
     } } } },
-
-    "{this}": "$~0",
   }
 }

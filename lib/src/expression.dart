@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'package:collection/collection.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
@@ -18,24 +17,16 @@ class Expression {
   Expression({required this.flatMap, required this.keywords, required this.operation, required this.logger});
 
   Object? exec(Map<String, Object?> mapIf) {
-    var condition = mapIf.entries.firstWhereOrNull((x) =>
-      (x.key != keywords.forThen) &&
-      (x.key != keywords.forElse)
-    )?.value;
-
+    var firstEntry = mapIf.entries.first;
+    var condition = firstEntry.key;
+    var blockThen = firstEntry.value;
     var blockElse = mapIf[keywords.forElse];
 
-    if (condition == null) {
+    if (condition.isEmpty) {
       return blockElse;
     }
 
-    var blockThen = mapIf[keywords.forThen];
-
-    if (blockThen == null) {
-      throw Exception('Then-block not found in "$mapIf"');
-    }
-
-    var isThen = _exec(condition as String);
+    var isThen = _exec(condition);
 
     if (logger.isDebug) {
       logger.debug('Condition: $condition\n...${isThen ? 'true' : 'false'}\n');

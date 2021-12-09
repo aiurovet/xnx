@@ -17,17 +17,6 @@ final blockThen = [true];
 final blockElse = [false];
 
 final keywords = Keywords();
-final keyIf = keywords.forIf;
-final keyCondition = '';
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-var mapIf = { keywords.forIf: {
-  keyCondition: 'false',
-  keywords.forThen: blockThen,
-  keywords.forElse: blockElse
-}};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -77,16 +66,11 @@ void main() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Map<String, Object?> setIf(String? condition) {
-  var dataIf = mapIf[keyIf];
-
-  (dataIf as Map<String, Object?>)[keyCondition] = condition;
-
-  if (dataIf == null) {
-    throw Exception('Conditional map should not be null');
-  }
-
-  return dataIf;
+Map<String, Object?> setIf(String condition) {
+  return {
+    condition: blockThen,
+    keywords.forElse: blockElse,
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////

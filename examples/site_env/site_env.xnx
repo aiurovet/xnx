@@ -4,7 +4,7 @@
  
   "{{-once-}}": {
     "{rls-dir}": './ReleaseFiles',
-    "{{-if-}}": { "": '" $@ " ~/i [\\s]clean[\\s]', "{{-then-}}": {
+    "{{-if-}}": { '" $@ " ~/i [\\s]clean[\\s]': {
        "{{-run-}}": '--delete "{rls-dir}"',
     } },
     "{{-run-}}": '--mkdir "{rls-dir}"',

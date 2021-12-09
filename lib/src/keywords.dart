@@ -98,7 +98,6 @@ class Keywords {
   //////////////////////////////////////////////////////////////////////////////
 
   String forIf = '{{-if-}}';
-  String forThen = '{{-then-}}';
   String forElse = '{{-else-}}';
 
   //////////////////////////////////////////////////////////////////////////////
@@ -127,8 +126,7 @@ class Keywords {
       var node = data['keywords'];
 
       forIf = node['kwIf'] ?? forIf;
-      forIf = node['kwThen'] ?? forThen;
-      forIf = node['kwElse'] ?? forElse;
+      forElse = node['kwElse'] ?? forElse;
 
       forCanExpandContent = node['kwCanExpandContent'] ?? forCanExpandContent;
       forCmd = node['kwCmd'] ?? forCmd;
@@ -165,17 +163,17 @@ class Keywords {
       forFnDate = node['fnDate'] ?? forFnDate;
       forFnDirName = node['fnDirName'] ?? forFnDirName;
       forFnDiv = node['fnDiv'] ?? forFnDiv;
-      forFnDivInt = node['fnIDiv'] ?? forFnDivInt;
+      forFnDivInt = node['fnDivInt'] ?? forFnDivInt;
       forFnEndOfMonth = node['fnEndOfMonth'] ?? forFnEndOfMonth;
       forFnExtension = node['fnExtension'] ?? forFnExtension;
       forFnFileSize = node['fnFileSize'] ?? forFnFileSize;
       forFnIndex = node['fnIndex'] ?? forFnIndex;
-      forFnMatch = node['fnMatch'] ?? forFnLastIndex;
       forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
-      forFnLastMatch = node['fnLastMatch'] ?? forFnMatch;
+      forFnLastMatch = node['fnLastMatch'] ?? forFnLastMatch;
       forFnLastModified = node['fnLastModified'] ?? forFnLastModified;
       forFnLocal = node['fnLocal'] ?? forFnLocal;
       forFnLower = node['fnLower'] ?? forFnLower;
+      forFnMatch = node['fnMatch'] ?? forFnMatch;
       forFnMax = node['fnMax'] ?? forFnMax;
       forFnMin = node['fnMin'] ?? forFnMin;
       forFnMod = node['fnMod'] ?? forFnMod;

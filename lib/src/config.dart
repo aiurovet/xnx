@@ -277,8 +277,9 @@ class Config {
     var resolvedData = expression.exec(data);
 
     if (resolvedData != null) {
-      setTrailFor(data, keywords.forThen, resolvedData);
-      result = execData(keywords.forThen, resolvedData, execFlatMap);
+      var key = data.keys.first;
+      setTrailFor(data, key, resolvedData);
+      result = execData(key, resolvedData, execFlatMap);
       setTrailFor(data, null, null);
     }
 

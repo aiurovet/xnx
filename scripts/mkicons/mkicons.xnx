@@ -14,7 +14,7 @@
 
   "{{-import-}}": "./shell.xnx",
 
-  "{{-if-}}": { "": '"${OS_TYPE}" != ""', "{{-then-}}": {
+  "{{-if-}}": { '"${OS_TYPE}" != ""': {
     "{OSTYPE}": "${OS_TYPE}",
   } },
 
@@ -59,7 +59,7 @@
       "{{-inp-}}": "{{-cur-dir-}}/{prj}.svg",
       "{sample}": "{{-cur-dir-}}/{icon-name}_{dim}x{dim}.svg",
 
-      "{{-if-}}": { "": '({dim} == 48) && ({look} == _dark) && ({sample} -fol {{-inp-}})', "{{-then-}}": {
+      "{{-if-}}": { '({dim} == 48) && ({look} == _dark) && ({sample} -fol {{-inp-}})': {
         "{{-run-}}": '--expand "{{-inp-}}" "{sample}"',
       } },
 
@@ -75,11 +75,11 @@
 
       "{exe-pthp}": "{out-dir}/{prj}",
 
-      "{{-if-}}": { "": '"${OS}" ==/i "linux"', "{{-then-}}": {
+      "{{-if-}}": { '"${OS}" ==/i "linux"': {
         "{{-run-}}": [
           '--move "{icon-pthp}_96x96.png" "{out-dir}/{icon-name}.png"'
         ]
-      }, "{{-else-}}": { "{{-if-}}": { "": '"${OS}" ==/i "macos"', "{{-then-}}": {
+      }, "{{-else-}}": { "{{-if-}}": { '"${OS}" ==/i "macos"': {
         "{png-dir-mac}": "{png-dir}.iconset",
         "{{-run-}}": [
           '--copy "{icon-pthp}_32x32.png" "{png-dir}/icon_16x16@2x.png"',
@@ -97,7 +97,7 @@
           '--move "{png-dir}" "{png-dir-mac}"',
           'iconutil --convert icns -o "{out-dir}/{icon-name}.icns" "{png-dir-mac}"'
         ]
-      }, "{{-else-}}": { "{{-if-}}": { "": '"${OS}" ==/i "windows"', "{{-then-}}": {
+      }, "{{-else-}}": { "{{-if-}}": { '"${OS}" ==/i "windows"': {
         "{{-run-}}": [
           '{convert} "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{out-dir}/{icon-name}.ico"',
         ]
