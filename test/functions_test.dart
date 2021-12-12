@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:test/test.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
@@ -26,7 +28,15 @@ void main() {
         .exec(<String, Object?>{
           '{1+2}': [r'=add', 1, 2],
           '{4*3}': [r'=mul', 4, 3],
-          '{math}': [r'=div', [r'=mul', 9, 3], [r'=mod', 5, 3]],
+          '{math}': [r'=pow', [r'=mul', [r'=idiv', 9, 3], [r'=mod', 5, 3]], 2],
+          '{cos}': [r'=Cos', ['=div', ['=Pi'], 3]],
+          '{exp}': [r'=Exp', 1],
+          '{pi}': ['=Pi'],
+          '{rad}': ['=Rad', 90],
+          '{sin}': [r'=Sin', ['=div', ['=Pi'], 6]],
+          '{sqrt}': [r'=Sqrt', 25],
+          '{tan}': [r'=Tan', ['=div', ['=Pi'], 4]],
+          '{ln}': [r'=Ln', exp(1)],
           '{today}': [r'=Today'],
           '{startOfMonth}': [r'=StartOfMonth', '2021-03-15'],
           '{endOfFeb}': [r'=EndOfMonth', '2021-02-15'],
@@ -60,7 +70,15 @@ void main() {
 
       expect(flatMap['{1+2}'], '3');
       expect(flatMap['{4*3}'], '12');
-      expect(flatMap['{math}'], '13.5');
+      expect(flatMap['{math}'], '36');
+      expect((num.parse(flatMap['{cos}']  ?? '') * 10000).round(),  5000);
+      expect((num.parse(flatMap['{exp}']  ?? '') * 10000).round(), 27183);
+      expect((num.parse(flatMap['{ln}']   ?? '') * 10000).round(), 10000);
+      expect((num.parse(flatMap['{pi}']   ?? '') * 10000).round(), 31416);
+      expect((num.parse(flatMap['{rad}']  ?? '') * 10000).round(), 15708);
+      expect((num.parse(flatMap['{sin}']  ?? '') * 10000).round(),  5000);
+      expect((num.parse(flatMap['{sqrt}'] ?? '') * 10000).round(), 50000);
+      expect((num.parse(flatMap['{tan}']  ?? '') * 10000).round(), 10000);
       expect(flatMap['{today}'], todayStr);
       expect(flatMap['{year}'], todayStr.substring(0, 4));
       expect(flatMap['{startOfMonth}'], '2021-03-01');

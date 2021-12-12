@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:file/file.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
@@ -17,11 +19,13 @@ enum FunctionType {
   addYears,
   baseName,
   baseNameNoExt,
+  cos,
   date,
   dirName,
   div,
   divInt,
   endOfMonth,
+  exp,
   extension,
   fileSize,
   indexOf,
@@ -29,6 +33,7 @@ enum FunctionType {
   lastMatch,
   lastModified,
   match,
+  ln,
   local,
   lower,
   max,
@@ -36,12 +41,18 @@ enum FunctionType {
   mod,
   mul,
   now,
+  pi,
+  pow,
+  rad,
   replace,
   replaceMatch,
   run,
+  sin,
+  sqrt,
   sub,
   substr,
   startOfMonth,
+  tan,
   time,
   today,
   upper,
@@ -127,13 +138,22 @@ class Functions {
   Object? _exec(FunctionType type, List<Object?> todo, {int offset = 0}) {
     switch (type) {
       case FunctionType.add:
+      case FunctionType.cos:
       case FunctionType.div:
       case FunctionType.divInt:
+      case FunctionType.exp:
+      case FunctionType.ln:
       case FunctionType.max:
       case FunctionType.min:
       case FunctionType.mod:
       case FunctionType.mul:
+      case FunctionType.pi:
+      case FunctionType.pow:
+      case FunctionType.rad:
+      case FunctionType.sin:
+      case FunctionType.sqrt:
       case FunctionType.sub:
+      case FunctionType.tan:
         return _execMath(type, todo, offset: offset);
       case FunctionType.addDays:
       case FunctionType.addMonths:
@@ -397,7 +417,25 @@ class Functions {
 
   String? _execMath(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
+
     var isInt = (type == FunctionType.divInt);
+    var isUnary = false;
+
+    switch (type) {
+      case FunctionType.pi:
+        return pi.toString();
+      case FunctionType.cos:
+      case FunctionType.exp:
+      case FunctionType.ln:
+      case FunctionType.rad:
+      case FunctionType.sin:
+      case FunctionType.sqrt:
+      case FunctionType.tan:
+        isUnary = true;
+        break;
+      default:
+        break;
+    }
 
     var o1 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var n1 = _toNum(o1, isInt: isInt);
@@ -406,46 +444,80 @@ class Functions {
       _fail(type, 'Bad 1st argument: $o1');
     }
 
-    var o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-    var n2 = _toNum(o2, isInt: isInt);
+    num? n2;
+    String? o2;
 
-    if (n2 == null) {
-      _fail(type, 'Bad 2nd argument: $o2');
+    if (!isUnary) {
+      o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+      n2 = _toNum(o2, isInt: isInt);
+
+      if (n2 == null) {
+        _fail(type, 'Bad 2nd argument: $o2');
+      }
     }
 
-    String? resStr;
+    n2 ??= 0;
 
     switch (type) {
       case FunctionType.add:
-        resStr = (n1 + n2).toString();
+        n1 += n2;
+        break;
+      case FunctionType.cos:
+        n1 = cos(n1);
         break;
       case FunctionType.div:
-        resStr = (n1 / n2).toString();
-        break;
       case FunctionType.divInt:
-        resStr = (n1 / n2).toStringAsFixed(0);
+        n1 /= n2;
+        break;
+      case FunctionType.exp:
+        n1 = exp(n1);
+        break;
+      case FunctionType.ln:
+        n1 = log(n1);
         break;
       case FunctionType.max:
-        resStr = (n1 >= n2 ? n1 : n2).toString();
+        n1 = (n1 >= n2 ? n1 : n2);
         break;
       case FunctionType.min:
-        resStr = (n1 <= n2 ? n1 : n2).toString();
+        n1 = (n1 <= n2 ? n1 : n2);
         break;
       case FunctionType.mod:
-        resStr = (n1 % n2).toString();
+        n1 %= n2;
         break;
       case FunctionType.mul:
-        resStr = (n1 * n2).toString();
+        n1 *= n2;
+        break;
+      case FunctionType.pow:
+        n1 = pow(n1, n2);
+        break;
+      case FunctionType.rad:
+        n1 = ((n1 * pi) / 180.0);
+        break;
+      case FunctionType.sin:
+        n1 = sin(n1);
+        break;
+      case FunctionType.sqrt:
+        n1 = sqrt(n1);
         break;
       case FunctionType.sub:
-        resStr = (n1 - n2).toString();
+        n1 -= n2;
+        break;
+      case FunctionType.tan:
+        n1 = tan(n1);
         break;
       default:
         break;
     }
 
+    var resStr = (isInt ? n1.toStringAsFixed(0) : n1.toString());
+
     if (logger.isDebug) {
-      logger.debug('$type\n...op1:    $o1\n...op2:    $o2\n...result: $resStr\n');
+      if (isUnary) {
+        logger.debug('$type\n...op:     $o1\n...result: $resStr');
+      }
+      else {
+        logger.debug('$type\n...op1:    $o1\n...op2:    $o2\n...result: $resStr');
+      }
     }
 
     return resStr;
@@ -650,11 +722,13 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnAddYears)] = FunctionType.addYears;
     nameTypeMap[_toName(keywords.forFnBaseName)] = FunctionType.baseName;
     nameTypeMap[_toName(keywords.forFnBaseNameNoExt)] = FunctionType.baseNameNoExt;
+    nameTypeMap[_toName(keywords.forFnCos)] = FunctionType.cos;
     nameTypeMap[_toName(keywords.forFnDate)] = FunctionType.date;
     nameTypeMap[_toName(keywords.forFnDirName)] = FunctionType.dirName;
     nameTypeMap[_toName(keywords.forFnDiv)] = FunctionType.div;
     nameTypeMap[_toName(keywords.forFnDivInt)] = FunctionType.divInt;
     nameTypeMap[_toName(keywords.forFnEndOfMonth)] = FunctionType.endOfMonth;
+    nameTypeMap[_toName(keywords.forFnExp)] = FunctionType.exp;
     nameTypeMap[_toName(keywords.forFnExtension)] = FunctionType.extension;
     nameTypeMap[_toName(keywords.forFnFileSize)] = FunctionType.fileSize;
     nameTypeMap[_toName(keywords.forFnIndex)] = FunctionType.indexOf;
@@ -662,6 +736,7 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnLastIndex)] = FunctionType.lastIndexOf;
     nameTypeMap[_toName(keywords.forFnLastMatch)] = FunctionType.lastMatch;
     nameTypeMap[_toName(keywords.forFnLastModified)] = FunctionType.lastModified;
+    nameTypeMap[_toName(keywords.forFnLn)] = FunctionType.ln;
     nameTypeMap[_toName(keywords.forFnLocal)] = FunctionType.local;
     nameTypeMap[_toName(keywords.forFnLower)] = FunctionType.lower;
     nameTypeMap[_toName(keywords.forFnMax)] = FunctionType.max;
@@ -669,12 +744,18 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnMod)] = FunctionType.mod;
     nameTypeMap[_toName(keywords.forFnMul)] = FunctionType.mul;
     nameTypeMap[_toName(keywords.forFnNow)] = FunctionType.now;
+    nameTypeMap[_toName(keywords.forFnPi)] = FunctionType.pi;
+    nameTypeMap[_toName(keywords.forFnPow)] = FunctionType.pow;
+    nameTypeMap[_toName(keywords.forFnRad)] = FunctionType.rad;
     nameTypeMap[_toName(keywords.forFnReplace)] = FunctionType.replace;
     nameTypeMap[_toName(keywords.forFnReplaceMatch)] = FunctionType.replaceMatch;
     nameTypeMap[_toName(keywords.forFnRun)] = FunctionType.run;
     nameTypeMap[_toName(keywords.forFnStartOfMonth)] = FunctionType.startOfMonth;
+    nameTypeMap[_toName(keywords.forFnSin)] = FunctionType.sin;
+    nameTypeMap[_toName(keywords.forFnSqrt)] = FunctionType.sqrt;
     nameTypeMap[_toName(keywords.forFnSub)] = FunctionType.sub;
     nameTypeMap[_toName(keywords.forFnSubstr)] = FunctionType.substr;
+    nameTypeMap[_toName(keywords.forFnTan)] = FunctionType.tan;
     nameTypeMap[_toName(keywords.forFnTime)] = FunctionType.time;
     nameTypeMap[_toName(keywords.forFnToday)] = FunctionType.today;
     nameTypeMap[_toName(keywords.forFnUpper)] = FunctionType.upper;
@@ -704,8 +785,19 @@ class Functions {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  num? _toNum(String? input, {bool isInt = false}) =>
-    (input == null ? null : (isInt ? int.tryParse(input) : num.tryParse(input)));
+  num? _toNum(String? input, {bool isInt = false}) {
+    if (input == null) {
+      return null;
+    }
+
+    var i = int.tryParse(input);
+
+    if (isInt || (i != null)) {
+      return i;
+    }
+
+    return num.tryParse(input);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
