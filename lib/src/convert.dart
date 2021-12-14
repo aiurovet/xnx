@@ -467,7 +467,7 @@ Output path: "$outFilePathEx"
 
     var effectiveMap = <String, String>{}
       ..addAll(map.data)
-      ..removeWhere((k, v) => _config.keywords.allForExpand.contains(k));
+      ..removeWhere((k, v) => _config.keywords.all.contains(k));
 
     // Expand data
 

@@ -300,8 +300,9 @@ class Config {
       return ConfigResult.ok;
     }
 
-    var keyEx = keywords.refine(key) ?? '';
     var result = ConfigResult.ok;
+
+    var keyEx = keywords.refine(key) ?? '';
 
     if ((data is num) && ((data % 1) == 0)) {
       flatMap[keyEx] = data.toStringAsFixed(0);
@@ -415,14 +416,20 @@ class Config {
   void loadAppConfig() {
     _logger.information('Loading the application configuration');
 
-    if (options.appConfigPath.isNotEmpty) {
-      var file = Path.fileSystem.file(options.appConfigPath);
-      var text = file.readAsStringSync();
-      var data = json5Decode(text);
+    String? text;
 
-      keywords.init(data);
-      functions.init(data);
+    if (options.appConfigPath.isEmpty) {
+      text = '{x: null}';
     }
+    else {
+      var file = Path.fileSystem.file(options.appConfigPath);
+      text = file.readAsStringSync();
+    }
+
+    var data = json5Decode(text);
+
+    keywords.init(data);
+    functions.init(data);
   }
 
   //////////////////////////////////////////////////////////////////////////////

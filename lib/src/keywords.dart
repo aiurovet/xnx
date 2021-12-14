@@ -84,8 +84,8 @@ class Keywords {
 
   RegExp rexRepeatable = RegExp('');
 
+  final all = <String>[];
   final allForExe = <String>[];
-  final allForExpand = <String>[];
   final allForGlob = <String>[];
   final allForInp = <String>[];
   final allForPath = <String>[];
@@ -124,88 +124,96 @@ class Keywords {
   //////////////////////////////////////////////////////////////////////////////
 
   void init(Map data) {
-    var node = (data['keywords'] as Map);
+    var rawNode = data['keywords'];
 
-    forIf = node['kwIf'] ?? forIf;
-    forElse = node['kwElse'] ?? forElse;
+    if (rawNode != null) {
+      var node = (rawNode as Map);
 
-    forCanExpandContent = node['kwCanExpandContent'] ?? forCanExpandContent;
-    forCmd = node['kwCmd'] ?? forCmd;
-    forCurDir = node['kwCurDir'] ?? forCurDir;
-    forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
-    forFunc = node['kwFunc'] ?? forFunc;
-    forInp = node['kwInp'] ?? forInp;
-    forInpDir = node['kwInpDir'] ?? forInpDir;
-    forInpExt = node['kwInpExt'] ?? forInpExt;
-    forInpName = node['kwInpName'] ?? forInpName;
-    forInpNameExt = node['kwInpNameExt'] ?? forInpNameExt;
-    forInpPath = node['kwInpPath'] ?? forInpPath;
-    forInpSubDir = node['kwInpSubDir'] ?? forInpSubDir;
-    forInpSubPath = node['kwInpSubPath'] ?? forInpSubPath;
-    forImport = node['kwImport'] ?? forImport;
-    forOnce = node['kwOnce'] ?? forOnce;
-    forOut = node['kwOut'] ?? forOut;
-    forRun = node['kwRun'] ?? forRun;
-    forSkip = node['kwSkip'] ?? forSkip;
-    forStop = node['kwStop'] ?? forStop;
-    forTake = node['kwTake'] ?? forTake;
-    forThis = node['kwThis'] ?? forThis;
+      forIf = node['kwIf'] ?? forIf;
+      forElse = node['kwElse'] ?? forElse;
+
+      forCanExpandContent = node['kwCanExpandContent'] ?? forCanExpandContent;
+      forCmd = node['kwCmd'] ?? forCmd;
+      forCurDir = node['kwCurDir'] ?? forCurDir;
+      forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
+      forFunc = node['kwFunc'] ?? forFunc;
+      forInp = node['kwInp'] ?? forInp;
+      forInpDir = node['kwInpDir'] ?? forInpDir;
+      forInpExt = node['kwInpExt'] ?? forInpExt;
+      forInpName = node['kwInpName'] ?? forInpName;
+      forInpNameExt = node['kwInpNameExt'] ?? forInpNameExt;
+      forInpPath = node['kwInpPath'] ?? forInpPath;
+      forInpSubDir = node['kwInpSubDir'] ?? forInpSubDir;
+      forInpSubPath = node['kwInpSubPath'] ?? forInpSubPath;
+      forImport = node['kwImport'] ?? forImport;
+      forOnce = node['kwOnce'] ?? forOnce;
+      forOut = node['kwOut'] ?? forOut;
+      forRun = node['kwRun'] ?? forRun;
+      forSkip = node['kwSkip'] ?? forSkip;
+      forStop = node['kwStop'] ?? forStop;
+      forTake = node['kwTake'] ?? forTake;
+      forThis = node['kwThis'] ?? forThis;
+    }
 
     _initRepeatable();
 
-    node = (data['functions'] as Map);
+    rawNode = data['functions'];
 
-    forFnAdd = node['fnAdd'] ?? forFnAdd;
-    forFnAddDays = node['fnAddDays'] ?? forFnAddDays;
-    forFnAddMonths = node['fnAddMonths'] ?? forFnAddMonths;
-    forFnAddYears = node['fnAddYears'] ?? forFnAddYears;
-    forFnBaseName = node['fnBaseName'] ?? forFnBaseName;
-    forFnBaseNameNoExt = node['fnBaseNameNoExt'] ?? forFnBaseNameNoExt;
-    forFnCos = node['fnCos'] ?? forFnCos;
-    forFnExp = node['fnExp'] ?? forFnExp;
-    forFnDate = node['fnDate'] ?? forFnDate;
-    forFnDirName = node['fnDirName'] ?? forFnDirName;
-    forFnDiv = node['fnDiv'] ?? forFnDiv;
-    forFnDivInt = node['fnDivInt'] ?? forFnDivInt;
-    forFnEndOfMonth = node['fnEndOfMonth'] ?? forFnEndOfMonth;
-    forFnExtension = node['fnExtension'] ?? forFnExtension;
-    forFnFileSize = node['fnFileSize'] ?? forFnFileSize;
-    forFnIndex = node['fnIndex'] ?? forFnIndex;
-    forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
-    forFnLastMatch = node['fnLastMatch'] ?? forFnLastMatch;
-    forFnLastModified = node['fnLastModified'] ?? forFnLastModified;
-    forFnLocal = node['fnLn'] ?? forFnLn;
-    forFnLocal = node['fnLocal'] ?? forFnLocal;
-    forFnLower = node['fnLower'] ?? forFnLower;
-    forFnMatch = node['fnMatch'] ?? forFnMatch;
-    forFnMax = node['fnMax'] ?? forFnMax;
-    forFnMin = node['fnMin'] ?? forFnMin;
-    forFnMod = node['fnMod'] ?? forFnMod;
-    forFnMul = node['fnMul'] ?? forFnMul;
-    forFnNow = node['fnNow'] ?? forFnNow;
-    forFnPi = node['fnPi'] ?? forFnPi;
-    forFnPow = node['fnPow'] ?? forFnPow;
-    forFnRad = node['fnRad'] ?? forFnRad;
-    forFnReplace = node['fnReplace'] ?? forFnReplace;
-    forFnReplaceMatch = node['fnReplaceMatch'] ?? forFnReplaceMatch;
-    forFnRun = node['fnRun'] ?? forFnRun;
-    forFnStartOfMonth = node['fnStartOfMonth'] ?? forFnStartOfMonth;
-    forFnSin = node['fnSin'] ?? forFnSin;
-    forFnSqrt = node['fnSqrt'] ?? forFnSqrt;
-    forFnSub = node['fnSub'] ?? forFnSub;
-    forFnSubstr = node['fnSubstr'] ?? forFnSubstr;
-    forFnTan = node['fnTan'] ?? forFnTan;
-    forFnTime = node['fnTime'] ?? forFnTime;
-    forFnToday = node['fnToday'] ?? forFnToday;
-    forFnUpper = node['fnUpper'] ?? forFnUpper;
-    forFnUtc = node['fnUtc'] ?? forFnUtc;
+    if (rawNode != null) {
+      var node = (data['functions'] as Map);
+
+      forFnAdd = node['fnAdd'] ?? forFnAdd;
+      forFnAddDays = node['fnAddDays'] ?? forFnAddDays;
+      forFnAddMonths = node['fnAddMonths'] ?? forFnAddMonths;
+      forFnAddYears = node['fnAddYears'] ?? forFnAddYears;
+      forFnBaseName = node['fnBaseName'] ?? forFnBaseName;
+      forFnBaseNameNoExt = node['fnBaseNameNoExt'] ?? forFnBaseNameNoExt;
+      forFnCos = node['fnCos'] ?? forFnCos;
+      forFnExp = node['fnExp'] ?? forFnExp;
+      forFnDate = node['fnDate'] ?? forFnDate;
+      forFnDirName = node['fnDirName'] ?? forFnDirName;
+      forFnDiv = node['fnDiv'] ?? forFnDiv;
+      forFnDivInt = node['fnDivInt'] ?? forFnDivInt;
+      forFnEndOfMonth = node['fnEndOfMonth'] ?? forFnEndOfMonth;
+      forFnExtension = node['fnExtension'] ?? forFnExtension;
+      forFnFileSize = node['fnFileSize'] ?? forFnFileSize;
+      forFnIndex = node['fnIndex'] ?? forFnIndex;
+      forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
+      forFnLastMatch = node['fnLastMatch'] ?? forFnLastMatch;
+      forFnLastModified = node['fnLastModified'] ?? forFnLastModified;
+      forFnLocal = node['fnLn'] ?? forFnLn;
+      forFnLocal = node['fnLocal'] ?? forFnLocal;
+      forFnLower = node['fnLower'] ?? forFnLower;
+      forFnMatch = node['fnMatch'] ?? forFnMatch;
+      forFnMax = node['fnMax'] ?? forFnMax;
+      forFnMin = node['fnMin'] ?? forFnMin;
+      forFnMod = node['fnMod'] ?? forFnMod;
+      forFnMul = node['fnMul'] ?? forFnMul;
+      forFnNow = node['fnNow'] ?? forFnNow;
+      forFnPi = node['fnPi'] ?? forFnPi;
+      forFnPow = node['fnPow'] ?? forFnPow;
+      forFnRad = node['fnRad'] ?? forFnRad;
+      forFnReplace = node['fnReplace'] ?? forFnReplace;
+      forFnReplaceMatch = node['fnReplaceMatch'] ?? forFnReplaceMatch;
+      forFnRun = node['fnRun'] ?? forFnRun;
+      forFnStartOfMonth = node['fnStartOfMonth'] ?? forFnStartOfMonth;
+      forFnSin = node['fnSin'] ?? forFnSin;
+      forFnSqrt = node['fnSqrt'] ?? forFnSqrt;
+      forFnSub = node['fnSub'] ?? forFnSub;
+      forFnSubstr = node['fnSubstr'] ?? forFnSubstr;
+      forFnTan = node['fnTan'] ?? forFnTan;
+      forFnTime = node['fnTime'] ?? forFnTime;
+      forFnToday = node['fnToday'] ?? forFnToday;
+      forFnUpper = node['fnUpper'] ?? forFnUpper;
+      forFnUtc = node['fnUtc'] ?? forFnUtc;
+    }
 
     _initDerived();
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String? refine(String? key) {
+  String? refine(String? key, {String? prefixForOthers}) {
     if (key == null) { return key; }
 
     // Frequency level 1
@@ -245,7 +253,7 @@ class Keywords {
     if (key.startsWith(forImport)) { return forImport; }
     if (key.startsWith(forThis)) { return forThis; }
 
-    return key;
+    return (prefixForOthers == null ? key : prefixForOthers + key);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -253,15 +261,16 @@ class Keywords {
   //////////////////////////////////////////////////////////////////////////////
 
   void _initDerived() {
-    allForExe..clear()..addAll([
-      forCmd, forRun,
+    all..clear()..addAll([
+      forCanExpandContent, forCmd, forCurDir, forDetectPaths,
+      forFunc, forInp, forInpDir, forInpExt, forInpName,
+      forInpNameExt, forInpPath,  forInpSubDir, forInpSubPath,
+      forImport, forOnce, forOut, forRun, forSkip, forStop,
+      forTake, forThis,
     ]);
 
-    allForExpand..clear()..addAll([
-      forCanExpandContent, forCmd, forCurDir, forDetectPaths,
-      forInp, forInpDir, forInpExt, forInpName, forInpNameExt,
-      forInpPath,  forInpSubDir, forInpSubPath,forOut, forRun,
-      forThis,
+    allForExe..clear()..addAll([
+      forCmd, forRun,
     ]);
 
     allForGlob..clear()..addAll([
