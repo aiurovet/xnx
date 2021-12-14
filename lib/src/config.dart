@@ -1,3 +1,4 @@
+import 'package:json5/json5.dart';
 import 'package:meta/meta.dart';
 import 'package:xnx/src/config_key_data.dart';
 import 'package:xnx/src/config_result.dart';
@@ -112,7 +113,7 @@ class Config {
       return false;
     }
     else {
-      keywords.load(options);
+      loadAppConfig();
       
       _logger.information('Processing actions');
 
@@ -407,6 +408,21 @@ class Config {
     }
 
     return isNew;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void loadAppConfig() {
+    _logger.information('Loading the application configuration');
+
+    if (options.appConfigPath.isNotEmpty) {
+      var file = Path.fileSystem.file(options.appConfigPath);
+      var text = file.readAsStringSync();
+      var data = json5Decode(text);
+
+      keywords.init(data);
+      functions.init(data);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

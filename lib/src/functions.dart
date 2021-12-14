@@ -46,6 +46,7 @@ enum FunctionType {
   rad,
   replace,
   replaceMatch,
+  round,
   run,
   sin,
   sqrt,
@@ -65,6 +66,7 @@ class Functions {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
+  static final int defaultNumericPrecision = 6;
   static final RegExp _rexGroup = RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
 
   //////////////////////////////////////////////////////////////////////////////
@@ -75,10 +77,15 @@ class Functions {
   @protected final Keywords keywords;
   @protected final Logger logger;
   @protected final Map<String, FunctionType> nameTypeMap = {};
+  int numericPrecision = defaultNumericPrecision;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Functions({required this.flatMap, required this.keywords, required this.logger}) {
+  Functions({required this.flatMap, required this.keywords, required this.logger, int? numericPrecision}) {
+    if (numericPrecision != null) {
+      this.numericPrecision = numericPrecision;
+    }
+
     _initNameTypeMap();
   }
 
@@ -135,6 +142,16 @@ class Functions {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  void init(Map data) {
+    var numericPrecisionStr = data['numericPrecision']?.toString();
+
+    if (numericPrecisionStr != null) {
+      numericPrecision = int.tryParse(numericPrecisionStr) ?? numericPrecision;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   Object? _exec(FunctionType type, List<Object?> todo, {int offset = 0}) {
     switch (type) {
       case FunctionType.add:
@@ -150,6 +167,7 @@ class Functions {
       case FunctionType.pi:
       case FunctionType.pow:
       case FunctionType.rad:
+      case FunctionType.round:
       case FunctionType.sin:
       case FunctionType.sqrt:
       case FunctionType.sub:
@@ -417,6 +435,7 @@ class Functions {
 
   String? _execMath(FunctionType type, List<Object?> todo, {int offset = 0}) {
     var cnt = todo.length;
+    var curNumericPrecision = numericPrecision;
 
     var isInt = (type == FunctionType.divInt);
     var isUnary = false;
@@ -451,7 +470,15 @@ class Functions {
       o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
       n2 = _toNum(o2, isInt: isInt);
 
-      if (n2 == null) {
+      if (type == FunctionType.round) {
+        if (n2 == null) {
+          isUnary = true;
+        }
+        else {
+          curNumericPrecision = n2.round();
+        }
+      }
+      else if (n2 == null) {
         _fail(type, 'Bad 2nd argument: $o2');
       }
     }
@@ -493,6 +520,8 @@ class Functions {
       case FunctionType.rad:
         n1 = ((n1 * pi) / 180.0);
         break;
+      case FunctionType.round:
+        break;
       case FunctionType.sin:
         n1 = sin(n1);
         break;
@@ -509,7 +538,7 @@ class Functions {
         break;
     }
 
-    var resStr = (isInt ? n1.toStringAsFixed(0) : n1.toString());
+    var resStr = n1.toStringAsFixed(isInt || (n1 is int) ? 0 : curNumericPrecision);
 
     if (logger.isDebug) {
       if (isUnary) {
@@ -749,6 +778,7 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnRad)] = FunctionType.rad;
     nameTypeMap[_toName(keywords.forFnReplace)] = FunctionType.replace;
     nameTypeMap[_toName(keywords.forFnReplaceMatch)] = FunctionType.replaceMatch;
+    nameTypeMap[_toName(keywords.forFnRound)] = FunctionType.round;
     nameTypeMap[_toName(keywords.forFnRun)] = FunctionType.run;
     nameTypeMap[_toName(keywords.forFnStartOfMonth)] = FunctionType.startOfMonth;
     nameTypeMap[_toName(keywords.forFnSin)] = FunctionType.sin;

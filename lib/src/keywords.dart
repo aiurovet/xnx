@@ -1,7 +1,5 @@
-import 'package:json5/json5.dart';
 import 'package:meta/meta.dart';
 
-import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/options.dart';
 
@@ -67,6 +65,7 @@ class Keywords {
   String forFnRad = '=Rad';
   String forFnReplace = '=Replace';
   String forFnReplaceMatch = '=ReplaceMatch';
+  String forFnRound = '=Round';
   String forFnRun = '=Run';
   String forFnStartOfMonth = '=StartOfMonth';
   String forFnSin = '=Sin';
@@ -124,90 +123,82 @@ class Keywords {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void load(Options options) {
-    logger.information('Loading the application configuration');
+  void init(Map data) {
+    var node = (data['keywords'] as Map);
 
-    if (options.appConfigPath.isNotEmpty) {
-      var file = Path.fileSystem.file(options.appConfigPath);
-      var text = file.readAsStringSync();
-      var data = json5Decode(text);
+    forIf = node['kwIf'] ?? forIf;
+    forElse = node['kwElse'] ?? forElse;
 
-      var node = data['keywords'];
+    forCanExpandContent = node['kwCanExpandContent'] ?? forCanExpandContent;
+    forCmd = node['kwCmd'] ?? forCmd;
+    forCurDir = node['kwCurDir'] ?? forCurDir;
+    forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
+    forFunc = node['kwFunc'] ?? forFunc;
+    forInp = node['kwInp'] ?? forInp;
+    forInpDir = node['kwInpDir'] ?? forInpDir;
+    forInpExt = node['kwInpExt'] ?? forInpExt;
+    forInpName = node['kwInpName'] ?? forInpName;
+    forInpNameExt = node['kwInpNameExt'] ?? forInpNameExt;
+    forInpPath = node['kwInpPath'] ?? forInpPath;
+    forInpSubDir = node['kwInpSubDir'] ?? forInpSubDir;
+    forInpSubPath = node['kwInpSubPath'] ?? forInpSubPath;
+    forImport = node['kwImport'] ?? forImport;
+    forOnce = node['kwOnce'] ?? forOnce;
+    forOut = node['kwOut'] ?? forOut;
+    forRun = node['kwRun'] ?? forRun;
+    forSkip = node['kwSkip'] ?? forSkip;
+    forStop = node['kwStop'] ?? forStop;
+    forTake = node['kwTake'] ?? forTake;
+    forThis = node['kwThis'] ?? forThis;
 
-      forIf = node['kwIf'] ?? forIf;
-      forElse = node['kwElse'] ?? forElse;
+    _initRepeatable();
 
-      forCanExpandContent = node['kwCanExpandContent'] ?? forCanExpandContent;
-      forCmd = node['kwCmd'] ?? forCmd;
-      forCurDir = node['kwCurDir'] ?? forCurDir;
-      forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
-      forFunc = node['kwFunc'] ?? forFunc;
-      forInp = node['kwInp'] ?? forInp;
-      forInpDir = node['kwInpDir'] ?? forInpDir;
-      forInpExt = node['kwInpExt'] ?? forInpExt;
-      forInpName = node['kwInpName'] ?? forInpName;
-      forInpNameExt = node['kwInpNameExt'] ?? forInpNameExt;
-      forInpPath = node['kwInpPath'] ?? forInpPath;
-      forInpSubDir = node['kwInpSubDir'] ?? forInpSubDir;
-      forInpSubPath = node['kwInpSubPath'] ?? forInpSubPath;
-      forImport = node['kwImport'] ?? forImport;
-      forOnce = node['kwOnce'] ?? forOnce;
-      forOut = node['kwOut'] ?? forOut;
-      forRun = node['kwRun'] ?? forRun;
-      forSkip = node['kwSkip'] ?? forSkip;
-      forStop = node['kwStop'] ?? forStop;
-      forTake = node['kwTake'] ?? forTake;
-      forThis = node['kwThis'] ?? forThis;
+    node = (data['functions'] as Map);
 
-      _initRepeatable();
-
-      node = data['functions'];
-
-      forFnAdd = node['fnAdd'] ?? forFnAdd;
-      forFnAddDays = node['fnAddDays'] ?? forFnAddDays;
-      forFnAddMonths = node['fnAddMonths'] ?? forFnAddMonths;
-      forFnAddYears = node['fnAddYears'] ?? forFnAddYears;
-      forFnBaseName = node['fnBaseName'] ?? forFnBaseName;
-      forFnBaseNameNoExt = node['fnBaseNameNoExt'] ?? forFnBaseNameNoExt;
-      forFnCos = node['fnCos'] ?? forFnCos;
-      forFnExp = node['fnExp'] ?? forFnExp;
-      forFnDate = node['fnDate'] ?? forFnDate;
-      forFnDirName = node['fnDirName'] ?? forFnDirName;
-      forFnDiv = node['fnDiv'] ?? forFnDiv;
-      forFnDivInt = node['fnDivInt'] ?? forFnDivInt;
-      forFnEndOfMonth = node['fnEndOfMonth'] ?? forFnEndOfMonth;
-      forFnExtension = node['fnExtension'] ?? forFnExtension;
-      forFnFileSize = node['fnFileSize'] ?? forFnFileSize;
-      forFnIndex = node['fnIndex'] ?? forFnIndex;
-      forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
-      forFnLastMatch = node['fnLastMatch'] ?? forFnLastMatch;
-      forFnLastModified = node['fnLastModified'] ?? forFnLastModified;
-      forFnLocal = node['fnLn'] ?? forFnLn;
-      forFnLocal = node['fnLocal'] ?? forFnLocal;
-      forFnLower = node['fnLower'] ?? forFnLower;
-      forFnMatch = node['fnMatch'] ?? forFnMatch;
-      forFnMax = node['fnMax'] ?? forFnMax;
-      forFnMin = node['fnMin'] ?? forFnMin;
-      forFnMod = node['fnMod'] ?? forFnMod;
-      forFnMul = node['fnMul'] ?? forFnMul;
-      forFnNow = node['fnNow'] ?? forFnNow;
-      forFnPi = node['fnPi'] ?? forFnPi;
-      forFnPow = node['fnPow'] ?? forFnPow;
-      forFnRad = node['fnRad'] ?? forFnRad;
-      forFnReplace = node['fnReplace'] ?? forFnReplace;
-      forFnReplaceMatch = node['fnReplaceMatch'] ?? forFnReplaceMatch;
-      forFnRun = node['fnRun'] ?? forFnRun;
-      forFnStartOfMonth = node['fnStartOfMonth'] ?? forFnStartOfMonth;
-      forFnSin = node['fnSin'] ?? forFnSin;
-      forFnSqrt = node['fnSqrt'] ?? forFnSqrt;
-      forFnSub = node['fnSub'] ?? forFnSub;
-      forFnSubstr = node['fnSubstr'] ?? forFnSubstr;
-      forFnTan = node['fnTan'] ?? forFnTan;
-      forFnTime = node['fnTime'] ?? forFnTime;
-      forFnToday = node['fnToday'] ?? forFnToday;
-      forFnUpper = node['fnUpper'] ?? forFnUpper;
-      forFnUtc = node['fnUtc'] ?? forFnUtc;
-    }
+    forFnAdd = node['fnAdd'] ?? forFnAdd;
+    forFnAddDays = node['fnAddDays'] ?? forFnAddDays;
+    forFnAddMonths = node['fnAddMonths'] ?? forFnAddMonths;
+    forFnAddYears = node['fnAddYears'] ?? forFnAddYears;
+    forFnBaseName = node['fnBaseName'] ?? forFnBaseName;
+    forFnBaseNameNoExt = node['fnBaseNameNoExt'] ?? forFnBaseNameNoExt;
+    forFnCos = node['fnCos'] ?? forFnCos;
+    forFnExp = node['fnExp'] ?? forFnExp;
+    forFnDate = node['fnDate'] ?? forFnDate;
+    forFnDirName = node['fnDirName'] ?? forFnDirName;
+    forFnDiv = node['fnDiv'] ?? forFnDiv;
+    forFnDivInt = node['fnDivInt'] ?? forFnDivInt;
+    forFnEndOfMonth = node['fnEndOfMonth'] ?? forFnEndOfMonth;
+    forFnExtension = node['fnExtension'] ?? forFnExtension;
+    forFnFileSize = node['fnFileSize'] ?? forFnFileSize;
+    forFnIndex = node['fnIndex'] ?? forFnIndex;
+    forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
+    forFnLastMatch = node['fnLastMatch'] ?? forFnLastMatch;
+    forFnLastModified = node['fnLastModified'] ?? forFnLastModified;
+    forFnLocal = node['fnLn'] ?? forFnLn;
+    forFnLocal = node['fnLocal'] ?? forFnLocal;
+    forFnLower = node['fnLower'] ?? forFnLower;
+    forFnMatch = node['fnMatch'] ?? forFnMatch;
+    forFnMax = node['fnMax'] ?? forFnMax;
+    forFnMin = node['fnMin'] ?? forFnMin;
+    forFnMod = node['fnMod'] ?? forFnMod;
+    forFnMul = node['fnMul'] ?? forFnMul;
+    forFnNow = node['fnNow'] ?? forFnNow;
+    forFnPi = node['fnPi'] ?? forFnPi;
+    forFnPow = node['fnPow'] ?? forFnPow;
+    forFnRad = node['fnRad'] ?? forFnRad;
+    forFnReplace = node['fnReplace'] ?? forFnReplace;
+    forFnReplaceMatch = node['fnReplaceMatch'] ?? forFnReplaceMatch;
+    forFnRun = node['fnRun'] ?? forFnRun;
+    forFnStartOfMonth = node['fnStartOfMonth'] ?? forFnStartOfMonth;
+    forFnSin = node['fnSin'] ?? forFnSin;
+    forFnSqrt = node['fnSqrt'] ?? forFnSqrt;
+    forFnSub = node['fnSub'] ?? forFnSub;
+    forFnSubstr = node['fnSubstr'] ?? forFnSubstr;
+    forFnTan = node['fnTan'] ?? forFnTan;
+    forFnTime = node['fnTime'] ?? forFnTime;
+    forFnToday = node['fnToday'] ?? forFnToday;
+    forFnUpper = node['fnUpper'] ?? forFnUpper;
+    forFnUtc = node['fnUtc'] ?? forFnUtc;
 
     _initDerived();
   }

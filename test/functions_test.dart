@@ -33,6 +33,7 @@ void main() {
           '{exp}': [r'=Exp', 1],
           '{pi}': ['=Pi'],
           '{rad}': ['=Rad', 90],
+          '{round}': ['=Round', 1.617, 2, ],
           '{sin}': [r'=Sin', ['=div', ['=Pi'], 6]],
           '{sqrt}': [r'=Sqrt', 25],
           '{tan}': [r'=Tan', ['=div', ['=Pi'], 4]],
@@ -71,14 +72,15 @@ void main() {
       expect(flatMap['{1+2}'], '3');
       expect(flatMap['{4*3}'], '12');
       expect(flatMap['{math}'], '36');
-      expect((num.parse(flatMap['{cos}']  ?? '') * 10000).round(),  5000);
-      expect((num.parse(flatMap['{exp}']  ?? '') * 10000).round(), 27183);
-      expect((num.parse(flatMap['{ln}']   ?? '') * 10000).round(), 10000);
-      expect((num.parse(flatMap['{pi}']   ?? '') * 10000).round(), 31416);
-      expect((num.parse(flatMap['{rad}']  ?? '') * 10000).round(), 15708);
-      expect((num.parse(flatMap['{sin}']  ?? '') * 10000).round(),  5000);
-      expect((num.parse(flatMap['{sqrt}'] ?? '') * 10000).round(), 50000);
-      expect((num.parse(flatMap['{tan}']  ?? '') * 10000).round(), 10000);
+      expect((num.parse(flatMap['{cos}']    ?? '') * 10000).round(),  5000);
+      expect((num.parse(flatMap['{exp}']    ?? '') * 10000).round(), 27183);
+      expect((num.parse(flatMap['{ln}']     ?? '') * 10000).round(), 10000);
+      expect((num.parse(flatMap['{pi}']     ?? '') * 10000).round(), 31416);
+      expect((num.parse(flatMap['{rad}']    ?? '') * 10000).round(), 15708);
+      expect((num.parse(flatMap['{round}']  ?? '') * 10000).round(), 16200);
+      expect((num.parse(flatMap['{sin}']    ?? '') * 10000).round(),  5000);
+      expect((num.parse(flatMap['{sqrt}']   ?? '') * 10000).round(), 50000);
+      expect((num.parse(flatMap['{tan}']    ?? '') * 10000).round(), 10000);
       expect(flatMap['{today}'], todayStr);
       expect(flatMap['{year}'], todayStr.substring(0, 4));
       expect(flatMap['{startOfMonth}'], '2021-03-01');
