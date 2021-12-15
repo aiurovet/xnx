@@ -38,6 +38,7 @@ class Keywords {
   String forFnAddYears = '=AddYears';
   String forFnBaseName = '=BaseName';
   String forFnBaseNameNoExt = '=BaseNameNoExt';
+  String forFnCeil = '=Ceil';
   String forFnCos = '=Cos';
   String forFnDate = '=Date';
   String forFnDirName = '=DirName';
@@ -47,6 +48,7 @@ class Keywords {
   String forFnExp = '=Exp';
   String forFnExtension = '=Extension';
   String forFnFileSize = '=FileSize';
+  String forFnFloor = '=Floor';
   String forFnIndex = '=Index';
   String forFnMatch = '=Match';
   String forFnLastIndex = '=LastIndex';

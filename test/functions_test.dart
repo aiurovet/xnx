@@ -29,8 +29,10 @@ void main() {
           '{1+2}': [r'=add', 1, 2],
           '{4*3}': [r'=mul', 4, 3],
           '{math}': [r'=pow', [r'=mul', [r'=idiv', 9, 3], [r'=mod', 5, 3]], 2],
+          '{ceil}': [r'=Ceil', 1.1],
           '{cos}': [r'=Cos', ['=div', ['=Pi'], 3]],
           '{exp}': [r'=Exp', 1],
+          '{floor}': [r'=Floor', 1.9],
           '{pi}': ['=Pi'],
           '{rad}': ['=Rad', 90],
           '{round}': ['=Round', 1.617, 2, ],
@@ -81,6 +83,8 @@ void main() {
       expect((num.parse(flatMap['{sin}']    ?? '') * 10000).round(),  5000);
       expect((num.parse(flatMap['{sqrt}']   ?? '') * 10000).round(), 50000);
       expect((num.parse(flatMap['{tan}']    ?? '') * 10000).round(), 10000);
+      expect((int.parse(flatMap['{ceil}']   ?? '')),  2);
+      expect((int.parse(flatMap['{floor}']  ?? '')),  1);
       expect(flatMap['{today}'], todayStr);
       expect(flatMap['{year}'], todayStr.substring(0, 4));
       expect(flatMap['{startOfMonth}'], '2021-03-01');

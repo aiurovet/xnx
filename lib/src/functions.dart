@@ -19,6 +19,7 @@ enum FunctionType {
   addYears,
   baseName,
   baseNameNoExt,
+  ceil,
   cos,
   date,
   dirName,
@@ -28,6 +29,7 @@ enum FunctionType {
   exp,
   extension,
   fileSize,
+  floor,
   indexOf,
   lastIndexOf,
   lastMatch,
@@ -155,10 +157,12 @@ class Functions {
   Object? _exec(FunctionType type, List<Object?> todo, {int offset = 0}) {
     switch (type) {
       case FunctionType.add:
+      case FunctionType.ceil:
       case FunctionType.cos:
       case FunctionType.div:
       case FunctionType.divInt:
       case FunctionType.exp:
+      case FunctionType.floor:
       case FunctionType.ln:
       case FunctionType.max:
       case FunctionType.min:
@@ -434,17 +438,15 @@ class Functions {
   //////////////////////////////////////////////////////////////////////////////
 
   String? _execMath(FunctionType type, List<Object?> todo, {int offset = 0}) {
-    var cnt = todo.length;
-    var curNumericPrecision = numericPrecision;
-
-    var isInt = (type == FunctionType.divInt);
     var isUnary = false;
 
     switch (type) {
       case FunctionType.pi:
         return pi.toString();
+      case FunctionType.ceil:
       case FunctionType.cos:
       case FunctionType.exp:
+      case FunctionType.floor:
       case FunctionType.ln:
       case FunctionType.rad:
       case FunctionType.sin:
@@ -456,8 +458,12 @@ class Functions {
         break;
     }
 
+    var curNumericPrecision = (type == FunctionType.divInt ? 0 : numericPrecision);
+
+    var cnt = todo.length;
+
     var o1 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-    var n1 = _toNum(o1, isInt: isInt);
+    var n1 = _toNum(o1, isInt: (curNumericPrecision == 0));
 
     if (n1 == null) {
       _fail(type, 'Bad 1st argument: $o1');
@@ -468,7 +474,7 @@ class Functions {
 
     if (!isUnary) {
       o2 = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-      n2 = _toNum(o2, isInt: isInt);
+      n2 = _toNum(o2, isInt: (curNumericPrecision == 0));
 
       if (type == FunctionType.round) {
         if (n2 == null) {
@@ -489,6 +495,9 @@ class Functions {
       case FunctionType.add:
         n1 += n2;
         break;
+      case FunctionType.ceil:
+        n1 = n1.ceil();
+        break;
       case FunctionType.cos:
         n1 = cos(n1);
         break;
@@ -498,6 +507,9 @@ class Functions {
         break;
       case FunctionType.exp:
         n1 = exp(n1);
+        break;
+      case FunctionType.floor:
+        n1 = n1.floor();
         break;
       case FunctionType.ln:
         n1 = log(n1);
@@ -538,7 +550,11 @@ class Functions {
         break;
     }
 
-    var resStr = n1.toStringAsFixed(isInt || (n1 is int) ? 0 : curNumericPrecision);
+    if (n1 is int) {
+      curNumericPrecision = 0;
+    }
+
+    var resStr = n1.toStringAsFixed(curNumericPrecision);
 
     if (logger.isDebug) {
       if (isUnary) {
@@ -751,6 +767,7 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnAddYears)] = FunctionType.addYears;
     nameTypeMap[_toName(keywords.forFnBaseName)] = FunctionType.baseName;
     nameTypeMap[_toName(keywords.forFnBaseNameNoExt)] = FunctionType.baseNameNoExt;
+    nameTypeMap[_toName(keywords.forFnCeil)] = FunctionType.ceil;
     nameTypeMap[_toName(keywords.forFnCos)] = FunctionType.cos;
     nameTypeMap[_toName(keywords.forFnDate)] = FunctionType.date;
     nameTypeMap[_toName(keywords.forFnDirName)] = FunctionType.dirName;
@@ -760,6 +777,7 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnExp)] = FunctionType.exp;
     nameTypeMap[_toName(keywords.forFnExtension)] = FunctionType.extension;
     nameTypeMap[_toName(keywords.forFnFileSize)] = FunctionType.fileSize;
+    nameTypeMap[_toName(keywords.forFnFloor)] = FunctionType.floor;
     nameTypeMap[_toName(keywords.forFnIndex)] = FunctionType.indexOf;
     nameTypeMap[_toName(keywords.forFnMatch)] = FunctionType.match;
     nameTypeMap[_toName(keywords.forFnLastIndex)] = FunctionType.lastIndexOf;
