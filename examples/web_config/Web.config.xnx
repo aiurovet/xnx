@@ -1,0 +1,56 @@
+{
+  "{{-import-}}": "api-url.xnx",
+ 
+  x: [
+    // AU
+ 
+    { "{Env}": "Dev",      "{Site}": "AU", "{culture}": "en-{Site}", },
+    { "{Env}": "Staging",  "{Site}": "AU", "{culture}": "en-{Site}", },
+    { "{Env}": "Training", "{Site}": "AU", "{culture}": "en-{Site}", },
+    { "{Env}": "Prod",     "{Site}": "AU", "{culture}": "en-{Site}", },
+ 
+    // UK - the country part of the culture varies from the site name
+ 
+    { "{Env}": "Dev",      "{Site}": "UK", "{culture}": "en-GB", },
+    { "{Env}": "Staging",  "{Site}": "UK", "{culture}": "en-GB", },
+    { "{Env}": "Training", "{Site}": "UK", "{culture}": "en-GB", },
+    { "{Env}": "Prod",     "{Site}": "UK", "{culture}": "en-GB", },
+ 
+    // US
+ 
+    { "{Env}": "Dev",      "{Site}": "US", "{culture}": "en-{Site}", },
+    { "{Env}": "Staging",  "{Site}": "US", "{culture}": "en-{Site}", },
+    { "{Env}": "Training", "{Site}": "US", "{culture}": "en-{Site}", },
+    { "{Env}": "Prod",     "{Site}": "US", "{culture}": "en-{Site}", },
+  ],
+ 
+  "{{-once-}}": {
+    // getting the full path lowercases the default input filename on Windows, hence defining explicitly
+    "{FileTitle}": "Web",
+    "{FileExt}": "config",
+  },
+ 
+  "{{-func-}}": {
+    "{env}": [ "=Lower", "{Env}" ],
+    "{site}": [ "=Lower", "{Site}" ],
+  },
+ 
+  "{Env-Site}": "{Env}-{Site}",
+ 
+  "{{-if-}}": { '("{Site}" ==/i "AU")': {
+      "{EnvSite}": "{Env}",
+      "{envsite}": "{env}",
+    },
+    "{{-else-}}": {
+      "{EnvSite}": "{Env}{Site}",
+      "{envsite}": "{env}{site}",
+  } },
+ 
+  "{{-cmd-}}": '--expand "{{-inp-}}" "{{-out-}}"',
+  "{{-inp-}}": "{FileTitle}-X.{FileExt}",
+ 
+  "{{-out-}}": [
+    "out/{site}/{env}/{FileTitle}.{FileExt}", 
+    "out/{FileTitle}.{Env}{Site}.{FileExt}",
+  ]
+}

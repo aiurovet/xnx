@@ -115,7 +115,7 @@ class Config {
     else {
       loadAppConfig();
       
-      _logger.information('Processing actions');
+      _logger.information('Processing actions\n');
 
       topData = all;
       execData(null, topData, execFlatMap);

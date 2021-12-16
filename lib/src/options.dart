@@ -37,6 +37,10 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static final _rexUseOtherDir = RegExp(r'^~([^\/\\]|$)');
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static final Map<String, Object?> appConfig = {
     'name': 'app-config',
     'abbr': 'c',
@@ -437,7 +441,7 @@ can be used with --move to delete the source''',
 
     _appConfigPath = '';
     _configFileInfo.init();
-    _startDirName = '';
+    _startDirName = Path.currentDirectory.path;
     _isAppendSep = false;
     _isListOnly = false;
     _isWaitAlways = false;
@@ -467,11 +471,7 @@ can be used with --move to delete the source''',
       }
     });
     addOption(parser, startDir, (value) {
-      dirName = _getString(_envStartDir, value, isPath: true);
-
-      if (!dirName.isBlank()) {
-        dirName = Path.getFullPath(dirName);
-      }
+      dirName = _getString(_envStartDir, value);
     });
     addFlag(parser, quiet, (value) {
       if (_getBool(_envQuiet, quiet, value)) {
@@ -763,7 +763,7 @@ For more details, see README.md
     _plainArgs = newArgs;
   }
 
-  ///////////////////////////////////////////////////////////4///////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   void setAppConfigPath() {
     if (_appConfigPath.isNotEmpty) {
@@ -807,45 +807,50 @@ For more details, see README.md
     _appConfigPath = '';
   }
 
-  ///////////////////////////////////////////////////////////4///////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   void setConfigPathAndStartDirName(String? configPath, String? dirName) {
     if ((configPath != null) && configPath.isBlank()) {
       configPath = null;
     }
 
-    if ((dirName != null) && dirName.isBlank()) {
-      dirName = null;
+    if ((configPath != null) && Path.extension(configPath).isBlank()) {
+      configPath += fileTypeCfg;
     }
 
-    if (configPath != null) {
-      if (Path.extension(configPath).isBlank()) {
-        configPath += fileTypeCfg;
-      }
+    var isConfigPathWithOtherDir = (configPath != null) && _rexUseOtherDir.hasMatch(configPath);
+    var isDirNameWithOtherDir = false;
+
+    if ((dirName == null) || dirName.isBlank()) {
+      dirName = Path.currentDirectory.path;
+    }
+    else {
+      isDirNameWithOtherDir = _rexUseOtherDir.hasMatch(dirName);
+    }
+
+    if (isConfigPathWithOtherDir && isDirNameWithOtherDir) {
+      throw Exception('$dirName and $configPath cannot refer to each other');
+    }
+
+    if (isDirNameWithOtherDir) {
       configPath = Path.getFullPath(configPath);
+      dirName = Path.join(Path.dirname(configPath), dirName.substring(1));
+    }
+    else {
+      dirName = Path.getFullPath(dirName);
+
+      if ((configPath != null) && isConfigPathWithOtherDir) {
+        configPath = Path.join(dirName, configPath.substring(1));
+      }
     }
 
-    if ((dirName == null) && (configPath != null) && Path.fileSystem.directory(configPath).tryExistsSync()) {
-      dirName = configPath;
-      configPath = '';
-    }
-
-    if (dirName != null) {
+    if (!Path.equals(_startDirName, dirName)) {
+      _logger.out('cd "$dirName"\n');
       _startDirName = dirName;
-      Path.fileSystem.currentDirectory = _startDirName; // to resolve the config path later
-    }
-
-    if (configPath != null) {
-      dirName = Path.dirname(configPath);
-      _startDirName = Path.getFullPath(dirName);
-    }
-
-    if (_startDirName != dirName) {
-      _logger.information('Setting current directory to: "$_startDirName"');
       Path.fileSystem.currentDirectory = _startDirName;
     }
 
-    if ((configPath == null)) {
+    if (configPath == null) {
       var fileName = Path.basename(_startDirName);
 
       if (fileName.isNotEmpty && !fileName.contains(Path.separator)) {
@@ -904,12 +909,8 @@ For more details, see README.md
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String _getString(String envKey, String? value, {bool isPath = false, String? defValue}) {
+  String _getString(String envKey, String? value, {String? defValue}) {
     var strValue = _getValue(envKey, value, defValue: defValue);
-
-    if (isPath) {
-      strValue = Path.getFullPath(strValue);
-    }
 
     Env.set(envKey, strValue, defValue: '');
 

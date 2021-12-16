@@ -17,7 +17,7 @@ class Logger {
   static const int levelInformation = 4;
   static const int levelDebug = 5;
 
-  static const int levelDefault = levelInformation;
+  static const int levelDefault = levelOut;
 
   static const levels = [ 'quiet', 'errors', 'normal', 'warnings', 'info', 'debug' ];
 

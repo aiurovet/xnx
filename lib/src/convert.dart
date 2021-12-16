@@ -459,6 +459,10 @@ Output path: "$outFilePathEx"
   //////////////////////////////////////////////////////////////////////////////
 
   File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, FlatMap map) {
+    var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
+
+    _logger.out('"${inpFile?.path ?? StringExt.stdinDisplay}" => "${tmpFile?.path ?? outFilePath}"${isExpandContentOnly ? '' : '\n'}');
+
     // Load the input as a text string
 
     var text = (inpFile == null ? stdin.readAsStringSync() : inpFile.readAsStringSync());
@@ -490,7 +494,7 @@ Output path: "$outFilePathEx"
     }
 
     if (_logger.isDebug) {
-      _logger.debug('\n...content of expanded "${inpFile?.path ?? ''}":\n\n$text');
+      _logger.debug('...content of expanded "${inpFile?.path ?? ''}":\n\n$text');
     }
 
     if (isStdOut) {
@@ -533,8 +537,6 @@ Output path: "$outFilePathEx"
 
         outFilePath = Path.join(outFilePath, outFileName);
       }
-
-      var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
       if (tmpFile == null) {
         Path.fileSystem.file(outFilePath)

@@ -77,7 +77,7 @@ class Command {
     }
 
     if (canShow && !isLocal) {
-      _logger?.information(toString());
+      _logger?.out(toString());
     }
 
     if (!canExec) {
