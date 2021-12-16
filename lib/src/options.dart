@@ -844,11 +844,12 @@ For more details, see README.md
       }
     }
 
-    if (!Path.equals(_startDirName, dirName)) {
+    if (!Path.equals(Path.currentDirectory.path, dirName)) {
       _logger.out('cd "$dirName"\n');
-      _startDirName = dirName;
-      Path.fileSystem.currentDirectory = _startDirName;
+      Path.fileSystem.currentDirectory = dirName;
     }
+
+    _startDirName = dirName;
 
     if (configPath == null) {
       var fileName = Path.basename(_startDirName);
@@ -870,6 +871,10 @@ For more details, see README.md
 
         isConfigPathFound = !(configPath?.isBlank() ?? true);
       }
+    }
+
+    if (!isDirNameWithOtherDir && !isConfigPathWithOtherDir && (configPath?.isNotEmpty ?? false)) {
+      configPath = Path.getFullPath(configPath);
     }
 
     if (!isConfigPathFound) {
