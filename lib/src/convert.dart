@@ -28,6 +28,7 @@ class Convert {
 
   static final RegExp rexExeSub = RegExp(r'^[\s]*[\-]');
   static final RegExp rexExeSubExpand = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
+  static final RegExp rexExeSubKeepTime = RegExp(r'(^|[\s])(--(copy|copy-newer|move|move-newer))([\s]|$)');
   static final RegExp rexExeSubForce = RegExp(r'(^|[\s])(-f|--force)([\s]|$)');
   static final RegExp rexExeSubPrint = RegExp(r'(^|[\s])(--print)([\s]|$)');
   static final RegExp rexIsShellCmd = RegExp(r'[\$\(\)\[\]\<\>\`\&\|]');
@@ -221,7 +222,7 @@ class Convert {
     if (!isForced && (inpFile != null) && (outFile != null) && !isSamePath) {
       var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
-      if (!isChanged) {
+      if (!isChanged && !rexExeSubKeepTime.hasMatch(command)) {
         isChanged = (outFile.compareLastModifiedStampToSync(toLastModifiedStamp: _config.lastModifiedStamp) < 0);
       }
 

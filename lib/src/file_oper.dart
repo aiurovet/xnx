@@ -14,7 +14,7 @@ class FileOper {
     var dirNameList = dirNameLists[0];
 
     for (var currDirName in dirNameList) {
-      if (currDirName.isBlank() || Path.fileSystem.file(currDirName).existsSync()) {
+      if (currDirName.isBlank() || Path.fileSystem.directory(currDirName).existsSync()) {
         return;
       }
 

@@ -691,7 +691,6 @@ can be used with --move to delete the source''',
     try {
       var result = parser.parse(args);
 
-
       if (!isCmd) {
         setConfigPathAndStartDirName(configPath, dirName);
       }
