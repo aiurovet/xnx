@@ -227,7 +227,7 @@ class Config {
         continue;
       }
 
-      flatMap[keyEx] = childData.toString().trim();
+      flatMap[keyEx] = childData.toString();
       result = execDataRun(execFlatMap);
 
       if (result != ConfigResult.ok) {
@@ -309,8 +309,8 @@ class Config {
       return result;
     }
 
-    var dataStr = data.toString().trim();
-    var isEmpty = dataStr.isEmpty;
+    var dataStr = data.toString();
+    var isEmpty = dataStr.isBlank();
 
     if (keyEx == keywords.forDetectPaths) {
       detectPathsRE = (isEmpty ? null : RegExp(dataStr));

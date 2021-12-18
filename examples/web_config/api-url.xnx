@@ -1,133 +1,131 @@
 {
-  ApiUrls: {
- 
-    // Core Web Service (old-style)
- 
-    "{ServiceUrl-Dev-AU}": "http://service.dev.business.internal.au/ServiceImpl.svc/",
-    "{ServiceUrl-Dev-UK}": "http://service.dev.business.internal.uk/ServiceImpl.svc/",
+  // Dev
+
+  "{{-if-}}": { '"{Env-Site}" == "Dev-AU"': {
+    "{ServiceUrl}": "http://service.dev.business.internal.au/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.dev.business.internal.au/",
+    "{SecondApiUrl}": "https://secondapi.dev.business.internal.au/",
+    "{ThirdApiUrl}": "https://third.dev.internal.business.com.au/",
+    "{FourthApiUrl}": "https://fourth.dev.internal.business.com.au/",
+    "{FifthApiUrl}": "https://fifthapi.dev.internal.business.com.au/",
+    "{SixthApiUrl}": "https://sixthapi.dev.internal.business.com.au/",
+  }, },
+
+  "{{-if-}}": { '"{Env-Site}" == "Dev-UK"': {
+    "{ServiceUrl}": "http://service.dev.business.internal.uk/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.dev.business.internal.uk/",
+    "{SecondApiUrl}": "https://secondapi.dev.business.internal.uk/",
+    "{ThirdApiUrl}": "https://third.dev.internal.business.co.uk/",
+    "{FourthApiUrl}": "https://fourth.dev.internal.business.co.uk/",
+    "{FifthApiUrl}": "https://fifthapi.dev.internal.business.co.uk/",
+    "{SixthApiUrl}": "https://sixthapi.dev.internal.business.co.uk/",
+  }, },
+
+  "{{-if-}}": { '"{Env-Site}" == "Dev-US"': {
     "{ServiceUrl-Dev-US}": "http://service.dev.internal.business.com/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.dev.internal.business.com/",
+    "{SecondApiUrl}": "https://secondapi.dev.internal.business.com/",
+    "{ThirdApiUrl}": "https://third.dev.internal.business.com/",
+    "{FourthApiUrl}": "https://fourth.dev.internal.business.com/",
+    "{FifthApiUrl}": "https://fifthapi.dev.internal.business.com/",
+    "{SixthApiUrl}": "https://sixthapi.dev.internal.business.com/",
+  }, },
+
+  // Staging
+
+  "{{-if-}}": { '"{Env-Site}" == "Staging-AU"': {
+    "{ServiceUrl}": "http://service.staging.business.internal.au/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.staging.business.internal.au/",
+    "{SecondApiUrl}": "https://secondapi.staging.business.internal.au/",
+    "{ThirdApiUrl}": "https://third.staging.internal.business.com.au/",
+    "{FourthApiUrl}": "https://fourth.staging.internal.business.com.au/",
+    "{FifthApiUrl}": "https://fifthapi.staging.internal.business.com.au/",
+    "{SixthApiUrl}": "https://sixthapi.staging.internal.business.com.au/",
+  }, },
+
+  "{{-if-}}": { '"{Env-Site}" == "Staging-UK"': {
+    "{ServiceUrl}": "http://service.staging.business.internal.uk/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.staging.business.internal.uk/",
+    "{SecondApiUrl}": "https://secondapi.staging.business.internal.uk/",
+    "{ThirdApiUrl}": "https://third.staging.internal.business.co.uk/",
+    "{FourthApiUrl}": "https://fourth.staging.internal.business.co.uk/",
+    "{FifthApiUrl}": "https://fifthapi.staging.internal.business.co.uk/",
+    "{SixthApiUrl}": "https://sixthapi.staging.internal.business.co.uk/",
+  }, },
+
+  "{{-if-}}": { '"{Env-Site}" == "Staging-US"': {
+    "{ServiceUrl}": "http://service.staging.internal.business.com/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.staging.internal.business.com/",
+    "{SecondApiUrl}": "https://secondapi.staging.internal.business.com/",
+    "{ThirdApiUrl}": "https://third.staging.internal.business.com/",
+    "{FourthApiUrl}": "https://fourth.staging.internal.business.com/",
+    "{FifthApiUrl}": "https://fifthapi.staging.internal.business.com/",
+    "{SixthApiUrl}": "https://sixthapi.staging.internal.business.com/",
+  }, },
+
+  // Training
+
+  "{{-if-}}": { '"{Env-Site}" == "Training-AU"': {
+    "{ServiceUrl}": "http://service.trainining.business.internal.au/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.trainining.business.internal.au/",
+    "{SecondApiUrl}": "https://secondapi.trainining.business.internal.au/",
+    "{ThirdApiUrl}": "https://third.trainining.internal.business.com.au/",
+    "{FourthApiUrl}": "https://fourth.trainining.internal.business.com.au/",
+    "{FifthApiUrl}": "https://fifthapi.trainining.internal.business.com.au/",
+    "{SixthApiUrl}": "https://sixthapi.trainining.internal.business.com.au/",
+  }, },
+
+  "{{-if-}}": { '"{Env-Site}" == "Training-UK"': {
+    "{ServiceUrl}": "http://service.trainining.business.internal.uk/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.trainining.business.internal.uk/",
+    "{SecondApiUrl}": "https://secondapi.trainining.business.internal.uk/",
+    "{ThirdApiUrl}": "https://third.trainining.internal.business.co.uk/",
+    "{FourthApiUrl}": "https://fourth.trainining.internal.business.co.uk/",
+    "{FifthApiUrl}": "https://fifthapi.trainining.internal.business.co.uk/",
+    "{SixthApiUrl}": "https://sixthapi.trainining.internal.business.co.uk/",
+  }, },
+
+  "{{-if-}}": { '"{Env-Site}" == "Training-US"': {
+    "{ServiceUrl}": "http://service.trainining.internal.business.com/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.trainining.internal.business.com/",
+    "{SecondApiUrl}": "https://secondapi.trainining.internal.business.com/",
+    "{ThirdApiUrl}": "https://third.trainining.internal.business.com/",
+    "{FourthApiUrl}": "https://fourth.trainining.internal.business.com/",
+    "{FifthApiUrl}": "https://fifthapi.trainining.internal.business.com/",
+    "{SixthApiUrl}": "https://sixthapi.trainining.internal.business.com/",
+  }, },
+
+  // Prod
+
+  "{{-if-}}": { '"{Env-Site}" == "Prod-AU"': {
+    "{ServiceUrl}": "http://service.business.internal.au/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.business.internal.au/",
+    "{SecondApiUrl}": "https://secondapi.business.internal.au/",
+    "{ThirdApiUrl}": "https://third.internal.business.com.au/",
+    "{FourthApiUrl}": "https://fourth.internal.business.com.au/",
+    "{FifthApiUrl}": "https://fifthapi.internal.business.com.au/",
+    "{SixthApiUrl}": "https://sixthapi.internal.business.com.au/",
+  }, },
+
+  "{{-if-}}": { '"{Env-Site}" == "Prod-UK"': {
+    "{ServiceUrl}": "http://service.business.internal.uk/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.business.internal.uk/",
+    "{SecondApiUrl}": "https://secondapi.business.internal.uk/",
+    "{ThirdApiUrl}": "https://third.internal.business.co.uk/",
+    "{FourthApiUrl}": "https://fourth.internal.business.co.uk/",
+    "{FifthApiUrl}": "https://fifthapi.internal.business.co.uk/",
+    "{SixthApiUrl}": "https://sixthapi.internal.business.co.uk/",
+  }, },
+
+  "{{-if-}}": { '"{Env-Site}" == "Prod-US"': {
+    "{ServiceUrl}": "http://service.internal.business.com/ServiceImpl.svc/",
+    "{FirstApiUrl}": "https://firstapi.internal.business.com/",
+    "{SecondApiUrl}": "https://secondapi.internal.business.com/",
+    "{ThirdApiUrl}": "https://third.internal.business.com/",
+    "{FourthApiUrl}": "https://fourth.internal.business.com/",
+    "{FifthApiUrl}": "https://fifthapi.internal.business.com/",
+    "{SixthApiUrl}": "https://sixthapi.internal.business.com/",
+  }, },
  
-    "{ServiceUrl-Staging-AU}": "https://service.staging.business.internal.au/ServiceImpl.svc/",
-    "{ServiceUrl-Staging-UK}": "https://service.staging.business.internal.uk/ServiceImpl.svc/",
-    "{ServiceUrl-Staging-US}": "https://service.staging.internal.business.com/ServiceImpl.svc/",
- 
-    "{ServiceUrl-Training-AU}": "https://service.training.business.internal.au/ServiceImpl.svc/",
-    "{ServiceUrl-Training-UK}": "https://service.training.business.internal.uk/ServiceImpl.svc/",
-    "{ServiceUrl-Training-US}": "https://service.training.internal.business.com/ServiceImpl.svc/",
- 
-    "{ServiceUrl-Prod-AU}": "https://service.business.internal.au/ServiceImpl.svc/",
-    "{ServiceUrl-Prod-UK}": "https://service.business.internal.uk/ServiceImpl.svc/",
-    "{ServiceUrl-Prod-US}": "https://service.internal.business.com/ServiceImpl.svc/",
- 
-    // first API (old-style)
- 
-    "{FirstApiUrl-Dev-AU}": "https://firstapi.dev.business.internal.au/",
-    "{FirstApiUrl-Dev-UK}": "https://firstapi.dev.business.internal.uk/",
-    "{FirstApiUrl-Dev-US}": "https://firstapi.dev.internal.business.com/",
- 
-    "{FirstApiUrl-Staging-AU}": "https://firstapi.staging.business.internal.au/",
-    "{FirstApiUrl-Staging-UK}": "https://firstapi.staging.business.internal.uk/",
-    "{FirstApiUrl-Staging-US}": "https://firstapi.staging.internal.business.com/",
- 
-    "{FirstApiUrl-Training-AU}": "https://firstapi.training.business.internal.au/",
-    "{FirstApiUrl-Training-UK}": "https://firstapi.training.business.internal.uk/",
-    "{FirstApiUrl-Training-US}": "https://firstapi.training.internal.business.com/",
- 
-    "{FirstApiUrl-Prod-AU}": "https://firstapi.business.internal.au/",
-    "{FirstApiUrl-Prod-UK}": "https://firstapi.business.internal.uk/",
-    "{FirstApiUrl-Prod-US}": "https://firstapi.internal.business.com/",
- 
-    // second API (old-style)
- 
-    "{SecondApiUrl-Dev-AU}": "https://secondapi.dev.business.internal.au/",
-    "{SecondApiUrl-Dev-UK}": "https://secondapi.dev.business.internal.uk/",
-    "{SecondApiUrl-Dev-US}": "https://secondapi.dev.internal.business.com/",
- 
-    "{SecondApiUrl-Staging-AU}": "https://secondapi.staging.business.internal.au/",
-    "{SecondApiUrl-Staging-UK}": "https://secondapi.staging.business.internal.uk/",
-    "{SecondApiUrl-Staging-US}": "https://secondapi.staging.internal.business.com/",
- 
-    "{SecondApiUrl-Training-AU}": "https://secondapi.training.business.internal.au/",
-    "{SecondApiUrl-Training-UK}": "https://secondapi.training.business.internal.uk/",
-    "{SecondApiUrl-Training-US}": "https://secondapi.training.internal.business.com/",
- 
-    "{SecondApiUrl-Prod-AU}": "https://secondapi.business.internal.au/",
-    "{SecondApiUrl-Prod-UK}": "https://secondapi.business.internal.uk/",
-    "{SecondApiUrl-Prod-US}": "https://secondapi.internal.business.com/",
- 
-    // Credit Risk API
- 
-    "{ThirdApiUrl-Dev-AU}": "https://third.dev.internal.business.com.au/",
-    "{ThirdApiUrl-Dev-UK}": "https://third.dev.internal.business.co.uk/",
-    "{ThirdApiUrl-Dev-US}": "https://third.dev.internal.business.com/",
- 
-    "{ThirdApiUrl-Staging-AU}": "https://third.staging.internal.business.com.au/",
-    "{ThirdApiUrl-Staging-UK}": "https://third.staging.internal.business.co.uk/",
-    "{ThirdApiUrl-Staging-US}": "https://third.staging.internal.business.com/",
- 
-    "{ThirdApiUrl-Training-AU}": "https://third.training.internal.business.com.au/",
-    "{ThirdApiUrl-Training-UK}": "https://third.training.internal.business.co.uk/",
-    "{ThirdApiUrl-Training-US}": "https://third.training.internal.business.com/",
- 
-    "{ThirdApiUrl-Prod-AU}": "https://third.internal.business.com.au/",
-    "{ThirdApiUrl-Prod-UK}": "https://third.internal.business.co.uk/",
-    "{ThirdApiUrl-Prod-US}": "https://third.internal.business.com/",
- 
-    // Data Mover API
- 
-    "{FourthApiUrl-Dev-AU}": "https://fourth.dev.internal.business.com.au/",
-    "{FourthApiUrl-Dev-UK}": "https://fourth.dev.internal.business.co.uk/",
-    "{FourthApiUrl-Dev-US}": "https://fourth.dev.internal.business.com/",
- 
-    "{FourthApiUrl-Staging-AU}": "https://fourth.staging.internal.business.com.au/",
-    "{FourthApiUrl-Staging-UK}": "https://fourth.staging.internal.business.co.uk/",
-    "{FourthApiUrl-Staging-US}": "https://fourth.staging.internal.business.com/",
- 
-    "{FourthApiUrl-Training-AU}": "https://fourth.training.internal.business.com.au/",
-    "{FourthApiUrl-Training-UK}": "https://fourth.training.internal.business.co.uk/",
-    "{FourthApiUrl-Training-US}": "https://fourth.training.internal.business.com/",
- 
-    "{FourthApiUrl-Prod-AU}": "https://fourth.internal.business.com.au/",
-    "{FourthApiUrl-Prod-UK}": "https://fourth.internal.business.co.uk/",
-    "{FourthApiUrl-Prod-US}": "https://fourth.internal.business.com/",
- 
-    // Fraud API
- 
-    "{FifthApiUrl-Dev-AU}": "https://fifthapi.dev.internal.business.com.au/",
-    "{FifthApiUrl-Dev-UK}": "https://fifthapi.dev.internal.business.co.uk/",
-    "{FifthApiUrl-Dev-US}": "https://fifthapi.dev.internal.business.com/",
- 
-    "{FifthApiUrl-Staging-AU}": "https://fifthapi.staging.internal.business.com.au/",
-    "{FifthApiUrl-Staging-UK}": "https://fifthapi.staging.internal.business.co.uk/",
-    "{FifthApiUrl-Staging-US}": "https://fifthapi.staging.internal.business.com/",
- 
-    "{FifthApiUrl-Training-AU}": "https://fifthapi.training.internal.business.com.au/",
-    "{FifthApiUrl-Training-UK}": "https://fifthapi.training.internal.business.co.uk/",
-    "{FifthApiUrl-Training-US}": "https://fifthapi.training.internal.business.com/",
- 
-    "{FifthApiUrl-Prod-AU}": "https://fifthapi.internal.business.com.au/",
-    "{FifthApiUrl-Prod-UK}": "https://fifthapi.internal.business.co.uk/",
-    "{FifthApiUrl-Prod-US}": "https://fifthapi.internal.business.com/",
- 
-    // Plan Service API
- 
-    "{SixthApiUrl-Dev-AU}": "https://sixthapi.dev.internal.business.com.au/",
-    "{SixthApiUrl-Dev-UK}": "https://sixthapi.dev.internal.business.co.uk/",
-    "{SixthApiUrl-Dev-US}": "https://sixthapi.dev.internal.business.com/",
- 
-    "{SixthApiUrl-Staging-AU}": "https://sixthapi.staging.internal.business.com.au/",
-    "{SixthApiUrl-Staging-UK}": "https://sixthapi.staging.internal.business.co.uk/",
-    "{SixthApiUrl-Staging-US}": "https://sixthapi.staging.internal.business.com/",
- 
-    "{SixthApiUrl-Training-AU}": "https://sixthapi.training.internal.business.com.au/",
-    "{SixthApiUrl-Training-UK}": "https://sixthapi.training.internal.business.co.uk/",
-    "{SixthApiUrl-Training-US}": "https://sixthapi.training.internal.business.com/",
- 
-    "{SixthApiUrl-Prod-AU}": "https://sixthapi.internal.business.com.au/",
-    "{SixthApiUrl-Prod-UK}": "https://sixthapi.internal.business.co.uk/",
-    "{SixthApiUrl-Prod-US}": "https://sixthapi.internal.business.com/",
- 
-    // End
- 
-  },
+  // End
 }

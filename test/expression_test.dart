@@ -58,6 +58,7 @@ void main() {
         expect(x.exec(setIf(' ! -d /test-dir/sub-dir')), blockElse);
         expect(x.exec(setIf('-f /test-dir/sub-dir/*1.txt')), blockThen);
         expect(x.exec(setIf('-e /test-dir/**/*2.txt')), blockThen);
+        expect(x.exec(setIf('"AU" ~ "^(AU|US)\$"')), blockThen);
         expect(x.exec(setIf(Env.getHome())), blockThen); // a string test
       });
     });

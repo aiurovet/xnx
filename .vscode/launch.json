@@ -22,7 +22,7 @@
     { "name": "xnx - site_env clean", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/site_env", "Clean", ], },
     { "name": "xnx - web_config",  "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-f", "-d", "examples/web_config", "-x", "~Web.config.xnx" ], },
+      "args": [ "-f", "-d", "examples/web_config", "-x", "~Web.config.xnx", "Dev", "UK", ], },
     { "name": "xnx - xunit_data",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/xunit_data" ], },
     { "name": "xnx - mkicons", "request": "launch", "type": "dart", "program": "bin/main.dart",

@@ -90,11 +90,41 @@ class Expression {
 
   List<int> _getFirstChunk(String condition) {
     var beg = -1;
-    var len = condition.length;
     var bracketCount = 0;
+    var len = condition.length;
+    var isEscaped = false;
+    var quote = '';
 
     for (var cur = 0; cur < len; cur++) {
-      switch (condition[cur]) {
+      var charCur = condition[cur];
+      var isQuoted = quote.isNotEmpty;
+
+      switch (charCur) {
+        case r'\':
+          if (isQuoted) {
+            isEscaped = !isEscaped;
+          }
+          continue;
+        case '"':
+        case "'":
+          if (isEscaped) {
+            continue;
+          }
+          if (charCur == quote) {
+            quote = '';
+            continue;
+          }
+          else if (quote.isEmpty) {
+            quote = charCur;
+          }
+          break;
+        default:
+          if (quote.isEmpty) {
+            break;
+          }
+          continue;
+      }
+      switch (charCur) {
         case '(':
           ++bracketCount;
           if (beg < 0) {

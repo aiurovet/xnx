@@ -80,6 +80,7 @@ class Operation {
 
   @protected final FlatMap flatMap;
   @protected final Logger logger;
+  @protected final RegExp rexQuoted = RegExp('^(".*"|\'.*\')\$');
 
   var _condition = '';
   var _isOpposite = false;
@@ -357,7 +358,7 @@ class Operation {
     );
 
     if (logger.isDebug) {
-      logger.debug('$type\n...op1: $o1\n...op2: $o2\n${isThen ? 'true' : 'false'}\n');
+      logger.debug('$type\n...op1: $o1\n...op2: $o2\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return isThen;
@@ -401,7 +402,7 @@ class Operation {
     }
 
     if (logger.isDebug) {
-      logger.debug('$type\n...path1: $path1\n...path2: $path2\n${isThen ? 'true' : 'false'}\n');
+      logger.debug('$type\n...path1: $path1\n...path2: $path2\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return isThen;
@@ -429,7 +430,7 @@ class Operation {
     }
 
     if (logger.isDebug) {
-      logger.debug('$type\n...mask: $mask\n${isThen ? 'true' : 'false'}\n');
+      logger.debug('$type\n...mask: $mask\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return isThen;
@@ -441,6 +442,17 @@ class Operation {
     var inp = _expandString(operands[0]);
     var pat = _expandString(operands[1]);
 
+    if (inp.isNotEmpty && pat.isNotEmpty) {
+      if (rexQuoted.hasMatch(inp)) {
+        if (pat.isNotEmpty && pat.isNotEmpty) {
+          if (rexQuoted.hasMatch(pat)) {
+            inp = inp.substring(1, inp.length - 1);
+            pat = pat.substring(1, pat.length - 1);
+          }
+        }
+      }
+    }
+
     var isThen = (pat.isEmpty ? false : RegExp(
       pat,
       caseSensitive: isCaseSensitive,
@@ -451,7 +463,7 @@ class Operation {
 
 
     if (logger.isDebug) {
-      logger.debug('$type\n...input:   "$inp"\n...pattern: "$pat"\n${isThen ? 'true' : 'false'}\n');
+      logger.debug('$type\n...input:   "$inp"\n...pattern: "$pat"\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return (type == OperationType.notMatches ? !isThen : isThen);
