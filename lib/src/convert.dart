@@ -484,6 +484,8 @@ Output path: "$outFilePathEx"
         if ((newText.length != text.length) || (newText != text)) {
           isDone = false;
         }
+
+        text = newText;
       });
     }
 
