@@ -476,22 +476,15 @@ Output path: "$outFilePathEx"
 
     // Expand data
 
-    for (; ;) {
+    for (var isDone = false; !isDone;) {
       effectiveMap.forEach((k, v) {
-        text = text.replaceAll(k, v);
-      });
+        isDone = true;
+        var newText = text.replaceAll(k, v);
 
-      var isDone = true;
-
-      effectiveMap.forEach((k, v) {
-        if (text.contains(k)) {
+        if ((newText.length != text.length) || (newText != text)) {
           isDone = false;
         }
       });
-
-      if (isDone) {
-        break;
-      }
     }
 
     if (_logger.isDebug) {

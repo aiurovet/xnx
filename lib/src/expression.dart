@@ -93,51 +93,56 @@ class Expression {
     var bracketCount = 0;
     var len = condition.length;
     var isEscaped = false;
+    var isQuoted = false;
     var quote = '';
 
-    for (var cur = 0; cur < len; cur++) {
-      var charCur = condition[cur];
-      var isQuoted = quote.isNotEmpty;
+    for (var curPos = 0; curPos < len; curPos++) {
+      var curChar = condition[curPos];
 
-      switch (charCur) {
-        case r'\':
-          if (isQuoted) {
-            isEscaped = !isEscaped;
-          }
-          continue;
+      if (curChar == r'\') {
+        if (isQuoted) {
+          isEscaped = !isEscaped;
+        }
+        continue;
+      }
+
+      switch (curChar) {
         case '"':
         case "'":
-          if (isEscaped) {
-            continue;
-          }
-          if (charCur == quote) {
-            quote = '';
-            continue;
-          }
-          else if (quote.isEmpty) {
-            quote = charCur;
+          if (!isEscaped) {
+            if (isQuoted) {
+              if (curChar == quote) {
+                quote = '';
+                isQuoted = false;
+              }
+            }
+            else {
+              quote = curChar;
+              isQuoted = true;
+            }
           }
           break;
-        default:
-          if (quote.isEmpty) {
-            break;
-          }
-          continue;
-      }
-      switch (charCur) {
         case '(':
-          ++bracketCount;
-          if (beg < 0) {
-            beg = cur;
+          if (!isQuoted) {
+            ++bracketCount;
+            if (beg < 0) {
+              beg = curPos;
+            }
           }
           break;
         case ')':
-          --bracketCount;
-          if (bracketCount == 0) {
-            return [beg, cur + 1];
+          if (!isQuoted) {
+            --bracketCount;
+            if (bracketCount == 0) {
+              return [beg, curPos + 1];
+            }
           }
           break;
+        default:
+          break;
       }
+
+      isEscaped = false;
     }
 
     if (bracketCount > 0) {
