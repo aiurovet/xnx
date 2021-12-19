@@ -79,17 +79,34 @@ jobs:
       ################################################################################
 
       - name: Running Integration Test 5 - site_env
-        run: bin/${{runner.os}}/xnx -d examples/site_env
-
-      - name: Checking Integration Test 5 - site_env - for POSIX-compliant OS
-        if: runner.os != 'Windows'
-        run: ls -1 examples/site_env/ReleaseFiles/au/01-dev | wc -l | grep -i "^[ \t]*4[ \t]*$"
-
-      - name: Checking Integration Test 5 - site_env - for Windows
-        if: runner.os == 'Windows'
         run: |
-          Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev
+          bin/${{runner.os}}/xnx -d examples/site_env
           (Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev).Count | Select-String -Quiet -Pattern "^[ \t]*4[ \t]*$"
+
+      # - name: Checking Integration Test 5 - site_env - for POSIX-compliant OS
+      #   if: runner.os != 'Windows'
+      #   run: ls -1 examples/site_env/ReleaseFiles/au/01-dev | wc -l | grep -i "^[ \t]*4[ \t]*$"
+
+      # - name: Checking Integration Test 5 - site_env - for Windows
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev
+      #     (Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev).Count | Select-String -Quiet -Pattern "^[ \t]*4[ \t]*$"
+
+      ################################################################################
+
+      - name: Running Integration Test 6 - web_config
+        run: |
+          bin/${{runner.os}}/xnx -d examples/web_config -x ~Web.config.xnx Dev UK
+          (Get-ChildItem -Path examples/web_config/out/Web.DevUK.config,examples/web_config/out/uk/dev/Web.config).Count | Select-String -Quiet -Pattern "^[ \t]*2[ \t]*$"
+
+      # - name: Checking Integration Test 6 - web_config - for POSIX-compliant OS
+      #   if: runner.os != 'Windows'
+      #   run: ls -1 examples/web_config/out/Web.DevUK.config examples/web_config/out/uk/dev/Web.config | wc -l | grep -i "^[ \t]*2[ \t]*$"
+
+      # - name: Checking Integration Test 6 - web_config - for Windows
+      #   if: runner.os == 'Windows'
+      #   run: (Get-ChildItem -Path examples\web_config\out\Web.DevUK.config,examples\web_config\out\uk\dev\Web.config).Count | Select-String -Quiet -Pattern "^[ \t]*2[ \t]*$"
 
       ################################################################################
 
