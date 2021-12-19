@@ -81,7 +81,7 @@ jobs:
       - name: Running Integration Test 5 - site_env
         run: |
           bin/${{runner.os}}/xnx -d examples/site_env
-          (Get-ChildItem -Path examples\site_env\ReleaseFiles\au\01-dev).Count | Select-String -Quiet -Pattern "^[ \t]*4[ \t]*$"
+          (Get-ChildItem -Path examples/site_env/ReleaseFiles/au/01-dev).Count | Select-String -Quiet -Pattern "^[ \t]*4[ \t]*$"
 
       # - name: Checking Integration Test 5 - site_env - for POSIX-compliant OS
       #   if: runner.os != 'Windows'
