@@ -5,14 +5,15 @@
 ################################################################################
 
 Param(
-  [Parameter(Mandatory=$false)] [String] $Path = '',
-  [Parameter(Mandatory=$false)] [String] $Include = '',
-  [Parameter(Mandatory=$false)] [String] $Exclude = '',
-  [Parameter(Mandatory=$false)] [Int32] $Depth = [System.Int32]::MaxValue,
-  [Parameter(Mandatory=$false)] [Int32] $Expected = [System.Int32]::MinValue,
-  [Switch] $Help,
-  [Switch] $Quiet,
-  [Switch] $Recurse
+  [Switch]   $Help,
+  [Switch]   $Quiet,
+  [Switch]   $Recurse,
+
+  [String[]] $Path     = @(),
+  [String]   $Include  = "",
+  [String]   $Exclude  = "",
+  [Int32]    $Depth    = [System.Int32]::MaxValue,
+  [Int32[]]  $Expected = @()
 )
 
 ################################################################################
@@ -29,7 +30,9 @@ $ScriptName = [System.IO.Path]::GetFileName($PSCommandPath)
 # Check command-line parameters and print usage if failed
 ################################################################################
 
-If (($Help) || ($Path.Length -le 0)) {
+If ($Help -Or !$Path) {
+  Write-Host "HERE"
+
   Write-Host @"
 
 USAGE:
@@ -38,14 +41,14 @@ $ScriptName [OPTIONS]
 
 OPTIONS:
 
--Help              - this help screen
--Quiet             - do not print anything
--Recurse           - scan all sub-directories (max depth)
--Path <list>       - a comma-separated list of directories and/or files (the wildcards are allowed)
--Depth <number>    - how deep the directory tree should be scanned (default: 0 in the non-recursive mode)
--Include <mask>    - fetch only those filenames (the wildcards are allowed)
--Exclude <mask>    - skip those filenames (the wildcards are allowed)
--Expected <number> - succeed only if the number of directories and/or files equals this one (default: don't check)
+-Help           - this help screen
+-Quiet          - do not print anything
+-Recurse        - recurse (scan all) sub-directories (maximum depth)
+-Path <list>    - a comma-separated list of directories and/or files (the wildcards are allowed)
+-Depth <num>    - how deep the directory tree should be scanned (default: 0 in the non-recursive mode)
+-Include <mask> - fetch only those filenames (the wildcards are allowed)
+-Exclude <mask> - skip those filenames (the wildcards are allowed)
+-Expected <num>|<min>,<max> - succeed only if the number of directories and/or files matches (default: don't check)
 
 "@
 
@@ -54,8 +57,13 @@ OPTIONS:
 
 ################################################################################
 
-if (!$Quiet) {
-  Write-Host "`n$ScriptName started`n";
+If ($Expected.Length -ge 1) {
+  $ExpectedMin = $Expected[0];
+  $ExpectedMax = $Expected[$Expected.Length - 1];
+}
+Else {
+  $ExpectedMin = [System.Int32]::MinValue;
+  $ExpectedMax = [System.Int32]::MinValue;
 }
 
 ################################################################################
@@ -63,25 +71,26 @@ if (!$Quiet) {
 $Actual = (Get-ChildItem -Path "$Path" -Include "$Include" -Exclude "$Exclude" -Depth $Depth).Count;
 $LastExitCode = If ($?) { 0 } Else { 1 }
 
-If ($Expected -le [System.Int32]::MinValue) {
+If ($ExpectedMin -le [System.Int32]::MinValue) {
   if (!$Quiet) {
-    Write-Output "Actual: $Actual";
+    Write-Output "${ScriptName}: Found: $Actual";
   }
 }
 Else {
-  If ($Actual -ne $Expected) {
+  If (($Actual -lt $ExpectedMin) -Or ($Actual -gt $ExpectedMax)) {
     $LastExitCode = 1
   }
 
-  $Result = If ($LastExitCode -eq 0) { "OK" } Else { "Failed" }
+  $Result = If ($LastExitCode -eq 0) { "Success" } Else { "Failure" }
 
   if (!$Quiet) {
-    Write-Output "Actual: $Actual`nExpected: $Expected`nResult: $Result";
+    if ($ExpectedMin -eq $ExpectedMax) {
+      Write-Output "${ScriptName}: ${Result}: $Actual == $ExpectedMin";
+    }
+    Else {
+      Write-Output "${ScriptName}: ${Result}: $ExpectedMin <= $Actual <= $ExpectedMax";
+    }
   }
-}
-
-if (!$Quiet) {
-  Write-Host "`n$ScriptName completed`n";
 }
 
 Exit $LastExitCode
