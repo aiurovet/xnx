@@ -4,7 +4,7 @@ set CNT=%~1
 shift
 
 if not "%~1" == "" (
-  for /F "tokens=*" %%v in ('dir /B %~* | find /v /c ""') do (
+  for /F "tokens=*" %%v in ('dir /B %* | find /v /c ""') do (
     if "%%v" == "%CNT%" (
       exit /B 0
     )
