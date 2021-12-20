@@ -19,17 +19,14 @@ jobs:
 
       ################################################################################
 
-      - name: Testing PowerShell script
-        run: |
-          pwd
-          ls -l
-          scripts/Check-FileCount.ps1
+      - uses: actions/checkout@v2
+      #- uses: browser-actions/setup-chrome@latest
+      #- uses: dart-lang/setup-dart@v1
 
       ################################################################################
 
-      - uses: actions/checkout@v2
-      - uses: browser-actions/setup-chrome@latest
-      - uses: dart-lang/setup-dart@v1
+      - name: Testing PowerShell script
+        run: scripts/Check-FileCount.ps1
 
       ################################################################################
 
