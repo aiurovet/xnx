@@ -20,13 +20,8 @@ jobs:
       ################################################################################
 
       - uses: actions/checkout@v2
-      #- uses: browser-actions/setup-chrome@latest
-      #- uses: dart-lang/setup-dart@v1
-
-      ################################################################################
-
-      - name: Testing PowerShell script
-        run: scripts/Check-FileCount.ps1
+      - uses: browser-actions/setup-chrome@latest
+      - uses: dart-lang/setup-dart@v1
 
       ################################################################################
 
@@ -64,29 +59,37 @@ jobs:
       ################################################################################
 
       - name: Running Integration Test 1 - flutter_app_icons
-        run: bin/${{runner.os}}/xnx -d examples/flutter_app_icons
+        run: |
+          bin/${{runner.os}}/xnx -d examples/flutter_app_icons
+          scripts/Check-FileCount.ps1 -Expected 40 -Path examples/flutter_app_icons -Include "*.png"
 
       ################################################################################
 
       - name: Running Integration Test 2 - ms_office
-        run: bin/${{runner.os}}/xnx -d examples/ms_office
+        run: |
+          bin/${{runner.os}}/xnx -d examples/ms_office
+          scripts/Check-FileCount.ps1 -Expected 12 -Path examples/ms_office/out/
 
       ################################################################################
 
       - name: Running Integration Test 3 - multi_conf
-        run: bin/${{runner.os}}/xnx -d examples/multi_conf
+        run: |
+          bin/${{runner.os}}/xnx -d examples/multi_conf
+          scripts/Check-FileCount.ps1 -Expected 6 -Path examples/multi_conf/out/
 
       ################################################################################
 
       - name: Running Integration Test 4 - multi_icon
-        run: bin/${{runner.os}}/xnx -d examples/multi_icon
+        run: |
+          bin/${{runner.os}}/xnx -d examples/multi_icon
+          scripts/Check-FileCount.ps1 -Expected 12 -Path examples/multi_icon/png/
 
       ################################################################################
 
       - name: Running Integration Test 5 - site_env
         run: |
           bin/${{runner.os}}/xnx -d examples/site_env
-          scripts/check-count 4 examples/site_env/ReleaseFiles/au/01-dev
+          scripts/Check-FileCount.ps1 -Expected 64 -Recurse -Path examples/site_env/ReleaseFiles/ -Include "*.txt"
 
       # - name: Checking Integration Test 5 - site_env - for POSIX-compliant OS
       #   if: runner.os != 'Windows'
@@ -103,7 +106,7 @@ jobs:
       - name: Running Integration Test 6 - web_config
         run: |
           bin/${{runner.os}}/xnx -d examples/web_config -x ~Web.config.xnx Dev UK
-          scripts/check-count 2 examples/web_config/out/Web.DevUK.config examples/web_config/out/uk/dev/Web.config
+          scripts/Check-FileCount.ps1 -Expected 2 -Recurse -Path examples/web_config/out/ -Include "Web*.config"
 
       # - name: Checking Integration Test 6 - web_config - for POSIX-compliant OS
       #   if: runner.os != 'Windows'
