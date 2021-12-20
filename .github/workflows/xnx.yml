@@ -22,8 +22,7 @@ jobs:
       - name: Testing PowerShell script
         run: |
           pwd
-          ls -1
-          ls scripts
+          ls -l
           scripts/Check-FileCount.ps1
 
       ################################################################################
