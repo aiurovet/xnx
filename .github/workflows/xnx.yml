@@ -81,7 +81,7 @@ jobs:
       - name: Running Integration Test 5 - site_env
         run: |
           bin/${{runner.os}}/xnx -d examples/site_env
-          (Get-ChildItem -Path examples/site_env/ReleaseFiles/au/01-dev).Count | Select-String -Quiet -Pattern "^[ \t]*4[ \t]*$"
+          scripts/check_count 4 examples/site_env/ReleaseFiles/au/01-dev
 
       # - name: Checking Integration Test 5 - site_env - for POSIX-compliant OS
       #   if: runner.os != 'Windows'
@@ -98,7 +98,7 @@ jobs:
       - name: Running Integration Test 6 - web_config
         run: |
           bin/${{runner.os}}/xnx -d examples/web_config -x ~Web.config.xnx Dev UK
-          (Get-ChildItem -Path examples/web_config/out/Web.DevUK.config,examples/web_config/out/uk/dev/Web.config).Count | Select-String -Quiet -Pattern "^[ \t]*2[ \t]*$"
+          scripts/check_count 2 examples/web_config/out/Web.DevUK.config examples/web_config/out/uk/dev/Web.config
 
       # - name: Checking Integration Test 6 - web_config - for POSIX-compliant OS
       #   if: runner.os != 'Windows'

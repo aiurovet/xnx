@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -Eeo pipefail
+
+CNT=${1}
+shift
+
+if (( ${CNT} > 0 )) && (( ${#} >= 1 )); then
+  OUT=$( ls -1 ${@} | wc -l | grep -c "^[\s]*${CNT}[\s]*$" )
+  exit ${?}
+else
+  printf "\nUSAGE: ${0} <expected-count> <files1> [<files2>...]\n\n"
+  exit 1
+fi
