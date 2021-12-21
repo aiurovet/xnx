@@ -10,7 +10,7 @@
     { "name": "help", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "--help", ], },
     { "name": "flutter_app_icons", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-f", "-d", "examples/flutter_app_icons" ], },
+      "args": [ "-v", "debug", "-f", "-d", "examples/flutter_app_icons" ], },
     { "name": "if", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/if" ], },
     { "name": "ms_office",   "request": "launch", "type": "dart", "program": "bin/main.dart",

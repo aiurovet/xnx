@@ -490,7 +490,7 @@ Output path: "$outFilePathEx"
     }
 
     if (_logger.isDebug) {
-      _logger.debug('...content of expanded "${inpFile?.path ?? ''}":\n\n$text');
+      _logger.debug('...content of "${tmpFile?.path ?? StringExt.stdinDisplay}":\n\n$text');
     }
 
     if (isStdOut) {
