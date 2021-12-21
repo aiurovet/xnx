@@ -4,6 +4,7 @@
     "{MAIN-CHROME-OPTS}": " --headless --default-background-color=0",
 
     "{{-if-}}": { '("${OS}" ==/i "linux") || ("${OS}" ==/i "macos")': {
+      "{/}": "/",
       "{{-if-}}": { '"${OS}" ==/i "linux"': {
         "{svg2png}": "google-chrome {MAIN-CHROME-OPTS}", // you can use chromium too
         "{shell}": "bash -c"
@@ -14,6 +15,7 @@
       "{convert}": "convert",
       "{sleep_0_5s}": "sleep 0.5s"
     }, "{{-else-}}": { "{{-if-}}": { '"${USER}" != ""': {
+      "{/}": "\\",
       "{svg2png}": "chrome {MAIN-CHROME-OPTS} --disable-gpu",
       "{convert}": "magick convert",
       "{shell}": "cmd /c",

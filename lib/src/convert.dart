@@ -245,7 +245,7 @@ class Convert {
     var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
     if (tmpFile != null) {
-      command = command.replaceAll(inpFilePath, tmpFilePath);
+      command = Path.replaceAll(command, inpFilePath, tmpFilePath);
     }
 
     Command(text: command, logger: _logger)

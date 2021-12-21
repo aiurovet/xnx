@@ -1,7 +1,7 @@
 // A sample configuration file to generate PNG icons for Flutter app (all needed platforms and sizes)
 
 {
-  "{{-import-}}_1": "../shell.xnx",
+  "{{-import-}}": "../shell.xnx",
 
   "{{-can-expand-content-}}": true,
 

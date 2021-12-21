@@ -17,6 +17,7 @@ class Path {
   static String driveSeparator = '';
   static bool isCaseSensitive = false;
   static bool isWindowsFS = false;
+  static RegExp rexSeparator = RegExp(r'[\/\\]');
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -159,6 +160,15 @@ class Path {
 
   static String relative(String path, {String? from}) =>
       fileSystem.path.relative(path, from: from);
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String replaceAll(String input, String fromPath, String toPath) {
+    var rexFromPath = RegExp(RegExp.escape(fromPath.replaceAll(rexSeparator, '\x01'))
+    .replaceAll('\x01', Path.rexSeparator.pattern), caseSensitive: !Path.isWindowsFS);
+
+    return input.replaceAll(rexFromPath, toPath);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
