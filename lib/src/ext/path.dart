@@ -164,10 +164,16 @@ class Path {
   //////////////////////////////////////////////////////////////////////////////
 
   static String replaceAll(String input, String fromPath, String toPath) {
-    var rexFromPath = RegExp(RegExp.escape(fromPath.replaceAll(rexSeparator, '\x01'))
-    .replaceAll('\x01', Path.rexSeparator.pattern), caseSensitive: !Path.isWindowsFS);
+    var pattern = "(^|[\\s\"']|\\:[\\/\\\\]+)" +
+                  RegExp.escape(fromPath.replaceAll(rexSeparator, '\x01'))
+                  .replaceAll('\x01', Path.rexSeparator.pattern) +
+                  "([\\s\"']|\$)";
 
-    return input.replaceAll(rexFromPath, toPath);
+    var rexFromPath = RegExp(pattern, caseSensitive: !Path.isWindowsFS);
+
+    return input.replaceAllMapped(rexFromPath, (m) {
+      return (m.group(1) ?? '') + toPath + (m.group(2) ?? '');
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////

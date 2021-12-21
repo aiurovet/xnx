@@ -51,7 +51,7 @@ void main() {
       test('replaceAll', () {
         Helper.initFileSystem(fileSystem);
 
-        expect(Path.equals(Path.replaceAll(r'a \b/c\d/e f', r'/b/c/d/e', r'/g/h'), r'a /g/h f'), true);
+        expect(Path.equals(Path.replaceAll(r'a \b/c\d/e \b/c\d/ee \b/c\d/e f', r'/b/c/d/e', r'/g/h'), r'a /g/h \b/c\d/ee /g/h f'), true);
       });
     });
   });
