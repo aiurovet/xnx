@@ -48,6 +48,11 @@ void main() {
         expect(Path.equals(Path.getFullPath('${sep}Abc.txt'), r'Abc.txt'), true);
         expect(Path.equals(Path.getFullPath('$sepСаша.Текст'), '$sepСаша.Текст'), true);
       });
+      test('replaceAll', () {
+        Helper.initFileSystem(fileSystem);
+
+        expect(Path.equals(Path.replaceAll(r'a \b/c\d/e f', r'/b/c/d/e', r'/g/h'), r'a /g/h f'), true);
+      });
     });
   });
 }
