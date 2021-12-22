@@ -62,7 +62,7 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<String> splitPattern(String pattern, {bool isDirectoryName = false}) {
+  static List<String> splitPattern(String pattern) {
     var dirName = '';
 
     if (pattern.isEmpty || !pattern.contains(Path.separator)) {

@@ -683,6 +683,10 @@ class Operation {
   //////////////////////////////////////////////////////////////////////////////
 
   int _skipNegations(int from, int length) {
+    if (from <= 0) {
+      _isOpposite = false;
+    }
+
     var last = from;
 
     for (; last < length; last++) {
