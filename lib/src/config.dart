@@ -247,12 +247,22 @@ class Config {
       if (key.startsWith(keywords.forOnce)) {
         _once.add(data);
       }
-      else if (key.startsWith(keywords.forSkip)) {
-        skip.init(isNot: (data['isNot'] as bool?), isPath: (data['isPath'] as bool?), mask: (data['mask'] as String?), regex: (data['regex'] as String?));
+      else if (key.startsWith(keywords.forFilesSkip)) {
+        skip.init(
+          isNot: (data[keywords.forFilesIsNot] as bool?),
+          isPath: (data[keywords.forFilesIsPath] as bool?),
+          mask: (data[keywords.forFilesMask] as String?),
+          regex: (data[keywords.forFilesRegex] as String?)
+        );
         return result;
       }
-      else if (key.startsWith(keywords.forTake)) {
-        take.init(isNot: (data['isNot'] as bool?), isPath: (data['isPath'] as bool?), mask: (data['mask'] as String?), regex: (data['regex'] as String?));
+      else if (key.startsWith(keywords.forFilesTake)) {
+        take.init(
+          isNot: (data[keywords.forFilesIsNot] as bool?),
+          isPath: (data[keywords.forFilesIsPath] as bool?),
+          mask: (data[keywords.forFilesMask] as String?),
+          regex: (data[keywords.forFilesRegex] as String?)
+        );
         return result;
       }
       else if (key.startsWith(keywords.forFunc)) {

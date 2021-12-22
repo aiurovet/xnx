@@ -35,6 +35,7 @@ enum FunctionType {
   lastMatch,
   lastModified,
   match,
+  len,
   ln,
   local,
   lower,
@@ -57,6 +58,7 @@ enum FunctionType {
   startOfMonth,
   tan,
   time,
+  title,
   today,
   upper,
   utc,
@@ -145,10 +147,10 @@ class Functions {
   //////////////////////////////////////////////////////////////////////////////
 
   void init(Map data) {
-    var numericPrecisionStr = data['numericPrecision']?.toString();
+    var numericPrecisionStr = data[keywords.forNumericPrecision]?.toString();
 
     if (numericPrecisionStr != null) {
-      numericPrecision = int.tryParse(numericPrecisionStr) ?? numericPrecision;
+      numericPrecision = (num.tryParse(numericPrecisionStr)?.floor() ?? numericPrecision);
     }
   }
 
@@ -194,6 +196,8 @@ class Functions {
       case FunctionType.fileSize:
       case FunctionType.lastModified:
         return _execFile(type, todo, offset: offset);
+      case FunctionType.len:
+        return _execLen(type, todo, offset: offset);
       case FunctionType.indexOf:
       case FunctionType.lastIndexOf:
         return _execIndex(type, todo, offset: offset);
@@ -212,6 +216,7 @@ class Functions {
       case FunctionType.substr:
         return _execSubstring(type, todo, offset: offset);
       case FunctionType.lower:
+      case FunctionType.title:
       case FunctionType.upper:
         return _execToCase(type, todo, offset: offset);
       default:
@@ -392,6 +397,29 @@ class Functions {
 
     if (logger.isDebug) {
       logger.debug('$type\n...input:  $inpStr\n...find:   $fndStr\n...from:    $begPos\n...result: $resStr\n');
+    }
+
+    return resStr;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String? _execLen(FunctionType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
+
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var resStr = '';
+
+    switch (type) {
+      case FunctionType.len:
+        resStr = inpStr.length.toStringAsFixed(0);
+        break;
+      default:
+        break;
+    }
+
+    if (logger.isDebug) {
+      logger.debug('$type\n...input:  $inpStr\n...result: $resStr\n');
     }
 
     return resStr;
@@ -727,6 +755,7 @@ class Functions {
     var cnt = todo.length;
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var sepStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
     if (inpStr.isEmpty) {
       return inpStr;
@@ -737,6 +766,9 @@ class Functions {
     switch (type) {
       case FunctionType.lower:
         resStr = inpStr.toLowerCase();
+        break;
+      case FunctionType.title:
+        resStr = _toTitleCase(inpStr, sepStr);
         break;
       case FunctionType.upper:
         resStr = inpStr.toUpperCase();
@@ -783,6 +815,7 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnLastIndex)] = FunctionType.lastIndexOf;
     nameTypeMap[_toName(keywords.forFnLastMatch)] = FunctionType.lastMatch;
     nameTypeMap[_toName(keywords.forFnLastModified)] = FunctionType.lastModified;
+    nameTypeMap[_toName(keywords.forFnLen)] = FunctionType.len;
     nameTypeMap[_toName(keywords.forFnLn)] = FunctionType.ln;
     nameTypeMap[_toName(keywords.forFnLocal)] = FunctionType.local;
     nameTypeMap[_toName(keywords.forFnLower)] = FunctionType.lower;
@@ -805,6 +838,7 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnSubstr)] = FunctionType.substr;
     nameTypeMap[_toName(keywords.forFnTan)] = FunctionType.tan;
     nameTypeMap[_toName(keywords.forFnTime)] = FunctionType.time;
+    nameTypeMap[_toName(keywords.forFnTitle)] = FunctionType.title;
     nameTypeMap[_toName(keywords.forFnToday)] = FunctionType.today;
     nameTypeMap[_toName(keywords.forFnUpper)] = FunctionType.upper;
     nameTypeMap[_toName(keywords.forFnUtc)] = FunctionType.utc;
@@ -863,6 +897,19 @@ class Functions {
       multiLine: flags.contains('m'),
       unicode: flags.contains('u'),
     );
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String _toTitleCase(String input, String separators){
+    var escSep = (separators.isEmpty ? r'\s' : RegExp.escape(separators).replaceAll(' ', r'\s'));
+    var rexSep = RegExp('(^|[$escSep]+)([^$escSep])');
+
+    var result = input.replaceAllMapped(rexSep, (m) {
+      return (m.group(1) ?? '') + (m.group(2)?.toUpperCase() ?? '');
+    });
+
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -2,9 +2,21 @@
   "{{-import-}}": "api-url.xnx",
  
   "{{-once-}}": {
-    "{Env}": "$~1",
-    "{Site}": "$~2",
-    "{BadArg}": "$~3",
+    "{EnvSite}": "$~1",
+    "{BadArg}": "$~2",
+
+    "{{-func-}}": {
+      "{EnvSiteBreak}": ["=Add", ["=Len", "{EnvSite}"], -2],
+      "{Env}": [ "=Title", ["=Substr", "{EnvSite}", 1, "{EnvSiteBreak}" ]],
+      "{Site}": [ "=Upper", ["=Substr", "{EnvSite}", ["=Add", "{EnvSiteBreak}", 1], 2]],
+
+      "{env}": [ "=Lower", "{Env}" ],
+      "{site}": [ "=Lower", "{Site}" ],
+
+      "{IsEnvValid}": [ "=IndexOf", ",{Env},", ",Dev,Staging,Training,Prod,", ],
+      "{IsSiteValid}": [ "=IndexOf", ",{Site},", ",AU,UK,US,", ],
+      "{IsSiteEnglish}": "{IsSiteValid}",
+    },
 
     "{ErrPrefix}": "*** ERROR: ",
     "{ErrSuffix}": "\n\nThe execution failed\n",
@@ -18,16 +30,6 @@
     "{Env-Site}": "{Env}-{Site}",
     "{FileTitle}": "Web",
     "{FileExt}": "config",
-
-    "{{-func-}}": {
-      "{env}": [ "=Lower", "{Env}" ],
-      "{site}": [ "=Lower", "{Site}" ],
-      "{Site}": [ "=Upper", "{Site}" ],
-
-      "{IsEnvValid}": [ "=IndexOf", ",{Env},", ",Dev,Staging,Training,Prod,", ],
-      "{IsSiteValid}": [ "=IndexOf", ",{Site},", ",AU,UK,US,", ],
-      "{IsSiteEnglish}": "{IsSiteValid}",
-    },
 
     "{{-if-}}": { '"{Env}" !~ "^(Dev|Staging|Training|Prod)\$"': {
         "{{-stop-}}": '{ErrPrefix}Invalid environment "{Env}"!{ErrSuffix}',

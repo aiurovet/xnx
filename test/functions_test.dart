@@ -66,6 +66,7 @@ void main() {
           '{lastIndex14}': [r'=LastIndex', 'Abcbcdefbqprstbz', 'b', 14],
           '{match}': [r'=Match', 'Abcbcdefbqprcde', '[cd]'],
           '{lastMatch}': [r'=LastMatch', 'Abcbcdefbqprcde', '[cd]'],
+          '{title}': [r'=title', 'ab_c def gh', ' _',],
           '{weird}': [r'=replaceMatch', '{Env}elop', '[de]', 'ab', '/gi'],
           '{groups}': [r'=replaceMatch', 'abcdefghi', '(bc(d))|(g(h))', r'$2\$2\\${4}', '/gi'],
           '{echo}': [r'=run', '$cmdEcho 1 2'],
@@ -109,6 +110,7 @@ void main() {
       expect(flatMap['{lastIndex14}'], '9');
       expect(flatMap['{match}'], '3');
       expect(flatMap['{lastMatch}'], '14');
+      expect(flatMap['{title}'], 'Ab_C Def Gh');
       expect(flatMap['{weird}'], 'ababVablop');
       expect(flatMap['{groups}'], r'ad$2\ef$2\hi');
       expect(flatMap['{echo}'], '1 2');

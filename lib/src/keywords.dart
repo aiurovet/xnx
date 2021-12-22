@@ -14,6 +14,12 @@ class Keywords {
   String forCmd = '{{-cmd-}}';
   String forCurDir = '{{-cur-dir-}}';
   String forDetectPaths = '{{-detectPaths-}}';
+  String forFilesIsNot = 'isNot';
+  String forFilesIsPath = 'isPath';
+  String forFilesMask = 'mask';
+  String forFilesRegex = 'regex';
+  String forFilesSkip = '{{-skip-}}';
+  String forFilesTake = '{{-take-}}';
   String forFunc = '{{-func-}}';
   String forInp = '{{-inp-}}';
   String forInpDir = '{{-inp-dir-}}';
@@ -24,12 +30,11 @@ class Keywords {
   String forInpSubDir = '{{-inp-sub-dir-}}';
   String forInpSubPath = '{{-inp-sub-path-}}';
   String forImport = '{{-import-}}';
+  String forNumericPrecision = 'numericPrecision';
   String forOnce = '{{-once-}}';
   String forOut = '{{-out-}}';
   String forRun = '{{-run-}}';
-  String forSkip = '{{-skip-}}';
   String forStop = '{{-stop-}}';
-  String forTake = '{{-take-}}';
   String forThis = '{{-this-}}';
 
   String forFnAdd = '=Add';
@@ -54,6 +59,7 @@ class Keywords {
   String forFnLastIndex = '=LastIndex';
   String forFnLastMatch = '=LastMatch';
   String forFnLastModified = '=LastModified';
+  String forFnLen = '=Len';
   String forFnLn = '=Ln';
   String forFnLocal = '=Local';
   String forFnLower = '=Lower';
@@ -76,6 +82,7 @@ class Keywords {
   String forFnSubstr = '=Substr';
   String forFnTan = '=Tan';
   String forFnTime = '=Time';
+  String forFnTitle = '=Title';
   String forFnToday = '=Today';
   String forFnUpper = '=Upper';
   String forFnUtc = '=Utc';
@@ -138,6 +145,12 @@ class Keywords {
       forCmd = node['kwCmd'] ?? forCmd;
       forCurDir = node['kwCurDir'] ?? forCurDir;
       forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
+      forFilesIsNot = node['kwFilesIsNot'] ?? forFilesIsNot;
+      forFilesIsPath = node['kwFilesIsPath'] ?? forFilesIsPath;
+      forFilesMask = node['kwFilesMask'] ?? forFilesMask;
+      forFilesRegex = node['kwFilesRegex'] ?? forFilesRegex;
+      forFilesSkip = node['kwFilesSkip'] ?? forFilesSkip;
+      forFilesTake = node['kwFilesTake'] ?? forFilesTake;
       forFunc = node['kwFunc'] ?? forFunc;
       forInp = node['kwInp'] ?? forInp;
       forInpDir = node['kwInpDir'] ?? forInpDir;
@@ -148,12 +161,11 @@ class Keywords {
       forInpSubDir = node['kwInpSubDir'] ?? forInpSubDir;
       forInpSubPath = node['kwInpSubPath'] ?? forInpSubPath;
       forImport = node['kwImport'] ?? forImport;
+      forNumericPrecision = node['kwNumericPrecision'] ?? forNumericPrecision;
       forOnce = node['kwOnce'] ?? forOnce;
       forOut = node['kwOut'] ?? forOut;
       forRun = node['kwRun'] ?? forRun;
-      forSkip = node['kwSkip'] ?? forSkip;
       forStop = node['kwStop'] ?? forStop;
-      forTake = node['kwTake'] ?? forTake;
       forThis = node['kwThis'] ?? forThis;
     }
 
@@ -183,7 +195,8 @@ class Keywords {
       forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
       forFnLastMatch = node['fnLastMatch'] ?? forFnLastMatch;
       forFnLastModified = node['fnLastModified'] ?? forFnLastModified;
-      forFnLocal = node['fnLn'] ?? forFnLn;
+      forFnLen = node['fnLen'] ?? forFnLen;
+      forFnLn = node['fnLn'] ?? forFnLn;
       forFnLocal = node['fnLocal'] ?? forFnLocal;
       forFnLower = node['fnLower'] ?? forFnLower;
       forFnMatch = node['fnMatch'] ?? forFnMatch;
@@ -205,6 +218,7 @@ class Keywords {
       forFnSubstr = node['fnSubstr'] ?? forFnSubstr;
       forFnTan = node['fnTan'] ?? forFnTan;
       forFnTime = node['fnTime'] ?? forFnTime;
+      forFnTitle = node['fnTitle'] ?? forFnTitle;
       forFnToday = node['fnToday'] ?? forFnToday;
       forFnUpper = node['fnUpper'] ?? forFnUpper;
       forFnUtc = node['fnUtc'] ?? forFnUtc;
@@ -233,9 +247,9 @@ class Keywords {
 
     // Frequency level 3
 
-    if (key.startsWith(forSkip)) { return forSkip; }
     if (key.startsWith(forStop)) { return forStop; }
-    if (key.startsWith(forTake)) { return forTake; }
+    if (key.startsWith(forFilesSkip)) { return forFilesSkip; }
+    if (key.startsWith(forFilesTake)) { return forFilesTake; }
 
     // Frequency level 4
 
@@ -267,8 +281,8 @@ class Keywords {
       forCanExpandContent, forCmd, forCurDir, forDetectPaths,
       forFunc, forInp, forInpDir, forInpExt, forInpName,
       forInpNameExt, forInpPath,  forInpSubDir, forInpSubPath,
-      forImport, forOnce, forOut, forRun, forSkip, forStop,
-      forTake, forThis,
+      forImport, forOnce, forOut, forRun, forFilesSkip, forStop,
+      forFilesTake, forThis,
     ]);
 
     allForExe..clear()..addAll([
