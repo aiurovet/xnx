@@ -316,6 +316,10 @@ class Operation {
       }
     }
 
+    if (type == OperationType.unknown) {
+      return false;
+    }
+
     if (_isOpposite) {
       if (type == OperationType.alwaysFalse) {
         type = OperationType.alwaysTrue;
@@ -326,7 +330,7 @@ class Operation {
       _isOpposite = false;
     }
 
-    return (type != OperationType.unknown);
+    return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////
