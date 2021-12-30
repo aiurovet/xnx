@@ -2,7 +2,7 @@
   "data": [
     {
       "<last-name>": "Ashwood",
-      "<given-names>": "Ann",
+      "<given-names>": 'Ann & Mary',
       "<full-name>": "<given-names> <last-name>",
       "<dob>": "1 Jan 1961",
       "<spouse-given-names>": "Alfred",
@@ -15,7 +15,7 @@
     },
     {
       "<last-name>": "Bourie",
-      "<given-names>": "Brian",
+      "<given-names>": "Brian <Sr>",
       "<full-name>": "<given-names> <last-name>",
       "<dob>": "1 Feb 1952",
       "<spouse-given-names>": "Blanche",

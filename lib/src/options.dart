@@ -11,6 +11,7 @@ import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/ext/stdin.dart';
 import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/markup_mode.dart';
 import 'package:xnx/src/pack_oper.dart';
 
 class Options {
@@ -31,6 +32,7 @@ class Options {
   static const String _envCompression = '${_envAppKeyPrefix}COMPRESSION';
   static const String _envForce = '${_envAppKeyPrefix}FORCE';
   static const String _envListOnly = '${_envAppKeyPrefix}LIST_ONLY';
+  static const String _envMarkup = '${_envAppKeyPrefix}MARKUP';
   static const String _envQuiet = '${_envAppKeyPrefix}QUIET';
   static const String _envStartDir = '${_envAppKeyPrefix}START_DIR';
   static const String _envVerbosity = '${_envAppKeyPrefix}VERBOSITY';
@@ -71,6 +73,10 @@ the application will define environment variable $_envCompression''',
 see also -x/--xargs''',
     'negatable': false,
   };
+  static final Map<String, Object?> expand = {
+    'name': 'expand',
+    'negatable': false,
+  };
   static final Map<String, Object?> forceConvert = {
     'name': 'force',
     'abbr': 'f',
@@ -90,6 +96,14 @@ the application will define environment variable $_envForce''',
     'help': '''display all commands, but do not execute those; if no command specified, then show config,
 the application will define environment variable $_envListOnly''',
     'negatable': false,
+  };
+  static final Map<String, Object?> markup = {
+    'name': 'markup',
+    'abbr': 'm',
+    'help': '''how to transform values before the expansion: html, xml (default: none),
+the application will define environment variable $_envMarkup''',
+    'valueHelp': 'MODE',
+    'defaultsTo': null,
   };
   static final Map<String, Object?> quiet = {
     'name': 'quiet',
@@ -346,6 +360,9 @@ can be used with --move to delete the source''',
 
   Logger _logger = Logger();
 
+  MarkupMode _markupMode = MarkupMode.none;
+  MarkupMode get markupMode => _markupMode;
+
   List<String> _plainArgs = [];
   List<String> get plainArgs => _plainArgs;
 
@@ -408,7 +425,7 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void addFlag(ArgParser parser, Map<String, Object?> option, void Function(bool)? callback) {
+  static void addFlag(ArgParser parser, Map<String, Object?> option, void Function(bool)? callback) {
     parser.addFlag(
       option['name']?.toString() ?? '',
       abbr: option['abbr']?.toString(),
@@ -420,7 +437,7 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void addOption(ArgParser parser, Map<String, Object?> option, void Function(String?)? callback) {
+  static void addOption(ArgParser parser, Map<String, Object?> option, void Function(String?)? callback) {
     parser.addOption(
       option['name']?.toString() ?? '',
       abbr: option['abbr']?.toString(),
@@ -440,6 +457,7 @@ can be used with --move to delete the source''',
     var isHelp = false;
 
     _appConfigPath = '';
+    _markupMode = MarkupMode.none;
     _configFileInfo.init();
     _startDirName = Path.currentDirectory.path;
     _isAppendSep = false;
@@ -472,6 +490,9 @@ can be used with --move to delete the source''',
     });
     addOption(parser, startDir, (value) {
       dirName = _getString(_envStartDir, value);
+    });
+    addOption(parser, markup, (value) {
+      _markupMode = parseMarkupMode(value);
     });
     addFlag(parser, quiet, (value) {
       if (_getBool(_envQuiet, quiet, value)) {
@@ -711,6 +732,7 @@ can be used with --move to delete the source''',
       }
     }
     catch (e) {
+
       isHelp = !_logger.isSilent;
       errMsg = e.toString();
     }
@@ -720,6 +742,18 @@ can be used with --move to delete the source''',
     }
 
     unquotePlainArgs();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static MarkupMode parseMarkupMode(String? value, {MarkupMode defValue = MarkupMode.none}) {
+    if (value == null) {
+      return defValue;
+    }
+
+    var valueEx = 'MarkupMode.$value';
+
+    return MarkupMode.values.firstWhereOrNull((x) => x.toString() == valueEx) ?? MarkupMode.none;
   }
 
   //////////////////////////////////////////////////////////////////////////////

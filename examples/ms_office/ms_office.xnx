@@ -19,6 +19,9 @@
       "{{-import-}}": "ms_office_data.xnx?path=$.data.*",
 
       "{{-run-}}": [
+        // Initial cleanup
+        '--delete "{unz-dir}"',
+
         // Expand template config file
         '--expand "ms_office_tmpl.xnx" "{cfg-curr}" --force',
 

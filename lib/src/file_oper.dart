@@ -30,10 +30,10 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void deleteSync(List<String> paths, {bool isListOnly = false, bool isSilent = false}) {
+  static void deleteSync(List<String> paths, {bool isListOnly = false, bool isRequired = false, bool isSilent = false}) {
     var pathLists = Path.argsToLists(paths, oper: 'delete directory');
 
-    listSync(pathLists[0], isSilent: isSilent, isSorted: true, isMinimal: false, listProc: (entities, entityNo, repeatNo, subPath) {
+    listSync(pathLists[0], isRequired: isRequired, isSilent: isSilent, isSorted: true, isMinimal: false, listProc: (entities, entityNo, repeatNo, subPath) {
       if (entityNo < 0) {
         return true;
       }
@@ -93,7 +93,7 @@ class FileOper {
   //////////////////////////////////////////////////////////////////////////////
 
   static List<FileSystemEntity> listSync(List<String> paths, {
-      int repeats = 1, bool isSorted = true, bool isMinimal = false, bool isSilent = false,
+      int repeats = 1, bool isSorted = true, bool isMinimal = false, bool isRequired = true, bool isSilent = false,
       bool Function(List<FileSystemEntity> entities, int entityNo, int repeatNo, String? subPath)? listProc,
       int Function(FileSystemEntity entity1, FileSystemEntity entity2)? sortProc
     }) {
@@ -139,7 +139,12 @@ class FileOper {
 
           if (!currDirName.isBlank() && (currDirName != DirectoryExt.curDirAbbr)) {
             if (!Path.fileSystem.directory(currDirName).existsSync()) {
-              throw Exception('Top source directory was not found: "${currDir.path}"');
+              if (isRequired) {
+                throw Exception('Top source directory was not found: "${currDir.path}"');
+              }
+              else {
+                continue;
+              }
             }
           }
 

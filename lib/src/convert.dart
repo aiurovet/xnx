@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:args/args.dart';
 import 'package:file/file.dart';
 import 'package:xnx/src/command.dart';
 
@@ -9,6 +10,7 @@ import 'package:xnx/src/config.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/markup_mode.dart';
 import 'package:xnx/src/options.dart';
 import 'package:xnx/src/pack_oper.dart';
 import 'package:xnx/src/ext/directory.dart';
@@ -145,7 +147,7 @@ class Convert {
         FileOper.createDirSync(args, isListOnly: isListOnly, isSilent: isSilent);
       }
       else if (options.isCmdDelete) {
-        FileOper.deleteSync(args, isListOnly: isListOnly, isSilent: isSilent);
+        FileOper.deleteSync(args, isListOnly: isListOnly, isSilent: isSilent, isRequired: false);
       }
       else if (options.isCmdFind) {
         FileOper.findSync(args, isSilent: isSilent);
@@ -165,23 +167,36 @@ class Convert {
     command = command.replaceAll(_config.keywords.forCurDir, curDirName);
 
     var isForced = options.isForced;
+    var markupMode = options.markupMode;
 
     if (isExpandContentOnly) {
-      if (!isForced) {
-        isForced = rexExeSubForce.hasMatch(command);
-      }
-
       var cli = Command(text: command);
       var args = cli.args;
 
       if (cli.isLocal && args.isNotEmpty) {
-        var argc = args.length;
+        final parser = ArgParser();
 
-        if (argc > 1) {
-          inpFilePath = args[1];
+        Options.addFlag(parser, Options.expand, (value) {
+          // Dummy
+        });
+        Options.addFlag(parser, Options.forceConvert, (value) {
+          isForced = value;
+        });
 
-          if (argc > 2) {
-            outFilePath = args[2];
+        Options.addOption(parser, Options.markup, (value) {
+          markupMode = Options.parseMarkupMode(value);
+        });
+
+        var result = parser.parse(args);
+        var paths = result.rest;
+
+        var pathCount = paths.length;
+
+        if (pathCount > 0) {
+          inpFilePath = paths[0];
+
+          if (pathCount > 1) {
+            outFilePath = paths[1];
           }
           else {
             outFilePath = inpFilePath;
@@ -237,7 +252,7 @@ class Convert {
     }
 
     if (canExpandContent && (inpFile != null)) {
-      expandInpContent(inpFile, outFilePath, tmpFilePath, map);
+      expandInpContent(inpFile, outFilePath, tmpFilePath, markupMode, map);
     }
 
     command = getValue(map, value: command, canReplace: true);
@@ -459,7 +474,7 @@ Output path: "$outFilePathEx"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, FlatMap map) {
+  File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, MarkupMode markupMode, FlatMap map) {
     var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
     _logger.out('"${inpFile?.path ?? StringExt.stdinDisplay}" => "${tmpFile?.path ?? outFilePath}"${isExpandContentOnly ? '' : '\n'}');
@@ -468,11 +483,38 @@ Output path: "$outFilePathEx"
 
     var text = (inpFile == null ? stdin.readAsStringSync() : inpFile.readAsStringSync());
 
-    // Remove keywords
+    // Remove keywords and transform the markup
 
-    var effectiveMap = <String, String>{}
-      ..addAll(map.data)
-      ..removeWhere((k, v) => _config.keywords.all.contains(k));
+    var allKeywords = _config.keywords.all;
+    var effectiveMap = <String, String>{};
+
+    map.forEach((k, v) {
+      if (allKeywords.contains(k)) {
+        return;
+      }
+
+      switch (markupMode) {
+        case MarkupMode.html:
+        case MarkupMode.xml:
+          var vv = v
+            .replaceAll('&', '&amp;')
+            .replaceAll("'", '&apos;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('"', '&quot;');
+
+          if (markupMode == MarkupMode.html) {
+            vv = vv
+              .replaceAll('\x09', '&#9;');
+          }
+
+          effectiveMap[k] = vv;
+          return;
+        default:
+          effectiveMap[k] = v;
+          return;
+      }
+    });
 
     // Expand data
 
