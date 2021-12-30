@@ -10,7 +10,7 @@ import 'package:xnx/src/config.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/file_oper.dart';
 import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/markup_mode.dart';
+import 'package:xnx/src/escape_mode.dart';
 import 'package:xnx/src/options.dart';
 import 'package:xnx/src/pack_oper.dart';
 import 'package:xnx/src/ext/directory.dart';
@@ -167,7 +167,7 @@ class Convert {
     command = command.replaceAll(_config.keywords.forCurDir, curDirName);
 
     var isForced = options.isForced;
-    var markupMode = options.markupMode;
+    var escapeMode = options.escapeMode;
 
     if (isExpandContentOnly) {
       var cli = Command(text: command);
@@ -183,8 +183,8 @@ class Convert {
           isForced = value;
         });
 
-        Options.addOption(parser, Options.markup, (value) {
-          markupMode = Options.parseMarkupMode(value);
+        Options.addOption(parser, Options.escape, (value) {
+          escapeMode = Options.parseEscapeMode(value);
         });
 
         var result = parser.parse(args);
@@ -252,7 +252,7 @@ class Convert {
     }
 
     if (canExpandContent && (inpFile != null)) {
-      expandInpContent(inpFile, outFilePath, tmpFilePath, markupMode, map);
+      expandInpContent(inpFile, outFilePath, tmpFilePath, escapeMode, map);
     }
 
     command = getValue(map, value: command, canReplace: true);
@@ -474,7 +474,7 @@ Output path: "$outFilePathEx"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, MarkupMode markupMode, FlatMap map) {
+  File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, EscapeMode escapeMode, FlatMap map) {
     var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
     _logger.out('"${inpFile?.path ?? StringExt.stdinDisplay}" => "${tmpFile?.path ?? outFilePath}"${isExpandContentOnly ? '' : '\n'}');
@@ -483,7 +483,7 @@ Output path: "$outFilePathEx"
 
     var text = (inpFile == null ? stdin.readAsStringSync() : inpFile.readAsStringSync());
 
-    // Remove keywords and transform the markup
+    // Remove keywords and escape special characters
 
     var allKeywords = _config.keywords.all;
     var effectiveMap = <String, String>{};
@@ -493,9 +493,9 @@ Output path: "$outFilePathEx"
         return;
       }
 
-      switch (markupMode) {
-        case MarkupMode.html:
-        case MarkupMode.xml:
+      switch (escapeMode) {
+        case EscapeMode.html:
+        case EscapeMode.xml:
           var vv = v
             .replaceAll('&', '&amp;')
             .replaceAll("'", '&apos;')
@@ -503,10 +503,18 @@ Output path: "$outFilePathEx"
             .replaceAll('<', '&lt;')
             .replaceAll('"', '&quot;');
 
-          if (markupMode == MarkupMode.html) {
+          if (escapeMode == EscapeMode.html) {
             vv = vv
               .replaceAll('\x09', '&#9;');
           }
+
+          effectiveMap[k] = vv;
+          return;
+        case EscapeMode.quotes:
+          var vv = v
+            .replaceAll(r'\', r'\\')
+            .replaceAll(r'"', r'\"')
+            .replaceAll(r"'", r"\'");
 
           effectiveMap[k] = vv;
           return;

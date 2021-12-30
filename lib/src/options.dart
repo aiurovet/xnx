@@ -11,7 +11,7 @@ import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/ext/stdin.dart';
 import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/markup_mode.dart';
+import 'package:xnx/src/escape_mode.dart';
 import 'package:xnx/src/pack_oper.dart';
 
 class Options {
@@ -32,7 +32,7 @@ class Options {
   static const String _envCompression = '${_envAppKeyPrefix}COMPRESSION';
   static const String _envForce = '${_envAppKeyPrefix}FORCE';
   static const String _envListOnly = '${_envAppKeyPrefix}LIST_ONLY';
-  static const String _envMarkup = '${_envAppKeyPrefix}MARKUP';
+  static const String _envEscape = '${_envAppKeyPrefix}ESCAPE';
   static const String _envQuiet = '${_envAppKeyPrefix}QUIET';
   static const String _envStartDir = '${_envAppKeyPrefix}START_DIR';
   static const String _envVerbosity = '${_envAppKeyPrefix}VERBOSITY';
@@ -73,6 +73,14 @@ the application will define environment variable $_envCompression''',
 see also -x/--xargs''',
     'negatable': false,
   };
+  static final Map<String, Object?> escape = {
+    'name': 'escape',
+    'abbr': 'm',
+    'help': '''how to escape special characters before the expansion: quotes, xml, html (default: none),
+the application will define environment variable $_envEscape''',
+    'valueHelp': 'MODE',
+    'defaultsTo': null,
+  };
   static final Map<String, Object?> expand = {
     'name': 'expand',
     'negatable': false,
@@ -96,14 +104,6 @@ the application will define environment variable $_envForce''',
     'help': '''display all commands, but do not execute those; if no command specified, then show config,
 the application will define environment variable $_envListOnly''',
     'negatable': false,
-  };
-  static final Map<String, Object?> markup = {
-    'name': 'markup',
-    'abbr': 'm',
-    'help': '''how to transform values before the expansion: html, xml (default: none),
-the application will define environment variable $_envMarkup''',
-    'valueHelp': 'MODE',
-    'defaultsTo': null,
   };
   static final Map<String, Object?> quiet = {
     'name': 'quiet',
@@ -360,8 +360,8 @@ can be used with --move to delete the source''',
 
   Logger _logger = Logger();
 
-  MarkupMode _markupMode = MarkupMode.none;
-  MarkupMode get markupMode => _markupMode;
+  EscapeMode _escapeMode = EscapeMode.none;
+  EscapeMode get escapeMode => _escapeMode;
 
   List<String> _plainArgs = [];
   List<String> get plainArgs => _plainArgs;
@@ -457,7 +457,7 @@ can be used with --move to delete the source''',
     var isHelp = false;
 
     _appConfigPath = '';
-    _markupMode = MarkupMode.none;
+    _escapeMode = EscapeMode.none;
     _configFileInfo.init();
     _startDirName = Path.currentDirectory.path;
     _isAppendSep = false;
@@ -491,8 +491,8 @@ can be used with --move to delete the source''',
     addOption(parser, startDir, (value) {
       dirName = _getString(_envStartDir, value);
     });
-    addOption(parser, markup, (value) {
-      _markupMode = parseMarkupMode(value);
+    addOption(parser, escape, (value) {
+      _escapeMode = parseEscapeMode(value);
     });
     addFlag(parser, quiet, (value) {
       if (_getBool(_envQuiet, quiet, value)) {
@@ -746,14 +746,14 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static MarkupMode parseMarkupMode(String? value, {MarkupMode defValue = MarkupMode.none}) {
+  static EscapeMode parseEscapeMode(String? value, {EscapeMode defValue = EscapeMode.none}) {
     if (value == null) {
       return defValue;
     }
 
-    var valueEx = 'MarkupMode.$value';
+    var valueEx = 'escapemode.${value.toLowerCase()}';
 
-    return MarkupMode.values.firstWhereOrNull((x) => x.toString() == valueEx) ?? MarkupMode.none;
+    return EscapeMode.values.firstWhereOrNull((x) => x.toString().toLowerCase() == valueEx) ?? EscapeMode.none;
   }
 
   //////////////////////////////////////////////////////////////////////////////
