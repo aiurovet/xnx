@@ -13,7 +13,7 @@ void main() {
 
         var o = Options();
 
-        o.parseArgs(['-p', '6', '-q']);
+        expect(() => o.parseArgs(['-p', '6', '-q',]), throwsException);
         expect(o.compression, 6);
         expect(o.configFileInfo.filePath.isEmpty, true);
 
@@ -26,7 +26,7 @@ void main() {
         o.parseArgs(['-p', '7', '-q', '--xnx', 'a']);
         expect(o.compression, 7);
 
-        o.parseArgs(['-q', '--config', 'a']);
+        o.parseArgs(['-q', '-c', 'a', '--xnx', 'a']);
         expect(o.compression, 7);
 
         configFile.deleteSync();
