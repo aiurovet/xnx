@@ -5,7 +5,9 @@
   "version": "0.1.0",
   "configurations": [
 
-    { "name": "ad-hoc -c", "request": "launch", "type": "dart", "program": "bin/main.dart",
+    { "name": "ad-hoc", "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-d", ".", ], },
+    { "name": "app-config", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-c ../../", "-f", "-d", "examples/multi_conf", ], },
     { "name": "help", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "--help", ], },

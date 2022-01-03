@@ -712,28 +712,30 @@ can be used with --move to delete the source''',
     try {
       var result = parser.parse(args);
 
-      if (!isCmd) {
-        setConfigPathAndStartDirName(configPath, dirName);
-      }
+      if (!isHelp) {
+        if (!isCmd) {
+          setConfigPathAndStartDirName(configPath, dirName);
+        }
 
-      _plainArgs = <String>[];
-      _plainArgs.addAll(result.rest);
+        _plainArgs = <String>[];
+        _plainArgs.addAll(result.rest);
 
-      if (_asXargs) {
-        _isEach = true;
+        if (_asXargs) {
+          _isEach = true;
 
-        var inpArgs = stdin.readAsStringSync().split('\n');
+          var inpArgs = stdin.readAsStringSync().split('\n');
 
-        for (var i = 0, n = inpArgs.length; i < n; i++) {
-          if (inpArgs[i].trim().isNotEmpty) {
-            _plainArgs.add(inpArgs[i]);
+          for (var i = 0, n = inpArgs.length; i < n; i++) {
+            if (inpArgs[i].trim().isNotEmpty) {
+              _plainArgs.add(inpArgs[i]);
+            }
           }
         }
       }
     }
     catch (e) {
-      isHelp = !_logger.isSilent;
-      errMsg = e.toString();
+      errMsg = (isHelp ? '' : e.toString());
+      isHelp = true;
     }
 
     if (isHelp) {
@@ -899,9 +901,14 @@ For more details, see README.md
       if (files.isNotEmpty) {
         var paths = files.map((x) => x.path).toList()..sort();
 
+        var oldConfigPath = configPath;
         configPath = paths.firstWhereOrNull((x) => Path.extension(x) == fileTypeCfg);
 
         isConfigPathFound = !(configPath?.isBlank() ?? true);
+
+        if (!isConfigPathFound) {
+          configPath = oldConfigPath;
+        }
       }
     }
 
@@ -910,7 +917,7 @@ For more details, see README.md
     }
 
     if (!isConfigPathFound) {
-      throw Exception('Configuration file not found: "${configPath ?? ''}"');
+      throw Exception('Configuration file not found: neither "${configPath ?? ''}", nor any $fileTypeCfg file in "$_startDirName" exists');
     }
 
     _configFileInfo = ConfigFileInfo(configPath);
