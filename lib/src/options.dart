@@ -477,7 +477,7 @@ can be used with --move to delete the source''',
 
     addFlag(parser, help, (value) {
       if (value) {
-        printUsage(parser);
+        isHelp = true;
       }
     });
     addOption(parser, appConfig, (value) {
@@ -732,7 +732,6 @@ can be used with --move to delete the source''',
       }
     }
     catch (e) {
-
       isHelp = !_logger.isSilent;
       errMsg = e.toString();
     }

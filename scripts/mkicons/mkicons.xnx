@@ -59,12 +59,12 @@
       "{{-inp-}}": "{{-cur-dir-}}/{prj}.svg",
       "{sample}": "{{-cur-dir-}}/{icon-name}_{dim}x{dim}.svg",
 
-      "{{-if-}}": { '({dim} == 48) && ({look} == _dark) && ({sample} -fol {{-inp-}})': {
+      "{{-if-}}": { '({dim} == 48) && ("{look}" == "_dark") && ({sample} -fol {{-inp-}})': {
         "{{-run-}}": '--expand "{{-inp-}}" "{sample}"',
       } },
 
       "{{-out-}}": "{{-cur-dir-}}/png/{icon-name}_{dim}x{dim}.png",
-      "{{-cmd-}}": '{svg2png} --window-size={dim},{dim} --screenshot={{-out-}} "file://{{-inp-}}"'
+      "{{-cmd-}}": '{svg2png} --window-size={dim},{dim} --screenshot={{-out-}} "file://{{-inp-}}"',
     },
 
     {
@@ -78,7 +78,13 @@
       "{{-if-}}": { '"${OS}" ==/i "linux"': {
         "{{-run-}}": [
           '--move "{icon-pthp}_96x96.png" "{out-dir}/{icon-name}.png"'
-        ]
+        ],
+
+        // /* Uncomment the section below if you need to generate a PNG icon in {{-cur-dir-}} */
+
+        // "{{-if-}}": { '("{look}" == "") && ({sample} -fol {{-inp-}})': {
+        //   "{{-run-}}": '--copy "{icon-pthp}_128x128.png" "{{-cur-dir-}}"',
+        // } },
       }, "{{-else-}}": { "{{-if-}}": { '"${OS}" ==/i "macos"': {
         "{png-dir-mac}": "{png-dir}.iconset",
         "{{-run-}}": [
