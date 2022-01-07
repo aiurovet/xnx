@@ -167,7 +167,7 @@ class Convert {
     command = command.replaceAll(_config.keywords.forCurDir, curDirName);
 
     var isForced = options.isForced;
-    var escapeMode = options.escapeMode;
+    var escapeMode = _config.escapeMode;
 
     if (isExpandContentOnly) {
       var cli = Command(text: command);

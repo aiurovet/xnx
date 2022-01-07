@@ -14,6 +14,7 @@ class Keywords {
   String forCmd = '{{-cmd-}}';
   String forCurDir = '{{-cur-dir-}}';
   String forDetectPaths = '{{-detectPaths-}}';
+  String forEscapeMode = '{{-escape-}}';
   String forFilesIsNot = 'isNot';
   String forFilesIsPath = 'isPath';
   String forFilesMask = 'mask';
@@ -145,6 +146,7 @@ class Keywords {
       forCmd = node['kwCmd'] ?? forCmd;
       forCurDir = node['kwCurDir'] ?? forCurDir;
       forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
+      forEscapeMode = node['kwEscapeMode'] ?? forEscapeMode;
       forFilesIsNot = node['kwFilesIsNot'] ?? forFilesIsNot;
       forFilesIsPath = node['kwFilesIsPath'] ?? forFilesIsPath;
       forFilesMask = node['kwFilesMask'] ?? forFilesMask;

@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:xnx/src/config_key_data.dart';
 import 'package:xnx/src/config_result.dart';
 import 'package:xnx/src/config_file_loader.dart';
+import 'package:xnx/src/escape_mode.dart';
 import 'package:xnx/src/expression.dart';
 import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/path.dart';
@@ -35,6 +36,7 @@ class Config {
 
   Map all = {};
   RegExp? detectPathsRE;
+  EscapeMode escapeMode = EscapeMode.none;
   PathFilter skip = PathFilter();
   PathFilter take = PathFilter();
 
@@ -105,6 +107,8 @@ class Config {
 
   bool exec({List<String>? args, ConfigFlatMapProc? execFlatMap}) {
     _logger.information('Loading actions');
+
+    escapeMode = options.escapeMode;
 
     var all = loadSync();
 
@@ -324,6 +328,11 @@ class Config {
 
     if (keyEx == keywords.forDetectPaths) {
       detectPathsRE = (isEmpty ? null : RegExp(dataStr));
+      return result;
+    }
+
+    if ((keyEx == keywords.forEscapeMode) && (options.escapeMode == EscapeMode.none)) {
+      escapeMode = Options.parseEscapeMode(dataStr);
       return result;
     }
 

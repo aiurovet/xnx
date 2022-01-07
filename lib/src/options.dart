@@ -362,6 +362,7 @@ can be used with --move to delete the source''',
 
   EscapeMode _escapeMode = EscapeMode.none;
   EscapeMode get escapeMode => _escapeMode;
+  set escapeMode(value) => _escapeMode = value;
 
   List<String> _plainArgs = [];
   List<String> get plainArgs => _plainArgs;
