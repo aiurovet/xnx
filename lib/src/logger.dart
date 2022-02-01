@@ -39,11 +39,8 @@ class Logger {
       _level = levelDefault;
     }
     else {
-      level = levels.indexOf(value);
-
-      if (_level < 0) {
-        level = int.tryParse(value) ?? levelDefault;
-      }
+      var i = levels.indexOf(value);
+      level = (i >= 0 ? i : int.tryParse(value) ?? levelDefault);
     }
   }
 
