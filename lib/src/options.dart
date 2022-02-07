@@ -19,9 +19,8 @@ class Options {
   //////////////////////////////////////////////////////////////////////////////
 
   static const String appName = 'xnx';
-  static const String appConfigName = '$appName$fileTypeAppCfg';
+  static const String appConfigName = 'default${fileTypeCfg}config';
   static const String appVersion = '0.1.0';
-  static const String fileTypeAppCfg = '.config';
   static const String fileTypeCfg = '.$appName';
   static const String fileMaskCfg = '${GlobExt.all}$fileTypeCfg';
   static const String helpMin = '-?';
@@ -801,42 +800,54 @@ For more details, see README.md
   //////////////////////////////////////////////////////////////////////////////
 
   void setAppConfigPath() {
+    var isFound = false;
+
     if (_appConfigPath.isNotEmpty) {
       _appConfigPath = Path.getFullPath(_appConfigPath);
       var stat = Path.fileSystem.statSync(_appConfigPath);
 
       if (stat.type == FileSystemEntityType.file) {
-        return;
+        isFound = true;
       }
+      else {
+        if (stat.type == FileSystemEntityType.directory) {
+          _appConfigPath = Path.join(_appConfigPath, appConfigName);
 
-      if (stat.type == FileSystemEntityType.directory) {
-        _appConfigPath = Path.join(_appConfigPath, appConfigName);
-
-        if (Path.fileSystem.file(_appConfigPath).existsSync()) {
-          return;
+          if (Path.fileSystem.file(_appConfigPath).existsSync()) {
+            isFound = true;
+          }
         }
       }
     }
 
-    var configDirName = Path.dirname(_configFileInfo.filePath);
-    _appConfigPath = Path.join(configDirName, appConfigName);
-
-    if (Path.fileSystem.file(_appConfigPath).existsSync()) {
-      return;
-    }
-
-    if (!Path.equals(_startDirName, configDirName)) {
-      _appConfigPath = Path.join(_startDirName, appConfigName);
+    if (!isFound) {
+      var configDirName = Path.dirname(_configFileInfo.filePath);
+      _appConfigPath = Path.join(configDirName, appConfigName);
 
       if (Path.fileSystem.file(_appConfigPath).existsSync()) {
-        return;
+        isFound = true;
+      }
+      else {
+        if (!Path.equals(_startDirName, configDirName)) {
+          _appConfigPath = Path.join(_startDirName, appConfigName);
+
+          if (Path.fileSystem.file(_appConfigPath).existsSync()) {
+            isFound = true;
+          }
+        }
+
+        if (!isFound) {
+          _appConfigPath = Path.join(Path.dirname(Platform.script.path), appConfigName);
+
+          if (Path.fileSystem.file(_appConfigPath).existsSync()) {
+            isFound = true;
+          }
+        }
       }
     }
 
-    _appConfigPath = Path.join(Path.dirname(Platform.script.path), appConfigName);
-
-    if (Path.fileSystem.file(_appConfigPath).existsSync()) {
-      return;
+    if (_logger.isDebug) {
+      _logger.debug('App config file was${isFound ? '' : ' not'} found: "$appConfigPath"\n');
     }
 
     _appConfigPath = '';
@@ -845,6 +856,10 @@ For more details, see README.md
   //////////////////////////////////////////////////////////////////////////////
 
   void setConfigPathAndStartDirName(String? configPath, String? dirName) {
+    if (_logger.isDebug) {
+      _logger.debug('Arg start dir: ${dirName == null ? StringExt.unknown : '"$dirName"'}\nArg input file: ${configPath == null ? StringExt.unknown : '"$configPath"'}\n');
+    }
+
     if ((configPath != null) && configPath.isBlank()) {
       configPath = null;
     }
@@ -861,6 +876,10 @@ For more details, see README.md
     }
     else {
       isDirNameWithOtherDir = _rexUseOtherDir.hasMatch(dirName);
+    }
+
+    if (!isConfigPathWithOtherDir && (configPath?.isNotEmpty ?? false)) {
+      configPath = Path.getFullPath(configPath);
     }
 
     if (isConfigPathWithOtherDir && isDirNameWithOtherDir) {
@@ -894,9 +913,7 @@ For more details, see README.md
       }
     }
 
-    var isConfigPathFound = (configPath?.isNotEmpty ?? false) && Path.fileSystem.file(configPath).tryExistsSync();
-
-    if (!isConfigPathFound) {
+    if (configPath?.isEmpty ?? true) {
       var files = Path.fileSystem.directory(_startDirName).listSync();
 
       if (files.isNotEmpty) {
@@ -905,23 +922,25 @@ For more details, see README.md
         var oldConfigPath = configPath;
         configPath = paths.firstWhereOrNull((x) => Path.extension(x) == fileTypeCfg);
 
-        isConfigPathFound = !(configPath?.isBlank() ?? true);
-
-        if (!isConfigPathFound) {
+        if (configPath?.isBlank() ?? true) {
           configPath = oldConfigPath;
+          throw Exception('No file of type $fileTypeCfg exists in "$_startDirName"');
         }
       }
+    }
+    else if (!Path.fileSystem.file(configPath).tryExistsSync()) {
+      throw Exception('File not found: "${configPath ?? ''}" (current dir: "${Path.fileSystem.currentDirectory.path}")');
     }
 
     if (!isDirNameWithOtherDir && !isConfigPathWithOtherDir && (configPath?.isNotEmpty ?? false)) {
       configPath = Path.getFullPath(configPath);
     }
 
-    if (!isConfigPathFound) {
-      throw Exception('Configuration file not found: neither "${configPath ?? ''}", nor any $fileTypeCfg file in "$_startDirName" exists');
-    }
-
     _configFileInfo = ConfigFileInfo(configPath);
+
+    if (_logger.isDebug) {
+      _logger.debug('Start dir: "$_startDirName"\nInput file: "${_configFileInfo.filePath}"\n');
+    }
 
     setAppConfigPath();
   }
