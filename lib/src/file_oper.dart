@@ -140,7 +140,7 @@ class FileOper {
           if (!currDirName.isBlank() && (currDirName != DirectoryExt.curDirAbbr)) {
             if (!Path.fileSystem.directory(currDirName).existsSync()) {
               if (isRequired) {
-                throw Exception('Top source directory was not found: "${currDir.path}"');
+                throw Exception('Top source directory is not found: "${currDir.path}"');
               }
               else {
                 continue;

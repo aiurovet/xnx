@@ -96,7 +96,7 @@ class PackOper {
         isMinimal: true,
         listProc: (entities, entityNo, repeatNo, subPath) {
           if (entityNo < 0) { // empty list
-            throw Exception('Source was not found: "${paths[0]}"');
+            throw Exception(Path.appendCurDirIfPathIsRelative('Source is not found: ', paths[0]));
           }
 
           var entity = entities[entityNo];

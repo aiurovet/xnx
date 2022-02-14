@@ -88,15 +88,28 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   bool execBuiltin(List<String>? args, {bool isSilent = false}) {
-    if ((args == null) || args.isEmpty) {
-      throw Exception('No argument specified for the built-in command');
-    }
-
     final isPrint = options.isCmdPrint;
+    final isPrintCwd = options.isCmdPrintCwd;
+    final isPrintEnv = options.isCmdPrintEnv;
     final isCompress = options.isCmdCompress;
     final isDecompress = options.isCmdDecompress;
     final isListOnly = options.isListOnly;
     final isMove = options.isCmdMove;
+
+    if (isPrintEnv) {
+      Platform.environment.forEach((key, value) {
+        _logger.out('Env: $key => $value');
+      });
+      return true;
+    }
+    else if (isPrintCwd) {
+      _logger.out(Path.currentDirectory.path);
+      return true;
+    }
+
+    if ((args == null) || args.isEmpty) {
+      throw Exception('No argument specified for the built-in command');
+    }
 
     var argCount = (args.length - 1);
     var arg1 = (argCount >= 0 ? args[0] : null);
@@ -215,7 +228,7 @@ class Convert {
     var inpFile = (hasInpFile ? Path.fileSystem.file(inpFilePath) : null);
 
     if ((inpFile != null) && !inpFile.existsSync()) {
-      throw Exception('Input file is not found: "$inpFilePath"');
+      throw Exception(Path.appendCurDirIfPathIsRelative('Input file is not found: ', inpFilePath));
     }
 
     var hasOutFile = (!isStdOut && !outFilePath.isBlank() && !Path.fileSystem.directory(outFilePath).existsSync());

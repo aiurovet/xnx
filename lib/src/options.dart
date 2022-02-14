@@ -161,11 +161,6 @@ default extension: $fileTypeCfg''',
 in a given or the current directory and print those to stdout''',
     'negatable': false,
   };
-  static final Map<String, Object?> cmdPrint = {
-    'name': 'print',
-    'help': 'just print the arguments to stdout',
-    'negatable': false,
-  };
   static final Map<String, Object?> cmdCopy = {
     'name': 'copy',
     'help': '''just copy file(s) and/or directorie(s) passed as plain argument(s),
@@ -199,6 +194,21 @@ glob patterns are allowed''',
     'name': 'move-newer',
     'help': '''just move more recently updated file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
+    'negatable': false,
+  };
+  static final Map<String, Object?> cmdPrint = {
+    'name': 'print',
+    'help': 'just print the arguments to stdout',
+    'negatable': false,
+  };
+  static final Map<String, Object?> cmdPrintCwd = {
+    'name': 'pwd',
+    'help': 'just print the current working directory to stdout',
+    'negatable': false,
+  };
+  static final Map<String, Object?> cmdPrintEnv = {
+    'name': 'env',
+    'help': 'just print all environment variables to stdout',
     'negatable': false,
   };
   static final Map<String, Object?> cmdRemove = {
@@ -373,7 +383,7 @@ can be used with --move to delete the source''',
 
   bool get isCmd => (
     _isCmdFind ||
-    _isCmdPrint ||
+    _isCmdPrint || _isCmdPrintCwd || _isCmdPrintEnv ||
     _isCmdCopy || _isCmdCopyNewer ||
     _isCmdDelete || _isCmdCreate ||
     _isCmdMove || _isCmdMoveNewer ||
@@ -405,6 +415,12 @@ can be used with --move to delete the source''',
 
   bool _isCmdPrint = false;
   bool get isCmdPrint => _isCmdPrint;
+
+  bool _isCmdPrintEnv = false;
+  bool get isCmdPrintEnv => _isCmdPrintEnv;
+
+  bool _isCmdPrintCwd = false;
+  bool get isCmdPrintCwd => _isCmdPrintCwd;
 
   bool _isCmdCreate = false;
   bool get isCmdCreateDir => _isCmdCreate;
@@ -467,6 +483,8 @@ can be used with --move to delete the source''',
 
     _isCmdFind = false;
     _isCmdPrint = false;
+    _isCmdPrintEnv = false;
+    _isCmdPrintCwd = false;
     _isCmdCompress = false;
     _isCmdDecompress = false;
     _isCmdMove = false;
@@ -534,6 +552,12 @@ can be used with --move to delete the source''',
     });
     addFlag(parser, cmdPrint, (value) {
       _isCmdPrint = value;
+    });
+    addFlag(parser, cmdPrintEnv, (value) {
+      _isCmdPrintEnv = value;
+    });
+    addFlag(parser, cmdPrintCwd, (value) {
+      _isCmdPrintCwd = value;
     });
     addFlag(parser, cmdCopy, (value) {
       _isCmdCopy = value;
@@ -864,6 +888,8 @@ For more details, see README.md
       configPath = null;
     }
 
+    var isConfigPathPassed = (configPath?.isNotEmpty ?? false);
+
     if ((configPath != null) && Path.extension(configPath).isBlank()) {
       configPath += fileTypeCfg;
     }
@@ -913,7 +939,13 @@ For more details, see README.md
       }
     }
 
-    if (configPath?.isEmpty ?? true) {
+    if (isConfigPathPassed) {
+      configPath ??= '';
+      if (!Path.fileSystem.file(configPath).tryExistsSync()) {
+        throw Exception(Path.appendCurDirIfPathIsRelative('File is not found: ', configPath));
+      }
+    }
+    else {
       var files = Path.fileSystem.directory(_startDirName).listSync();
 
       if (files.isNotEmpty) {
@@ -927,9 +959,6 @@ For more details, see README.md
           throw Exception('No file of type $fileTypeCfg exists in "$_startDirName"');
         }
       }
-    }
-    else if (!Path.fileSystem.file(configPath).tryExistsSync()) {
-      throw Exception('File not found: "${configPath ?? ''}" (current dir: "${Path.fileSystem.currentDirectory.path}")');
     }
 
     if (!isDirNameWithOtherDir && !isConfigPathWithOtherDir && (configPath?.isNotEmpty ?? false)) {

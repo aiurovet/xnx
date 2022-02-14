@@ -14,6 +14,22 @@ void main() {
         expect(Path.adjust(''), '');
         expect(Path.adjust(r'\a\bc/def'), '${pathSep}a${pathSep}bc${pathSep}def');
       });
+      test('appendCurDirIfPathIsRelative', () {
+        Helper.initFileSystem(fileSystem);
+
+        var dir = Path.fileSystem.directory('test')..createSync();
+        var oldDir = Path.currentDirectory;
+        Path.currentDirectory = dir;
+        var curDir = Path.currentDirectory.path;
+        var sep = Path.separator;
+
+        expect(Path.appendCurDirIfPathIsRelative('File not found: ', 'aaa.txt').contains(curDir), true);
+        expect(Path.appendCurDirIfPathIsRelative('File not found: ', 'b${sep}aaa.txt').contains(curDir), true);
+        expect(Path.appendCurDirIfPathIsRelative('File not found: ', '${sep}aaa.txt').contains(curDir), false);
+
+        Path.currentDirectory = oldDir;
+        dir.deleteSync();
+      });
       test('argsToListAndDestination', () {
         Helper.initFileSystem(fileSystem);
 

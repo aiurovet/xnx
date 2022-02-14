@@ -35,6 +35,19 @@ class Path {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static String appendCurDirIfPathIsRelative(String prefix, String? path) {
+    var pathEx = (path ?? '');
+    var result = (prefix + '"' + pathEx + '"');
+
+    if (pathEx.isEmpty || !isAbsolute(pathEx)) {
+      result += ' (current dir: "${currentDirectory.path}")';
+    }
+
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static String argsToListAndDestination(
     List<String> retPaths, {
     String? path,

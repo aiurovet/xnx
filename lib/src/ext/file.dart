@@ -77,7 +77,7 @@ extension FileExt on File {
       if (canThrow) {
         var descEx = (description == null ? 'File' : description + ' file');
         var pathEx = (file == null ? '' : path);
-        throw Exception('$descEx was not found: "$pathEx"');
+        throw Exception(Path.appendCurDirIfPathIsRelative('$descEx is not found: ', pathEx));
       }
       else {
         return null;
@@ -172,7 +172,7 @@ extension FileExt on File {
     // Ensuring source file exists
 
     if (!tryExistsSync()) {
-      throw Exception('${isListOnly ? 'Will fail to copy' : 'Copy failed'}, as source file "$path" was not found');
+      throw Exception('${isListOnly ? 'Will fail to copy' : 'Copy failed'}, as source file "$path" is not found');
     }
 
     // Sanity check

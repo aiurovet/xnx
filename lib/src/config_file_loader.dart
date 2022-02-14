@@ -291,7 +291,7 @@ class ConfigFileLoader {
       var stat = file.statSync();
 
       if (stat.type == FileSystemEntityType.notFound) {
-        throw Exception('File not found: $displayName');
+        throw Exception(Path.appendCurDirIfPathIsRelative('File is not found: ', displayName));
       }
 
       var fileLastModifiedStamp = stat.modified.millisecondsSinceEpoch;
