@@ -1,16 +1,10 @@
 import 'dart:io';
 import 'package:file/file.dart';
+import 'package:xnx/src/ext/ascii.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/string.dart';
 
 class Env {
-  static const _dollar = r'$';
-  static const _dollarDollar = r'$$';
-
-  static final RegExp _rexEnvVarName = RegExp(
-      r'\$([A-Z_][A-Z_0-9]*)|\$[\{]([A-Z_][A-Z_0-9\(\)]*)[\}]|\$(~?\*|~?\@|~?#|~[0-9]+)|\$[\{](~?\*|~?\@|~?#|~[0-9]+)[\}]',
-      caseSensitive: false
-  );
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -33,81 +27,185 @@ class Env {
   //////////////////////////////////////////////////////////////////////////////
 
   static String expand(String input, {List<String>? args, bool canEscape = false}) {
-    if ((args != null) && args.isEmpty) {
+    var argCount = (args?.length ?? 0);
+
+    if (argCount <= 0) {
       args = null;
     }
 
-    var out = '';
+    var braceCount = 0;
+    var currCodeUnit = 0;
+    var envVarName = '';
+    var fromPos = -1;
+    var isEscaped = false;
+    var nextCodeUnit = 0;
+    var result = '';
 
-    for (var inp in input.split(_dollarDollar)) {
-      if (out.isNotEmpty) {
-        out += _dollar;
-      }
+    for (var currPos = 0, lastPos = input.length - 1; currPos <= lastPos; currPos++) {
+      currCodeUnit = input.codeUnitAt(currPos); // (currPos == 0 ? input.codeUnitAt(0) : nextCodeUnit);
+      nextCodeUnit = (currPos < lastPos ? input.codeUnitAt(currPos + 1) : 0);
 
-      out += inp.replaceAllMapped(_rexEnvVarName, (match) {
-        var envVarName = (match.group(1) ?? match.group(2) ?? '');
-        var newValue = '';
+      switch (currCodeUnit) {
+        case Ascii.backSlash:
+          isEscaped = !isEscaped;
 
-        if (envVarName.isNotEmpty) {
-          newValue = get(envVarName);
-
-          if (canEscape && newValue.isNotEmpty) {
-             newValue = newValue.replaceAll(escape, escapeEscape);
-          }
-
-          return newValue;
-        }
-        else {
-          if (args != null) {
-            var argStr = (match.group(3) ?? match.group(4) ?? '');
-
-            switch (argStr) {
-              case '*':
-              case '@':
-              case '~*':
-              case '~@':
-                newValue = args.map((x) => x.quote()).join(' ');
-                break;
-              case '#':
-              case '~#':
-                newValue = args.length.toString();
-                break;
-              default:
-                var argNo = int.tryParse(argStr.substring(1), radix: 10);
-
-                if (argNo != null) {
-                  if ((argNo > 0) && (argNo <= args.length)) {
-                    newValue = args[argNo - 1];
-                  }
-                }
-                break;
+          if (nextCodeUnit == Ascii.dollar) {
+            if (isEscaped) {
+              ++currPos;
+            }
+            else {
+              continue;
             }
           }
+          break;
+        case Ascii.dollar:
+          isEscaped = false;
+
+          if (((nextCodeUnit < Ascii.lowerA) || (nextCodeUnit > Ascii.lowerZ)) &&
+              ((nextCodeUnit < Ascii.upperA) || (nextCodeUnit > Ascii.upperZ)) &&
+              (nextCodeUnit != Ascii.asterisk) &&
+              (nextCodeUnit != Ascii.at) &&
+              (nextCodeUnit != Ascii.braceOpen) &&
+              (nextCodeUnit != Ascii.hash) &&
+              (nextCodeUnit != Ascii.tilde)) {
+            break;
+          }
+
+          braceCount = 0;
+          envVarName = '';
+
+          for (fromPos = (++currPos); envVarName.isEmpty; currPos++) {
+            if (envVarName.isNotEmpty) {
+              break;
+            }
+            if (currPos > lastPos) {
+              envVarName = input.substring(fromPos, currPos);
+              break;
+            }
+
+            currCodeUnit = (currPos == 0 ? input.codeUnitAt(0) : nextCodeUnit);
+            nextCodeUnit = (currPos < lastPos ? input.codeUnitAt(currPos + 1) : 0);
+
+            switch (currCodeUnit) {
+              case Ascii.braceOpen:
+                ++braceCount;
+                continue;
+              case Ascii.braceShut:
+                if ((--braceCount) <= 0) {
+                  envVarName = input.substring(fromPos + 1, currPos);
+                }
+                continue;
+              default:
+                if ((braceCount <= 0) &&
+                    ((currCodeUnit < Ascii.upperA) || (currCodeUnit > Ascii.upperZ)) &&
+                    ((currCodeUnit < Ascii.lowerA) || (currCodeUnit > Ascii.lowerZ)) &&
+                    ((currCodeUnit < Ascii.digitZero) || (currCodeUnit > Ascii.digitNine)) &&
+                    (currCodeUnit != Ascii.asterisk) &&
+                    (currCodeUnit != Ascii.at) &&
+                    (currCodeUnit != Ascii.hash) &&
+                    (currCodeUnit != Ascii.parenthesisOpen) &&
+                    (currCodeUnit != Ascii.parenthesisShut) &&
+                    (currCodeUnit != Ascii.tilde) &&
+                    (currCodeUnit != Ascii.underscore)) {
+                  envVarName = input.substring(fromPos, currPos);
+                  if (envVarName.isNotEmpty) {
+                    --currPos;
+                  }
+                }
+                continue;
+            }
+          }
+          if (braceCount != 0) {
+            throw Exception('Bad environment variable: $envVarName');
+          }
+          break;
+        default:
+          isEscaped = false;
+          break;
+      }
+
+      if (envVarName.isNotEmpty) {
+        var isLength = (envVarName[0] == '#');
+
+        if (isLength) {
+          envVarName = envVarName.substring(1);
         }
 
-        if (canEscape && newValue.isNotEmpty) {
-          newValue = newValue.replaceAll(escape, escapeEscape);
+        var argNo = (envVarName.startsWith('~') ? int.tryParse(envVarName.substring(1), radix: 10) ?? 0 : 0);
+        var value = '';
+
+        if (argNo != 0) {
+          if ((argNo > 0) && (argNo <= argCount) && (args != null)) {
+            value = args[argNo - 1];
+          }
+        }
+        else if (envVarName.isEmpty) {
+          if (isLength) {
+            value = (args?.length ?? 0).toString();
+            isLength = false;
+          }
+        }
+        else {
+          switch (envVarName) {
+            case '*':
+            case '@':
+            case '~*':
+            case '~@':
+              if (args != null) {
+                value = args.map((x) => x.quote()).join(' ');
+              }
+              break;
+            case '~#':
+              if (args != null) {
+                value = args.length.toString();
+              }
+              break;
+            default:
+              value = get(envVarName);
+              break;
+          }
         }
 
-        return newValue;
-      });
+        if (value.isEmpty) {
+          var breakPos = envVarName.indexOf(':');
+
+          if (value.isEmpty && (breakPos >= 0) && (breakPos < (envVarName.length - 1) && '-='.contains(envVarName[breakPos + 1]))) {
+            value = expand(envVarName.substring(breakPos + 2), args: args, canEscape: canEscape);
+          }
+        }
+
+        if (isLength) {
+          result += value.length.toString();
+        }
+        else {
+          result += value;
+        }
+
+        envVarName = '';
+
+        if (currCodeUnit == Ascii.dollar) {
+          --currPos;
+          continue;
+        }
+      }
+
+      if (currPos <= lastPos) {
+        result += input[currPos];
+      }
     }
 
-    return out;
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   static String get(String key, {String? defValue}) {
     var keyEx = (isWindows ? key.toUpperCase() : key);
-    var value = (_local.isEmpty ? null : _local[keyEx]);
 
-    if (value == null) {
-      return Platform.environment[keyEx] ?? defValue ?? '';
-    }
-    else {
-      return value;
-    }
+    var value = (_local.isEmpty ? null : _local[keyEx]);
+    value ??= Platform.environment[keyEx] ?? defValue ?? '';
+
+    return value;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -182,4 +280,5 @@ class Env {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+
 }

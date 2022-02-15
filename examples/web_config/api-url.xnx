@@ -19,6 +19,7 @@
     "{FourthApiUrl}": "https://fourth.dev.internal.business.co.uk/",
     "{FifthApiUrl}": "https://fifthapi.dev.internal.business.co.uk/",
     "{SixthApiUrl}": "https://sixthapi.dev.internal.business.co.uk/",
+    "{DbContext}": "${DBCONTEXT:-${DBCONTEXT2:-abc def}}",
   }, },
 
   "{{-if-}}": { '"{Env-Site}" == "Dev-US"': {

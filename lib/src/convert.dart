@@ -193,11 +193,15 @@ class Convert {
           // Dummy
         });
         Options.addFlag(parser, Options.forceConvert, (value) {
-          isForced = value;
+          if (value) {
+            isForced = value;
+          }
         });
 
         Options.addOption(parser, Options.escape, (value) {
-          escapeMode = Options.parseEscapeMode(value);
+          if ((value != null) && value.isNotEmpty) {
+            escapeMode = Options.parseEscapeMode(value);
+          }
         });
 
         var result = parser.parse(args);
