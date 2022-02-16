@@ -37,7 +37,9 @@ class Env {
     var currCodeUnit = 0;
     var envVarName = '';
     var fromPos = -1;
+    var hasBraces = false;
     var isEscaped = false;
+    var isSpecialAllowed = false;
     var nextCodeUnit = 0;
     var result = '';
 
@@ -60,19 +62,27 @@ class Env {
           break;
         case Ascii.dollar:
           isEscaped = false;
+          hasBraces = (nextCodeUnit == Ascii.braceOpen);
 
-          if (((nextCodeUnit < Ascii.lowerA) || (nextCodeUnit > Ascii.lowerZ)) &&
+          if (!hasBraces &&
+              ((nextCodeUnit < Ascii.lowerA) || (nextCodeUnit > Ascii.lowerZ)) &&
               ((nextCodeUnit < Ascii.upperA) || (nextCodeUnit > Ascii.upperZ)) &&
               (nextCodeUnit != Ascii.asterisk) &&
               (nextCodeUnit != Ascii.at) &&
-              (nextCodeUnit != Ascii.braceOpen) &&
               (nextCodeUnit != Ascii.hash) &&
+              (currCodeUnit != Ascii.parenthesisOpen) &&
+              (currCodeUnit != Ascii.parenthesisShut) &&
               (nextCodeUnit != Ascii.tilde)) {
             break;
           }
 
-          braceCount = 0;
+          braceCount = (hasBraces ? 1 : 0);
           envVarName = '';
+          isSpecialAllowed = true;
+
+          if (hasBraces) {
+            ++currPos;
+          }
 
           for (fromPos = (++currPos); envVarName.isEmpty; currPos++) {
             if (envVarName.isNotEmpty) {
@@ -80,43 +90,64 @@ class Env {
             }
             if (currPos > lastPos) {
               envVarName = input.substring(fromPos, currPos);
+
+              if (braceCount > 0) {
+                throw Exception('Unclosed environment variable $envVarName');
+              }
               break;
             }
 
-            currCodeUnit = (currPos == 0 ? input.codeUnitAt(0) : nextCodeUnit);
+            currCodeUnit = input.codeUnitAt(currPos);
             nextCodeUnit = (currPos < lastPos ? input.codeUnitAt(currPos + 1) : 0);
 
             switch (currCodeUnit) {
               case Ascii.braceOpen:
-                ++braceCount;
+                if (hasBraces) {
+                  ++braceCount;
+                }
+                else {
+                  envVarName = input.substring(fromPos, currPos);
+                }
                 continue;
               case Ascii.braceShut:
-                if ((--braceCount) <= 0) {
-                  envVarName = input.substring(fromPos + 1, currPos);
+                if (!hasBraces || (--braceCount) <= 0) {
+                  envVarName = input.substring(fromPos, currPos);
                 }
                 continue;
               default:
-                if ((braceCount <= 0) &&
-                    ((currCodeUnit < Ascii.upperA) || (currCodeUnit > Ascii.upperZ)) &&
-                    ((currCodeUnit < Ascii.lowerA) || (currCodeUnit > Ascii.lowerZ)) &&
-                    ((currCodeUnit < Ascii.digitZero) || (currCodeUnit > Ascii.digitNine)) &&
-                    (currCodeUnit != Ascii.asterisk) &&
-                    (currCodeUnit != Ascii.at) &&
-                    (currCodeUnit != Ascii.hash) &&
-                    (currCodeUnit != Ascii.parenthesisOpen) &&
-                    (currCodeUnit != Ascii.parenthesisShut) &&
-                    (currCodeUnit != Ascii.tilde) &&
-                    (currCodeUnit != Ascii.underscore)) {
-                  envVarName = input.substring(fromPos, currPos);
-                  if (envVarName.isNotEmpty) {
-                    --currPos;
+                if (braceCount > 0) {
+                  continue;
+                }
+                if ((currCodeUnit == Ascii.tilde)) {
+                  continue;
+                }
+                else if ((currCodeUnit == Ascii.asterisk) ||
+                    (currCodeUnit == Ascii.at) ||
+                    (currCodeUnit == Ascii.hash)) {
+                  if (isSpecialAllowed) {
+                    isSpecialAllowed = hasBraces;
+                    continue;
                   }
                 }
+                else if (((currCodeUnit >= Ascii.lowerA) && (currCodeUnit <= Ascii.lowerZ)) ||
+                    ((currCodeUnit >= Ascii.upperA) && (currCodeUnit <= Ascii.upperZ)) ||
+                    ((currCodeUnit >= Ascii.digitZero) && (currCodeUnit <= Ascii.digitNine)) ||
+                    (currCodeUnit == Ascii.parenthesisOpen) ||
+                    (currCodeUnit == Ascii.parenthesisShut) ||
+                    (currCodeUnit == Ascii.tilde) ||
+                    (currCodeUnit == Ascii.underscore)) {
+                  isSpecialAllowed = hasBraces;
+                  continue;                  
+                }
+
+                envVarName = input.substring(fromPos, currPos);
+
+                if (envVarName.isNotEmpty) {
+                  --currPos;
+                }
+
                 continue;
             }
-          }
-          if (braceCount != 0) {
-            throw Exception('Bad environment variable: $envVarName');
           }
           break;
         default:
@@ -177,7 +208,10 @@ class Env {
         if (isLength) {
           result += value.length.toString();
         }
-        else {
+        else if (value.isNotEmpty) {
+          if (canEscape) {
+            value = value.replaceAll(escape, escapeEscape);
+          }
           result += value;
         }
 

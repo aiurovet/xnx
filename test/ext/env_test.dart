@@ -29,6 +29,7 @@ void main() {
         expect(Env.expand('a \$#XNX_A b \${#XNX_B}'), 'a 1 b 1');
         expect(Env.expand('a \$#~1 b \${#~2} \${3:-No #3}', args: [ 'a1', 'ab2' ]), 'a 2 b 3 No #3');
         expect(Env.expand('a \$@ \$~* \${#~@}', args: [ 'a1', 'a2', 'a 3' ]), 'a a1 a2 "a 3" a1 a2 "a 3" 11');
+        expect(Env.expand('a \$@@ \${**}', args: [ 'a1', 'a2' ]), 'a a1 a2@ ');
       });
 
       test('get', () {
