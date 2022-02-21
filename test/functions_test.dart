@@ -67,6 +67,7 @@ void main() {
           '{match}': [r'=Match', 'Abcbcdefbqprcde', '[cd]'],
           '{lastMatch}': [r'=LastMatch', 'Abcbcdefbqprcde', '[cd]'],
           '{title}': [r'=title', 'ab_c def gh', ' _',],
+          '{iif}': [r'=iif', '("abc" ~ \'^a\') && ("def" != "")', [r'=iif', 'd ~ e', 'Yes1', 'Yes2'], 'No'],
           '{weird}': [r'=replaceMatch', '{Env}elop', '[de]', 'ab', '/gi'],
           '{groups}': [r'=replaceMatch', 'abcdefghi', '(bc(d))|(g(h))', r'$2\$2\\${4}', '/gi'],
           '{echo}': [r'=run', '$cmdEcho 1 2'],
@@ -111,6 +112,7 @@ void main() {
       expect(flatMap['{match}'], '3');
       expect(flatMap['{lastMatch}'], '14');
       expect(flatMap['{title}'], 'Ab_C Def Gh');
+      expect(flatMap['{iif}'], 'Yes2');
       expect(flatMap['{weird}'], 'ababVablop');
       expect(flatMap['{groups}'], r'ad$2\ef$2\hi');
       expect(flatMap['{echo}'], '1 2');

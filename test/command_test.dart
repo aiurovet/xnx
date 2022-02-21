@@ -18,11 +18,13 @@ void main() {
       expect((c.parse('"abc" "d\'e\'f" \'g"hi"\'').path.length == 3) && (c.args.length == 2), true);
       expect((c.parse('"ab c" "d \'e\' f" \'g  "hi"\'').path.length == 4) && (c.args.length == 2), true);
       expect((c.parse('abc def|ghi').path.length == 3) && (c.args.length == 3), true);
-      expect((c.parse('abc def| ghi').path.length == 3) && (c.args.length == 3), true);
+      expect((c.parse('abc def|ghi', isFull: false).path.length == 3) && (c.args.length == 1), true);
+      expect((c.parse('abc def > ghi').path.length == 3) && (c.args.length == 3), true);
       expect((c.parse('abc def\\| ghi').path.length == 3) && (c.args.length == 2), true);
-      //expect(c.parse('abc def\\t\\r\\n').args[0].endsWith('\t\r\n'), true);
+      expect(c.parse('abc def\\t\\r\\n').args[0].endsWith('trn'), true);
       expect(c.parse('abc \'"d e f"\'').args[0], '"d e f"');
-      expect(c.parse(r'abc "\\\d e f"').args[0], r'\\\d e f');
+      expect(c.parse(r'abc "\\\d e f"').args[0], r'\d e f');
+      expect(((c.parse(r'--inp="a/b.txt"c -d').args[0] == r'--inp=a/b.txt') && (c.args[1] == 'c')), true);
     });
 
     test('exec', () {

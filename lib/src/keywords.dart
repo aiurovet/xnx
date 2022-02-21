@@ -55,6 +55,7 @@ class Keywords {
   String forFnExtension = '=Extension';
   String forFnFileSize = '=FileSize';
   String forFnFloor = '=Floor';
+  String forFnIif = '=Iif';
   String forFnIndex = '=Index';
   String forFnMatch = '=Match';
   String forFnLastIndex = '=LastIndex';
@@ -193,6 +194,7 @@ class Keywords {
       forFnEndOfMonth = node['fnEndOfMonth'] ?? forFnEndOfMonth;
       forFnExtension = node['fnExtension'] ?? forFnExtension;
       forFnFileSize = node['fnFileSize'] ?? forFnFileSize;
+      forFnIif = node['fnIif'] ?? forFnIif;
       forFnIndex = node['fnIndex'] ?? forFnIndex;
       forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
       forFnLastMatch = node['fnLastMatch'] ?? forFnLastMatch;

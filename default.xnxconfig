@@ -130,6 +130,7 @@
     fnExtension: '=Extension',
     fnFileSize: '=FileSize',
     fnFloor: '=Floor',
+    fnIif: '=Iif',
     fnIndex: '=Index',
     fnMatch: '=Match',
     fnLastIndex: '=LastIndex',

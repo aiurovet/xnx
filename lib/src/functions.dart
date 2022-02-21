@@ -4,12 +4,14 @@ import 'package:file/file.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:xnx/src/command.dart';
+import 'package:xnx/src/expression.dart';
 import 'package:xnx/src/ext/file.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/flat_map.dart';
 import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/logger.dart';
+import 'package:xnx/src/operation.dart';
 
 enum FunctionType {
   unknown,
@@ -30,6 +32,7 @@ enum FunctionType {
   extension,
   fileSize,
   floor,
+  iif,
   indexOf,
   lastIndexOf,
   lastMatch,
@@ -77,9 +80,11 @@ class Functions {
   // Protected members
   //////////////////////////////////////////////////////////////////////////////
 
+  @protected late final Expression expression;
   @protected final FlatMap flatMap;
   @protected final Keywords keywords;
   @protected final Logger logger;
+  @protected late final Operation operation;
   @protected final Map<String, FunctionType> nameTypeMap = {};
   int numericPrecision = defaultNumericPrecision;
 
@@ -89,6 +94,9 @@ class Functions {
     if (numericPrecision != null) {
       this.numericPrecision = numericPrecision;
     }
+
+    operation = Operation(flatMap: flatMap, logger: logger);
+    expression = Expression(flatMap: flatMap, keywords: keywords, operation: operation, logger: logger);
 
     _initNameTypeMap();
   }
@@ -196,6 +204,8 @@ class Functions {
       case FunctionType.fileSize:
       case FunctionType.lastModified:
         return _execFile(type, todo, offset: offset);
+      case FunctionType.iif:
+        return _execIif(type, todo, offset: offset);
       case FunctionType.len:
         return _execLen(type, todo, offset: offset);
       case FunctionType.indexOf:
@@ -400,6 +410,18 @@ class Functions {
     }
 
     return resStr;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String? _execIif(FunctionType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
+
+    var cndStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var yesStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var notStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+
+    return (expression.exec({cndStr: yesStr, keywords.forElse: notStr})?.toString() ?? '');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -810,6 +832,7 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnExtension)] = FunctionType.extension;
     nameTypeMap[_toName(keywords.forFnFileSize)] = FunctionType.fileSize;
     nameTypeMap[_toName(keywords.forFnFloor)] = FunctionType.floor;
+    nameTypeMap[_toName(keywords.forFnIif)] = FunctionType.iif;
     nameTypeMap[_toName(keywords.forFnIndex)] = FunctionType.indexOf;
     nameTypeMap[_toName(keywords.forFnMatch)] = FunctionType.match;
     nameTypeMap[_toName(keywords.forFnLastIndex)] = FunctionType.lastIndexOf;

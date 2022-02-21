@@ -11,9 +11,9 @@ class Command {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static const _breakChars = ' \t|&<>';
   static const _localPrint = r'--print';
   static const _optionChars = r'-+';
+  static const _shellChars = '|<>()&;';
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -167,8 +167,9 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Command parse(String? input) {
+  Command parse(String? input, {bool isFull = true}) {
     args.clear();
+
     path = '';
     isLocal = false;
     isShellRequired = false;
@@ -179,25 +180,79 @@ class Command {
       return this;
     }
 
-    for (var argEndPos = 0;;) {
-      if (argEndPos > 0) {
-        buffer = _addArg(buffer, argEndPos);
-      }
+    var isArgEnd = false;
+    var isEscape = false;
+    var isQuoted = 0;
 
-      argEndPos = buffer.length;
+    var currChar = '';
+    var nextChar = currChar;
+    var arg = '';
 
-      if (argEndPos == 0) {
+    for (var currNo = 0, lastNo = buffer.length - 1; ; currNo++) {
+      if (currNo > lastNo) {
+        if (arg.isNotEmpty) {
+          _addArg(arg);
+        }
         break;
       }
 
-      switch (buffer[0]) {
-        case "'":
-        case '"':
-          argEndPos = _getNextQuotePos(buffer, argEndPos);
+      currChar = (currNo == 0 ? buffer[0] : nextChar);
+      nextChar = (currNo < lastNo ? buffer[currNo + 1] : '');
+
+      if ((currChar == Env.escape) && !isEscape) {
+        isEscape = true;
+        continue;
+      }
+      if (isEscape) {
+        isEscape = false;
+      }
+      else if ((currChar == ' ') || (currChar == '\t')) {
+        if (arg.isEmpty) {
           continue;
-        default:
-          argEndPos = _getNextBreakPos(buffer, argEndPos);
+        }
+        isArgEnd = (isQuoted <= 0);
+      }
+      else if (currChar == "'") {
+        if (isQuoted <= 0) {
+          isQuoted = 1;
           continue;
+        }
+        else if (isQuoted == 1) {
+          isQuoted = 0;
+          isArgEnd = true;
+        }
+      }
+      else if (currChar == '"') {
+        if (isQuoted <= 0) {
+          isQuoted = 2;
+          continue;
+        }
+        else if (isQuoted == 2) {
+          isQuoted = 0;
+          isArgEnd = true;
+        }
+      }
+      else {
+        if ((isQuoted == 0) && _shellChars.contains(currChar)) {
+          if (isFull) {
+            isShellRequired = true;
+            _addArg(arg);
+            arg = currChar;
+          }
+          else {
+            currNo = lastNo; // stop to avoid shell command injection
+          }
+          isArgEnd = true;
+        }
+      }
+
+      if (isArgEnd) {
+        _addArg(arg);
+        arg = '';
+        isArgEnd = false;
+      }
+      else {
+        arg += currChar;
       }
     }
 
@@ -237,88 +292,26 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String _addArg(String input, int endPos) {
+  void _addArg(String arg) {
+    if (arg.isEmpty) {
+      return;
+    }
+
+    var firstChar = arg[0];
+
     var hasPath = (path.isNotEmpty || isLocal);
-    var arg = input.substring(0, endPos).trim().unquote().trim();
 
-    if (arg.isNotEmpty) {
-      var firstChar = arg[0];
-
-      if (!hasPath) {
-        isLocal = _optionChars.contains(firstChar);
-        hasPath = isLocal;
-      }
-
-      if (hasPath) {
-        args.add(arg);
-      }
-      else {
-        path = arg;
-      }
-
-      if (!isShellRequired && input.contains('(')) {
-        isShellRequired = true;
-      }
+    if (!hasPath) {
+      isLocal = _optionChars.contains(firstChar);
+      hasPath = isLocal;
     }
 
-    return input.substring(endPos).trim();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  int _getNextBreakPos(String input, int endPos) {
-    for (var isEscape = false, curPos = 0; curPos < endPos; curPos++) {
-      var curChr = input[curPos];
-
-      if (curChr == Env.escape) {
-        isEscape = !isEscape;
-        continue;
-      }
-
-      if (isEscape) {
-        isEscape = false;
-        continue;
-      }
-
-      var brkPos = _breakChars.indexOf(curChr);
-
-      if (brkPos < 0) {
-        continue;
-      }
-
-      if (brkPos >= 2) {
-        isShellRequired = true;
-      }
-
-      return (curPos == 0 ? 1 : curPos);
+    if (hasPath) {
+      args.add(arg);
     }
-
-    return endPos;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  int _getNextQuotePos(String input, int endPos) {
-    var begChr = input[0];
-
-    for (var isEscape = false, curPos = 1; curPos < endPos; curPos++) {
-      var curChr = input[curPos];
-
-      if (curChr == Env.escape) {
-        isEscape = !isEscape;
-        continue;
-      }
-
-      if (!isEscape) {
-        if (curChr == begChr) {
-          return curPos + 1;
-        }
-      }
-
-      isEscape = false;
+    else {
+      path = arg;
     }
-
-    return endPos;
   }
 
   //////////////////////////////////////////////////////////////////////////////
