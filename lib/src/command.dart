@@ -180,6 +180,12 @@ class Command {
       return this;
     }
 
+    // if (Path.isWindowsFS) {
+    //   buffer = buffer.replaceAll(Env.escape, Env.escapeEscape);
+    // }
+
+    var escape = Env.escape; // (Path.isWindowsFS ? Env.escapeWin : Env.escapePosix);
+
     var isArgEnd = false;
     var isEscape = false;
     var isQuoted = 0;
@@ -187,7 +193,6 @@ class Command {
     var currChar = '';
     var nextChar = currChar;
     var arg = '';
-    var escape = (Path.isWindowsFS ? Env.escapeWin : Env.escapePosix);
 
     for (var currNo = 0, lastNo = buffer.length - 1; ; currNo++) {
       if (currNo > lastNo) {
@@ -200,7 +205,7 @@ class Command {
       currChar = (currNo == 0 ? buffer[0] : nextChar);
       nextChar = (currNo < lastNo ? buffer[currNo + 1] : '');
 
-      if ((currChar == escape) && !isEscape) {
+      if (!isEscape && (isQuoted != 1) && (currChar == escape)) {
         isEscape = true;
         continue;
       }
