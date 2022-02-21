@@ -11,7 +11,7 @@
 
   // You can use the system and your own environment variables
   // too: just export those before calling xnx and use here
-  // in a UNIX-like format: $HOME, ${USERPROFILE}, $MY_VAR
+  // in a POSIX-style format: $HOME, ${USERPROFILE}, $MY_VAR
 
   "{{-out-}}": "{{-inp-dir-}}/../out/{{-inp-name-}}-{envTC}{{-inp-ext-}}",
 }

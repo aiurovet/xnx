@@ -12,6 +12,8 @@ class Env {
 
   static String escape = r'\'; // for any OS
   static String escapeEscape = (escape + escape);
+  static String escapePosix = escape; // Linux, macOS et al
+  static String escapeWin = r'^'; // Windows
 
   static final String homeKey = (isWindows ? 'USERPROFILE' : 'HOME');
   static final String userKey = (isWindows ? 'USERNAME' : 'USER');

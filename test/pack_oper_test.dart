@@ -8,22 +8,22 @@ import 'package:xnx/src/pack_oper.dart';
 
 import 'helper.dart';
 
-void doneLocal() {
-  getLocalFromDir().parent.deleteIfExistsSync(recursive: true);
-  getLocalToDir().deleteIfExistsSync(recursive: true);
+void doneLocal(int i) {
+  getLocalFromDir(i).parent.deleteIfExistsSync(recursive: true);
+  getLocalToDir(i).deleteIfExistsSync(recursive: true);
 }
 
-Directory getLocalFromDir() =>
-  Path.fileSystem.directory(Path.join(Path.join(Env.getHome(), 'dir'), 'sub-dir'));
+Directory getLocalFromDir(int testId) =>
+  Path.fileSystem.directory(Path.join(Path.join(Env.getHome(), 'dir-$testId'), 'sub-dir'));
 
-Directory getLocalToDir() =>
-  Path.fileSystem.directory(Path.join(Env.getHome(), 'zip'));
+Directory getLocalToDir(int testId) =>
+  Path.fileSystem.directory(Path.join(Env.getHome(), 'pack-$testId'));
 
-List<Directory> initLocal() {
+List<Directory> initLocal(int testId) {
   Env.init();
 
-  var fromDir = getLocalFromDir();
-  var toDir = getLocalToDir();
+  var fromDir = getLocalFromDir(testId);
+  var toDir = getLocalToDir(testId);
 
   Path.fileSystem.directory(Path.join(fromDir.path, 'sub-sub-dir')).createSync(recursive: true);
   Path.fileSystem.file(Path.join(fromDir.path, 'a.txt'))..createSync()..writeAsStringSync('A');
@@ -149,8 +149,10 @@ void main() {
 
         isFirstZipRun = false;
 
+        var testId = 1;
+
         try {
-          var dirList = initLocal();
+          var dirList = initLocal(testId);
           var fromDir = dirList[0];
           var toDir = dirList[1];
 
@@ -200,7 +202,7 @@ void main() {
           expect(fromDir.listSync().length, 5);
         }
         finally {
-          doneLocal();
+          doneLocal(testId);
         }
       });
       test('archiveSync/unarchiveSync - TAR.GZ - LFS', () {
@@ -213,8 +215,10 @@ void main() {
 
         isFirstTarGzRun = false;
 
+        var testId = 2;
+
         try {
-          var dirList = initLocal();
+          var dirList = initLocal(testId);
           var fromDir = dirList[0];
           var toDir = dirList[1];
 
@@ -253,7 +257,7 @@ void main() {
           expect(fromDir.listSync().length, 5);
         }
         finally {
-          doneLocal();
+          doneLocal(testId);
         }
       });
     });
