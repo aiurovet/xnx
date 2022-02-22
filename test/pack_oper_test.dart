@@ -38,9 +38,6 @@ List<Directory> initLocal(int testId) {
 }
 
 void main() {
-  var isFirstZipRun = true;
-  var isFirstTarGzRun = true;
-
   Helper.forEachMemoryFileSystem((fileSystem) {
     group('Operation', () {
       test('getPackPath', () {
@@ -139,127 +136,117 @@ void main() {
         expect(PackOper.isPackTypeTar(PackType.tarGz), true);
         expect(PackOper.isPackTypeTar(PackType.tarZ), true);
       });
-      test('archiveSync/unarchiveSync - ZIP - LFS', () {
-        // The "archive" package does not seem to be testable on MemoryFileSystem yet
-        // So we are testing just once in the current home directory
+    });
+  });
+  group('Operation - LFS -', () {
+    test('archiveSync/unarchiveSync - ZIP', () {
+      // The "archive" package does not seem to be testable on MemoryFileSystem yet
+      // So we are testing just once in the current home directory
 
-        if (!isFirstZipRun) {
-          return;
-        }
+      var testId = 1;
 
-        isFirstZipRun = false;
+      try {
+        var dirList = initLocal(testId);
+        var fromDir = dirList[0];
+        var toDir = dirList[1];
 
-        var testId = 1;
+        var toPath = Path.join(toDir.path, 'test.zip');
 
-        try {
-          var dirList = initLocal(testId);
-          var fromDir = dirList[0];
-          var toDir = dirList[1];
+        PackOper.archiveSync(
+          PackType.zip,
+          [fromDir.parent.path, toPath],
+          isMove: true,
+          isSilent: true,
+          isListOnly: true,
+        );
 
-          var toPath = Path.join(toDir.path, 'test.zip');
+        expect(Path.fileSystem.file(toPath).existsSync(), false);
 
-          PackOper.archiveSync(
-            PackType.zip,
-            [fromDir.parent.path, toPath],
-            isMove: true,
-            isSilent: true,
-            isListOnly: true,
-          );
+        PackOper.archiveSync(
+          PackType.zip,
+          [fromDir.parent.path, toPath],
+          isMove: true,
+          isSilent: true
+        );
 
-          expect(Path.fileSystem.file(toPath).existsSync(), false);
+        expect(Path.fileSystem.file(toPath).existsSync(), true);
+        expect(fromDir.parent.existsSync(), false);
 
-          PackOper.archiveSync(
-            PackType.zip,
-            [fromDir.parent.path, toPath],
-            isMove: true,
-            isSilent: true
-          );
+        PackOper.unarchiveSync(
+          PackType.zip,
+          toPath,
+          fromDir.parent.path,
+          isMove: false,
+          isSilent: true,
+          isListOnly: true,
+        );
 
-          expect(Path.fileSystem.file(toPath).existsSync(), true);
-          expect(fromDir.parent.existsSync(), false);
+        expect(fromDir.existsSync(), false);
 
-          PackOper.unarchiveSync(
-            PackType.zip,
-            toPath,
-            fromDir.parent.path,
-            isMove: false,
-            isSilent: true,
-            isListOnly: true,
-          );
+        expect(Path.fileSystem.file(toPath).existsSync(), true);
+        PackOper.unarchiveSync(
+          PackType.zip,
+          toPath,
+          fromDir.parent.path,
+          isMove: false,
+          isSilent: true
+        );
 
-          expect(fromDir.existsSync(), false);
+        expect(Path.fileSystem.file(toPath).existsSync(), true);
+        expect(fromDir.listSync().length, 5);
+      }
+      finally {
+        doneLocal(testId);
+      }
+    });
+    test('archiveSync/unarchiveSync - TAR.GZ', () {
+      // The "archive" package does not seem to be testable on MemoryFileSystem yet
+      // So we are testing just once in the current home directory
 
-          expect(Path.fileSystem.file(toPath).existsSync(), true);
-          PackOper.unarchiveSync(
-            PackType.zip,
-            toPath,
-            fromDir.parent.path,
-            isMove: false,
-            isSilent: true
-          );
+      var testId = 2;
 
-          expect(Path.fileSystem.file(toPath).existsSync(), true);
-          expect(fromDir.listSync().length, 5);
-        }
-        finally {
-          doneLocal(testId);
-        }
-      });
-      test('archiveSync/unarchiveSync - TAR.GZ - LFS', () {
-        // The "archive" package does not seem to be testable on MemoryFileSystem yet
-        // So we are testing just once in the current home directory
+      try {
+        var dirList = initLocal(testId);
+        var fromDir = dirList[0];
+        var toDir = dirList[1];
 
-        if (!isFirstTarGzRun) {
-          return;
-        }
+        var toPath = Path.join(toDir.path, 'test.tar.gz');
+        FileOper.deleteSync([toPath]);
 
-        isFirstTarGzRun = false;
+        PackOper.archiveSync(
+          PackType.gz,
+          [fromDir.parent.path, toPath],
+          isMove: true,
+          isSilent: true,
+          isListOnly: true,
+        );
 
-        var testId = 2;
+        expect(Path.fileSystem.file(toPath).existsSync(), false);
 
-        try {
-          var dirList = initLocal(testId);
-          var fromDir = dirList[0];
-          var toDir = dirList[1];
+        PackOper.archiveSync(
+          PackType.tarGz,
+          [fromDir.parent.path, toPath],
+          isMove: true,
+          isSilent: true
+        );
 
-          var toPath = Path.join(toDir.path, 'test.tar.gz');
-          FileOper.deleteSync([toPath]);
+        expect(Path.fileSystem.file(toPath).existsSync(), true);
+        expect(fromDir.parent.existsSync(), false);
 
-          PackOper.archiveSync(
-            PackType.gz,
-            [fromDir.parent.path, toPath],
-            isMove: true,
-            isSilent: true,
-            isListOnly: true,
-          );
+        PackOper.unarchiveSync(
+          PackType.tarGz,
+          toPath,
+          fromDir.parent.path,
+          isMove: false,
+          isSilent: true
+        );
 
-          expect(Path.fileSystem.file(toPath).existsSync(), false);
-
-          PackOper.archiveSync(
-            PackType.tarGz,
-            [fromDir.parent.path, toPath],
-            isMove: true,
-            isSilent: true
-          );
-
-          expect(Path.fileSystem.file(toPath).existsSync(), true);
-          expect(fromDir.parent.existsSync(), false);
-
-          PackOper.unarchiveSync(
-            PackType.tarGz,
-            toPath,
-            fromDir.parent.path,
-            isMove: false,
-            isSilent: true
-          );
-
-          expect(Path.fileSystem.file(toPath).existsSync(), true);
-          expect(fromDir.listSync().length, 5);
-        }
-        finally {
-          doneLocal(testId);
-        }
-      });
+        expect(Path.fileSystem.file(toPath).existsSync(), true);
+        expect(fromDir.listSync().length, 5);
+      }
+      finally {
+        doneLocal(testId);
+      }
     });
   });
 }
