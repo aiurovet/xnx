@@ -7,8 +7,15 @@
 
 {
   numericPrecision: 6,
+  cmdEscape: '`', // both \ and / are disallowed in order to ensure correct path interpretation
 
   keywords: {
+    // A key to define in this file the keyword for numeric precision
+    kwNumericPrecision: 'numericPrecision',
+
+    // A key to define in this file the keyword for escape character for commands
+    kwCmdEscape: 'cmdEscape',
+
     // Boolean flag to allow automatic content expansion to a temporary file before executing the actual command
     kwCanExpandContent: '{{-can-expand-content-}}',
 
@@ -82,9 +89,6 @@
     // The value should represent explicit filename or file path
     // The content of that file will be embedded before the full application file parsing (similar to #include in C/C++)
     kwImport: '{{-import-}}',
-
-    // A key to define the numeric precision in this file
-    kwNumericPrecision: 'numericPrecision',
 
     // Anything under the value (hash map) for this key will be processed just once (useful for initialisation)
     kwOnce: '{{-once-}}',

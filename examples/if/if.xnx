@@ -14,7 +14,7 @@
   },
 
   "{{-if-}}": { '"${HOME}" !~/i \/(\\.|HOME)': {
-    "{{-run-}}": '--print "Has match"',
+    "{{-run-}}": '--print "Has" ``"match``"',
   }, "{{-else-}}": {
     "{{-run-}}": '--print "No match"',
   } },

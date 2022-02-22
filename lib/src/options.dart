@@ -874,7 +874,9 @@ For more details, see README.md
       _logger.debug('App config file was${isFound ? '' : ' not'} found: "$appConfigPath"\n');
     }
 
-    _appConfigPath = '';
+    if (!isFound) {
+      _appConfigPath = '';
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

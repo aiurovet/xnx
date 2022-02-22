@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:xnx/src/command.dart';
 import 'package:xnx/src/expression.dart';
+import 'package:xnx/src/ext/env.dart';
 import 'package:xnx/src/ext/file.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/flat_map.dart';
@@ -160,6 +161,17 @@ class Functions {
     if (numericPrecisionStr != null) {
       numericPrecision = (num.tryParse(numericPrecisionStr)?.floor() ?? numericPrecision);
     }
+
+    var cmdEscape = data[keywords.forCmdEscape]?.toString().trim();
+
+    if (cmdEscape == null) {
+      Env.cmdEscape = Env.defCmdEscape;
+    }
+    else if (Path.rexSeparator.hasMatch(cmdEscape)) {
+      throw Exception('Invalid command escape character, as no kind of directory separator is allowed: / \\');
+    }
+
+    Env.cmdEscape = ((cmdEscape == null) || cmdEscape.isEmpty ? Env.defCmdEscape : cmdEscape);
   }
 
   //////////////////////////////////////////////////////////////////////////////

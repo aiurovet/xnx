@@ -6,6 +6,13 @@ import 'package:xnx/src/options.dart';
 class Keywords {
 
   //////////////////////////////////////////////////////////////////////////////
+  // The names for keys in the application configuration file itself
+  //////////////////////////////////////////////////////////////////////////////
+
+  String forCmdEscape = 'cmdEscape';
+  String forNumericPrecision = 'numericPrecision';
+
+  //////////////////////////////////////////////////////////////////////////////
   // All of these keys are searched using 'statsWith' rather than 'equals', as
   // they are allowed not to be unique per map
   //////////////////////////////////////////////////////////////////////////////
@@ -31,7 +38,6 @@ class Keywords {
   String forInpSubDir = '{{-inp-sub-dir-}}';
   String forInpSubPath = '{{-inp-sub-path-}}';
   String forImport = '{{-import-}}';
-  String forNumericPrecision = 'numericPrecision';
   String forOnce = '{{-once-}}';
   String forOut = '{{-out-}}';
   String forRun = '{{-run-}}';
@@ -145,6 +151,7 @@ class Keywords {
 
       forCanExpandContent = node['kwCanExpandContent'] ?? forCanExpandContent;
       forCmd = node['kwCmd'] ?? forCmd;
+      forCmdEscape = node['kwCmdEscape'] ?? forCmdEscape;
       forCurDir = node['kwCurDir'] ?? forCurDir;
       forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
       forEscapeMode = node['kwEscapeMode'] ?? forEscapeMode;
