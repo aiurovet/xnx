@@ -1,13 +1,23 @@
 // Application configuration file for xnx
-// The content can be changed according to developers' preference
+// The content can be changed according to your preference
 //
-// When the applicatiopn starts, it first looks for a file under option -c/--config,
+// When the applicatiopn starts, it first looks for a file under option -c or --config,
 // then for a file with this apecific name under the current directory, then under
 // the application directory
 
 {
+  // The precision to use in floating-point data and mathematical functions
   numericPrecision: 6,
-  cmdEscape: '`', // both \ and / are disallowed in order to ensure correct path interpretation
+
+  // An escape character to use in command-line arguments
+  // Both \ and / are disallowed in order to ensure correct path interpretation
+  // The most obvious candidate is the back-tick ` (like in PowerShell), but
+  // the whole concept is discouraged, as there will be situations when you
+  // won't be able to avoid using the backslash for apostrophes or quotes in
+  // JSON-compliant string data
+  // Having two kinds of escaping in a single string does not appeal to me,
+  // but in case you want that, you have such option
+  cmdEscape: '',
 
   keywords: {
     // A key to define in this file the keyword for numeric precision

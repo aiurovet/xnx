@@ -4,7 +4,8 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=0.1.0
   "version": "0.1.0",
   "configurations": [
-
+    { "name": "---- mkicons ----", "request": "launch", "type": "dart", "program": "bin/main.dart",
+      "args": [ "-f", "-d", "scripts/mkicons", "xnx", "../../out" ], },
     { "name": "ad-hoc", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-d", "../xnx-azx/examples/web_config", "-x", "~Web.config.xnx.tmp", "-v", "5", "DevUK" ], },
     { "name": "app-config", "request": "launch", "type": "dart", "program": "bin/main.dart",
@@ -27,7 +28,5 @@
       "args": [ "-f", "-d", "examples/web_config", "-x", "~Web.config.xnx", "devuk", ], },
     { "name": "xunit_data",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/xunit_data" ], },
-    { "name": "mkicons", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-f", "-d", "scripts/mkicons", "xnx", "../../out" ], },
   ]
 }

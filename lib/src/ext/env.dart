@@ -9,7 +9,7 @@ class Env {
   //////////////////////////////////////////////////////////////////////////////
 
   static final bool isWindows = Platform.isWindows;
-  static final String defCmdEscape = r'`';
+  static final String defCmdEscape = r'';
 
   static String cmdEscape = defCmdEscape;
   static String escape = r'\'; // for any OS
