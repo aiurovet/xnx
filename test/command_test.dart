@@ -14,6 +14,8 @@ void main() {
       });
       test('parse', () {
         Helper.initFileSystem(fileSystem);
+        Env.cmdEscape = '`';
+
         var c = Command();
 
         expect(c.parse(null).path.isEmpty && c.args.isEmpty, true);
