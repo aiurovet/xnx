@@ -35,11 +35,13 @@ class Env {
       args = null;
     }
 
+    var argNo = 0;
     var braceCount = 0;
     var currCodeUnit = 0;
     var envVarName = '';
     var fromPos = -1;
     var hasBraces = false;
+    var isArg = false;
     var isEscaped = false;
     var isSpecialAllowed = false;
     var nextCodeUnit = 0;
@@ -78,6 +80,7 @@ class Env {
             break;
           }
 
+          isArg = (nextCodeUnit == Ascii.tilde);
           braceCount = (hasBraces ? 1 : 0);
           envVarName = '';
           isSpecialAllowed = true;
@@ -151,6 +154,17 @@ class Env {
                 continue;
             }
           }
+
+          argNo = int.tryParse(envVarName) ?? 0;
+
+          if (argNo > 0) {
+            if (!isArg) {
+              result += (hasBraces ? '\${$argNo}' : '\$$argNo'.toString());
+              --currPos;
+              continue;
+            }
+            envVarName = '';
+          }
           break;
         default:
           isEscaped = false;
@@ -164,7 +178,7 @@ class Env {
           envVarName = envVarName.substring(1);
         }
 
-        var argNo = (envVarName.startsWith('~') ? int.tryParse(envVarName.substring(1), radix: 10) ?? 0 : 0);
+        argNo = (envVarName.startsWith('~') ? int.tryParse(envVarName.substring(1), radix: 10) ?? 0 : 0);
         var value = '';
 
         if (argNo != 0) {

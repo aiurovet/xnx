@@ -6,9 +6,6 @@
 // the application directory
 
 {
-  // The precision to use in floating-point data and mathematical functions
-  numericPrecision: 6,
-
   // An escape character to use in command-line arguments
   // Both \ and / are disallowed in order to ensure correct path interpretation
   // The most obvious candidate is the back-tick ` (like in PowerShell), but
@@ -19,9 +16,18 @@
   // but in case you want that, you have such option
   cmdEscape: '',
 
+  // Treat a key as a regular expression if it starts with the noted prefix and ends with the noted suffix
+  myKeyAsRegExp: { prefix: '/', suffix: '/', },
+
+  // The precision to use in floating-point data and mathematical functions
+  numericPrecision: 6,
+
   keywords: {
     // A key to define in this file the keyword for numeric precision
     kwNumericPrecision: 'numericPrecision',
+
+    // A key to define in this file the keyword for keyAsRegExp property,
+    kwKeyAsRegExp: 'myKeyAsRegExp',
 
     // A key to define in this file the keyword for escape character for commands
     kwCmdEscape: 'cmdEscape',

@@ -1,0 +1,22 @@
+{
+  "{{-once-}}": {
+    "{{-func-}}": {
+      "{major}": [ "=ReplaceMatch", "$~1", "^([^\\.]+).*", "$1" ],
+      "{minor}": [ "=ReplaceMatch", "$~1", "^[^\\.]+\\.([^\\.]+).*", "$1" ],
+      "{patch}": [ "=ReplaceMatch", "$~1", "^[^\\.]+\\.[^\\.]+\\.([^\\.]+).*", "$1" ],
+    },
+    "/(['\"]version['\"]\\s*:\\s*['\"])(\\d+\\.\\d+\\.\\d+)(['\"])/":
+      '${1}${~1}${3}',
+    "/(['\"]version['\"]\\s*:\\s*{\\s*['\"]Major['\"]\\s*:\\s*)([^,\\s]+)(,\\s*['\"]Minor['\"]\\s*:\\s*)([^,\\s]+)(,\\s*['\"]Patch['\"]\\s*:\\s*)([^,\\s]+)/i":
+      '${1}{major}${3}{minor}${5}{patch}',
+  },
+
+  "{{-inp-}}": [
+    "package.json",
+    "package-lock.json",
+    "task.json",
+    "vss-extension.json",
+  ],
+
+  "{{-run-}}": '--expand "{{-inp-}}"', // non-incremental (enforced)
+}

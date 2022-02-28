@@ -11,6 +11,7 @@ class Keywords {
 
   String forCmdEscape = 'cmdEscape';
   String forNumericPrecision = 'numericPrecision';
+  String forKeyAsRegExp = 'keyAsRegExp';
 
   //////////////////////////////////////////////////////////////////////////////
   // All of these keys are searched using 'statsWith' rather than 'equals', as
@@ -96,6 +97,11 @@ class Keywords {
   String forFnUtc = '=Utc';
 
   //////////////////////////////////////////////////////////////////////////////
+
+  String regExpPrefix = '/';
+  String regExpSuffix = '/';
+
+  //////////////////////////////////////////////////////////////////////////////
   // Derived
   //////////////////////////////////////////////////////////////////////////////
 
@@ -171,12 +177,20 @@ class Keywords {
       forInpSubDir = node['kwInpSubDir'] ?? forInpSubDir;
       forInpSubPath = node['kwInpSubPath'] ?? forInpSubPath;
       forImport = node['kwImport'] ?? forImport;
+      forKeyAsRegExp = node['kwKeyAsRegExp'] ?? forKeyAsRegExp;
       forNumericPrecision = node['kwNumericPrecision'] ?? forNumericPrecision;
       forOnce = node['kwOnce'] ?? forOnce;
       forOut = node['kwOut'] ?? forOut;
       forRun = node['kwRun'] ?? forRun;
       forStop = node['kwStop'] ?? forStop;
       forThis = node['kwThis'] ?? forThis;
+    }
+
+    rawNode = data[forKeyAsRegExp];
+
+    if (rawNode is Map) {
+      regExpPrefix = rawNode[forKeyAsRegExp].prefix ?? '';
+      regExpSuffix = rawNode[forKeyAsRegExp].suffix ?? '';
     }
 
     _initRepeatable();

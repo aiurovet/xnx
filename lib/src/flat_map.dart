@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/keywords.dart';
+import 'package:xnx/src/regexp_ex.dart';
 
 class FlatMap {
 
@@ -76,8 +77,24 @@ class FlatMap {
       oldValue = safeValue;
 
       map.forEach((k, v) {
-        if (safeValue.contains(k)) {
-          safeValue = safeValue.replaceAll(k, v.toString());
+        var rx = RegExpEx.fromDecoratedPattern(k);
+
+        if (rx == null) {
+          if (safeValue.contains(k)) {
+            safeValue = safeValue.replaceAll(k, v.toString());
+          }
+        }
+        else {
+          var r = rx.regExp;
+
+          if (r != null) {
+            if (rx.isGlobal) {
+              safeValue = safeValue.replaceAll(r, v.toString());
+            }
+            else {
+              safeValue = safeValue.replaceFirst(r, v.toString());
+            }
+          }
         }
       });
     }

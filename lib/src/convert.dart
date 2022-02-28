@@ -19,6 +19,7 @@ import 'package:xnx/src/ext/file_system_entity.dart';
 import 'package:xnx/src/ext/path.dart';
 import 'package:xnx/src/ext/stdin.dart';
 import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/src/regexp_ex.dart';
 
 class Convert {
 
@@ -494,7 +495,10 @@ Output path: "$outFilePathEx"
   File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, EscapeMode escapeMode, FlatMap map) {
     var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
-    _logger.out('"${inpFile?.path ?? StringExt.stdinDisplay}" => "${tmpFile?.path ?? outFilePath}"${isExpandContentOnly ? '' : '\n'}');
+    var inpPath = (inpFile?.path ?? StringExt.stdinDisplay);
+    var outPath = (Path.equals(inpPath, outFilePath) ? '' : ' => "${tmpFile?.path ?? outFilePath}"');
+
+    _logger.out('Expanding: "$inpPath"$outPath${isExpandContentOnly ? '' : '\n'}');
 
     // Load the input as a text string
 
@@ -543,10 +547,23 @@ Output path: "$outFilePathEx"
 
     // Expand data
 
+    var regExpPrefix = _config.keywords.regExpPrefix;
+    var regExpSuffix = _config.keywords.regExpSuffix;
+
     for (var isDone = false; !isDone;) {
       effectiveMap.forEach((k, v) {
         isDone = true;
-        var newText = text.replaceAll(k, v);
+
+        var newText = '';
+
+        var rx = RegExpEx.fromDecoratedPattern(k, prefix: regExpPrefix, suffix: regExpSuffix);
+
+        if (rx == null) {
+          newText = text.replaceAll(k, v);
+        }
+        else {
+          newText = rx.replace(text, v.toString());
+        }
 
         if ((newText.length != text.length) || (newText != text)) {
           isDone = false;

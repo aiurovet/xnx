@@ -1,0 +1,27 @@
+{
+  "manifestVersion": 1,
+  "id": "myapp-azx",
+  "publisher": "myid",
+  "version": "0.1.2",
+  "name": "myapp",
+  "description": "Azure DevOps extension for myapp",
+  "public": false,
+  "categories": [ "Azure Repos" ],
+  "targets": [ { "id": "Microsoft.VisualStudio.Services" } ],
+  "icons": { "default": "images/extension-icon.png" },
+  "contributions": [
+    {
+      "id": "myapp-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [ "ms.vss-distributed-task.tasks" ],
+      "properties": { "name": "bin" }
+    }
+  ],
+  "files": [
+    { "path": "bin" },
+    { "path": "task.json", "packagePath": "bin/task.json" },
+    { "path": "../bin/Linux/myapp", "packagePath": "bin/Linux/myapp" },
+    { "path": "../bin/macOS/myapp", "packagePath": "bin/macOS/myapp" },
+    { "path": "../bin/Windows/myapp.exe", "packagePath": "bin/Windows/myapp" }
+  ]
+}

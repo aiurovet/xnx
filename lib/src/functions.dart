@@ -13,6 +13,7 @@ import 'package:xnx/src/keywords.dart';
 import 'package:xnx/src/ext/string.dart';
 import 'package:xnx/src/logger.dart';
 import 'package:xnx/src/operation.dart';
+import 'package:xnx/src/regexp_ex.dart';
 
 enum FunctionType {
   unknown,
@@ -671,29 +672,10 @@ class Functions {
     var dstStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    var regExp = _toRegExp(srcPat, flgStr);
+    var resStr = RegExpEx.fromPattern(srcPat, flags: flgStr)?.replace(inpStr, dstStr);
 
-    if (regExp == null) {
+    if (resStr == null) {
       _fail(type, 'invalid regular expression $srcPat');
-    }
-
-    var isGlobal = flgStr.contains('g');
-
-    String resStr;
-
-    if (dstStr.contains(r'$')) {
-      if (isGlobal) {
-        resStr = inpStr.replaceAllMapped(regExp, (match) => _execReplaceMatchProc(match, dstStr));
-      }
-      else {
-        resStr = inpStr.replaceFirstMapped(regExp, (match) => _execReplaceMatchProc(match, dstStr));
-      }
-    }
-    else if (isGlobal) {
-      resStr = inpStr.replaceAll(regExp, dstStr);
-    }
-    else {
-      resStr = inpStr.replaceFirst(regExp, dstStr);
     }
 
     if (logger.isDebug) {
@@ -705,31 +687,31 @@ class Functions {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String _execReplaceMatchProc(Match match, String dstStr) {
-    return dstStr.replaceAllMapped(_rexGroup, (groupMatch) {
-      var s = groupMatch[1];
+  // String _execReplaceMatchProc(Match match, String dstStr) {
+  //   return dstStr.replaceAllMapped(_rexGroup, (groupMatch) {
+  //     var s = groupMatch[1];
 
-      if ((s != null) && s.isNotEmpty) {
-        return s[1];
-      }
+  //     if ((s != null) && s.isNotEmpty) {
+  //       return s[1];
+  //     }
 
-      s = groupMatch[2];
+  //     s = groupMatch[2];
 
-      if ((s != null) && s.isNotEmpty) {
-        return s[1];
-      }
+  //     if ((s != null) && s.isNotEmpty) {
+  //       return s[1];
+  //     }
 
-      s = (groupMatch[4] ?? groupMatch[5]);
-      var groupNo = _toInt(s) ?? -1;
+  //     s = (groupMatch[4] ?? groupMatch[5]);
+  //     var groupNo = _toInt(s) ?? -1;
 
-      if ((groupNo >= 0) && (groupNo <= match.groupCount)) {
-        return match[groupNo] ?? '';
-      }
-      else {
-        return '';
-      }
-    });
-  }
+  //     if ((groupNo >= 0) && (groupNo <= match.groupCount)) {
+  //       return match[groupNo] ?? '';
+  //     }
+  //     else {
+  //       return '';
+  //     }
+  //   });
+  // }
 
   //////////////////////////////////////////////////////////////////////////////
 
