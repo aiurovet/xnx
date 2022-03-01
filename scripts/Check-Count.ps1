@@ -17,6 +17,8 @@ Param(
 
 $ScriptName = [System.IO.Path]::GetFileName($PSCommandPath)
 
+Write-Host "CurDir: ${[System.IO.Directory]::GetCurrentDirectory()}";
+
 ################################################################################
 
 If ($Expected.Length -Ge 1) {
