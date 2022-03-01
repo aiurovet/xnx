@@ -1,3 +1,3 @@
-# myapp-azx 9.87.654
+# myapp-azx 0.0.1
 
 Azure DevOps extension for myapp.

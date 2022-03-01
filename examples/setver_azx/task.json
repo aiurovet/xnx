@@ -12,9 +12,9 @@
   ],
   "author": "Myname Mysurname",
   "version": {
-    "Major": 9,
-    "Minor": 87,
-    "Patch": 654
+    "Major": 0,
+    "Minor": 0,
+    "Patch": 1
   },
   "instanceNameFormat": "Execute myapp",
   "minimumAgentVersion": "2.105.0",

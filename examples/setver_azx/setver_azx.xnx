@@ -1,20 +1,17 @@
 {
   "{{-once-}}": {
+    "{full}": "$~1",
+    "{bad-arg}": "$~2",
+    "{{-if-}}": { '"{bad-arg}" != ""': { "{{-stop-}}": "Too many arguments passed!", }, },
+
     "{{-func-}}": {
-      "{major}": [ "=ReplaceMatch", "$~1", "^([^\\.]+).*", "$1" ],
-      "{minor}": [ "=ReplaceMatch", "$~1", "^[^\\.]+\\.([^\\.]+).*", "$1" ],
-      "{patch}": [ "=ReplaceMatch", "$~1", "^[^\\.]+\\.[^\\.]+\\.([^\\.]+).*", "$1" ],
+      "{major}": [ "=ReplaceMatch", "{full}", "^([^\\.]+).*", "$1" ],
+      "{minor}": [ "=ReplaceMatch", "{full}", "^[^\\.]+\\.([^\\.]+).*", "$1" ],
+      "{patch}": [ "=ReplaceMatch", "{full}", "^[^\\.]+\\.[^\\.]+\\.([^\\.]+).*", "$1" ],
     },
   },
 
-  // "{{-inp-}}": [
-  //   "package.json",
-  //   "package-lock.json",
-  //   "task.json",
-  //   "vss-extension.json",
-  // ],
-
-  "{R}": [
+  "{x}": [
     {
       "{{-inp-}}": [ "package.json", "package-lock.json", "vss-extension.json", ],
       
@@ -44,5 +41,5 @@
     },
   ],
 
-  "{{-run-}}": '--expand "{{-inp-}}"', // non-incremental (enforced)
+  "{{-run-}}": '--expand "{{-inp-}}"', // non-incremental (always enforced)
 }

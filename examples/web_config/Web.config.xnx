@@ -2,8 +2,8 @@
   "{{-import-}}": "api-url.xnx",
  
   "{{-once-}}": {
-    "{EnvSite}": "$~1$~2",
-    "{BadArg}": "$~3",
+    "{EnvSite}": "$~1",
+    "{BadArg}": "$~2",
 
     "{{-func-}}": {
       "{EnvSiteBreak}": ["=Add", ["=Len", "{EnvSite}"], -2],
