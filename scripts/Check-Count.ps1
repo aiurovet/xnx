@@ -30,19 +30,17 @@ Else {
 
 ################################################################################
 
-$Command = "Get-ChildItem"; Write-Host "DBG: 1: $Command";
+$Command = "Get-ChildItem";
 
-if ($Recurse) { $Command = "$Command -Recurse"; Write-Host "DBG: 2: $Command"; }
-if ($Path) { $Command = "$Command -Path `"$Path`""; Write-Host "DBG: 3: $Command"; }
-if ($Filter) { $Command = "$Command -Filter `"$Filter`""; Write-Host "DBG: 4: $Command"; }
-if ($Depth) { $Command = "$Command -Depth $Depth"; Write-Host "DBG: 5: $Command"; }
-if ($Include) { $Command = "$Command -Include `"$Include`""; Write-Host "DBG: 6: $Command"; }
-if ($Exclude) { $Command = "$Command -Exclude `"$Exclude`""; Write-Host "DBG: 7: $Command"; }
+if ($Recurse) { $Command = "$Command -Recurse"; }
+if ($Path) { $Command = "$Command -Path `"$Path`""; }
+if ($Filter) { $Command = "$Command -Filter `"$Filter`""; }
+if ($Depth) { $Command = "$Command -Depth $Depth"; }
+if ($Include) { $Command = "$Command -Include `"$Include`""; }
+if ($Exclude) { $Command = "$Command -Exclude `"$Exclude`""; }
 
 if ($Pattern) { $Pattern = $Pattern -replace "`"", "```"";
-                $Command = "$Command | Get-Content | Select-String -Pattern `"$Pattern`""; Write-Host "DBG: 8: $Command"; }
-
-Write-Host "DBG: 9: $Command";
+                $Command = "$Command | Get-Content | Select-String -Pattern `"$Pattern`""; }
 
 $Actual = (Invoke-Expression -Command "$Command").Count
 $LastExitCode = If ($?) { 0 } Else { 1 }
