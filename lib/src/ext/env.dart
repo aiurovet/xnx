@@ -68,16 +68,29 @@ class Env {
           isEscaped = false;
           hasBraces = (nextCodeUnit == Ascii.braceOpen);
 
-          if (!hasBraces &&
-              ((nextCodeUnit < Ascii.lowerA) || (nextCodeUnit > Ascii.lowerZ)) &&
-              ((nextCodeUnit < Ascii.upperA) || (nextCodeUnit > Ascii.upperZ)) &&
-              (nextCodeUnit != Ascii.asterisk) &&
-              (nextCodeUnit != Ascii.at) &&
-              (nextCodeUnit != Ascii.hash) &&
-              (currCodeUnit != Ascii.parenthesisOpen) &&
-              (currCodeUnit != Ascii.parenthesisShut) &&
-              (nextCodeUnit != Ascii.tilde)) {
-            break;
+          if (!hasBraces) {
+            if (((nextCodeUnit < Ascii.lowerA) || (nextCodeUnit > Ascii.lowerZ)) &&
+                ((nextCodeUnit < Ascii.upperA) || (nextCodeUnit > Ascii.upperZ)) &&
+                (nextCodeUnit != Ascii.asterisk) &&
+                (nextCodeUnit != Ascii.at) &&
+                (nextCodeUnit != Ascii.hash) &&
+                (nextCodeUnit != Ascii.parenthesisOpen) &&
+                (nextCodeUnit != Ascii.parenthesisShut) &&
+                (nextCodeUnit != Ascii.tilde)) {
+              break;
+            }
+            if ((nextCodeUnit >= Ascii.digitZero) && (nextCodeUnit <= Ascii.digitNine)) {
+              break;
+            }
+          }
+
+          if (hasBraces) {
+            var thirdPos = (currPos + 2);
+            var thirdCodeUnit = (thirdPos <= lastPos ? input.codeUnitAt(thirdPos) : 0);
+
+            if (thirdCodeUnit == Ascii.braceOpen) {
+              break;
+            }
           }
 
           isArg = (nextCodeUnit == Ascii.tilde);
@@ -127,20 +140,20 @@ class Env {
                   continue;
                 }
                 else if ((currCodeUnit == Ascii.asterisk) ||
-                    (currCodeUnit == Ascii.at) ||
-                    (currCodeUnit == Ascii.hash)) {
+                         (currCodeUnit == Ascii.at) ||
+                         (currCodeUnit == Ascii.hash)) {
                   if (isSpecialAllowed) {
                     isSpecialAllowed = hasBraces;
                     continue;
                   }
                 }
                 else if (((currCodeUnit >= Ascii.lowerA) && (currCodeUnit <= Ascii.lowerZ)) ||
-                    ((currCodeUnit >= Ascii.upperA) && (currCodeUnit <= Ascii.upperZ)) ||
-                    ((currCodeUnit >= Ascii.digitZero) && (currCodeUnit <= Ascii.digitNine)) ||
-                    (currCodeUnit == Ascii.parenthesisOpen) ||
-                    (currCodeUnit == Ascii.parenthesisShut) ||
-                    (currCodeUnit == Ascii.tilde) ||
-                    (currCodeUnit == Ascii.underscore)) {
+                         ((currCodeUnit >= Ascii.upperA) && (currCodeUnit <= Ascii.upperZ)) ||
+                         ((currCodeUnit >= Ascii.digitZero) && (currCodeUnit <= Ascii.digitNine)) ||
+                         (currCodeUnit == Ascii.parenthesisOpen) ||
+                         (currCodeUnit == Ascii.parenthesisShut) ||
+                         (currCodeUnit == Ascii.tilde) ||
+                         (currCodeUnit == Ascii.underscore)) {
                   isSpecialAllowed = hasBraces;
                   continue;                  
                 }
@@ -155,16 +168,16 @@ class Env {
             }
           }
 
-          argNo = int.tryParse(envVarName) ?? 0;
+          if (!isArg) {
+            argNo = int.tryParse(isArg ? envVarName.substring(1) : envVarName) ?? 0;
 
-          if (argNo > 0) {
-            if (!isArg) {
+            if (argNo > 0) {
               result += (hasBraces ? '\${$argNo}' : '\$$argNo'.toString());
               --currPos;
               continue;
             }
-            envVarName = '';
           }
+
           break;
         default:
           isEscaped = false;

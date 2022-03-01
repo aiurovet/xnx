@@ -76,7 +76,6 @@ class Functions {
   //////////////////////////////////////////////////////////////////////////////
 
   static final int defaultNumericPrecision = 6;
-  static final RegExp _rexGroup = RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
 
   //////////////////////////////////////////////////////////////////////////////
   // Protected members
@@ -470,16 +469,16 @@ class Functions {
 
     if (inpStr.isNotEmpty && patStr.isNotEmpty) {
       var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-      var regExp = _toRegExp(patStr, flgStr);
+      var rx = RegExpEx.fromPattern(patStr, flags: flgStr);
 
-      if (regExp != null) {
+      if (rx != null) {
         switch (type) {
           case FunctionType.match:
-            var match = regExp.firstMatch(inpStr);
+            var match = rx.regExp.firstMatch(inpStr);
             resStr = ((match?.start ?? -1) + 1).toString();
             break;
           case FunctionType.lastMatch:
-            var allMatches = regExp.allMatches(inpStr);
+            var allMatches = rx.regExp.allMatches(inpStr);
             if (allMatches.isNotEmpty) {
               resStr = (allMatches.last.start + 1).toString();
             }
@@ -895,24 +894,6 @@ class Functions {
     }
 
     return num.tryParse(input);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  RegExp? _toRegExp(String? pattern, String? flags) {
-    if (pattern == null) {
-      return null;
-    }
-
-    flags ??= '';
-
-    return RegExp(
-      pattern,
-      caseSensitive: !flags.contains('i'),
-      dotAll: flags.contains('s'),
-      multiLine: flags.contains('m'),
-      unicode: flags.contains('u'),
-    );
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -78,23 +78,15 @@ class FlatMap {
 
       map.forEach((k, v) {
         var rx = RegExpEx.fromDecoratedPattern(k);
+        var vs = v.toString();
 
         if (rx == null) {
           if (safeValue.contains(k)) {
-            safeValue = safeValue.replaceAll(k, v.toString());
+            safeValue = safeValue.replaceAll(k, vs);
           }
         }
         else {
-          var r = rx.regExp;
-
-          if (r != null) {
-            if (rx.isGlobal) {
-              safeValue = safeValue.replaceAll(r, v.toString());
-            }
-            else {
-              safeValue = safeValue.replaceFirst(r, v.toString());
-            }
-          }
+          safeValue = rx.replace(safeValue, vs);
         }
       });
     }
