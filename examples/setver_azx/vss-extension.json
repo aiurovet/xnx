@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "myapp-azx",
   "publisher": "myid",
-  "version": "0.1.2",
+  "version": "9.87.654",
   "name": "myapp",
   "description": "Azure DevOps extension for myapp",
   "public": false,

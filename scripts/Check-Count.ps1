@@ -7,6 +7,7 @@ Param(
   [Switch]   $Recurse,
 
   [String[]] $Path,
+  [String]   $Pattern,
   [String]   $Filter,
   [String]   $Include,
   [String]   $Exclude,
@@ -38,6 +39,9 @@ if ($Depth) { $Command = "$Command -Depth $Depth" }
 if ($Include) { $Command = "$Command -Include `"$Include`""; }
 if ($Exclude) { $Command = "$Command -Exclude `"$Exclude`""; }
 
+if ($Pattern) { $Pattern = $Pattern -replace "`"", "```"";
+                $Command = "$Command | Get-Content | Select-String -Pattern `"$Pattern`""; }
+
 $Actual = (Invoke-Expression -Command "$Command").Count
 $LastExitCode = If ($?) { 0 } Else { 1 }
 
@@ -55,10 +59,10 @@ Else {
 
   if (!$Quiet) {
     if ($ExpectedMin -Eq $ExpectedMax) {
-      Write-Output "${ScriptName}: ${Result}: $Actual == $ExpectedMin"
+      Write-Output "${ScriptName}: ${Result}: $Actual (actual) == $ExpectedMin (expected)"
     }
     Else {
-      Write-Output "${ScriptName}: ${Result}: $ExpectedMin <= $Actual <= $ExpectedMax"
+      Write-Output "${ScriptName}: ${Result}: $ExpectedMin (min) <= $Actual (actual) <= $ExpectedMax (max)"
     }
   }
 }

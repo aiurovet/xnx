@@ -61,56 +61,52 @@ jobs:
       - name: Running Integration Test 1 - flutter_app_icons
         run: |
           bin/${{runner.os}}/xnx -d examples/flutter_app_icons
-          scripts/Check-FileCount.ps1 -Expected 40 -Recurse -Path examples/flutter_app_icons -Include "*.png"
+          scripts/Check-Count.ps1 -Expected 40 -Recurse -Path examples/flutter_app_icons -Include "*.png"
 
       ################################################################################
 
       - name: Running Integration Test 2 - ms_office
         run: |
           bin/${{runner.os}}/xnx -d examples/ms_office
-          scripts/Check-FileCount.ps1 -Expected 12 -Path examples/ms_office/out/
+          scripts/Check-Count.ps1 -Expected 12 -Path examples/ms_office/out/
 
       ################################################################################
 
       - name: Running Integration Test 3 - multi_conf
         run: |
           bin/${{runner.os}}/xnx -d examples/multi_conf
-          scripts/Check-FileCount.ps1 -Expected 6 -Path examples/multi_conf/out/
+          scripts/Check-Count.ps1 -Expected 6 -Path examples/multi_conf/out/
 
       ################################################################################
 
       - name: Running Integration Test 4 - multi_icon
         run: |
           bin/${{runner.os}}/xnx -d examples/multi_icon
-          scripts/Check-FileCount.ps1 -Expected 12 -Path examples/multi_icon/png/
+          scripts/Check-Count.ps1 -Expected 12 -Path examples/multi_icon/png/
 
       ################################################################################
 
       - name: Running Integration Test 5 - setver_azx
         run: |
           bin/${{runner.os}}/xnx -d examples/setver_azx "9.87.654"
-          Select-String -Pattern '"version": "9.87.654"' -Path examples/setver_azx/package-lock.json
-          Select-String -Pattern '"version": "9.87.654"' -Path examples/setver_azx/package.json
-          Select-String -Pattern '"version": "9.87.654"' -Path examples/setver_azx/vss-extension.json
-          Select-String -Pattern '"Major": 9,'           -Path examples/setver_azx/task.json
-          Select-String -Pattern '"Minor": 87,'          -Path examples/setver_azx/task.json
-          Select-String -Pattern '"Patch": 654'          -Path examples/setver_azx/task.json
-          Select-String -Pattern 'Version 9.87.654'      -Path examples/setver_azx/LICENSE
-          Select-String -Pattern '# myapp-azx 9.87.654'  -Path examples/setver_azx/README.md
+          scripts/Check-Count.ps1 -Expected 3 -Pattern '"version": "9.87.654"' \
+            -Path examples/setver_azx/*.json
+          scripts/Check-Count.ps1 -Expected 3 -Pattern '"Major": 9,|"Minor": 87,|"Patch": 654' \
+            -Path examples/setver_azx/task.json
 
       ################################################################################
 
       - name: Running Integration Test 6 - site_env
         run: |
           bin/${{runner.os}}/xnx -d examples/site_env
-          scripts/Check-FileCount.ps1 -Expected 64 -Recurse -Path examples/site_env/ReleaseFiles/ -Include "*.txt"
+          scripts/Check-Count.ps1 -Expected 64 -Recurse -Path examples/site_env/ReleaseFiles/ -Include "*.txt"
 
       ################################################################################
 
       - name: Running Integration Test 7 - web_config
         run: |
           bin/${{runner.os}}/xnx -d examples/web_config -x ~Web.config.xnx DevUK
-          scripts/Check-FileCount.ps1 -Expected 2 -Recurse -Path examples/web_config/out/ -Include "Web*.config"
+          scripts/Check-Count.ps1 -Expected 2 -Recurse -Path examples/web_config/out/ -Include "Web*.config"
 
       ################################################################################
 

@@ -1,6 +1,6 @@
 {
   "name": "myapp-azx",
-  "version": "0.1.2",
+  "version": "9.87.654",
   "description": "Azure DevOps extension for myapp.",
   "main": "main.js",
   "scripts": {
