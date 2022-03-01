@@ -86,14 +86,28 @@ jobs:
 
       ################################################################################
 
-      - name: Running Integration Test 5 - site_env
+      - name: Running Integration Test 5 - setver_azx
+        run: |
+          bin/${{runner.os}}/xnx -d examples/setver_azx "9.87.654"
+          Select-String -Pattern '"version": "9.87.654"' -Path examples/setver_azx/package-lock.json
+          Select-String -Pattern '"version": "9.87.654"' -Path examples/setver_azx/package.json
+          Select-String -Pattern '"version": "9.87.654"' -Path examples/setver_azx/vss-extension.json
+          Select-String -Pattern '"Major": 9,'           -Path examples/setver_azx/task.json
+          Select-String -Pattern '"Minor": 87,'          -Path examples/setver_azx/task.json
+          Select-String -Pattern '"Patch": 654'          -Path examples/setver_azx/task.json
+          Select-String -Pattern 'Version 9.87.654'      -Path examples/setver_azx/LICENSE
+          Select-String -Pattern '# myapp-azx 9.87.654'  -Path examples/setver_azx/README.md
+
+      ################################################################################
+
+      - name: Running Integration Test 6 - site_env
         run: |
           bin/${{runner.os}}/xnx -d examples/site_env
           scripts/Check-FileCount.ps1 -Expected 64 -Recurse -Path examples/site_env/ReleaseFiles/ -Include "*.txt"
 
       ################################################################################
 
-      - name: Running Integration Test 6 - web_config
+      - name: Running Integration Test 7 - web_config
         run: |
           bin/${{runner.os}}/xnx -d examples/web_config -x ~Web.config.xnx DevUK
           scripts/Check-FileCount.ps1 -Expected 2 -Recurse -Path examples/web_config/out/ -Include "Web*.config"
