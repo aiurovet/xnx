@@ -25,7 +25,6 @@ List<Directory> initLocal(int testId) {
   var fromDir = getLocalFromDir(testId);
   var toDir = getLocalToDir(testId);
 
-  doneLocal(testId);
   Path.fileSystem.directory(Path.join(fromDir.path, 'sub-sub-dir')).createSync(recursive: true);
   Path.fileSystem.file(Path.join(fromDir.path, 'a.txt'))..createSync()..writeAsStringSync('A');
   Path.fileSystem.file(Path.join(fromDir.path, 'b.txt'))..createSync()..writeAsStringSync('B B');
@@ -157,7 +156,6 @@ void main() {
           PackType.zip,
           [fromDir.parent.path, toPath],
           isMove: true,
-          isSilent: true,
           isListOnly: true,
         );
 
@@ -167,7 +165,6 @@ void main() {
           PackType.zip,
           [fromDir.parent.path, toPath],
           isMove: true,
-          isSilent: true
         );
 
         expect(Path.fileSystem.file(toPath).existsSync(), true);
@@ -178,7 +175,6 @@ void main() {
           toPath,
           fromDir.parent.path,
           isMove: false,
-          isSilent: true,
           isListOnly: true,
         );
 
@@ -190,7 +186,6 @@ void main() {
           toPath,
           fromDir.parent.path,
           isMove: false,
-          isSilent: true
         );
 
         expect(Path.fileSystem.file(toPath).existsSync(), true);
@@ -218,7 +213,6 @@ void main() {
           PackType.gz,
           [fromDir.parent.path, toPath],
           isMove: true,
-          isSilent: true,
           isListOnly: true,
         );
 
@@ -228,7 +222,6 @@ void main() {
           PackType.tarGz,
           [fromDir.parent.path, toPath],
           isMove: true,
-          isSilent: true
         );
 
         expect(Path.fileSystem.file(toPath).existsSync(), true);
@@ -239,7 +232,6 @@ void main() {
           toPath,
           fromDir.parent.parent.path,
           isMove: false,
-          isSilent: true
         );
 
         expect(Path.fileSystem.file(toPath).existsSync(), true);
