@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/file_oper.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/file_oper.dart';
 
 import 'helper.dart';
 

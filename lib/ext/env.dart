@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:file/file.dart';
-import 'package:xnx/src/ext/ascii.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/ext/ascii.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/string.dart';
 
 class Env {
 

@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/config_key_data.dart';
+import 'package:xnx/config_key_data.dart';
 
 void main() {
   group('ConfigKeyData', () {

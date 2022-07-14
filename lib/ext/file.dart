@@ -1,5 +1,5 @@
 import 'package:file/file.dart';
-import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/ext/path.dart';
 import 'file_system_entity.dart';
 import 'string.dart';
 

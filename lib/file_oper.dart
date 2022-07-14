@@ -1,9 +1,9 @@
 import 'package:file/file.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/ext/directory.dart';
-import 'package:xnx/src/ext/file.dart';
-import 'package:xnx/src/ext/glob.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/ext/directory.dart';
+import 'package:xnx/ext/file.dart';
+import 'package:xnx/ext/glob.dart';
 
 class FileOper {
 

@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/path.dart';
 
 class Helper {
   static const defaultDelay = 10; // milliseconds

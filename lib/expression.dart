@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/flat_map.dart';
-import 'package:xnx/src/keywords.dart';
-import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/operation.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/flat_map.dart';
+import 'package:xnx/keywords.dart';
+import 'package:xnx/logger.dart';
+import 'package:xnx/operation.dart';
 
 class Expression {
   static final RegExp rexEndsWithTrue = RegExp(r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',);

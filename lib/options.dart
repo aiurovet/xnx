@@ -2,17 +2,17 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:archive/archive.dart';
 import 'package:args/args.dart';
-import 'package:xnx/src/config_file_info.dart';
-import 'package:xnx/src/config_file_loader.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/file_system_entity.dart';
-import 'package:xnx/src/ext/glob.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/ext/stdin.dart';
-import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/escape_mode.dart';
-import 'package:xnx/src/pack_oper.dart';
+import 'package:xnx/config_file_info.dart';
+import 'package:xnx/config_file_loader.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/file_system_entity.dart';
+import 'package:xnx/ext/glob.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/ext/stdin.dart';
+import 'package:xnx/logger.dart';
+import 'package:xnx/escape_mode.dart';
+import 'package:xnx/pack_oper.dart';
 
 class Options {
 

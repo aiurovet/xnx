@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/directory.dart';
-import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/ext/directory.dart';
+import 'package:xnx/ext/path.dart';
 import '../helper.dart';
 
 void main() {

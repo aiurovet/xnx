@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
-import 'package:xnx/src/ext/glob.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/ext/glob.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/string.dart';
 
 extension FileSystemEntityExt on FileSystemEntity {
 

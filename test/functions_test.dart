@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/file_oper.dart';
-import 'package:xnx/src/flat_map.dart';
-import 'package:xnx/src/keywords.dart';
-import 'package:xnx/src/functions.dart';
-import 'package:xnx/src/logger.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/file_oper.dart';
+import 'package:xnx/flat_map.dart';
+import 'package:xnx/keywords.dart';
+import 'package:xnx/functions.dart';
+import 'package:xnx/logger.dart';
 
 import 'helper.dart';
 

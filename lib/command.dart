@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/xnx.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/logger.dart';
+import 'package:xnx/xnx.dart';
 
 class Command {
 

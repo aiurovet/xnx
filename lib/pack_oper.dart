@@ -1,12 +1,12 @@
 import 'package:file/file.dart';
 import 'package:archive/archive_io.dart';
-import 'package:xnx/src/command.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/ext/file.dart';
-import 'package:xnx/src/ext/file_system_entity.dart';
-import 'package:xnx/src/file_oper.dart';
+import 'package:xnx/command.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/ext/file.dart';
+import 'package:xnx/ext/file_system_entity.dart';
+import 'package:xnx/file_oper.dart';
 
 enum PackType {
   bz2,
@@ -111,7 +111,7 @@ class PackOper {
             if (!isListOnly) {
               if (isTar) {
                 if (isDir) {
-                  tarFileEncoder?.addDirectory(entity as Directory);
+                  tarFileEncoder?.addDirectory(entity);
                 }
                 else if (!isDirOnly) {
                   tarFileEncoder?.addFile(entity as File);
@@ -119,7 +119,7 @@ class PackOper {
               }
               else if (isZip) {
                 if (isDir) {
-                  zipFileEncoder?.addDirectory(entity as Directory, includeDirName: ((subPath?.isNotEmpty ?? false) || isDirOnly));
+                  zipFileEncoder?.addDirectory(entity, includeDirName: ((subPath?.isNotEmpty ?? false) || isDirOnly));
                 }
                 else {
                   zipFileEncoder?.addFile(entity as File);

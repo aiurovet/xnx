@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/flat_map.dart';
+import 'package:xnx/flat_map.dart';
 
 void main() {
   group('Operation', () {

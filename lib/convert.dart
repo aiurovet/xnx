@@ -2,24 +2,24 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:file/file.dart';
-import 'package:xnx/src/command.dart';
+import 'package:xnx/command.dart';
 
-import 'package:xnx/src/config_result.dart';
-import 'package:xnx/src/config_file_loader.dart';
-import 'package:xnx/src/config.dart';
-import 'package:xnx/src/flat_map.dart';
-import 'package:xnx/src/file_oper.dart';
-import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/escape_mode.dart';
-import 'package:xnx/src/options.dart';
-import 'package:xnx/src/pack_oper.dart';
-import 'package:xnx/src/ext/directory.dart';
-import 'package:xnx/src/ext/file.dart';
-import 'package:xnx/src/ext/file_system_entity.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/stdin.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/regexp_ex.dart';
+import 'package:xnx/config_result.dart';
+import 'package:xnx/config_file_loader.dart';
+import 'package:xnx/config.dart';
+import 'package:xnx/flat_map.dart';
+import 'package:xnx/file_oper.dart';
+import 'package:xnx/logger.dart';
+import 'package:xnx/escape_mode.dart';
+import 'package:xnx/options.dart';
+import 'package:xnx/pack_oper.dart';
+import 'package:xnx/ext/directory.dart';
+import 'package:xnx/ext/file.dart';
+import 'package:xnx/ext/file_system_entity.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/stdin.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/regexp_ex.dart';
 
 class Convert {
 

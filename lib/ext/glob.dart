@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
-import 'package:xnx/src/ext/path.dart';
+import 'package:xnx/ext/path.dart';
 import 'string.dart';
 
 extension GlobExt on Glob {

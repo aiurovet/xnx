@@ -5,16 +5,16 @@ import 'package:file/file.dart';
 
 import 'package:json5/json5.dart';
 import 'package:json_path/json_path.dart';
-import 'package:xnx/src/command.dart';
+import 'package:xnx/command.dart';
 
-import 'package:xnx/src/config_file_info.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/keywords.dart';
-import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/ext/file.dart';
-import 'package:xnx/src/ext/stdin.dart';
-import 'package:xnx/src/ext/string.dart';
+import 'package:xnx/config_file_info.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/keywords.dart';
+import 'package:xnx/logger.dart';
+import 'package:xnx/ext/file.dart';
+import 'package:xnx/ext/stdin.dart';
+import 'package:xnx/ext/string.dart';
 
 class ConfigFileLoader {
   //////////////////////////////////////////////////////////////////////////////

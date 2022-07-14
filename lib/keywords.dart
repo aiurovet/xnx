@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
-import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/options.dart';
+import 'package:xnx/logger.dart';
+import 'package:xnx/options.dart';
 
 class Keywords {
 

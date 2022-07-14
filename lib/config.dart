@@ -1,20 +1,20 @@
 import 'package:json5/json5.dart';
 import 'package:meta/meta.dart';
-import 'package:xnx/src/config_key_data.dart';
-import 'package:xnx/src/config_result.dart';
-import 'package:xnx/src/config_file_loader.dart';
-import 'package:xnx/src/escape_mode.dart';
-import 'package:xnx/src/expression.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/flat_map.dart';
-import 'package:xnx/src/keywords.dart';
-import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/operation.dart';
-import 'package:xnx/src/options.dart';
-import 'package:xnx/src/functions.dart';
-import 'package:xnx/src/path_filter.dart';
+import 'package:xnx/config_key_data.dart';
+import 'package:xnx/config_result.dart';
+import 'package:xnx/config_file_loader.dart';
+import 'package:xnx/escape_mode.dart';
+import 'package:xnx/expression.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/flat_map.dart';
+import 'package:xnx/keywords.dart';
+import 'package:xnx/logger.dart';
+import 'package:xnx/operation.dart';
+import 'package:xnx/options.dart';
+import 'package:xnx/functions.dart';
+import 'package:xnx/path_filter.dart';
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/env.dart';
+import 'package:xnx/ext/env.dart';
 import '../helper.dart';
 
 void main() {

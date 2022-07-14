@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/options.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/options.dart';
 
 import 'helper.dart';
 

@@ -1,3 +1,3 @@
-import 'package:xnx/src/xnx.dart';
+import 'package:xnx/xnx.dart';
 
 void main(List<String> args) => Xnx.main(args);

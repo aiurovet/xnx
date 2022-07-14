@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:xnx/src/logger.dart';
+import 'package:xnx/logger.dart';
 
 void main() {
   group('Logger', () {

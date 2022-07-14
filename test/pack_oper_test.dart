@@ -1,10 +1,10 @@
 import 'package:file/file.dart';
 import 'package:test/test.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/file_system_entity.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/file_oper.dart';
-import 'package:xnx/src/pack_oper.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/file_system_entity.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/file_oper.dart';
+import 'package:xnx/pack_oper.dart';
 
 import 'helper.dart';
 

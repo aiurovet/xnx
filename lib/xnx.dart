@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:xnx/src/convert.dart';
-import 'package:xnx/src/ext/env.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/logger.dart';
-import 'package:xnx/src/options.dart';
+import 'package:xnx/convert.dart';
+import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/logger.dart';
+import 'package:xnx/options.dart';
 
 class Xnx {
   Logger _logger = Logger();

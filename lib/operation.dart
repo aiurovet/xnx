@@ -1,9 +1,9 @@
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
-import 'package:xnx/src/ext/file_system_entity.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/ext/string.dart';
-import 'package:xnx/src/logger.dart';
+import 'package:xnx/ext/file_system_entity.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/ext/string.dart';
+import 'package:xnx/logger.dart';
 
 import 'flat_map.dart';
 

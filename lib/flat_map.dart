@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
-import 'package:xnx/src/ext/path.dart';
-import 'package:xnx/src/keywords.dart';
-import 'package:xnx/src/regexp_ex.dart';
+import 'package:xnx/ext/path.dart';
+import 'package:xnx/keywords.dart';
+import 'package:xnx/regexp_ex.dart';
 
 class FlatMap {
 
