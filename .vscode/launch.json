@@ -23,7 +23,7 @@
     { "name": "multi_icon",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/multi_icon" ], },
     { "name": "setver_azx", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-d", "examples/setver_azx", "0.1.2", ], },
+      "args": [ "-f", "-d", "examples/setver_azx", "0.1.2", ], },
     { "name": "site_env clean", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/site_env", "Clean", ], },
     { "name": "web_config",  "request": "launch", "type": "dart", "program": "bin/main.dart",

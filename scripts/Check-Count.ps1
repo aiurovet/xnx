@@ -30,7 +30,7 @@ Else {
 
 ################################################################################
 
-$Command = "Get-ChildItem -Name"
+$Command = "Get-ChildItem"
 
 $ToChar = [IO.Path]::DirectorySeparatorChar
 $FromChar = ($ToChar -Eq "/" ? "\\" : "/")
@@ -50,7 +50,7 @@ if ($Include) { $Command = "$Command -Include `"$Include`"" }
 if ($Exclude) { $Command = "$Command -Exclude `"$Exclude`"" }
 
 if ($Pattern) { $Pattern = $Pattern -replace "`"", "```"";
-                $Command = "$Command | Select-String -Pattern `"$Pattern`""; }
+                $Command = "$Command | Get-Content | Select-String -Pattern `"$Pattern`""; }
 
 $Actual = (Invoke-Expression -Command "$Command").Count
 $LastExitCode = If ($?) { 0 } Else { 1 }
