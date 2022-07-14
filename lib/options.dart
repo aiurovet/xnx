@@ -1016,7 +1016,7 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
       if ((pathLen != prefixLen) && (path[prefixLen] == Path.separator)) {
         otherDir = Env.getHome();
       }
-      return Path.join(otherDir + path.substring(prefixLen));
+      return Path.join(otherDir, path.substring(prefixLen));
     }
 
     return path;
