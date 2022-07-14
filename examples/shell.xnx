@@ -10,7 +10,7 @@
       "{{-if-}}": { '"${OS}" ==/i "linux"': {
         "{shell}": "bash -c",
         //"{svg2png}": "google-chrome {MAIN-CHROME-OPTS}", // you can use chromium too
-        "{svg2png}": "microsoft-edge-stable {MAIN-CHROME-OPTS}", // you can use chromium too
+        "{svg2png}": "microsoft-edge-stable {MAIN-CHROME-OPTS}",
       }, "{{-else-}}": {
         "{shell}": "zsh -c",
         "{svg2png}": '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" {MAIN-CHROME-OPTS}',
