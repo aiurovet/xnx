@@ -37,10 +37,12 @@ $FromChar = ($ToChar -Eq "/" ? "\\" : "/")
 
 if ($Path) { $Path = $Path -Replace $FromChar, $ToChar }
 if ($Filter) { $Filter = $Filter -Replace $FromChar, $ToChar }
+if ($Include) { $Include = $Include -Replace $FromChar, $ToChar }
+if ($Exclude) { $Exclude = $Exclude -Replace $FromChar, $ToChar }
 
-$Cwd = [IO.Directory]::GetCurrentDirectory
+$Cwd = [IO.Directory]::GetCurrentDirectory()
 
-Write-Output "`nDBG: Cwd:  $Cwd`nDBG: Path: $Path`nDBG: Fltr: $Filter`n";
+Write-Output "`nDBG: Cwdy: $Cwd`nDBG: Path: $Path`nDBG: Fltr: $Filter`nDBG: Incl: $Include`nDBG: Excl: $Exclude`n";
 
 if ($Recurse) { $Command = "$Command -Recurse" }
 if ($Path) { $Command = "$Command -Path `"$Path`"" }
