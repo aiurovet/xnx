@@ -344,14 +344,16 @@ class PackOper {
       final cmd = (Env.isWindows || isTar || isListOnly ? null : Command(isToVar: true));
 
       for (final entity in archive) {
+        if (entity.name.isEmpty) {
+          continue;
+        }
+
         final toPath = Path.join(toDirName, entity.name);
         final isFile = entity.isFile;
 
         if (!isSilent) {
           print('${isListOnly ? 'Will extract' : 'Extracting'} ${isFile ? 'file' : 'dir'} "${entity.name}"');
         }
-
-print('DBG: isFile: $isFile, toPath: $toPath');
 
         if (isFile) {
           if (!isListOnly) {
