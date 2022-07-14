@@ -24,13 +24,26 @@
       "{shell}": "cmd /c",
       "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500",
  
-      "{chrome-root}": "${ProgramFiles}",
+      "{app-root}": "${ProgramFiles}",
       "{chrome-subd}": "Google\\Chrome\\Application",
+      "{msedge-subd}": "Microsoft\\Edge\\Application",
+      "{svg2png-exe}": "{app-root}\\{msedge-subd}\\msedge.exe",
 
-      "{{-if-}}": { '! -d "{chrome-root}\\{chrome-subd}"': {
-        "{chrome-root}": "${ProgramFiles(x86)}",
+      "{{-if-}}": { '! -d "{app-root}\\{msedge-subd}"': {
+        "{app-root}": "${ProgramFiles(x86)}",
+
+        "{{-if-}}": { '! -d "{app-root}\\{msedge-subd}"': {
+          "{app-root}": "${ProgramFiles}",
+          "{svg2png-exe}": "{app-root}\\{chrome-subd}\\chrome.exe",
+
+          "{{-if-}}": { '! -d "{app-root}\\{chrome-subd}"': {
+            "{app-root}": "${ProgramFiles(x86)}",
+            "{svg2png-exe}": "{app-root}\\{chrome-subd}\\chrome.exe",
+          } },
+        } },
       } },
-      "{svg2png}": '"{chrome-root}\\{chrome-subd}\\chrome.exe" {MAIN-CHROME-OPTS} --disable-gpu',
+      
+      "{svg2png}": '"{svg2png-exe}" {MAIN-CHROME-OPTS} --disable-gpu',
     } } } },
   }
 }
