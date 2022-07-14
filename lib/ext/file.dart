@@ -75,7 +75,7 @@ extension FileExt on File {
 
     if (!(file?.existsSync() ?? false)) {
       if (canThrow) {
-        var descEx = (description == null ? 'File' : description + ' file');
+        var descEx = (description == null ? 'File' : '$description file');
         var pathEx = (file == null ? '' : path);
         throw Exception(Path.appendCurDirIfPathIsRelative('$descEx is not found: ', pathEx));
       }
@@ -151,7 +151,7 @@ extension FileExt on File {
 
     if (file == null) {
       if (canThrow) {
-        var descEx = (description == null ? 'File' : description + ' file');
+        var descEx = (description == null ? 'File' : '$description file');
         throw Exception('$descEx path is empty');
       }
       else {

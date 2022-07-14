@@ -37,7 +37,7 @@ class Path {
 
   static String appendCurDirIfPathIsRelative(String prefix, String? path) {
     var pathEx = (path ?? '');
-    var result = (prefix + '"' + pathEx + '"');
+    var result = '$prefix"$pathEx"';
 
     if (pathEx.isEmpty || !isAbsolute(pathEx)) {
       result += ' (current dir: "${currentDirectory.path}")';
@@ -178,10 +178,12 @@ class Path {
   //////////////////////////////////////////////////////////////////////////////
 
   static String replaceAll(String input, String fromPath, String toPath) {
-    var pattern = "(^|[\\s\"']|\\:[\\/\\\\]+)" +
-                  RegExp.escape(fromPath.replaceAll(rexSeparator, '\x01'))
-                  .replaceAll('\x01', Path.rexSeparator.pattern) +
-                  "([\\s\"']|\$)";
+    var pattern = "(^|[\\s\"']|\\:[\\/\\\\]+)";
+
+    pattern += RegExp.escape(fromPath.replaceAll(rexSeparator, '\x01'))
+      .replaceAll('\x01', Path.rexSeparator.pattern);
+
+    pattern += "([\\s\"']|\$)";
 
     var rexFromPath = RegExp(pattern, caseSensitive: !Path.isWindowsFS);
 

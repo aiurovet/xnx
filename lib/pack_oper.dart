@@ -344,11 +344,9 @@ class PackOper {
       final cmd = (Env.isWindows || isTar || isListOnly ? null : Command(isToVar: true));
 
       for (final entity in archive) {
-        if (entity.name.isEmpty) {
-          continue;
-        }
-
-print('DBG: "${entity.name}"');
+        // if (entity.name.isEmpty) {
+        //   continue;
+        // }
 
         final toPath = Path.join(toDirName, entity.name);
         final isFile = entity.isFile && !entity.name.endsWith(Path.separator);

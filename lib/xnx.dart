@@ -69,7 +69,7 @@ class Xnx {
         return false;
       }
 
-      var errDtl = (_logger.level >= Logger.levelDebug ? '\n\n' + stackTrace.toString() : '');
+      var errDtl = (_logger.level >= Logger.levelDebug ? '\n\n${stackTrace.toString()}' : '');
       errMsg = '\n*** ERROR: $errMsg$errDtl\n';
 
       _logger.error(errMsg);
