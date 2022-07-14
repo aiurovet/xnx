@@ -12,17 +12,10 @@ Param(
   [String]   $Include,
   [String]   $Exclude,
   [Int32]    $Depth,
-  [Int32]    $Wait,
   [Int32[]]  $Expected
 )
 
 $ScriptName = [IO.Path]::GetFileName($PSCommandPath)
-
-################################################################################
-
-If ($Wait) {
-    Wait-Event -Timeout $Wait
-}
 
 ################################################################################
 
