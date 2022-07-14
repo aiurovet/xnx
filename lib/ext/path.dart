@@ -89,6 +89,7 @@ class Path {
 
   static Directory get currentDirectory => fileSystem.currentDirectory;
   static set currentDirectory(Directory value) => fileSystem.currentDirectory = value;
+  static set currentDirectoryName(String value) => fileSystem.currentDirectory = value;
 
   //////////////////////////////////////////////////////////////////////////////
 

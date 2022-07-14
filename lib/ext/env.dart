@@ -10,12 +10,14 @@ class Env {
 
   static final bool isWindows = Platform.isWindows;
   static final String defCmdEscape = r'';
+  static final String pathPathSeparator = (isWindows ? ';' : ':');
 
   static String cmdEscape = defCmdEscape;
   static String escape = r'\'; // for any OS
   static String escapeEscape = (escape + escape);
 
   static final String homeKey = (isWindows ? 'USERPROFILE' : 'HOME');
+  static final String pathKey = 'PATH';
   static final String userKey = (isWindows ? 'USERNAME' : 'USER');
 
   //////////////////////////////////////////////////////////////////////////////
@@ -340,6 +342,30 @@ class Env {
   static void setEscape([String? newEscape]) {
     escape = newEscape ?? r'\';
     escapeEscape = escape + escape;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String which(String subPath, {bool canThrow = false}) {
+    subPath = Path.adjust(subPath);
+
+    if (!Path.isAbsolute(subPath)) {
+      final topPaths = Env.get(Env.pathKey).split(Env.pathPathSeparator);
+
+      for (var topPath in topPaths) {
+        final fullPath = Path.join(topPath, subPath);
+
+        if (Path.fileSystem.file(fullPath).existsSync()) {
+          return fullPath;
+        }
+      }
+    }
+
+    if (canThrow) {
+      throw Exception('$subPath is not found under any of ${Env.pathKey} directories');
+    }
+
+    return '';
   }
 
   //////////////////////////////////////////////////////////////////////////////

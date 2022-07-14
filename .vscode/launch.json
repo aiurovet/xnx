@@ -7,7 +7,7 @@
     { "name": "---- mkicons ----", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "scripts/mkicons", "xnx", "../../out" ], },
     { "name": "ad-hoc", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-d", "../xnx-azx/examples/web_config", "-x", "~Web.config.xnx.tmp", "-v", "5", "DevUK" ], },
+      "args": [ "-d", "../xnx-azx/examples/web_config", "-x", "Web.config.xnx.tmp", "-v", "5", "DevUK" ], },
     { "name": "app-config", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-c ../../", "-f", "-d", "examples/multi_conf", ], },
     { "name": "help", "request": "launch", "type": "dart", "program": "bin/main.dart",
@@ -27,7 +27,7 @@
     { "name": "site_env clean", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/site_env", "Clean", ], },
     { "name": "web_config",  "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-f", "-d", "examples/web_config", "-x", "~Web.config.xnx", "devuk", ], },
+      "args": [ "-f", "-d", "examples/web_config", "-x", "Web.config.xnx", "devuk", ], },
     { "name": "xunit_data",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/xunit_data" ], },
   ]

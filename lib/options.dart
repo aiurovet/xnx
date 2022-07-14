@@ -38,7 +38,7 @@ class Options {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static final _rexUseOtherDir = RegExp(r'^~([^\/\\]|$)');
+  static const _otherDirPrefix = '~';
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -882,91 +882,68 @@ For more details, see README.md
   //////////////////////////////////////////////////////////////////////////////
 
   void setConfigPathAndStartDirName(String? configPath, String? dirName) {
+    final runDirName = Path.currentDirectory.path;
+
     if (_logger.isDebug) {
-      _logger.debug('Arg start dir: ${dirName == null ? StringExt.unknown : '"$dirName"'}\nArg input file: ${configPath == null ? StringExt.unknown : '"$configPath"'}\n');
+      _logger.debug('''
+Run from dir: $runDirName'}
+Arg set dir:  ${dirName == null ? StringExt.unknown : '"$dirName"'}
+Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
+''');
     }
 
     if ((configPath != null) && configPath.isBlank()) {
       configPath = null;
     }
 
-    var isConfigPathPassed = (configPath?.isNotEmpty ?? false);
+    configPath = _setOtherDir(runDirName, configPath);
 
-    if ((configPath != null) && Path.extension(configPath).isBlank()) {
-      configPath += fileTypeCfg;
-    }
-
-    var isConfigPathWithOtherDir = (configPath != null) && _rexUseOtherDir.hasMatch(configPath);
-    var isDirNameWithOtherDir = false;
-
-    if ((dirName == null) || dirName.isBlank()) {
-      dirName = Path.currentDirectory.path;
-    }
-    else {
-      isDirNameWithOtherDir = _rexUseOtherDir.hasMatch(dirName);
-    }
-
-    if (!isConfigPathWithOtherDir && (configPath?.isNotEmpty ?? false)) {
-      configPath = Path.getFullPath(configPath);
-    }
-
-    if (isConfigPathWithOtherDir && isDirNameWithOtherDir) {
-      throw Exception('$dirName and $configPath cannot refer to each other');
-    }
-
-    if (isDirNameWithOtherDir) {
-      configPath = Path.getFullPath(configPath);
-      dirName = Path.join(Path.dirname(configPath), dirName.substring(1));
-    }
-    else {
-      dirName = Path.getFullPath(dirName);
-
-      if ((configPath != null) && isConfigPathWithOtherDir) {
-        configPath = Path.join(dirName, configPath.substring(1));
+    if (configPath != null) {
+      if (Path.extension(configPath).isBlank()) {
+        configPath += fileTypeCfg;
       }
     }
 
-    if (!Path.equals(Path.currentDirectory.path, dirName)) {
+    dirName = _setOtherDir(runDirName, dirName);
+
+    if ((dirName != null) && !Path.equals(Path.currentDirectory.path, dirName)) {
       _logger.out('cd "$dirName"\n');
-      Path.fileSystem.currentDirectory = dirName;
+      Path.currentDirectoryName = dirName;
     }
 
-    _startDirName = dirName;
+    if (configPath != null) {
+      configPath = Path.getFullPath(configPath);
+    }
+
+    _startDirName = Path.fileSystem.currentDirectory.path;
 
     if (configPath == null) {
       var fileName = Path.basename(_startDirName);
 
-      if (fileName.isNotEmpty && !fileName.contains(Path.separator)) {
+      if (fileName.isNotEmpty) {
         configPath = Path.join(_startDirName, fileName + fileTypeCfg);
+
+        if (!Path.fileSystem.file(configPath).tryExistsSync()) {
+          configPath = null;
+        }
       }
     }
 
-    if (isConfigPathPassed) {
-      configPath ??= '';
-      if (!Path.fileSystem.file(configPath).tryExistsSync()) {
-        throw Exception(Path.appendCurDirIfPathIsRelative('File is not found: ', configPath));
-      }
-    }
-    else {
+    if (configPath == null) {
       var files = Path.fileSystem.directory(_startDirName).listSync();
 
       if (files.isNotEmpty) {
         var paths = files.map((x) => x.path).toList()..sort();
 
-        var oldConfigPath = configPath;
         configPath = paths.firstWhereOrNull((x) => Path.extension(x) == fileTypeCfg);
-
-        if (configPath?.isBlank() ?? true) {
-          configPath = oldConfigPath;
-          throw Exception('No file of type $fileTypeCfg exists in "$_startDirName"');
-        }
       }
     }
 
-    if (!isDirNameWithOtherDir && !isConfigPathWithOtherDir && (configPath?.isNotEmpty ?? false)) {
-      configPath = Path.getFullPath(configPath);
+    if ((configPath == null) || configPath.isBlank()) {
+      throw Exception('No file of type $fileTypeCfg exists in "$_startDirName"');
     }
 
+    configPath = Path.getFullPath(configPath);
     _configFileInfo = ConfigFileInfo(configPath);
 
     if (_logger.isDebug) {
@@ -1020,6 +997,29 @@ For more details, see README.md
     }
 
     return value;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String? _setOtherDir(String otherDir, String? path) {
+    if (path == null) {
+      return path;
+    }
+
+    final pathLen = path.length;
+    final prefixLen = _otherDirPrefix.length;
+
+    if (pathLen < prefixLen) {
+      return path;
+    }
+    if (path.startsWith(_otherDirPrefix)) {
+      if ((pathLen != prefixLen) && (path[prefixLen] == Path.separator)) {
+        otherDir = Env.getHome();
+      }
+      return Path.join(otherDir + path.substring(prefixLen));
+    }
+
+    return path;
   }
 
   //////////////////////////////////////////////////////////////////////////////

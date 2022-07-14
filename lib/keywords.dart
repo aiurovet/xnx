@@ -62,9 +62,10 @@ class Keywords {
   String forFnExtension = '=Extension';
   String forFnFileSize = '=FileSize';
   String forFnFloor = '=Floor';
+  String forFnFullPath = '=FullPath';
   String forFnIif = '=Iif';
   String forFnIndex = '=Index';
-  String forFnMatch = '=Match';
+  String forFnJoinPath = '=JoinPath';
   String forFnLastIndex = '=LastIndex';
   String forFnLastMatch = '=LastMatch';
   String forFnLastModified = '=LastModified';
@@ -72,6 +73,7 @@ class Keywords {
   String forFnLn = '=Ln';
   String forFnLocal = '=Local';
   String forFnLower = '=Lower';
+  String forFnMatch = '=Match';
   String forFnMax = '=Max';
   String forFnMin = '=Min';
   String forFnMod = '=Mod';
@@ -95,6 +97,7 @@ class Keywords {
   String forFnToday = '=Today';
   String forFnUpper = '=Upper';
   String forFnUtc = '=Utc';
+  String forFnWhich = '=Which';
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -189,8 +192,8 @@ class Keywords {
     rawNode = data[forKeyAsRegExp];
 
     if (rawNode is Map) {
-      regExpPrefix = rawNode[forKeyAsRegExp].prefix ?? '';
-      regExpSuffix = rawNode[forKeyAsRegExp].suffix ?? '';
+      regExpPrefix = rawNode[forKeyAsRegExp]?.prefix ?? '';
+      regExpSuffix = rawNode[forKeyAsRegExp]?.suffix ?? '';
     }
 
     _initRepeatable();
@@ -215,8 +218,10 @@ class Keywords {
       forFnEndOfMonth = node['fnEndOfMonth'] ?? forFnEndOfMonth;
       forFnExtension = node['fnExtension'] ?? forFnExtension;
       forFnFileSize = node['fnFileSize'] ?? forFnFileSize;
+      forFnFullPath = node['fnFullPath'] ?? forFnFullPath;
       forFnIif = node['fnIif'] ?? forFnIif;
       forFnIndex = node['fnIndex'] ?? forFnIndex;
+      forFnJoinPath = node['fnJoinPath'] ?? forFnJoinPath;
       forFnLastIndex = node['fnLastIndex'] ?? forFnLastIndex;
       forFnLastMatch = node['fnLastMatch'] ?? forFnLastMatch;
       forFnLastModified = node['fnLastModified'] ?? forFnLastModified;
@@ -247,6 +252,7 @@ class Keywords {
       forFnToday = node['fnToday'] ?? forFnToday;
       forFnUpper = node['fnUpper'] ?? forFnUpper;
       forFnUtc = node['fnUtc'] ?? forFnUtc;
+      forFnWhich = node['fnWhich'] ?? forFnWhich;
     }
 
     _initDerived();

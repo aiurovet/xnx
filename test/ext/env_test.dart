@@ -70,13 +70,11 @@ void main() {
 
         expect(Env.getHome(), Platform.environment[Env.isWindows ? 'USERPROFILE' : 'HOME']);
       });
-
       test('homeKey', () {
         Helper.initFileSystem(fileSystem);
 
         expect(Env.homeKey, (Env.isWindows ? 'USERPROFILE' : 'HOME'));
       });
-
       test('set', () {
         Helper.initFileSystem(fileSystem);
 
@@ -90,6 +88,12 @@ void main() {
         expect(Env.get('XNX_A'), Env.isWindows ? 'A' : 'C');
         Env.set(Env.homeKey, 'A');
         expect(Env.get(Env.homeKey), 'A');
+      });
+      test('which', () {
+        Helper.initFileSystem(fileSystem);
+
+        expect(Env.which('').isEmpty, true);
+        expect(Env.which(Env.isWindows ? 'xcopy' : 'ls').isEmpty, true);
       });
     });
   });

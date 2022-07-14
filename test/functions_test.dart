@@ -140,6 +140,8 @@ void main() {
             '{extension}': [r'=extension', file.path],
             '{fileSize}': [r'=fileSize', file.path],
             '{fileSizeK}': [r'=fileSize', file.path, 'K'],
+            '{fullPath}': [r'=fullPath', file.path],
+            '{joinPath}': [r'=joinPath', Path.dirname(file.path), Path.basename(file.path)],
             '{lastModifiedDir}': [r'=lastModified', 'dir1'],
             '{lastModifiedFile}': [r'=lastModified', file.path],
           });
@@ -151,6 +153,8 @@ void main() {
         expect(flatMap['{dirSize}'], '-1');
         expect(flatMap['{fileSize}'], '5120.00');
         expect(flatMap['{fileSizeK}'], '5.00');
+        expect(flatMap['{fullPath}'], Path.getFullPath(file.path));
+        expect(flatMap['{joinPath}'], file.path);
         expect((flatMap['{lastModifiedDir}'] ?? '').compareTo(minDateTimeStr) >= 0, true);
         expect((flatMap['{lastModifiedFile}'] ?? '').compareTo(minDateTimeStr) >= 0, true);
 

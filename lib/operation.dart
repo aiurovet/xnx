@@ -1,5 +1,7 @@
-import 'package:file/file.dart';
+import 'dart:io';
+
 import 'package:meta/meta.dart';
+import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/file_system_entity.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
@@ -15,6 +17,7 @@ enum OperationType {
   exists,
   existsDir,
   existsFile,
+  existsWhich,
   fileEquals,
   fileNewer,
   fileNotEquals,
@@ -28,6 +31,7 @@ enum OperationType {
   notExists,
   notExistsDir,
   notExistsFile,
+  notExistsWhich,
   notMatches,
 }
 
@@ -45,6 +49,7 @@ class Operation {
     OperationType.exists: OperationType.notExists,
     OperationType.existsDir: OperationType.notExistsDir,
     OperationType.existsFile: OperationType.notExistsFile,
+    OperationType.existsWhich: OperationType.notExistsWhich,
     OperationType.fileEquals: OperationType.fileNotEquals,
     OperationType.fileNewer: OperationType.fileOlder,
     OperationType.fileNotEquals: OperationType.fileEquals,
@@ -58,6 +63,7 @@ class Operation {
     OperationType.notExists: OperationType.exists,
     OperationType.notExistsDir: OperationType.existsDir,
     OperationType.notExistsFile: OperationType.existsFile,
+    OperationType.notExistsWhich: OperationType.existsWhich,
     OperationType.notMatches: OperationType.matches,
   };
 
@@ -117,6 +123,8 @@ class Operation {
       case OperationType.notExists:
       case OperationType.notExistsDir:
       case OperationType.notExistsFile:
+      case OperationType.existsWhich:
+      case OperationType.notExistsWhich:
         return _execExists();
       case OperationType.matches:
       case OperationType.notMatches:
@@ -217,6 +225,9 @@ class Operation {
           break;
         case 'f':
           type = OperationType.existsFile;
+          break;
+        case 'w':
+          type = OperationType.existsWhich;
           break;
         case 'feq':
           type = OperationType.fileEquals;
@@ -416,28 +427,46 @@ class Operation {
 
   bool _execExists() {
     var mask = _expandString(operands[0], canUnquote: true);
+    var isThen = mask.isNotEmpty;
 
-    var isThen = true;
+    if (isThen) {
+      mask = Path.adjust(mask);
 
-    if (mask.isNotEmpty) {
-      isThen = (mask.isEmpty ? false : FileSystemEntityExt.tryPatternExistsSync(
-        mask,
-        isDirectory: (type == OperationType.existsDir),
-        isFile: (type == OperationType.existsFile),
-      ));
-    }
-
-    if ((type == OperationType.notExists) ||
-        (type == OperationType.notExistsDir) ||
-        (type == OperationType.notExistsFile)) {
-      return !isThen;
+      switch (type) {
+        case OperationType.exists:
+        case OperationType.notExists:
+          isThen = FileSystemEntityExt.tryPatternExistsSync(mask, isDirectory: false, isFile: false);
+          break;
+        case OperationType.existsDir:
+        case OperationType.notExistsDir:
+          isThen = FileSystemEntityExt.tryPatternExistsSync(mask, isDirectory: true, isFile: false);
+          break;
+        case OperationType.existsFile:
+        case OperationType.notExistsFile:
+          isThen = FileSystemEntityExt.tryPatternExistsSync(mask, isDirectory: false, isFile: true);
+          break;
+        case OperationType.existsWhich:
+        case OperationType.notExistsWhich:
+          isThen = Env.which(mask).isNotEmpty;
+          break;
+        default:
+          isThen = false;
+      }
     }
 
     if (logger.isDebug) {
       logger.debug('$type\n...mask: $mask\n...${isThen ? 'true' : 'false'}\n');
     }
 
-    return isThen;
+    switch (type) {
+      case OperationType.notExists:
+      case OperationType.notExistsDir:
+      case OperationType.notExistsFile:
+      case OperationType.notExistsWhich:
+        return !isThen;
+      default:
+        return isThen;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

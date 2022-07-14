@@ -1,4 +1,5 @@
 import 'package:test/test.dart';
+import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/flat_map.dart';
 import 'package:xnx/logger.dart';
@@ -65,6 +66,7 @@ void main() {
       expect((o.parse('-d abc.def') == OperationType.existsDir), true);
       expect((o.parse('-e abc.def') == OperationType.exists), true);
       expect((o.parse('-f abc.def') == OperationType.existsFile), true);
+      expect((o.parse('-w ${Env.isWindows ? 'xcopy' : 'ls'}') == OperationType.existsWhich), true);
       expect((o.parse('a1.txt -feq s2.txt') == OperationType.fileEquals), true);
       expect((o.parse('a1.txt -fne s2.txt') == OperationType.fileNotEquals), true);
       expect((o.parse('a1.txt -fnw') == OperationType.fileNewer), true);

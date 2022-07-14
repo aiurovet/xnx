@@ -61,11 +61,16 @@ void main() {
         Path.fileSystem.currentDirectory = initDirName;
         o.setConfigPathAndStartDirName(configPath, '~');
         expect(Path.equals(o.configFileInfo.filePath, Path.join(dirName, baseName)), true);
+        expect(Path.equals(Path.currentDirectory.path, initDirName), true);
+
+        Path.fileSystem.currentDirectory = initDirName;
+        o.setConfigPathAndStartDirName(configPath, dirName);
+        expect(Path.equals(o.configFileInfo.filePath, Path.join(dirName, baseName)), true);
         expect(Path.equals(Path.currentDirectory.path, dirName), true);
 
         Path.fileSystem.currentDirectory = initDirName;
         o.setConfigPathAndStartDirName('~${Path.basename(configPath)}', Path.dirname(configPath));
-        expect(Path.equals(o.configFileInfo.filePath, Path.join(dirName, baseName)), true);
+        expect(Path.equals(o.configFileInfo.filePath, Path.join(initDirName, baseName)), true);
         expect(Path.equals(Path.currentDirectory.path, dirName), true);
       });
     });

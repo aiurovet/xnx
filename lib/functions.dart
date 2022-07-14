@@ -34,8 +34,10 @@ enum FunctionType {
   extension,
   fileSize,
   floor,
+  fullPath,
   iif,
   indexOf,
+  joinPath,
   lastIndexOf,
   lastMatch,
   lastModified,
@@ -67,6 +69,7 @@ enum FunctionType {
   today,
   upper,
   utc,
+  which,
 }
 
 class Functions {
@@ -213,7 +216,10 @@ class Functions {
       case FunctionType.dirName:
       case FunctionType.extension:
       case FunctionType.fileSize:
+      case FunctionType.fullPath:
+      case FunctionType.joinPath:
       case FunctionType.lastModified:
+      case FunctionType.which:
         return _execFile(type, todo, offset: offset);
       case FunctionType.iif:
         return _execIif(type, todo, offset: offset);
@@ -346,7 +352,7 @@ class Functions {
     var cnt = todo.length;
 
     var fileName = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-    var format = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+    var secondArg = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
     var stat = Path.fileSystem.file(fileName).statSync();
 
@@ -373,17 +379,26 @@ class Functions {
         resStr = Path.extension(fileName);
         break;
       case FunctionType.fileSize:
-        resStr = FileExt.formatSize((isFile ? stat.size : -1), format);
+        resStr = FileExt.formatSize((isFile ? stat.size : -1), secondArg);
+        break;
+      case FunctionType.fullPath:
+        resStr = Path.getFullPath(fileName);
+        break;
+      case FunctionType.joinPath:
+        resStr = Path.join(fileName, secondArg);
         break;
       case FunctionType.lastModified:
         resStr = (isFound ? stat.modified.toIso8601String() : '');
+        break;
+      case FunctionType.which:
+        resStr = Env.which(fileName);
         break;
       default:
         break;
     }
 
     if (logger.isDebug) {
-      logger.debug('$type\n...input:  $fileName\n...format: $format\n...result: $resStr\n');
+      logger.debug('$type\n...input:  $fileName\n...format: $secondArg\n...result: $resStr\n');
     }
 
     return resStr;
@@ -824,8 +839,10 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnExtension)] = FunctionType.extension;
     nameTypeMap[_toName(keywords.forFnFileSize)] = FunctionType.fileSize;
     nameTypeMap[_toName(keywords.forFnFloor)] = FunctionType.floor;
+    nameTypeMap[_toName(keywords.forFnFullPath)] = FunctionType.fullPath;
     nameTypeMap[_toName(keywords.forFnIif)] = FunctionType.iif;
     nameTypeMap[_toName(keywords.forFnIndex)] = FunctionType.indexOf;
+    nameTypeMap[_toName(keywords.forFnJoinPath)] = FunctionType.joinPath;
     nameTypeMap[_toName(keywords.forFnMatch)] = FunctionType.match;
     nameTypeMap[_toName(keywords.forFnLastIndex)] = FunctionType.lastIndexOf;
     nameTypeMap[_toName(keywords.forFnLastMatch)] = FunctionType.lastMatch;
@@ -857,6 +874,7 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnToday)] = FunctionType.today;
     nameTypeMap[_toName(keywords.forFnUpper)] = FunctionType.upper;
     nameTypeMap[_toName(keywords.forFnUtc)] = FunctionType.utc;
+    nameTypeMap[_toName(keywords.forFnWhich)] = FunctionType.which;
   }
 
   //////////////////////////////////////////////////////////////////////////////
