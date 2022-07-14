@@ -1,6 +1,5 @@
 import 'package:file/file.dart';
 import 'package:archive/archive_io.dart';
-import 'package:path/path.dart';
 import 'package:xnx/command.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
