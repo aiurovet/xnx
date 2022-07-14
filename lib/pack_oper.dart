@@ -1,5 +1,6 @@
 import 'package:file/file.dart';
 import 'package:archive/archive_io.dart';
+import 'package:path/path.dart';
 import 'package:xnx/command.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
@@ -348,8 +349,10 @@ class PackOper {
           continue;
         }
 
+print('DBG: "${entity.name}"');
+
         final toPath = Path.join(toDirName, entity.name);
-        final isFile = entity.isFile;
+        final isFile = entity.isFile && !entity.name.endsWith(Path.separator);
 
         if (!isSilent) {
           print('${isListOnly ? 'Will extract' : 'Extracting'} ${isFile ? 'file' : 'dir'} "${entity.name}"');
