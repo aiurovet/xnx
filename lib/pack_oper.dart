@@ -287,7 +287,7 @@ class PackOper {
       toPath = Path.join(Path.dirname(fromPath), fileTitle);
     }
 
-    return toPath;
+    return Path.adjust(toPath);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -344,11 +344,11 @@ class PackOper {
       final cmd = (Env.isWindows || isTar || isListOnly ? null : Command(isToVar: true));
 
       for (final entity in archive) {
-        // if (entity.name.isEmpty) {
-        //   continue;
-        // }
+        if (entity.name.isEmpty) {
+          continue;
+        }
 
-        final toPath = Path.join(toDirName, entity.name);
+        final toPath = Path.adjust(Path.join(toDirName, entity.name));
         final isFile = entity.isFile && !entity.name.endsWith(Path.separator);
 
         if (!isSilent) {
