@@ -38,9 +38,9 @@ $FromChar = ($ToChar -Eq "/" ? "\\" : "/")
 if ($Path) { $Path = $Path -Replace $FromChar, $ToChar }
 if ($Filter) { $Filter = $Filter -Replace $FromChar, $ToChar }
 
-$Cwd = [Directory]::GetCurrentDirectory
+$Cwd = [IO.Directory]::GetCurrentDirectory
 
-Write-Output "`nDBG: Cwd:  $Cwd`nDBG: Path: $Path`nDBG: Fltr: $Filter`n`n";
+Write-Output "`nDBG: Cwd:  $Cwd`nDBG: Path: $Path`nDBG: Fltr: $Filter`n";
 
 if ($Recurse) { $Command = "$Command -Recurse" }
 if ($Path) { $Command = "$Command -Path `"$Path`"" }
