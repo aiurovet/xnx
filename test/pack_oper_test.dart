@@ -25,6 +25,7 @@ List<Directory> initLocal(int testId) {
   var fromDir = getLocalFromDir(testId);
   var toDir = getLocalToDir(testId);
 
+  doneLocal(testId);
   Path.fileSystem.directory(Path.join(fromDir.path, 'sub-sub-dir')).createSync(recursive: true);
   Path.fileSystem.file(Path.join(fromDir.path, 'a.txt'))..createSync()..writeAsStringSync('A');
   Path.fileSystem.file(Path.join(fromDir.path, 'b.txt'))..createSync()..writeAsStringSync('B B');
