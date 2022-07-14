@@ -30,14 +30,20 @@ Else {
 
 ################################################################################
 
-$Command = "Get-ChildItem";
+$Command = "Get-ChildItem"
 
-if ($Recurse) { $Command = "$Command -Recurse"; }
-if ($Path) { $Command = "$Command -Path `"$Path`""; }
-if ($Filter) { $Command = "$Command -Filter `"$Filter`""; }
-if ($Depth) { $Command = "$Command -Depth $Depth"; }
-if ($Include) { $Command = "$Command -Include `"$Include`""; }
-if ($Exclude) { $Command = "$Command -Exclude `"$Exclude`""; }
+if ($Path) {
+  $ToChar = [IO.Path]::DirectorySeparatorChar
+  $FromChar = ($ToChar -Eq "/" ? "\\" : "/")
+  $Path = $Path -Replace $FromChar, $ToChar
+}
+
+if ($Recurse) { $Command = "$Command -Recurse" }
+if ($Path) { $Command = "$Command -Path `"$Path`"" }
+if ($Filter) { $Command = "$Command -Filter `"$Filter`"" }
+if ($Depth) { $Command = "$Command -Depth $Depth" }
+if ($Include) { $Command = "$Command -Include `"$Include`"" }
+if ($Exclude) { $Command = "$Command -Exclude `"$Exclude`"" }
 
 if ($Pattern) { $Pattern = $Pattern -replace "`"", "```"";
                 $Command = "$Command | Get-Content | Select-String -Pattern `"$Pattern`""; }
