@@ -351,6 +351,8 @@ class PackOper {
           print('${isListOnly ? 'Will extract' : 'Extracting'} ${isFile ? 'file' : 'dir'} "${entity.name}"');
         }
 
+print('DBG: isFile: $isFile, toPath: $toPath');
+
         if (isFile) {
           if (!isListOnly) {
             Path.fileSystem.directory(Path.dirname(toPath))
