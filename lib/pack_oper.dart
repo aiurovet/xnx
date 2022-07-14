@@ -349,7 +349,7 @@ class PackOper {
         }
 
         final toPath = Path.adjust(Path.join(toDirName, entity.name));
-        final isFile = entity.isFile && !entity.name.endsWith(Path.separator);
+        final isFile = entity.isFile && !entity.name.endsWith(Path.separatorPosix);
 
         if (!isSilent) {
           print('${isListOnly ? 'Will extract' : 'Extracting'} ${isFile ? 'file' : 'dir'} "${entity.name}"');
