@@ -1,5 +1,6 @@
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:xnx/ext/directory.dart';
 import 'string.dart';
 
 class Path {
@@ -44,7 +45,7 @@ class Path {
     var result = '$prefix"$pathEx"';
 
     if (pathEx.isEmpty || !isAbsolute(pathEx)) {
-      result += ' (current dir: "${currentDirectory.path}")';
+      result += ' (current dir: "${fileSystem.currentDirectory.path}")';
     }
 
     return result;
@@ -110,7 +111,7 @@ class Path {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getFullPath(String? path) {
+  static String getFullPathOld(String? path) {
       var full = fileSystem.path.canonicalize(Path.adjust(path));
 
       if (!Path.isWindowsFS || (path == null) || path.isEmpty) {
@@ -145,6 +146,93 @@ class Path {
       }
 
       return (isChanged ? partsOfFull.join(Path.separator) : full);
+  }
+
+  /// Convert [aPath] to the fully qualified path\
+  /// \
+  /// For POSIX, it calls `canonicalize()`\
+  /// For Windows, it takes an absolute path,
+  /// prepends it with the current drive (if omitted),
+  /// and resolves . and ..
+  ///
+  static String getFullPath(String? aPath) {
+    // If path is null, return the current directory
+    //
+    if (aPath == null) {
+      return fileSystem.currentDirectory.path;
+    }
+
+    // If path is empty, return the current directory
+    //
+    if (aPath.isEmpty) {
+      return fileSystem.currentDirectory.path;
+    }
+
+    // Posix is always 'in chocolate'
+    //
+    if (!isWindowsFS) {
+      return fileSystem.path.canonicalize(aPath);
+    }
+
+    aPath = adjust(aPath);
+
+    // Get absolute path
+    //
+    var absPath = aPath;
+
+    // If no drive is present, then take it from the current directory
+    //
+    if (aPath.startsWith(separator)) {
+      final curDirName = fileSystem.currentDirectory.path;
+      absPath = curDirName.substring(0, curDirName.indexOf(separator)) + aPath;
+    } else if (!aPath.contains(driveSeparator)) {
+      absPath = join(fileSystem.currentDirectory.path, aPath);
+    }
+
+    // Split path in parts (drive, directories, basename)
+    //
+    final parts = absPath.split(separator);
+    var drive = parts[0];
+
+    // Resolve all . and .. occurrences
+    //
+    var result = '';
+
+    for (var i = 0, n = parts.length; i < n; i++) {
+      final part = parts[i];
+
+      switch (part) {
+        case '':
+          continue;
+        case DirectoryExt.curDirAbbr:
+          continue;
+        case DirectoryExt.parentDirAbbr:
+          final breakPos = result.lastIndexOf(separator);
+          if (breakPos >= 0) {
+            result = result.substring(0, breakPos);
+          }
+          continue;
+        default:
+          if (i > 0) {
+            // full path should start with drive
+            result += separator;
+          }
+          result += part;
+          continue;
+      }
+    }
+
+    // Disaster recovery
+    //
+    if (result.isEmpty) {
+      result = drive + separator;
+    } else if (result == drive) {
+      result += separator;
+    }
+
+    // Return the result
+    //
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////

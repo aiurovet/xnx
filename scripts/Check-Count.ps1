@@ -33,14 +33,12 @@ Else {
 $Command = "Get-ChildItem"
 
 $ToChar = [IO.Path]::DirectorySeparatorChar
-$FromChar = ($ToChar -Eq "/" ? "\\" : "/")
+$FromChar = If ($ToChar -Eq "/") {"\\"} Else { "/" }
 
 if ($Path) { $Path = $Path -Replace $FromChar, $ToChar }
 if ($Filter) { $Filter = $Filter -Replace $FromChar, $ToChar }
 if ($Include) { $Include = $Include -Replace $FromChar, $ToChar }
 if ($Exclude) { $Exclude = $Exclude -Replace $FromChar, $ToChar }
-
-$Cwd = [IO.Directory]::GetCurrentDirectory()
 
 if ($Recurse) { $Command = "$Command -Recurse" }
 if ($Path) { $Command = "$Command -Path `"$Path`"" }

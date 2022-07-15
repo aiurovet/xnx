@@ -8,8 +8,8 @@ import 'string.dart';
 extension DirectoryExt on Directory {
   //////////////////////////////////////////////////////////////////////////////
 
-  static final curDirAbbr = '.';
-  static final parentDirAbbr = '..';
+  static const curDirAbbr = '.';
+  static const parentDirAbbr = '..';
 
   //////////////////////////////////////////////////////////////////////////////
 
