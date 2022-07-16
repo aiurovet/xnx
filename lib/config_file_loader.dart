@@ -41,6 +41,9 @@ class ConfigFileLoader {
   File? _file;
   File? get file => _file;
 
+  String _importDirName = '';
+  String get importDirName => _importDirName;
+
   bool _isStdIn = false;
   bool get isStdIn => _isStdIn;
 
@@ -60,10 +63,14 @@ class ConfigFileLoader {
   // Construction
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader({bool isStdIn = false, File? file, String? text, Keywords? keywords, Logger? logger}) {
+  ConfigFileLoader({bool isStdIn = false, File? file, String? text, String? importDirName, Keywords? keywords, Logger? logger}) {
     _file = file;
     _isStdIn = isStdIn;
     _lastModifiedStamp = (file?.lastModifiedStampSync() ?? 0);
+
+    if (importDirName != null) {
+      _importDirName = importDirName;
+    }
 
     if (text != null) {
       _text = text;
@@ -83,6 +90,7 @@ class ConfigFileLoader {
   void clear({bool isFull = true}) {
     _data = null;
     _file = null;
+    _importDirName = '';
     _isStdIn = false;
     _text = '';
 
@@ -227,7 +235,7 @@ class ConfigFileLoader {
     _text = _text.replaceAll('\'', '\x02');
     _text = _text.replaceAll(r'\"', '\x03');
     _text = _text.replaceAllMapped(regExp, (match) {
-      var impPath = match.group(4);
+      var impPath = Path.join(_importDirName, match.group(4));
       var impPathsSerialized = match.group(5);
       var elemSep = match.group(6) ?? '';
 
@@ -269,7 +277,7 @@ class ConfigFileLoader {
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigFileLoader loadSync(String? pathAndFilter) {
-    return loadSyncEx(ConfigFileInfo(pathAndFilter));
+    return loadSyncEx(ConfigFileInfo(input: pathAndFilter));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -279,6 +287,8 @@ class ConfigFileLoader {
 
     _isStdIn = (filePath.isBlank() || (filePath == StringExt.stdinPath));
     var displayName = (_isStdIn ? StringExt.stdinDisplay : '"$filePath"');
+
+    _importDirName = fileInfo.importDirName;
 
     _logger.information('Loading from $displayName');
 

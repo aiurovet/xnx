@@ -105,8 +105,8 @@ jobs:
 
       - name: Running Integration Test 7 - web_config
         run: |
-          bin/${{runner.os}}/xnx -d examples/web_config -x Web.config.xnx DevUK
-          scripts/Check-Count.ps1 -Expected 2 -Recurse -Path "examples/web_config/out" -Include "Web*.config"
+          bin/${{runner.os}}/xnx -d examples/web_config -x xnx/appconfig.xnx Web.X.config Dev UK Local=service,fourth
+          scripts/Check-Count.ps1 -Expected 1 -Recurse -Path "examples/web_config/out"
 
       ################################################################################
 

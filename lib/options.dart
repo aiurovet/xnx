@@ -33,6 +33,7 @@ class Options {
   static const String _envListOnly = '${_envAppKeyPrefix}LIST_ONLY';
   static const String _envEscape = '${_envAppKeyPrefix}ESCAPE';
   static const String _envQuiet = '${_envAppKeyPrefix}QUIET';
+  static const String _envImportDir = '${_envAppKeyPrefix}IMPORT_DIR';
   static const String _envStartDir = '${_envAppKeyPrefix}START_DIR';
   static const String _envVerbosity = '${_envAppKeyPrefix}VERBOSITY';
 
@@ -96,6 +97,14 @@ the application will define environment variable $_envForce''',
     'abbr': 'h',
     'help': 'this help screen',
     'negatable': false,
+  };
+  static final Map<String, Object?> importDir = {
+    'name': 'import-dir',
+    'abbr': 'i',
+    'help': '''default directory for $fileTypeCfg files being imported into other $fileTypeCfg files,
+the application will define environment variable $_envImportDir''',
+    'valueHelp': 'DIR',
+    'defaultsTo': null,
   };
   static final Map<String, Object?> listOnly = {
     'name': 'list-only',
@@ -349,6 +358,9 @@ can be used with --move to delete the source''',
   ConfigFileInfo _configFileInfo = ConfigFileInfo();
   ConfigFileInfo get configFileInfo => _configFileInfo;
 
+  String _importDirName = '';
+  String get importDirName => _importDirName;
+
   bool _isAppendSep = false;
   bool get isAppendSep => _isAppendSep;
 
@@ -508,6 +520,9 @@ can be used with --move to delete the source''',
     });
     addOption(parser, startDir, (value) {
       dirName = _getString(_envStartDir, value);
+    });
+    addOption(parser, importDir, (value) {
+      _importDirName = _getString(_envImportDir, value);
     });
     addOption(parser, escape, (value) {
       _escapeMode = parseEscapeMode(value);
@@ -944,7 +959,7 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
     }
 
     configPath = Path.getFullPath(configPath);
-    _configFileInfo = ConfigFileInfo(configPath);
+    _configFileInfo = ConfigFileInfo(input: configPath, importDirName: _importDirName);
 
     if (_logger.isDebug) {
       _logger.debug('Start dir: "$_startDirName"\nInput file: "${_configFileInfo.filePath}"\n');

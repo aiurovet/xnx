@@ -1,0 +1,70 @@
+{
+  "{{-once-}}": {
+    "{InpFilePath}": "$~1",
+    "{Env}": "$~2",
+    "{Site}": "$~3",
+    "{Local}": "$~4",
+    "{BadArg}": "$~5",
+ 
+    "{{-func-}}": {
+      "{env}": [ "=Lower", "{Env}" ],
+      "{site}": [ "=Lower", "{Site}" ],
+      "{Site}": [ "=Upper", "{Site}" ],
+ 
+      "{InpDirName}": [ "=DirName", "{InpFilePath}" ],
+      "{InpBaseName}": [ "=BaseName", "{InpFilePath}" ],
+      "{Extension}": [ "=Extension", "{InpBaseName}" ],
+      "{OutBaseNameNoExt}": [ "=BaseNameNoExt", [ "=BaseNameNoExt", "{InpBaseName}" ] ],
+      "{OutFilePath}": "{InpDirName}/out/{OutBaseNameNoExt}{Extension}",
+    },
+ 
+    "{Env-Site}": "{Env}-{Site}",
+ 
+    "{ErrPrefix}": "*** ERROR: ",
+    "{ErrSuffix}": "\n\nThe execution failed\n",
+ 
+    "{{-if-}}": { '"{Env}" == ""': { "{{-stop-}}": "{ErrPrefix}Undefined environment!{ErrSuffix}", }, },
+    "{{-if-}}": { '"{Site}" == ""': { "{{-stop-}}": "{ErrPrefix}Undefined site!{ErrSuffix}", }, },
+    "{{-if-}}": { '"{BadArg}" != ""': { "{{-stop-}}": "{ErrPrefix}Too many arguments!{ErrSuffix}", }, },
+ 
+    "{{-if-}}": { '"{Env}" !~/i "^(Dev|Staging|Training|Prod)\$"': {
+      "{{-stop-}}": '{ErrPrefix}Invalid environment "{Env}"!{ErrSuffix}',
+    } },
+ 
+    "{{-if-}}": { '"{Env}" ==/i "Prod"': {
+      "{Debug}": "false",
+      "{RequireSSL}": "true",
+    }, "{{-else-}}": {
+      "{Debug}": "true",
+      "{RequireSSL}": "false",
+    }, },
+ 
+    "{{-if-}}": { '"{Site}" ~/i "^(AU|UK|US)\$"': {
+        "{Language}": "en",
+    }, "{{-else}}": {
+      "{{-stop-}}": '{ErrPrefix}Invalid site "{Site}"!{ErrSuffix}',
+    }, },
+ 
+    "{{-if-}}": { '"{Site}" == "UK"': {
+      "{Culture}": "{Language}-GB",
+    }, "{{-else-}}": {
+      "{Culture}": "{Language}-{Site}"
+    }, },
+ 
+    "{{-if-}}": { '("{Site}" ==/i "AU") && ("{Env}" !=/i "Prod")': {
+      "{EnvSite}": "{Env}",
+      "{envsite}": "{env}",
+    }, "{{-else-}}": {
+      "{EnvSite}": "{Env}{Site}",
+      "{envsite}": "{env}{site}",
+    }, },
+ 
+    "{{-run-}}": '--print "Envir:\t\'{Env}\'\nSite:\t\'{Site}\'\nRegion:\t\'{Culture}\'\nLocal:\t\'{Local}\'\n\n\'{InpFilePath}\' => \'{OutFilePath}\'\n"',
+  },
+ 
+  "{{-import-}}": "endpoints.xnx",
+ 
+  "{{-cmd-}}": '--expand "{{-inp-}}" "{{-out-}}"',
+  "{{-inp-}}": "{InpFilePath}",
+  "{{-out-}}": "{OutFilePath}",
+}

@@ -1,0 +1,304 @@
+{
+  // DEV
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Dev-AU"': {
+    "{InitialServiceUrl}":  "http://initialservice.dev.mysite.internal.au/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "http://firstapi.dev.mysite.internal.au/",
+    "{SecondApiUrl}":       "http://secondapi.dev.mysite.internal.au/",
+    "{ThirdApiUrl}":        "https://thirdapi.dev.mysite.com.au",
+    "{FourthApiUrl}":       "https://fourthapi.dev.internal.mysite.com.au/",
+    "{FifthApiUrl}":        "https://fifthapi.dev.internal.mysite.com.au/",
+    "{SixthApiUrl}":        "https://sixthapi.dev.internal.mysite.com.au/",
+    "{SeventhApiUrl}":      "https://seventhapi.dev.internal.mysite.com.au/",
+    "{EighthApiUrl}":       "https://eighthapi.dev.internal.mysite.com.au/",
+    "{NinthApiUrl}":        "https://ninthapi.dev.internal.mysite.com.au/",
+ 
+    "{eBDRUrl}":            "",
+ 
+    "{DBContextDecrypted}": "Data Source=111.22.33.44;Initial Catalog=Dev;User ID=myid;Password=mypass;Max Pool Size=200;",
+    "{DBContextEncrypted}": "qvxFof9ax1...==",
+ 
+    "{MachineKey}":         "95F9BE11CF520...40",
+    "{DecryptionKey}":      "A858..F4",
+  }, },
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Dev-UK"': {
+    "{InitialServiceUrl}":  "http://initialservice.dev.mysite.internal.uk/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "http://firstapi.dev.mysite.internal.uk/",
+    "{SecondApiUrl}":       "http://secondapi.dev.mysite.internal.uk/",
+    "{ThirdApiUrl}":        "https://thirdapi.dev.mysite.co.uk",
+    "{FourthApiUrl}":       "https://fourthapi.dev.internal.mysite.co.uk/",
+    "{FifthApiUrl}":        "https://fifthapi.dev.internal.mysite.co.uk/",
+    "{SixthApiUrl}":        "https://sixthapi.dev.internal.mysite.co.uk/",
+    "{SeventhApiUrl}":      "https://seventhapi.dev.internal.mysite.co.uk/",
+    "{EighthApiUrl}":       "https://eighthapi.dev.internal.mysite.co.uk/",
+    "{NinthApiUrl}":        "https://ninthapi.dev.internal.mysite.co.uk/",
+ 
+    "{eBDRUrl}":            "https://secure.uat.e-series.uk.experian.com/e-bureaudatareview",
+ 
+    "{DBContextDecrypted}": "Data Source=111.22.33.44;Initial Catalog=DevUK;User ID=myid;Password=mypass;Max Pool Size=200;",
+    "{DBContextEncrypted}": "qvxFof9ax1...==",
+ 
+    "{MachineKey}":         "95F9BE11CF520...40",
+    "{DecryptionKey}":      "A858..F4",
+  }, },
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Dev-US"': {
+    "{InitialServiceUrl}":  "http://initialservice.dev.internal.mysite.com/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.dev.internal.mysite.com/",
+    "{SecondApiUrl}":       "https://secondapi.dev.internal.mysite.com/",
+    "{FourthApiUrl}":       "https://fourthapi.dev.internal.mysite.com/",
+    "{FifthApiUrl}":        "https://fifthapi.dev.internal.mysite.com/",
+    "{SixthApiUrl}":        "https://sixthapi.dev.internal.mysite.com/",
+    "{SeventhApiUrl}":      "https://seventhapi.dev.internal.mysite.com/",
+    "{EighthApiUrl}":       "https://eighthapi.dev.internal.mysite.com/",
+    "{NinthApiUrl}":        "https://ninthapi.dev.internal.mysite.com/",
+ 
+    "{eBDRUrl}":            "",
+ 
+    "{DBContextDecrypted}": "Data Source=111.22.33.44;Initial Catalog=DevUS;User ID=myid;Password=mypass;Max Pool Size=200;",
+    "{DBContextEncrypted}": "qvxFof9ax1...==",
+ 
+    "{MachineKey}":         "95F9BE11CF520...40",
+    "{DecryptionKey}":      "A858..F4",
+  }, },
+ 
+  // STAGING
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Staging-AU"': {
+    "{InitialServiceUrl}":  "https://initialservice-staging.nonprod.internal.mysite.com.au/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.staging.mysite.internal.au/",
+    "{SecondApiUrl}":       "https://secondapi.staging.mysite.internal.au/",
+    "{FourthApiUrl}":       "https://fourthapi.staging.internal.mysite.com.au/",
+    "{FifthApiUrl}":        "https://fifthapi.staging.internal.mysite.com.au/",
+    "{SixthApiUrl}":        "https://sixthapi.staging.internal.mysite.com.au/",
+    "{SeventhApiUrl}":      "https://seventhapi.staging.internal.mysite.com.au/",
+    "{EighthApiUrl}":       "https://eighthapi.staging.internal.mysite.com.au/",
+    "{NinthApiUrl}":        "https://ninthapi.staging.internal.mysite.com.au/",
+ 
+    "{eBDRUrl}":            "",
+ 
+    "{DBContextDecrypted}": "Data Source=111.22.33.44;Initial Catalog=Staging;User ID=myid;Password=mypass;Max Pool Size=200;",
+    "{DBContextEncrypted}": "qvxFof9ax1...==",
+ 
+    "{MachineKey}":         "95F9BE11CF520...40",
+    "{DecryptionKey}":      "A858..F4",
+  }, },
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Staging-UK"': {
+    "{InitialServiceUrl}":  "http://initialservice.staging.mysite.internal.uk/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.staging.mysite.internal.uk/",
+    "{SecondApiUrl}":       "https://secondapi.staging.mysite.internal.uk/",
+    "{FourthApiUrl}":       "https://fourthapi.staging.internal.mysite.co.uk/",
+    "{FifthApiUrl}":        "https://fifthapi.staging.internal.mysite.co.uk/",
+    "{SixthApiUrl}":        "https://sixthapi.staging.internal.mysite.co.uk/",
+    "{SeventhApiUrl}":      "https://seventhapi.staging.internal.mysite.co.uk/",
+    "{EighthApiUrl}":       "https://eighthapi.staging.internal.mysite.co.uk/",
+    "{NinthApiUrl}":        "https://ninthapi.staging.internal.mysite.co.uk/",
+ 
+    "{eBDRUrl}":            "https://secure.uat.e-series.uk.experian.com/e-bureaudatareview",
+ 
+    "{DBContextDecrypted}": "Data Source=111.22.33.44;Initial Catalog=StagingUK;User ID=myid;Password=mypass;Max Pool Size=200;",
+    "{DBContextEncrypted}": "qvxFof9ax1...==",
+ 
+    "{MachineKey}":         "95F9BE11CF520...40",
+    "{DecryptionKey}":      "A858..F4",
+  }, },
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Staging-US"': {
+    "{InitialServiceUrl}":  "https://initialservice.staging.mysite.internal.com/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.staging.mysite.internal.com/",
+    "{SecondApiUrl}":       "https://secondapi.staging.mysite.internal.com/",
+    "{FourthApiUrl}":       "https://fourthapi.staging.internal.mysite.com/",
+    "{FifthApiUrl}":        "https://fifthapi.staging.internal.mysite.com/",
+    "{SixthApiUrl}":        "https://sixthapi.staging.internal.mysite.com/",
+    "{SeventhApiUrl}":      "https://seventhapi.staging.internal.mysite.com/",
+    "{EighthApiUrl}":       "https://eighthapi.staging.internal.mysite.com/",
+    "{NinthApiUrl}":        "https://ninthapi.staging.internal.mysite.com/",
+ 
+    "{eBDRUrl}":            "",
+ 
+    "{DBContextDecrypted}": "Data Source=111.22.33.44;Initial Catalog=StagingUS;User ID=myid;Password=mypass;Max Pool Size=200;",
+    "{DBContextEncrypted}": "qvxFof9ax1...==",
+ 
+    "{MachineKey}":         "95F9BE11CF520...40",
+    "{DecryptionKey}":      "A858..F4",
+  }, },
+ 
+  // TRAINING
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Training-AU"': {
+    "{InitialServiceUrl}":  "http://initialservice.training.mysite.internal.au/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.training.mysite.internal.au/",
+    "{SecondApiUrl}":       "https://secondapi.training.mysite.internal.au/",
+    "{FourthApiUrl}":       "https://fourthapi.training.internal.mysite.com.au/",
+    "{FifthApiUrl}":        "https://fifthapi.training.internal.mysite.com.au/",
+    "{SixthApiUrl}":        "https://sixthapi.training.internal.mysite.com.au/",
+    "{SeventhApiUrl}":      "https://seventhapi.training.internal.mysite.com.au/",
+    "{EighthApiUrl}":       "https://eighthapi.training.internal.mysite.com.au/",
+    "{NinthApiUrl}":        "https://ninthapi.training.internal.mysite.com.au/",
+ 
+    "{eBDRUrl}":            "",
+ 
+    // The rest is taken from Azure DevOps Library
+
+    "{DBContextDecrypted}": "{Deploy-DBContext}",
+    "{DBContextEncrypted}": "{Deploy-DBContext}",
+ 
+    "{MachineKey}":         "{Deploy-MachineKey}",
+    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+  }, },
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Training-UK"': {
+    "{InitialServiceUrl}":  "http://initialservice.training.mysite.internal.uk/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.training.mysite.internal.uk/",
+    "{SecondApiUrl}":       "https://secondapi.training.mysite.internal.uk/",
+    "{FourthApiUrl}":       "https://fourthapi.training.internal.mysite.co.uk/",
+    "{FifthApiUrl}":        "https://fifthapi.training.internal.mysite.co.uk/",
+    "{SixthApiUrl}":        "https://sixthapi.training.internal.mysite.co.uk/",
+    "{SeventhApiUrl}":      "https://seventhapi.training.internal.mysite.co.uk/",
+    "{EighthApiUrl}":       "https://eighthapi.training.internal.mysite.co.uk/",
+    "{NinthApiUrl}":        "https://ninthapi.training.internal.mysite.co.uk/",
+ 
+    "{eBDRUrl}":            "https://secure.uat.e-series.uk.experian.com/e-bureaudatareview",
+ 
+    // The rest is taken from Azure DevOps Library
+
+    "{DBContextDecrypted}": "{Deploy-DBContext}",
+    "{DBContextEncrypted}": "{Deploy-DBContext}",
+ 
+    "{MachineKey}":         "{Deploy-MachineKey}",
+    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+  }, },
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Training-US"': {
+    "{InitialServiceUrl}":  "https://initialservice.training.mysite.internal.com/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.training.mysite.internal.com/",
+    "{SecondApiUrl}":       "https://secondapi.training.mysite.internal.com/",
+    "{ThirdApiUrl}":        "https://thirdapi.training.mysite.com/",
+    "{FourthApiUrl}":       "https://fourthapi.training.internal.mysite.com/",
+    "{FifthApiUrl}":        "https://fifthapi.training.internal.mysite.com/",
+    "{SixthApiUrl}":        "https://sixthapi.training.internal.mysite.com/",
+    "{SeventhApiUrl}":      "https://seventhapi.training.internal.mysite.com/",
+    "{EighthApiUrl}":       "https://eighthapi.training.internal.mysite.com/",
+    "{NinthApiUrl}":        "https://ninthapi.training.internal.mysite.com/",
+ 
+    "{eBDRUrl}":            "",
+ 
+     // The rest is taken from Azure DevOps Library
+
+    "{DBContextDecrypted}": "{Deploy-DBContext}",
+    "{DBContextEncrypted}": "{Deploy-DBContext}",
+ 
+    "{MachineKey}":         "{Deploy-MachineKey}",
+    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+  }, },
+ 
+  // PROD
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Prod-AU"': {
+    "{InitialServiceUrl}":  "http://initialservice.mysite.internal.au/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.mysite.internal.au/",
+    "{SecondApiUrl}":       "https://secondapi.mysite.internal.au/",
+    "{FourthApiUrl}":       "https://fourthapi.internal.mysite.com.au/",
+    "{FifthApiUrl}":        "https://fifthapi.internal.mysite.com.au/",
+    "{SixthApiUrl}":        "https://sixthapi.internal.mysite.com.au/",
+    "{SeventhApiUrl}":      "https://seventhapi.internal.mysite.com.au/",
+    "{EighthApiUrl}":       "https://eighthapi.internal.mysite.com.au/",
+    "{NinthApiUrl}":        "https://ninthapi.internal.mysite.com.au/",
+ 
+    "{eBDRUrl}":            "",
+ 
+    // The rest is taken from Azure DevOps Library
+
+    "{DBContextDecrypted}": "{Deploy-DBContext}",
+    "{DBContextEncrypted}": "{Deploy-DBContext}",
+ 
+    "{MachineKey}":         "{Deploy-MachineKey}",
+    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+  }, },
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Prod-UK"': {
+    "{InitialServiceUrl}":  "http://initialservice.mysite.internal.uk/ServiceImpl.svc/",
+    "{FirstApiUrl}":        "https://firstapi.mysite.internal.uk/",
+    "{SecondApiUrl}":       "https://secondapi.mysite.internal.uk/",
+    "{FourthApiUrl}":       "https://fourthapi.internal.mysite.co.uk/",
+    "{FifthApiUrl}":        "https://fifthapi.internal.mysite.co.uk/",
+    "{SixthApiUrl}":        "https://sixthapi.internal.mysite.co.uk/",
+    "{SeventhApiUrl}":      "https://seventhapi.internal.mysite.co.uk/",
+    "{EighthApiUrl}":       "https://eighthapi.internal.mysite.co.uk/",
+    "{NinthApiUrl}":        "https://ninthapi.internal.mysite.co.uk/",
+ 
+    "{eBDRUrl}":            "https://secure.e-series.uk.experian.com/e-bureaudatareview",
+ 
+    // The rest is taken from Azure DevOps Library
+
+    "{DBContextDecrypted}": "{Deploy-DBContext}",
+    "{DBContextEncrypted}": "{Deploy-DBContext}",
+ 
+    "{MachineKey}":         "{Deploy-MachineKey}",
+    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+  }, },
+ 
+  "{{-if-}}": { '"{Env-Site}" == "Prod-US"': {
+    "{InitialServiceUrl}":  "https://initialservice.internal.mysite.com/ServiceImpl.svc",
+    "{FirstApiUrl}":        "https://firstapi.internal.mysite.com/",
+    "{SecondApiUrl}":       "https://secondapi.internal.mysite.com/",
+    "{ThirdApiUrl}":        "https://thirdapi.mysite.com/",
+    "{FourthApiUrl}":       "https://fourthapi.internal.mysite.com/",
+    "{FifthApiUrl}":        "https://fifthapi.internal.mysite.com/",
+    "{SixthApiUrl}":        "https://sixthapi.internal.mysite.com/",
+    "{SeventhApiUrl}":      "https://seventhapi.internal.mysite.com/",
+    "{EighthApiUrl}":       "https://eighthapi.internal.mysite.com/",
+    "{NinthApiUrl}":        "https://ninthapi.internal.mysite.com/",
+ 
+    "{eBDRUrl}":            "",
+ 
+    // The rest is taken from Azure DevOps Library
+
+    "{DBContextDecrypted}": "{Deploy-DBContext}",
+    "{DBContextEncrypted}": "{Deploy-DBContext}",
+ 
+    "{MachineKey}":         "{Deploy-MachineKey}",
+    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+  }, },
+ 
+  // LOCAL (specify a single * to make all ApiUrl values local)
+  //
+  // Currently, there is a huge discrepancy in port numbers, as launchSettings.json
+  // is excluded from the version control, and every dev is setting their own ports.
+  // Possibly, versioning that file is the best option despite the obvious flaws.
+ 
+  "{{-if-}}": { '("{Local}" ~/i "\\*|third")': {
+    "{ThirdApiUrl}":  "http://localhost:55523/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|(Initial)?Service")': {
+    "{InitialServiceUrl}":  "http://localhost:54964/ServiceImpl.svc/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|fourth")': {
+    "{FourthApiUrl}":  "https://localhost:56587/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|first")': {
+    "{FirstApiUrl}":  "https://localhost:61334/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|fifth")': {
+    "{FifthApiUrl}":  "http://localhost:5050/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|sixth")': {
+    "{SixthApiUrl}":  "https://localhost:52777/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|seventh")': {
+    "{SeventhApiUrl}":  "https://localhost:64828/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|ninth")': {
+    "{NinthApiUrl}":  "https://localhost:4500/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|eight")': {
+    "{EighthApiUrl}":  "https://localhost:60109/",
+  }, },
+  "{{-if-}}": { '("{Local}" ~/i "\\*|second")': {
+    "{SecondApiUrl}":  "http://localhost:42367/",
+  }, },
+ 
+  // END
+}

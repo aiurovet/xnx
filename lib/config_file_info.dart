@@ -1,4 +1,6 @@
 
+import 'package:xnx/ext/path.dart';
+
 class ConfigFileInfo {
 
   //////////////////////////////////////////////////////////////////////////////
@@ -9,18 +11,24 @@ class ConfigFileInfo {
 
   var filePath = '';
   var jsonPath = '';
+  var importDirName = '';
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileInfo([String? input]) {
+  ConfigFileInfo({String? input, String? importDirName}) {
+    if (importDirName != null) {
+      this.importDirName = importDirName;
+    }
     parse(input);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void init({String? filePath, String? jsonPath}) {
+  void init({String? filePath, String? jsonPath, String? importDirName}) {
     this.filePath = filePath?.trim() ?? '';
     this.jsonPath = jsonPath?.trim() ?? '';
+
+    this.importDirName = importDirName ?? Path.fileSystem.path.dirname(this.filePath);
   }
 
   //////////////////////////////////////////////////////////////////////////////
