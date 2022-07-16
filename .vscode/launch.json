@@ -27,7 +27,7 @@
     { "name": "site_env clean", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/site_env", "Clean", ], },
     { "name": "web_config",  "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-f", "-d", "examples/web_config", "-x", "xnx/appconfig.xnx", "Web.X.config", "Dev", "UK", "Local=service,sixth" ], },
+      "args": [ "-f", "-d", "examples/web_config", "-x", "xnx/appconfig", "Web.X.config", "Dev", "AU", "Local=service,eighth" ], },
     { "name": "xunit_data",  "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/xunit_data" ], },
   ]

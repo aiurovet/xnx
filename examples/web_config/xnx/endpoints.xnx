@@ -293,7 +293,7 @@
   "{{-if-}}": { '("{Local}" ~/i "\\*|ninth")': {
     "{NinthApiUrl}":  "https://localhost:4500/",
   }, },
-  "{{-if-}}": { '("{Local}" ~/i "\\*|eight")': {
+  "{{-if-}}": { '("{Local}" ~/i "\\*|eighth")': {
     "{EighthApiUrl}":  "https://localhost:60109/",
   }, },
   "{{-if-}}": { '("{Local}" ~/i "\\*|second")': {
