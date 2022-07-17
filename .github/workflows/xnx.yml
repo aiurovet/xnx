@@ -22,7 +22,7 @@ jobs:
       ################################################################################
 
       - uses: actions/checkout@v2
-      - uses: browser-actions/setup-chrome@latest
+      - uses: browser-actions/setup-edge@latest
       - uses: dart-lang/setup-dart@v1
 
       ################################################################################
