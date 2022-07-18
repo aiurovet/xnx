@@ -1,22 +1,31 @@
 {
   "{{-once-}}": {
     "{InpFilePath}": "$~1",
-    "{Env}": "$~2",
-    "{Site}": "$~3",
-    "{Local}": "$~4",
-    "{BadArg}": "$~5",
+    "{EnvSiteArg}": "$~2",
+    "{Local}": "$~3",
+    "{BadArg}": "$~4",
+ 
+    "{{-if-}}": { '"{EnvSiteArg}" ~/i "^(Dev|Staging|Training|Prod)\$"': {
+      "{EnvSite}": "{EnvSiteArg}AU",
+    }, "{{-else-}}": {
+      "{EnvSite}": "{EnvSiteArg}",
+    } },
  
     "{{-func-}}": {
+      "{Break}": [ "=Add", [ "=Len", "{EnvSite}" ], -2 ],
+      "{Env}": [ "=Substr", "{EnvSite}", 1, "{Break}" ],
+      "{Site}": [ "=Upper", [ "=Substr", "{EnvSite}", [ "=Add", "{Break}", 1 ] ] ],
+ 
       "{env}": [ "=Lower", "{Env}" ],
       "{site}": [ "=Lower", "{Site}" ],
-      "{Site}": [ "=Upper", "{Site}" ],
  
       "{InpDirName}": [ "=DirName", "{InpFilePath}" ],
       "{InpBaseName}": [ "=BaseName", "{InpFilePath}" ],
       "{Extension}": [ "=Extension", "{InpBaseName}" ],
       "{OutBaseNameNoExt}": [ "=BaseNameNoExt", [ "=BaseNameNoExt", "{InpBaseName}" ] ],
-      "{OutFilePath}": "{InpDirName}/out/{OutBaseNameNoExt}{Extension}",
     },
+ 
+    "{OutFilePath}": "{InpDirName}/{OutBaseNameNoExt}.generated{Extension}",
  
     "{Env-Site}": "{Env}-{Site}",
  
@@ -49,14 +58,6 @@
       "{Culture}": "{Language}-GB",
     }, "{{-else-}}": {
       "{Culture}": "{Language}-{Site}"
-    }, },
- 
-    "{{-if-}}": { '("{Site}" ==/i "AU") && ("{Env}" !=/i "Prod")': {
-      "{EnvSite}": "{Env}",
-      "{envsite}": "{env}",
-    }, "{{-else-}}": {
-      "{EnvSite}": "{Env}{Site}",
-      "{envsite}": "{env}{site}",
     }, },
  
     "{{-run-}}": '--print "Envir:\t\'{Env}\'\nSite:\t\'{Site}\'\nRegion:\t\'{Culture}\'\nLocal:\t\'{Local}\'\n\n\'{InpFilePath}\' => \'{OutFilePath}\'\n"',
