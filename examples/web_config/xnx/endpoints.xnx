@@ -47,6 +47,7 @@
     "{InitialServiceUrl}":  "http://initialservice.dev.internal.mysite.com/ServiceImpl.svc/",
     "{FirstApiUrl}":        "https://firstapi.dev.internal.mysite.com/",
     "{SecondApiUrl}":       "https://secondapi.dev.internal.mysite.com/",
+    "{ThirdApiUrl}":        "https://thirdapi.dev.mysite.com",
     "{FourthApiUrl}":       "https://fourthapi.dev.internal.mysite.com/",
     "{FifthApiUrl}":        "https://fifthapi.dev.internal.mysite.com/",
     "{SixthApiUrl}":        "https://sixthapi.dev.internal.mysite.com/",
@@ -69,6 +70,7 @@
     "{InitialServiceUrl}":  "https://initialservice-staging.nonprod.internal.mysite.com.au/ServiceImpl.svc/",
     "{FirstApiUrl}":        "https://firstapi.staging.mysite.internal.au/",
     "{SecondApiUrl}":       "https://secondapi.staging.mysite.internal.au/",
+    "{ThirdApiUrl}":        "https://thirdapi.staging.mysite.internal.au/",
     "{FourthApiUrl}":       "https://fourthapi.staging.internal.mysite.com.au/",
     "{FifthApiUrl}":        "https://fifthapi.staging.internal.mysite.com.au/",
     "{SixthApiUrl}":        "https://sixthapi.staging.internal.mysite.com.au/",
@@ -89,6 +91,7 @@
     "{InitialServiceUrl}":  "http://initialservice.staging.mysite.internal.uk/ServiceImpl.svc/",
     "{FirstApiUrl}":        "https://firstapi.staging.mysite.internal.uk/",
     "{SecondApiUrl}":       "https://secondapi.staging.mysite.internal.uk/",
+    "{ThirdApiUrl}":        "https://thirdapi.staging.mysite.internal.uk/",
     "{FourthApiUrl}":       "https://fourthapi.staging.internal.mysite.co.uk/",
     "{FifthApiUrl}":        "https://fifthapi.staging.internal.mysite.co.uk/",
     "{SixthApiUrl}":        "https://sixthapi.staging.internal.mysite.co.uk/",
@@ -109,6 +112,7 @@
     "{InitialServiceUrl}":  "https://initialservice.staging.mysite.internal.com/ServiceImpl.svc/",
     "{FirstApiUrl}":        "https://firstapi.staging.mysite.internal.com/",
     "{SecondApiUrl}":       "https://secondapi.staging.mysite.internal.com/",
+    "{ThirdApiUrl}":        "https://thirdapi.staging.mysite.internal.com/",
     "{FourthApiUrl}":       "https://fourthapi.staging.internal.mysite.com/",
     "{FifthApiUrl}":        "https://fifthapi.staging.internal.mysite.com/",
     "{SixthApiUrl}":        "https://sixthapi.staging.internal.mysite.com/",
@@ -131,6 +135,7 @@
     "{InitialServiceUrl}":  "http://initialservice.training.mysite.internal.au/ServiceImpl.svc/",
     "{FirstApiUrl}":        "https://firstapi.training.mysite.internal.au/",
     "{SecondApiUrl}":       "https://secondapi.training.mysite.internal.au/",
+    "{ThirdApiUrl}":        "https://thirdapi.training.mysite.internal.au/",
     "{FourthApiUrl}":       "https://fourthapi.training.internal.mysite.com.au/",
     "{FifthApiUrl}":        "https://fifthapi.training.internal.mysite.com.au/",
     "{SixthApiUrl}":        "https://sixthapi.training.internal.mysite.com.au/",
@@ -140,19 +145,20 @@
  
     "{eBDRUrl}":            "",
  
-    // The rest is taken from Azure DevOps Library
+    // The rest is taken from the environment
 
-    "{DBContextDecrypted}": "{Deploy-DBContext}",
-    "{DBContextEncrypted}": "{Deploy-DBContext}",
+    "{DBContextDecrypted}": "${DBContext}",
+    "{DBContextEncrypted}": "${DBContext}",
  
-    "{MachineKey}":         "{Deploy-MachineKey}",
-    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+    "{MachineKey}":         "${MachineKey}",
+    "{DecryptionKey}":      "${DecryptionKey}",
   }, },
  
   "{{-if-}}": { '"{Env-Site}" == "Training-UK"': {
     "{InitialServiceUrl}":  "http://initialservice.training.mysite.internal.uk/ServiceImpl.svc/",
     "{FirstApiUrl}":        "https://firstapi.training.mysite.internal.uk/",
     "{SecondApiUrl}":       "https://secondapi.training.mysite.internal.uk/",
+    "{ThirdApiUrl}":        "https://thirdapi.training.mysite.internal.uk/",
     "{FourthApiUrl}":       "https://fourthapi.training.internal.mysite.co.uk/",
     "{FifthApiUrl}":        "https://fifthapi.training.internal.mysite.co.uk/",
     "{SixthApiUrl}":        "https://sixthapi.training.internal.mysite.co.uk/",
@@ -162,13 +168,13 @@
  
     "{eBDRUrl}":            "https://secure.uat.e-series.uk.experian.com/e-bureaudatareview",
  
-    // The rest is taken from Azure DevOps Library
+    // The rest is taken from the environment
 
-    "{DBContextDecrypted}": "{Deploy-DBContext}",
-    "{DBContextEncrypted}": "{Deploy-DBContext}",
+    "{DBContextDecrypted}": "${DBContext}",
+    "{DBContextEncrypted}": "${DBContext}",
  
-    "{MachineKey}":         "{Deploy-MachineKey}",
-    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+    "{MachineKey}":         "${MachineKey}",
+    "{DecryptionKey}":      "${DecryptionKey}",
   }, },
  
   "{{-if-}}": { '"{Env-Site}" == "Training-US"': {
@@ -185,13 +191,13 @@
  
     "{eBDRUrl}":            "",
  
-     // The rest is taken from Azure DevOps Library
+    // The rest is taken from the environment
 
-    "{DBContextDecrypted}": "{Deploy-DBContext}",
-    "{DBContextEncrypted}": "{Deploy-DBContext}",
+    "{DBContextDecrypted}": "${DBContext}",
+    "{DBContextEncrypted}": "${DBContext}",
  
-    "{MachineKey}":         "{Deploy-MachineKey}",
-    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+    "{MachineKey}":         "${MachineKey}",
+    "{DecryptionKey}":      "${DecryptionKey}",
   }, },
  
   // PROD
@@ -200,6 +206,7 @@
     "{InitialServiceUrl}":  "http://initialservice.mysite.internal.au/ServiceImpl.svc/",
     "{FirstApiUrl}":        "https://firstapi.mysite.internal.au/",
     "{SecondApiUrl}":       "https://secondapi.mysite.internal.au/",
+    "{ThirdApiUrl}":        "https://thirdapi.mysite.internal.au/",
     "{FourthApiUrl}":       "https://fourthapi.internal.mysite.com.au/",
     "{FifthApiUrl}":        "https://fifthapi.internal.mysite.com.au/",
     "{SixthApiUrl}":        "https://sixthapi.internal.mysite.com.au/",
@@ -209,19 +216,19 @@
  
     "{eBDRUrl}":            "",
  
-    // The rest is taken from Azure DevOps Library
+    // The rest is taken from the environment
 
-    "{DBContextDecrypted}": "{Deploy-DBContext}",
-    "{DBContextEncrypted}": "{Deploy-DBContext}",
+    "{DBContextDecrypted}": "${DBContext}",
+    "{DBContextEncrypted}": "${DBContext}",
  
-    "{MachineKey}":         "{Deploy-MachineKey}",
-    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+    "{MachineKey}":         "${MachineKey}",
+    "{DecryptionKey}":      "${DecryptionKey}",
   }, },
  
   "{{-if-}}": { '"{Env-Site}" == "Prod-UK"': {
     "{InitialServiceUrl}":  "http://initialservice.mysite.internal.uk/ServiceImpl.svc/",
     "{FirstApiUrl}":        "https://firstapi.mysite.internal.uk/",
-    "{SecondApiUrl}":       "https://secondapi.mysite.internal.uk/",
+    "{ThirdApiUrl}":        "https://thirdapi.mysite.internal.uk/",
     "{FourthApiUrl}":       "https://fourthapi.internal.mysite.co.uk/",
     "{FifthApiUrl}":        "https://fifthapi.internal.mysite.co.uk/",
     "{SixthApiUrl}":        "https://sixthapi.internal.mysite.co.uk/",
@@ -231,13 +238,13 @@
  
     "{eBDRUrl}":            "https://secure.e-series.uk.experian.com/e-bureaudatareview",
  
-    // The rest is taken from Azure DevOps Library
+    // The rest is taken from the environment
 
-    "{DBContextDecrypted}": "{Deploy-DBContext}",
-    "{DBContextEncrypted}": "{Deploy-DBContext}",
+    "{DBContextDecrypted}": "${DBContext}",
+    "{DBContextEncrypted}": "${DBContext}",
  
-    "{MachineKey}":         "{Deploy-MachineKey}",
-    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+    "{MachineKey}":         "${MachineKey}",
+    "{DecryptionKey}":      "${DecryptionKey}",
   }, },
  
   "{{-if-}}": { '"{Env-Site}" == "Prod-US"': {
@@ -254,13 +261,13 @@
  
     "{eBDRUrl}":            "",
  
-    // The rest is taken from Azure DevOps Library
+    // The rest is taken from the environment
 
-    "{DBContextDecrypted}": "{Deploy-DBContext}",
-    "{DBContextEncrypted}": "{Deploy-DBContext}",
+    "{DBContextDecrypted}": "${DBContext}",
+    "{DBContextEncrypted}": "${DBContext}",
  
-    "{MachineKey}":         "{Deploy-MachineKey}",
-    "{DecryptionKey}":      "{Deploy-DecryptionKey}",
+    "{MachineKey}":         "${MachineKey}",
+    "{DecryptionKey}":      "${DecryptionKey}",
   }, },
  
   // LOCAL (specify a single * to make all ApiUrl values local)
