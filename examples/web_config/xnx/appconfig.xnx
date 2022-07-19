@@ -64,6 +64,7 @@
   },
  
   "{{-import-}}": "endpoints.xnx",
+  "{{-import-}}": "-secrets.xnx",
  
   "{{-cmd-}}": '--expand "{{-inp-}}" "{{-out-}}"',
   "{{-inp-}}": "{InpFilePath}",

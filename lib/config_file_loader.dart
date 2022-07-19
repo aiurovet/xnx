@@ -22,6 +22,7 @@ class ConfigFileLoader {
   //////////////////////////////////////////////////////////////////////////////
 
   static const String impFileKeySep = '_';
+  static const String impTempPrefix = '-'; // import if exists and delete after
   static const String recordSep = ',';
 
   static final String allArgs = r'${@}';
@@ -235,14 +236,35 @@ class ConfigFileLoader {
     _text = _text.replaceAll('\'', '\x02');
     _text = _text.replaceAll(r'\"', '\x03');
     _text = _text.replaceAllMapped(regExp, (match) {
-      var impPath = Path.join(_importDirName, match.group(4));
-      var impPathsSerialized = match.group(5);
-      var elemSep = match.group(6) ?? '';
+      var impName = match.group(4);
 
-      var result = lf.importFiles(keywords.forImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + elemSep;
+      if ((impName == null) || impName.isEmpty) {
+        return match.group(0) ?? '';
+      }
+
+      final isTemp = impName.startsWith(impTempPrefix);
+
+      if (isTemp) {
+        impName = impName.substring(impTempPrefix.length);
+      }
+
+      final impPath = Path.join(_importDirName, impName);
+
+      if (isTemp && !Path.fileSystem.file(impPath).existsSync()) {
+        return match.group(0) ?? '';
+      }
+
+      final impPathsSerialized = match.group(5);
+      final elemSep = match.group(6) ?? '';
+
+      final result = lf.importFiles(keywords.forImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + elemSep;
 
       if (_lastModifiedStamp < lf._lastModifiedStamp) {
         _lastModifiedStamp = lf._lastModifiedStamp;
+      }
+
+      if (isTemp) {
+        Path.fileSystem.file(impPath).deleteSync();
       }
 
       return result;
