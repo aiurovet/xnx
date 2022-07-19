@@ -1,8 +1,8 @@
 import 'package:meta/meta.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/ext/string.dart';
 import 'package:xnx/flat_map.dart';
 import 'package:xnx/keywords.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/operation.dart';
 
 class Expression {
@@ -28,8 +28,8 @@ class Expression {
 
     var isThen = _exec(condition);
 
-    if (logger.isDebug) {
-      logger.debug('Condition: $condition\n...${isThen ? 'true' : 'false'}\n');
+    if (logger.isVerbose) {
+      logger.verbose('Condition: $condition\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return (isThen ? blockThen : blockElse);

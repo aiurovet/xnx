@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/convert.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/string.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/options.dart';
 
 class Xnx {
@@ -65,11 +65,11 @@ class Xnx {
       else if (errMsg == Options.help['name']) {
         return true;
       }
-      else if (_logger.isSilent) {
+      else if (_logger.isQuiet) {
         return false;
       }
 
-      var errDtl = (_logger.level >= Logger.levelDebug ? '\n\n${stackTrace.toString()}' : '');
+      var errDtl = (_logger.level >= Logger.levelVerbose ? '\n\n${stackTrace.toString()}' : '');
       errMsg = '\n*** ERROR: $errMsg$errDtl\n';
 
       _logger.error(errMsg);

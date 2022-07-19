@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/file_system_entity.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
-import 'package:xnx/logger.dart';
 
 import 'flat_map.dart';
 
@@ -372,8 +372,8 @@ class Operation {
       false
     );
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...op1: $o1\n...op2: $o2\n...${isThen ? 'true' : 'false'}\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...op1: $o1\n...op2: $o2\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return isThen;
@@ -416,8 +416,8 @@ class Operation {
         break;
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...path1: $path1\n...path2: $path2\n...${isThen ? 'true' : 'false'}\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...path1: $path1\n...path2: $path2\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return isThen;
@@ -454,8 +454,8 @@ class Operation {
       }
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...mask: $mask\n...${isThen ? 'true' : 'false'}\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...mask: $mask\n...${isThen ? 'true' : 'false'}\n');
     }
 
     switch (type) {
@@ -495,8 +495,8 @@ class Operation {
     ).hasMatch(inp));
 
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:   "$inp"\n...pattern: "$pat"\n...${isThen ? 'true' : 'false'}\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:   "$inp"\n...pattern: "$pat"\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return (type == OperationType.notMatches ? !isThen : isThen);

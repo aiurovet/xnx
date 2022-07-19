@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:test/test.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/file_oper.dart';
 import 'package:xnx/flat_map.dart';
 import 'package:xnx/keywords.dart';
 import 'package:xnx/functions.dart';
-import 'package:xnx/logger.dart';
 
 import 'helper.dart';
 

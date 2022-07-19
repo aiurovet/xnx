@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:archive/archive.dart';
 import 'package:args/args.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/config_file_info.dart';
 import 'package:xnx/config_file_loader.dart';
 import 'package:xnx/ext/env.dart';
@@ -10,7 +11,6 @@ import 'package:xnx/ext/glob.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
 import 'package:xnx/ext/stdin.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/escape_mode.dart';
 import 'package:xnx/pack_oper.dart';
 
@@ -30,12 +30,12 @@ class Options {
   static const String _envAppendSep = '${_envAppKeyPrefix}APPEND_SEP';
   static const String _envCompression = '${_envAppKeyPrefix}COMPRESSION';
   static const String _envForce = '${_envAppKeyPrefix}FORCE';
+  static const String _envImportDir = '${_envAppKeyPrefix}IMPORT_DIR';
   static const String _envListOnly = '${_envAppKeyPrefix}LIST_ONLY';
   static const String _envEscape = '${_envAppKeyPrefix}ESCAPE';
   static const String _envQuiet = '${_envAppKeyPrefix}QUIET';
-  static const String _envImportDir = '${_envAppKeyPrefix}IMPORT_DIR';
   static const String _envStartDir = '${_envAppKeyPrefix}START_DIR';
-  static const String _envVerbosity = '${_envAppKeyPrefix}VERBOSITY';
+  static const String _envVerbose = '${_envAppKeyPrefix}VERBOSE';
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -128,14 +128,11 @@ the application will define environment variable $_envStartDir''',
     'valueHelp': 'DIR',
     'defaultsTo': null,
   };
-  static final Map<String, Object?> verbosity = {
-    'name': 'verbosity',
+  static final Map<String, Object?> verbose = {
+    'name': 'verbose',
     'abbr': 'v',
-    'help': '''how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug),
-defaults to "${Logger.levels[Logger.levelDefault]}",
-the application will define environment variable $_envVerbosity,''',
-    'valueHelp': 'LEVEL',
-    'defaultsTo': null,
+    'help': '''Shows detailed log, the application will define environment variable $_envVerbose,''',
+    'negatable': false,
   };
   static final Map<String, Object?> waitAlways = {
     'name': 'wait-always',
@@ -529,13 +526,12 @@ can be used with --move to delete the source''',
     });
     addFlag(parser, quiet, (value) {
       if (_getBool(_envQuiet, quiet, value)) {
-        _logger.level = Logger.levelSilent;
+        _logger.level = Logger.levelQuiet;
       }
     });
-    addOption(parser, verbosity, (value) {
-      if (value != null) {
-        var v = _getString(_envVerbosity, value);
-        _logger.levelAsString = v;
+    addFlag(parser, verbose, (value) {
+      if (_getBool(_envVerbose, verbose, value)) {
+        _logger.level = Logger.levelVerbose;
       }
     });
     addFlag(parser, each, (value) {
@@ -740,10 +736,6 @@ can be used with --move to delete the source''',
       }
     });
 
-    if (!_logger.hasLevel) {
-      _logger.level = Logger.levelDefault;
-    }
-
     if (args.isEmpty || args.contains(helpMin)) {
       printUsage(parser);
     }
@@ -799,7 +791,7 @@ can be used with --move to delete the source''',
   //////////////////////////////////////////////////////////////////////////////
 
   void printUsage(ArgParser parser, {String? error}) {
-    if (!_logger.isSilent) {
+    if (!_logger.isQuiet) {
       stderr.writeln('''
 $appName $appVersion (C) Alexander Iurovetski 2020 - 2021
 
@@ -885,8 +877,8 @@ For more details, see README.md
       }
     }
 
-    if (_logger.isDebug) {
-      _logger.debug('App config file was${isFound ? '' : ' not'} found: "$appConfigPath"\n');
+    if (_logger.isVerbose) {
+      _logger.verbose('App config file was${isFound ? '' : ' not'} found: "$appConfigPath"\n');
     }
 
     if (!isFound) {
@@ -899,8 +891,8 @@ For more details, see README.md
   void setConfigPathAndStartDirName(String? configPath, String? dirName) {
     final runDirName = Path.currentDirectory.path;
 
-    if (_logger.isDebug) {
-      _logger.debug('''
+    if (_logger.isVerbose) {
+      _logger.verbose('''
 Run from dir: $runDirName'}
 Arg set dir:  ${dirName == null ? StringExt.unknown : '"$dirName"'}
 Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
@@ -961,8 +953,8 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
     configPath = Path.getFullPath(configPath);
     _configFileInfo = ConfigFileInfo(input: configPath, importDirName: _importDirName);
 
-    if (_logger.isDebug) {
-      _logger.debug('Start dir: "$_startDirName"\nInput file: "${_configFileInfo.filePath}"\n');
+    if (_logger.isVerbose) {
+      _logger.verbose('Start dir: "$_startDirName"\nInput file: "${_configFileInfo.filePath}"\n');
     }
 
     setAppConfigPath();

@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
+import 'package:thin_logger/thin_logger.dart';
 
-import 'package:xnx/logger.dart';
 import 'package:xnx/options.dart';
 
 class Keywords {

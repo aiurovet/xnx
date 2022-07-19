@@ -5,13 +5,13 @@ import 'package:file/file.dart';
 
 import 'package:json5/json5.dart';
 import 'package:json_path/json_path.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/command.dart';
 
 import 'package:xnx/config_file_info.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/keywords.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/ext/file.dart';
 import 'package:xnx/ext/stdin.dart';
 import 'package:xnx/ext/string.dart';
@@ -290,7 +290,7 @@ class ConfigFileLoader {
 
     _importDirName = fileInfo.importDirName;
 
-    _logger.information('Loading from $displayName');
+    _logger.info('Loading from $displayName');
 
     if (_isStdIn) {
       _file = null;

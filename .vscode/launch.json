@@ -7,7 +7,7 @@
     { "name": "---- mkicons ----", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "scripts/mkicons", "xnx", "../../out" ], },
     { "name": "ad-hoc", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-d", "../xnx-azx/examples/web_config", "-x", "Web.config.xnx.tmp", "-v", "5", "DevUK" ], },
+      "args": [ "-f", "-d", "examples/if" ], },
     { "name": "app-config", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-c ../../", "-f", "-d", "examples/multi_conf", ], },
     { "name": "help", "request": "launch", "type": "dart", "program": "bin/main.dart",

@@ -25,7 +25,7 @@
       "{OutBaseNameNoExt}": [ "=BaseNameNoExt", [ "=BaseNameNoExt", "{InpBaseName}" ] ],
     },
  
-    "{OutFilePath}": "{InpDirName}/{OutBaseNameNoExt}.generated{Extension}",
+    "{OutFilePath}": "{InpDirName}/out/{OutBaseNameNoExt}{Extension}",
  
     "{Env-Site}": "{Env}-{Site}",
  

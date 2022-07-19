@@ -1,12 +1,12 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:test/test.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/expression.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/flat_map.dart';
 import 'package:xnx/keywords.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/operation.dart';
 
 import 'helper.dart';

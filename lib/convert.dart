@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:file/file.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/command.dart';
 
 import 'package:xnx/config_result.dart';
@@ -9,7 +10,6 @@ import 'package:xnx/config_file_loader.dart';
 import 'package:xnx/config.dart';
 import 'package:xnx/flat_map.dart';
 import 'package:xnx/file_oper.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/escape_mode.dart';
 import 'package:xnx/options.dart';
 import 'package:xnx/pack_oper.dart';
@@ -246,8 +246,8 @@ class Convert {
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
     }
 
-    if (_logger.isDebug) {
-      _logger.debug('Temp file path: "$tmpFilePath"');
+    if (_logger.isVerbose) {
+      _logger.verbose('Temp file path: "$tmpFilePath"');
     }
 
     var outFile = (hasOutFile ? Path.fileSystem.file(outFilePath) : null);
@@ -260,7 +260,7 @@ class Convert {
       }
 
       if (!isChanged) {
-        _logger.information('Up to date: "$outFilePath"');
+        _logger.info('Up to date: "$outFilePath"');
         return false;
       }
     }
@@ -332,8 +332,8 @@ class Convert {
           regexPattern: getValue(mapCurr, value: _config.take.regexPattern, canReplace: true),
         )) {
         if (!_config.take.hasMatch(inpFilePathEx)) {
-          if (_logger.isDebug) {
-            _logger.debug('Does not match the take pattern: "$inpFilePathCurr"');
+          if (_logger.isVerbose) {
+            _logger.verbose('Does not match the take pattern: "$inpFilePathCurr"');
           }
           continue;
         }
@@ -344,8 +344,8 @@ class Convert {
           regexPattern: getValue(mapCurr, value: _config.skip.regexPattern, canReplace: true),
         )) {
         if (_config.skip.hasMatch(inpFilePathEx)) {
-          if (_logger.isDebug) {
-            _logger.debug('Skipping: "$inpFilePathCurr" (matches ${_config.skip.regexPattern ?? _config.skip.maskPattern})');
+          if (_logger.isVerbose) {
+            _logger.verbose('Skipping: "$inpFilePathCurr" (matches ${_config.skip.regexPattern ?? _config.skip.maskPattern})');
           }
           continue;
         }
@@ -371,8 +371,8 @@ class Convert {
       canExpandContent = !options.isListOnly && (isExpandContentOnly || getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false).parseBool());
 
       if (!curDirName.isBlank()) {
-        if (_logger.isDebug) {
-          _logger.debug('Setting current directory to: "$curDirName"');
+        if (_logger.isVerbose) {
+          _logger.verbose('Setting current directory to: "$curDirName"');
         }
 
         Path.fileSystem.currentDirectory = curDirName;
@@ -419,8 +419,8 @@ class Convert {
 
         outFilePathEx = Path.adjust(outFilePathEx);
 
-        if (_logger.isDebug) {
-          _logger.debug('''
+        if (_logger.isVerbose) {
+          _logger.verbose('''
 
 Input dir:       "${mapCurr[_config.keywords.forInpDir]}"
 Input sub-dir:   "${mapCurr[_config.keywords.forInpSubDir]}"
@@ -435,8 +435,8 @@ Input sub-path:  "${mapCurr[_config.keywords.forInpSubPath]}"
 
       outDirName = (isStdOut ? '' : Path.dirname(outFilePathEx));
 
-      if (_logger.isDebug) {
-        _logger.debug('''
+      if (_logger.isVerbose) {
+        _logger.verbose('''
 
 Output dir:  "$outDirName"
 Output path: "$outFilePathEx"
@@ -573,8 +573,8 @@ Output path: "$outFilePathEx"
       });
     }
 
-    if (_logger.isDebug) {
-      _logger.debug('...content of "${tmpFile?.path ?? StringExt.stdinDisplay}":\n\n$text');
+    if (_logger.isVerbose) {
+      _logger.verbose('...content of "${tmpFile?.path ?? StringExt.stdinDisplay}":\n\n$text');
     }
 
     if (isStdOut) {

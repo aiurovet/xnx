@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:file/file.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/command.dart';
 import 'package:xnx/expression.dart';
 import 'package:xnx/ext/env.dart';
@@ -11,7 +12,6 @@ import 'package:xnx/ext/path.dart';
 import 'package:xnx/flat_map.dart';
 import 'package:xnx/keywords.dart';
 import 'package:xnx/ext/string.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/operation.dart';
 import 'package:xnx/regexp_ex.dart';
 
@@ -308,8 +308,8 @@ class Functions {
       resStr = (hasTime ? resStr.substring(11) : null);
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:   $valueStr\n...add:     $addUnits\n...hasDate: $hasDate\n...hasTime: $hasTime\n...result:  $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:   $valueStr\n...add:     $addUnits\n...hasDate: $hasDate\n...hasTime: $hasTime\n...result:  $resStr\n');
     }
 
     return resStr;
@@ -339,8 +339,8 @@ class Functions {
         break;
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...result: $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...result: $resStr\n');
     }
 
     return resStr;
@@ -397,8 +397,8 @@ class Functions {
         break;
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:  $fileName\n...format: $secondArg\n...result: $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:  $fileName\n...format: $secondArg\n...result: $resStr\n');
     }
 
     return resStr;
@@ -431,8 +431,8 @@ class Functions {
       }
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:  $inpStr\n...find:   $fndStr\n...from:    $begPos\n...result: $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:  $inpStr\n...find:   $fndStr\n...from:    $begPos\n...result: $resStr\n');
     }
 
     return resStr;
@@ -466,8 +466,8 @@ class Functions {
         break;
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:  $inpStr\n...result: $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:  $inpStr\n...result: $resStr\n');
     }
 
     return resStr;
@@ -504,8 +504,8 @@ class Functions {
       }
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:  $inpStr\n...pattern: $patStr\n...result: $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:  $inpStr\n...pattern: $patStr\n...result: $resStr\n');
     }
 
     return resStr;
@@ -632,12 +632,12 @@ class Functions {
 
     var resStr = n1.toStringAsFixed(curNumericPrecision);
 
-    if (logger.isDebug) {
+    if (logger.isVerbose) {
       if (isUnary) {
-        logger.debug('$type\n...op:     $o1\n...result: $resStr');
+        logger.verbose('$type\n...op:     $o1\n...result: $resStr');
       }
       else {
-        logger.debug('$type\n...op1:    $o1\n...op2:    $o2\n...result: $resStr');
+        logger.verbose('$type\n...op1:    $o1\n...op2:    $o2\n...result: $resStr');
       }
     }
 
@@ -659,8 +659,8 @@ class Functions {
 
     var resStr = inpStr.replaceAll(srcStr, dstStr);
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:  $inpStr\n...from:   $srcStr\n...to:     $dstStr\n...result: $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:  $inpStr\n...from:   $srcStr\n...to:     $dstStr\n...result: $resStr\n');
     }
 
     return resStr;
@@ -692,8 +692,8 @@ class Functions {
       _fail(type, 'invalid regular expression $srcPat');
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:   $inpStr\n...pattern: $srcPat\n...flags:   $flgStr\n...to:      $dstStr\n...result:  $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:   $inpStr\n...pattern: $srcPat\n...flags:   $flgStr\n...to:      $dstStr\n...result:  $resStr\n');
     }
 
     return resStr;
@@ -735,8 +735,8 @@ class Functions {
     var txt = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var cmd = Command(text: txt, isToVar: true);
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...command: ${cmd.toString()}\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...command: ${cmd.toString()}\n');
     }
 
     return cmd.exec();
@@ -771,8 +771,8 @@ class Functions {
     var endVal = begVal + lenVal;
     var resStr = inpStr.substring(begVal, endVal);
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:  $inpStr\n...beg:    $begVal\n...end:    $endVal\n...result: $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:  $inpStr\n...beg:    $begVal\n...end:    $endVal\n...result: $resStr\n');
     }
 
     return resStr;
@@ -806,8 +806,8 @@ class Functions {
         break;
     }
 
-    if (logger.isDebug) {
-      logger.debug('$type\n...input:  $inpStr\n...result: $resStr\n');
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:  $inpStr\n...result: $resStr\n');
     } 
 
     return resStr;

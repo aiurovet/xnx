@@ -1,5 +1,6 @@
 import 'package:json5/json5.dart';
 import 'package:meta/meta.dart';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/config_key_data.dart';
 import 'package:xnx/config_result.dart';
 import 'package:xnx/config_file_loader.dart';
@@ -10,7 +11,6 @@ import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
 import 'package:xnx/flat_map.dart';
 import 'package:xnx/keywords.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/operation.dart';
 import 'package:xnx/options.dart';
 import 'package:xnx/functions.dart';
@@ -89,16 +89,8 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   ConfigResult defaultExecFlatMap(Map<String, String> map) {
-    if (_logger.isDebug) {
-      _logger.debug('$map\n');
-    }
-    else {
-      _logger.outInfo(map.containsKey(keywords.forRun) ?
-        'Run: ${expandStraight(map, map[keywords.forRun] ?? '')}\n' :
-        'Inp: ${expandStraight(map, map[keywords.forInp] ?? '')}\n'
-        'Out: ${expandStraight(map, map[keywords.forOut] ?? '')}\n'
-        'Cmd: ${expandStraight(map, map[keywords.forCmd] ?? '')}\n'
-      );
+    if (_logger.isVerbose) {
+      _logger.verbose('$map\n');
     }
 
     return ConfigResult.ok;
@@ -106,20 +98,20 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   bool exec({List<String>? args, ConfigFlatMapProc? execFlatMap}) {
-    _logger.information('Loading actions');
+    _logger.info('Loading actions');
 
     escapeMode = options.escapeMode;
 
     var all = loadSync();
 
     if (all.isEmpty) {
-      _logger.information('Nothing found');
+      _logger.info('Nothing found');
       return false;
     }
     else {
       loadAppConfig();
       
-      _logger.information('Processing actions\n');
+      _logger.info('Processing actions\n');
 
       topData = all;
       execData(null, topData, execFlatMap);
@@ -423,8 +415,8 @@ class Config {
     var isNew = (flatMapStr != prevFlatMapStr);
     prevFlatMapStr = flatMapStr;
 
-    if (_logger.isDebug) {
-      _logger.debug('Is new map: $isNew');
+    if (_logger.isVerbose) {
+      _logger.verbose('Is new map: $isNew');
     }
 
     return isNew;
@@ -433,7 +425,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   void loadAppConfig() {
-    _logger.information('Loading the application configuration');
+    _logger.info('Loading the application configuration');
 
     String? text;
 
@@ -518,8 +510,8 @@ class Config {
       '${x.key.quote()}:${x.value.quote()}'
     ).join(',')}';
 
-    if (_logger.isDebug) {
-      _logger.debug(result);
+    if (_logger.isVerbose) {
+      _logger.verbose(result);
     }
 
     return result;

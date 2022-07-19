@@ -1,8 +1,8 @@
 import 'dart:io';
+import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
-import 'package:xnx/logger.dart';
 import 'package:xnx/xnx.dart';
 
 class Command {
