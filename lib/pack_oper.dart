@@ -119,9 +119,9 @@ class PackOper {
               }
               else if (isZip) {
                 if (isDir) {
-                  zipFileEncoder?.addDirectory(entity, includeDirName: ((subPath?.isNotEmpty ?? false) || isDirOnly));
+                  zipFileEncoder?.addDirectory(entity);
                 }
-                else {
+                else if (!isDirOnly) {
                   zipFileEncoder?.addFile(entity as File);
                 }
               }

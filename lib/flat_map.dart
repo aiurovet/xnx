@@ -70,7 +70,7 @@ class FlatMap {
     var forCurDir = keywords?.forCurDir ?? '';
 
     if (forCurDir.isNotEmpty) {
-      safeValue = safeValue.replaceAll(forCurDir, Path.currentDirectory.path);
+      safeValue = safeValue.replaceAll(forCurDir, Path.currentDirectoryName);
     }
 
     for (var oldValue = ''; oldValue != safeValue;) {

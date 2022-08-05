@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/config_file_info.dart';
 import 'package:xnx/config_file_loader.dart';
+import 'package:xnx/ext/directory.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/file_system_entity.dart';
 import 'package:xnx/ext/glob.dart';
@@ -484,7 +485,7 @@ can be used with --move to delete the source''',
     _appConfigPath = '';
     _escapeMode = EscapeMode.none;
     _configFileInfo.init();
-    _startDirName = Path.currentDirectory.path;
+    _startDirName = Path.currentDirectoryName;
     _isAppendSep = false;
     _isListOnly = false;
     _isWaitAlways = false;
@@ -744,7 +745,9 @@ can be used with --move to delete the source''',
       var result = parser.parse(args);
 
       if (!isHelp) {
-        if (!isCmd) {
+        if (isCmd) {
+          setCmdStartDirName(dirName);
+        } else {
           setConfigPathAndStartDirName(configPath, dirName);
         }
 
@@ -889,7 +892,7 @@ For more details, see README.md
   //////////////////////////////////////////////////////////////////////////////
 
   void setConfigPathAndStartDirName(String? configPath, String? dirName) {
-    final runDirName = Path.currentDirectory.path;
+    final runDirName = Path.currentDirectoryName;
 
     if (_logger.isVerbose) {
       _logger.verbose('''
@@ -913,7 +916,7 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
 
     dirName = _setOtherDir(runDirName, dirName);
 
-    if ((dirName != null) && !Path.equals(Path.currentDirectory.path, dirName)) {
+    if ((dirName != null) && !Path.equals(Path.currentDirectoryName, dirName)) {
       _logger.out('cd "$dirName"\n');
       Path.currentDirectoryName = dirName;
     }
@@ -922,7 +925,7 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
       configPath = Path.getFullPath(configPath);
     }
 
-    _startDirName = Path.fileSystem.currentDirectory.path;
+    _startDirName = Path.currentDirectoryName;
 
     if (configPath == null) {
       var fileName = Path.basename(_startDirName);
@@ -958,6 +961,25 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
     }
 
     setAppConfigPath();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void setCmdStartDirName(String? dirName) {
+    if ((dirName == null) || dirName.isEmpty || (dirName == DirectoryExt.curDirAbbr)) {
+      return;
+    }
+
+    if (_isDirNameUnderCurrent(dirName)) {
+      return;
+    }
+
+    Path.currentDirectoryName = dirName;
+    _startDirName = Path.currentDirectoryName;
+
+    if (_logger.isVerbose) {
+      _logger.verbose('Start dir: "$_startDirName"');
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1004,6 +1026,20 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
     }
 
     return value;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static bool _isDirNameUnderCurrent(String dirName) {
+    final sep = Path.separator;
+    final cwd = Path.currentDirectoryName + sep;
+
+    final isAbs = Path.fileSystem.path.isAbsolute(dirName);
+
+    final prefix = (isAbs ? '' : sep);
+    final suffix = (dirName.endsWith(sep) ? '' : sep);
+
+    return (cwd.endsWith(prefix + dirName + suffix));
   }
 
   //////////////////////////////////////////////////////////////////////////////

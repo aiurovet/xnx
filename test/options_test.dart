@@ -20,7 +20,7 @@ void main() {
         var configFile = Path.fileSystem.file('a.xnx')..createSync();
 
         o.parseArgs(['-p', '6', '-q', '--xnx', 'a']);
-        expect(Path.equals(o.configFileInfo.filePath, Path.join(Path.currentDirectory.path, 'a.xnx')), true);
+        expect(Path.equals(o.configFileInfo.filePath, Path.join(Path.currentDirectoryName, 'a.xnx')), true);
         expect(Env.get('_XNX_COMPRESSION'), '6');
 
         o.parseArgs(['-p', '7', '-q', '--xnx', 'a']);
@@ -36,7 +36,7 @@ void main() {
 
         var o = Options();
 
-        var initDirName = Path.currentDirectory.path;
+        var initDirName = Path.currentDirectoryName;
         var baseName = 'a.xnx';
         var configPath = Path.join(initDirName, baseName);
 
@@ -45,7 +45,7 @@ void main() {
         Path.fileSystem.currentDirectory = initDirName;
         o.setConfigPathAndStartDirName(null, null);
         expect(Path.equals(o.configFileInfo.filePath, Path.join(initDirName, baseName)), true);
-        expect(Path.equals(Path.currentDirectory.path, initDirName), true);
+        expect(Path.equals(Path.currentDirectoryName, initDirName), true);
 
         configFile.deleteSync();
 
@@ -56,22 +56,22 @@ void main() {
         Path.fileSystem.currentDirectory = initDirName;
         o.setConfigPathAndStartDirName(configPath, null);
         expect(Path.equals(o.configFileInfo.filePath, Path.join(dirName, baseName)), true);
-        expect(Path.equals(Path.currentDirectory.path, initDirName), true);
+        expect(Path.equals(Path.currentDirectoryName, initDirName), true);
 
         Path.fileSystem.currentDirectory = initDirName;
         o.setConfigPathAndStartDirName(configPath, '~');
         expect(Path.equals(o.configFileInfo.filePath, Path.join(dirName, baseName)), true);
-        expect(Path.equals(Path.currentDirectory.path, initDirName), true);
+        expect(Path.equals(Path.currentDirectoryName, initDirName), true);
 
         Path.fileSystem.currentDirectory = initDirName;
         o.setConfigPathAndStartDirName(configPath, dirName);
         expect(Path.equals(o.configFileInfo.filePath, Path.join(dirName, baseName)), true);
-        expect(Path.equals(Path.currentDirectory.path, dirName), true);
+        expect(Path.equals(Path.currentDirectoryName, dirName), true);
 
         Path.fileSystem.currentDirectory = initDirName;
         o.setConfigPathAndStartDirName('~${Path.basename(configPath)}', Path.dirname(configPath));
         expect(Path.equals(o.configFileInfo.filePath, Path.join(initDirName, baseName)), true);
-        expect(Path.equals(Path.currentDirectory.path, dirName), true);
+        expect(Path.equals(Path.currentDirectoryName, dirName), true);
       });
     });
   });

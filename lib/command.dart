@@ -107,7 +107,7 @@ class Command {
         result = Process.runSync(path, args,
           environment: fullEnv,
           runInShell: isShellRequired,
-          workingDirectory: Path.currentDirectory.path
+          workingDirectory: Path.currentDirectoryName
         );
 
         isSuccess = (result.exitCode == 0);

@@ -184,7 +184,7 @@ void main() {
         PackOper.unarchiveSync(
           PackType.zip,
           toPath,
-          fromDir.parent.path,
+          fromDir.parent.parent.path,
           isMove: false,
         );
 

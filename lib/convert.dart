@@ -104,7 +104,7 @@ class Convert {
       return true;
     }
     else if (isPrintCwd) {
-      _logger.out(Path.currentDirectory.path);
+      _logger.out(Path.currentDirectoryName);
       return true;
     }
 

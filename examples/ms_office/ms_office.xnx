@@ -32,7 +32,7 @@
         '--xnx "{cfg-curr}" --dir "{unz-dir}"',
 
         // Compress back to a single file
-        '-p {compression} --zip --move "{unz-dir}" "{out-file}"',
+        '-p {compression} --zip --move "{unz-dir}/*" "{out-file}"',
       ],
     },
     {

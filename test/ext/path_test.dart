@@ -20,7 +20,7 @@ void main() {
         var dir = Path.fileSystem.directory('test')..createSync();
         var oldDir = Path.currentDirectory;
         Path.currentDirectory = dir;
-        var curDir = Path.currentDirectory.path;
+        var curDir = Path.currentDirectoryName;
         var sep = Path.separator;
 
         expect(Path.appendCurDirIfPathIsRelative('File not found: ', 'aaa.txt').contains(curDir), true);
