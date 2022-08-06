@@ -35,7 +35,6 @@ class Options {
   static const String _envListOnly = '${_envAppKeyPrefix}LIST_ONLY';
   static const String _envEscape = '${_envAppKeyPrefix}ESCAPE';
   static const String _envQuiet = '${_envAppKeyPrefix}QUIET';
-  static const String _envStartDir = '${_envAppKeyPrefix}START_DIR';
   static const String _envVerbose = '${_envAppKeyPrefix}VERBOSE';
 
   //////////////////////////////////////////////////////////////////////////////
@@ -124,8 +123,7 @@ the application will define environment variable $_envQuiet''',
   static final Map<String, Object?> startDir = {
     'name': 'dir',
     'abbr': 'd',
-    'help': '''startup directory,
-the application will define environment variable $_envStartDir''',
+    'help': 'directory to start in',
     'valueHelp': 'DIR',
     'defaultsTo': null,
   };
@@ -517,7 +515,7 @@ can be used with --move to delete the source''',
       }
     });
     addOption(parser, startDir, (value) {
-      dirName = _getString(_envStartDir, value);
+      dirName = value ?? '';
     });
     addOption(parser, importDir, (value) {
       _importDirName = _getString(_envImportDir, value);
@@ -970,10 +968,6 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
       return;
     }
 
-    if (_isDirNameUnderCurrent(dirName)) {
-      return;
-    }
-
     Path.currentDirectoryName = dirName;
     _startDirName = Path.currentDirectoryName;
 
@@ -1026,20 +1020,6 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
     }
 
     return value;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static bool _isDirNameUnderCurrent(String dirName) {
-    final sep = Path.separator;
-    final cwd = Path.currentDirectoryName + sep;
-
-    final isAbs = Path.fileSystem.path.isAbsolute(dirName);
-
-    final prefix = (isAbs ? '' : sep);
-    final suffix = (dirName.endsWith(sep) ? '' : sep);
-
-    return (cwd.endsWith(prefix + dirName + suffix));
   }
 
   //////////////////////////////////////////////////////////////////////////////

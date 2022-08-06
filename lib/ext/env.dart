@@ -265,6 +265,10 @@ class Env {
   //////////////////////////////////////////////////////////////////////////////
 
   static String get(String key, {String? defValue}) {
+    if (key.isEmpty) {
+      return key;
+    }
+
     var keyEx = (isWindows ? key.toUpperCase() : key);
 
     var value = (_local.isEmpty ? null : _local[keyEx]);
@@ -312,6 +316,10 @@ class Env {
   //////////////////////////////////////////////////////////////////////////////
 
   static void set<T>(String key, T value, {T? defValue}) {
+    if (key.isEmpty) {
+      return;
+    }
+
     var keyEx = (isWindows ? key.toUpperCase() : key);
 
     if ((value == null) && (defValue == null)) {

@@ -88,7 +88,7 @@ class Command {
     var errMsg = '';
     var isSuccess = false;
 
-    var oldCurDir = Path.fileSystem.currentDirectory;
+    var oldCurDir = Path.currentDirectory;
     var oldLocEnv = Env.getAllLocal();
 
     var fullEnv = Env.getAll();
@@ -138,7 +138,7 @@ class Command {
     }
 
     Env.setAllLocal(oldLocEnv);
-    Path.fileSystem.currentDirectory = oldCurDir;
+    Path.currentDirectory = oldCurDir;
 
     if (!isSuccess) {
       throw Exception(errMsg.isEmpty ? '\nExecution failed' : errMsg);

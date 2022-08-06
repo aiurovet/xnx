@@ -53,7 +53,7 @@ void main() {
       test('getFullPath', () {
         Helper.initFileSystem(fileSystem);
 
-        var curDir = Path.fileSystem.currentDirectory.path;
+        var curDir = Path.currentDirectoryName;
         var sep = Path.separator;
 
         expect(Path.equals(Path.getFullPath(''), curDir), true);

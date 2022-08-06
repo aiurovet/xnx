@@ -39,10 +39,7 @@ extension GlobExt on Glob {
   List<FileSystemEntity> listSync({String? root, bool? recursive, bool followLinks = false}) {
     var that = this;
 
-    var fullRoot = (root == null ?
-      Path.fileSystem.currentDirectory.path :
-      Path.getFullPath(root)
-    );
+    var fullRoot = (root == null ? Path.currentDirectoryName : Path.getFullPath(root));
 
     var lst = Path.fileSystem
       .directory(fullRoot)

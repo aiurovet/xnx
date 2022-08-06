@@ -119,7 +119,7 @@ extension DirectoryExt on Directory {
       var dirName = parts[0];
       var subPattern = parts[1];
 
-      dir = (dirName.isBlank() ? Path.fileSystem.currentDirectory : Path.fileSystem.directory(dirName));
+      dir = (dirName.isBlank() ? Path.currentDirectory : Path.fileSystem.directory(dirName));
       lst = dir.pathListSync(subPattern, checkExists: checkExists, takeDirs: takeDirs, takeFiles: takeFiles);
     }
     else {

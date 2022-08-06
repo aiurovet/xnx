@@ -375,7 +375,7 @@ class Convert {
           _logger.verbose('Setting current directory to: "$curDirName"');
         }
 
-        Path.fileSystem.currentDirectory = curDirName;
+        Path.currentDirectoryName = curDirName;
       }
 
       if (command.isBlank()) {
@@ -708,7 +708,7 @@ Output path: "$outFilePathEx"
 
   String getCurDirName(FlatMap map, bool canReplace) {
     var curDirName = (getValue(map, key: _config.keywords.forCurDir, canReplace: canReplace));
-    curDirName = (curDirName.isBlank() ? Path.fileSystem.currentDirectory.path : Path.getFullPath(curDirName));
+    curDirName = (curDirName.isBlank() ? Path.currentDirectoryName : Path.getFullPath(curDirName));
 
     return curDirName;
   }
