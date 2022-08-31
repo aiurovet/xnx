@@ -41,10 +41,14 @@ class Path {
   //////////////////////////////////////////////////////////////////////////////
 
   static bool contains(String source, String what) {
+    var sourceAdj = adjust(source);
+    var whatAdj = adjust(what);
+
     if (isWindowsFS) {
-      return source.toLowerCase().contains(what.toLowerCase());
+      return sourceAdj.toLowerCase().contains(whatAdj.toLowerCase());
     }
-    return source.contains(what);
+
+    return sourceAdj.contains(whatAdj);
   }
 
   //////////////////////////////////////////////////////////////////////////////

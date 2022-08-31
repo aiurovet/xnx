@@ -44,6 +44,11 @@ void main() {
 
         expect(Path.contains(r'abc de/fghi jk', r'de/fghi'), true);
         expect(Path.contains(r'Abc dE/Fghi Jk', r'de/fghi'), Path.isWindowsFS);
+
+        if (Path.isWindowsFS) {
+          expect(Path.contains(r'Abc dE/Fghi Jk', r'de\fghi'), true);
+          expect(Path.contains(r'Abc dE\Fghi Jk', r'de/fghi'), true);
+        }
       });
       test('join', () {
         Helper.initFileSystem(fileSystem);

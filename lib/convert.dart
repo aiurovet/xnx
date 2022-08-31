@@ -224,11 +224,10 @@ class Convert {
       }
     }
 
-    var commandAdj = Path.adjust(command);
-    var hasInpFile = (!isStdIn && !inpFilePath.isBlank() && Path.contains(commandAdj, inpFilePath));
+    var hasInpFile = (!isStdIn && !inpFilePath.isBlank() && Path.contains(command, inpFilePath));
 
     if (isExpandContentOnly && !hasInpFile) {
-      throw Exception('Input file path "$inpFilePath" is empty or not found in $commandAdj');
+      throw Exception('Input file path "$inpFilePath" is empty or not found in ${Path.adjust(command)}');
     }
 
     var inpFile = (hasInpFile ? Path.fileSystem.file(inpFilePath) : null);
