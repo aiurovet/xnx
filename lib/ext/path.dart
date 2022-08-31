@@ -40,6 +40,15 @@ class Path {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static bool contains(String source, String what) {
+    if (isWindowsFS) {
+      return source.toLowerCase().contains(what.toLowerCase());
+    }
+    return source.contains(what);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   static String appendCurDirIfPathIsRelative(String prefix, String? path) {
     var pathEx = (path ?? '');
     var result = '$prefix"$pathEx"';

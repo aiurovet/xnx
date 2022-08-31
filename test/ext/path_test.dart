@@ -39,6 +39,12 @@ void main() {
         expect(Path.argsToListAndDestination(fromPaths, path: '', paths: ['a']).isEmpty && (fromPaths.length == 1), true);
         expect(Path.argsToListAndDestination(fromPaths, path: 'a', paths: ['b', 'c']).isEmpty && (fromPaths.length == 3), true);
       });
+      test('contains', () {
+        Helper.initFileSystem(fileSystem);
+
+        expect(Path.contains(r'abc de/fghi jk', r'de/fghi'), true);
+        expect(Path.contains(r'Abc dE/Fghi Jk', r'de/fghi'), Path.isWindowsFS);
+      });
       test('join', () {
         Helper.initFileSystem(fileSystem);
 

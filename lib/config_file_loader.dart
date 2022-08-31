@@ -22,6 +22,7 @@ class ConfigFileLoader {
   //////////////////////////////////////////////////////////////////////////////
 
   static const String impFileKeySep = '_';
+  static const String impFindPrefix = '+'; // import if exists
   static const String impTempPrefix = '-'; // import if exists and delete after
   static const String recordSep = ',';
 
@@ -243,14 +244,15 @@ class ConfigFileLoader {
       }
 
       final isTemp = impName.startsWith(impTempPrefix);
+      final isOptional = (isTemp || impName.startsWith(impFindPrefix));
 
-      if (isTemp) {
+      if (isOptional) {
         impName = impName.substring(impTempPrefix.length);
       }
 
       final impPath = Path.join(_importDirName, impName);
 
-      if (isTemp && !Path.fileSystem.file(impPath).existsSync()) {
+      if (isOptional && !Path.fileSystem.file(impPath).existsSync()) {
         return match.group(0) ?? '';
       }
 

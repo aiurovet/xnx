@@ -135,7 +135,7 @@ extension DirectoryExt on Directory {
     var fromFullDirName = appendPathSeparator(Path.getFullPath(path));
     var toFullDirName = appendPathSeparator(Path.getFullPath(toDirName));
 
-    if (toFullDirName.contains(fromFullDirName)) {
+    if (Path.contains(toFullDirName, fromFullDirName)) {
       var action = 'Can\'t ${isMove ? 'rename' : 'copy'} directory "$fromFullDirName"';
       var target = (toFullDirName == fromFullDirName ? 'itself' : 'it\'s sub-directory $toFullDirName');
 

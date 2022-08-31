@@ -224,7 +224,7 @@ class Convert {
       }
     }
 
-    var hasInpFile = (!isStdIn && !inpFilePath.isBlank() && Path.adjust(command).contains(inpFilePath));
+    var hasInpFile = (!isStdIn && !inpFilePath.isBlank() && Path.contains(Path.adjust(command), inpFilePath));
 
     if (isExpandContentOnly && !hasInpFile) {
       throw Exception('Input file is undefined for the content expansion');
