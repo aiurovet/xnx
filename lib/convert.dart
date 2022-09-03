@@ -573,13 +573,17 @@ Output path: "$outFilePathEx"
       });
     }
 
-    if (_logger.isVerbose) {
-      _logger.verbose('...content of "${tmpFile?.path ?? StringExt.stdinDisplay}":\n\n$text');
-    }
+    // if (_logger.isVerbose) {
+    //   _logger.verbose('...content of "${tmpFile?.path ?? StringExt.stdinDisplay}":\n\n$text');
+    // }
 
     if (isStdOut) {
+      if (_logger.isVerbose) {
+        _logger.verbose('...writing result to ${StringExt.stdoutDisplay}');
+      }
       _logger.out(text);
-      return null;
+
+      tmpFile = null;
     }
     else {
       var inpFilePath = inpFile?.path ?? '';
@@ -603,6 +607,9 @@ Output path: "$outFilePathEx"
       var outDir = Path.fileSystem.directory(outDirName);
 
       if (!outDir.existsSync()) {
+        if (_logger.isVerbose) {
+          _logger.verbose('...creating directory ${outDir.path}');
+        }
         outDir.createSync(recursive: true);
       }
 
@@ -619,21 +626,38 @@ Output path: "$outFilePathEx"
       }
 
       if (tmpFile == null) {
+        if (_logger.isVerbose) {
+          _logger.verbose('...writing result to $outFilePath');
+        }
+
         Path.fileSystem.file(outFilePath)
           .writeAsStringSync(text);
       }
       else {
-        var tmpFile = Path.fileSystem.file(tmpFilePath)
+        tmpFile = Path.fileSystem.file(tmpFilePath);
+
+        if (_logger.isVerbose) {
+          _logger.verbose('...writing result to temp file ${tmpFile.path}');
+        }
+
+        tmpFile
           ..deleteIfExistsSync()
           ..writeAsStringSync(text);
 
         if (Path.equals(inpFilePath, outFilePath)) {
+          if (_logger.isVerbose) {
+            _logger.verbose('...renaming temp file to $outFilePath');
+          }
           tmpFile.renameSync(outFilePath);
         }
       }
-
-      return (isExpandContentOnly ? null : tmpFile);
     }
+
+    if (_logger.isVerbose) {
+      _logger.verbose('...expanding content completed');
+    }
+
+    return (isExpandContentOnly ? null : tmpFile);
   }
 
   //////////////////////////////////////////////////////////////////////////////
