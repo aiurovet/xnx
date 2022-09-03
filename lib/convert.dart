@@ -548,7 +548,7 @@ Output path: "$outFilePathEx"
     // Expand data
 
     if (_logger.isVerbose) {
-      _logger.verbose('...resolving regular expression pattern keys');
+      _logger.verbose('...expanding patterns in the content');
     }
 
     var regExpPrefix = _config.keywords.regExpPrefix;
@@ -579,10 +579,14 @@ Output path: "$outFilePathEx"
 
         text = newText;
       });
+
+      if (_logger.isVerbose) {
+        _logger.verbose('......result of expansion:\n\n$text');
+      }
     }
 
     if (_logger.isVerbose) {
-      _logger.verbose('......regular expression keys resolved');
+      _logger.verbose('......text expansion completed');
     }
 
     // if (_logger.isVerbose) {
@@ -666,7 +670,7 @@ Output path: "$outFilePathEx"
     }
 
     if (_logger.isVerbose) {
-      _logger.verbose('...expanding content completed');
+      _logger.verbose('...completed expanding patterns in the content');
     }
 
     return (isExpandContentOnly ? null : tmpFile);
