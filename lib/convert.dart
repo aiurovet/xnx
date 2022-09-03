@@ -553,8 +553,11 @@ Output path: "$outFilePathEx"
 
     var regExpPrefix = _config.keywords.regExpPrefix;
     var regExpSuffix = _config.keywords.regExpSuffix;
+    var laps = 0;
 
     for (var isDone = false; !isDone;) {
+      ++laps;
+
       effectiveMap.forEach((k, v) {
         isDone = true;
 
@@ -582,6 +585,10 @@ Output path: "$outFilePathEx"
 
       if (_logger.isVerbose) {
         _logger.verbose('......result of expansion:\n\n$text');
+      }
+
+      if (laps >= 5) {
+        throw Exception('The loop is too long');
       }
     }
 
