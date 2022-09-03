@@ -1,3 +1,6 @@
-# myapp-azx 0.0.1
+# xnx-azx
 
-Azure DevOps extension for myapp.
+Azure DevOps extension for the xnx utility.
+
+Copyright (c) 2022, Alexander Iurovetski
+All rights reserved under MIT license (see LICENSE file)

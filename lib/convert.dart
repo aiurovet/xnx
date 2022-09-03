@@ -547,6 +547,10 @@ Output path: "$outFilePathEx"
 
     // Expand data
 
+    if (_logger.isVerbose) {
+      _logger.verbose('...resolving regular expression pattern keys');
+    }
+
     var regExpPrefix = _config.keywords.regExpPrefix;
     var regExpSuffix = _config.keywords.regExpSuffix;
 
@@ -559,9 +563,15 @@ Output path: "$outFilePathEx"
         var rx = RegExpEx.fromDecoratedPattern(k, prefix: regExpPrefix, suffix: regExpSuffix);
 
         if (rx == null) {
+          if (_logger.isVerbose) {
+            _logger.verbose('......replacing $k with $v');
+          }
           newText = text.replaceAll(k, v);
         }
         else {
+          if (_logger.isVerbose) {
+            _logger.verbose('......replacing $text with $v');
+          }
           newText = rx.replace(text, v.toString());
         }
 
@@ -573,6 +583,9 @@ Output path: "$outFilePathEx"
       });
     }
 
+    if (_logger.isVerbose) {
+      _logger.verbose('......completed');
+    }
     // if (_logger.isVerbose) {
     //   _logger.verbose('...content of "${tmpFile?.path ?? StringExt.stdinDisplay}":\n\n$text');
     // }

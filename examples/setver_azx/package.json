@@ -1,42 +1,40 @@
 {
-  "name": "myapp-azx",
-  "version": "0.0.1",
-  "description": "Azure DevOps extension for myapp.",
+  "name": "xnx-azx",
+  "version": "0.1.44",
+  "description": "Azure DevOps extension for the xnx utility.",
   "main": "main.js",
   "scripts": {
     "start": "node main",
     "prestart": "npm run build",
     "reset": "reset",
     "build": "tsc",
-    "postbuild": "cp -p package*.json bin/ && cd bin && npm ci --production",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/myid/myapp-azx.git"
+    "url": "git+https://github.com/aiurovet/xnx-azx.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/myid/myapp-azx/issues"
+    "url": "https://github.com/aiurovet/xnx-azx/issues"
   },
-  "homepage": "https://github.com/myid/myapp-azx#readme",
+  "homepage": "https://github.com/aiurovet/xnx-azx#readme",
   "dependencies": {
-    "azure-pipelines-task-lib": "^3.1.10",
+    "azure-pipelines-task-lib": "^3.3.1",
     "fs.realpath": "^1.0.0",
-    "glob": "^7.2.0",
     "minimatch": "^3.0.4",
     "process.argv": "^0.6.0"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
     "@types/q": "^1.5.5",
+    "glob": "^8.0.3",
     "jest": "^27.5.1",
     "sync-request": "^6.1.0",
-    "tfx-cli": "^0.10.0",
-    "ts-jest": "^27.1.3",
+    "ts-jest": "^27.1.5",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4",
     "uuid": "^8.3.2"

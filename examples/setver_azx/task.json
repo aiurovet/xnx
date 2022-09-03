@@ -1,22 +1,18 @@
 {
   "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
   "id": "580d736d-a96a-45a8-b13b-41c0d9684013",
-  "name": "myapp",
-  "friendlyName": "myapp",
-  "description": "Azure DevOps Extension for the myapp utility",
-  "helpMarkDown": "[Learn more about this task](https://github.com/myid/myapp-azx/README.md)",
+  "name": "xnx",
+  "friendlyName": "xnx",
+  "description": "Azure DevOps Extension for the xnx utility",
+  "helpMarkDown": "[Learn more about this task](https://github.com/aiurovet/xnx-azx/README.md)",
   "category": "Utility",
   "visibility": [
     "Build",
     "Release"
   ],
-  "author": "Myname Mysurname",
-  "version": {
-    "Major": 0,
-    "Minor": 0,
-    "Patch": 1
-  },
-  "instanceNameFormat": "Execute myapp",
+  "author": "Alexander Iurovetski",
+  "version": { "Major": 0, "Minor": 1, "Patch": 44 },
+  "instanceNameFormat": "Expand placeholders in text files and execute external applications",
   "minimumAgentVersion": "2.105.0",
   "inputs": [
     {
@@ -31,6 +27,44 @@
         "quotes": "quotes",
         "xml": "xml",
         "html": "html"
+      }
+    },
+    {
+      "name": "startDir",
+      "type": "string",
+      "label": "Start in",
+      "required": false,
+      "helpMarkDown": "Directory to start in"
+    },
+    {
+      "name": "xnxFilePath",
+      "type": "string",
+      "label": "Xnx file",
+      "helpMarkDown": "The xnx file to process (filename or path)"
+    },
+    {
+      "name": "varFilePath",
+      "type": "string",
+      "label": "File with the tokens of AzDO variables as environment variables",
+      "required": false,
+      "helpMarkDown": "File with tokens (leave empty if not used or is the same as the xnx file)"
+    },
+    {
+      "name": "extraArgs",
+      "type": "multiLine",
+      "label": "Additional arguments",
+      "helpMarkDown": "Additional arguments"
+    },
+    {
+      "name": "logLevelName",
+      "type": "pickList",
+      "label": "Log Level",
+      "defaultValue": "normal",
+      "helpMarkDown": "The level of logging",
+      "options": {
+        "quiet": "quiet",
+        "normal": "normal",
+        "verbose": "verbose"
       }
     }
   ],

@@ -1,17 +1,17 @@
 {
   "manifestVersion": 1,
-  "id": "myapp-azx",
-  "publisher": "myid",
-  "version": "0.0.1",
-  "name": "myapp",
-  "description": "Azure DevOps extension for myapp",
+  "id": "xnx-azx",
+  "publisher": "aiurovet",
+  "version": "0.1.44",
+  "name": "xnx",
+  "description": "Azure DevOps extension for the xnx utility",
   "public": false,
   "categories": [ "Azure Repos" ],
   "targets": [ { "id": "Microsoft.VisualStudio.Services" } ],
   "icons": { "default": "images/extension-icon.png" },
   "contributions": [
     {
-      "id": "myapp-task",
+      "id": "xnx-task",
       "type": "ms.vss-distributed-task.task",
       "targets": [ "ms.vss-distributed-task.tasks" ],
       "properties": { "name": "bin" }
@@ -20,8 +20,9 @@
   "files": [
     { "path": "bin" },
     { "path": "task.json", "packagePath": "bin/task.json" },
-    { "path": "../bin/Linux/myapp", "packagePath": "bin/Linux/myapp" },
-    { "path": "../bin/macOS/myapp", "packagePath": "bin/macOS/myapp" },
-    { "path": "../bin/Windows/myapp.exe", "packagePath": "bin/Windows/myapp" }
+    { "path": "images/extension-icon.png", "packagePath": "bin/extension-icon.png" },
+    { "path": "bin/Linux/xnx", "packagePath": "bin/Linux/xnx" },
+    { "path": "bin/macOS/xnx", "packagePath": "bin/macOS/xnx" },
+    { "path": "bin/Windows/xnx.exe", "packagePath": "bin/Windows/xnx" }
   ]
 }
