@@ -95,7 +95,7 @@ jobs:
       - name: Running Integration Test 5 - setver_azx
         run: |
           bin/${{runner.os}}/xnx -d examples/setver_azx "0.1.45"
-          scripts/Check-Count.ps1 -Expected 3 -Pattern '"version": "0.1.45"' -Path "examples/setver_azx/*.json"
+          scripts/Check-Count.ps1 -Expected 4 -Pattern '"version": "0.1.45"' -Path "examples/setver_azx/*.json"
           scripts/Check-Count.ps1 -Expected 3 -Pattern '"Major": 0,|"Minor": 1,|"Patch": 45' -Path "examples/setver_azx/task.json"
           bin/${{runner.os}}/xnx -d examples/setver_azx "0.1.44"
 
