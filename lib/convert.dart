@@ -553,11 +553,8 @@ Output path: "$outFilePathEx"
 
     var regExpPrefix = _config.keywords.regExpPrefix;
     var regExpSuffix = _config.keywords.regExpSuffix;
-    var laps = 0;
 
     for (var isDone = false; !isDone;) {
-      ++laps;
-
       effectiveMap.forEach((k, v) {
         isDone = true;
 
@@ -586,19 +583,11 @@ Output path: "$outFilePathEx"
       if (_logger.isVerbose) {
         _logger.verbose('......result of expansion:\n\n$text');
       }
-
-      if (laps >= 5) {
-        throw Exception('The loop is too long');
-      }
     }
 
     if (_logger.isVerbose) {
       _logger.verbose('......text expansion completed');
     }
-
-    // if (_logger.isVerbose) {
-    //   _logger.verbose('...content of "${tmpFile?.path ?? StringExt.stdinDisplay}":\n\n$text');
-    // }
 
     if (isStdOut) {
       if (_logger.isVerbose) {

@@ -1,13 +1,14 @@
 {
   "{{-once-}}": {
-    "{full}": "$~1",
+    "{full-ex}": "$~1",
     "{bad-arg}": "$~2",
     "{{-if-}}": { '"{bad-arg}" != ""': { "{{-stop-}}": "Too many arguments passed!", }, },
 
     "{{-func-}}": {
-      "{major}": [ "=ReplaceMatch", "{full}", "^([^\\.]+).*", "$1" ],
-      "{minor}": [ "=ReplaceMatch", "{full}", "^[^\\.]+\\.([^\\.]+).*", "$1" ],
-      "{patch}": [ "=ReplaceMatch", "{full}", "^[^\\.]+\\.[^\\.]+\\.([^\\.]+).*", "$1" ],
+      "{full}": [ "=Trim", "{full-ex}" ],
+      "{major}": [ "=ReplaceMatch", "{full}", "^([^\\.\\s]+).*", "$1" ],
+      "{minor}": [ "=ReplaceMatch", "{full}", "^[^\\.\\s]+\\.([^\\.\\s]+).*", "$1" ],
+      "{patch}": [ "=ReplaceMatch", "{full}", "^[^\\.\\s]+\\.[^\\.\\s]+\\.([^\\.\\s]+).*", "$1" ],
     },
   },
 
@@ -16,7 +17,7 @@
       "{{-inp-}}": [ "package.json", "package-lock.json", "vss-extension.json", ],
       
       "/(['\"]version['\"]\\s*:\\s*['\"])([^\\.\\s]+\\.[^\\.\\s]+\\.[^\\.\\s]+)(['\"])/":
-        '${1}${~1}${3}',
+        '${1}{full}${3}',
     },
 
     {
@@ -27,17 +28,10 @@
     },
 
     {
-      "{{-inp-}}": [ "LICENSE", ],
+      "{{-inp-}}": [ "LICENSE", "README.md", ],
 
       "/(^\\s*version\\s+)(.*)$/im":
-        "${1}${~1}"
-    },
-
-    {
-      "{{-inp-}}": [ "README.md", ],
-
-      "/(^\\s*#\\s*myapp-azx\\s+)(.*)/im":
-        "${1}${~1}"
+        "${1}{full}"
     },
   ],
 

@@ -95,6 +95,9 @@ class Keywords {
   String forFnTime = '=Time';
   String forFnTitle = '=Title';
   String forFnToday = '=Today';
+  String forFnTrim = '=Trim';
+  String forFnTrimLeft = '=TrimLeft';
+  String forFnTrimRight = '=TrimRight';
   String forFnUpper = '=Upper';
   String forFnUtc = '=Utc';
   String forFnWhich = '=Which';
@@ -250,6 +253,9 @@ class Keywords {
       forFnTime = node['fnTime'] ?? forFnTime;
       forFnTitle = node['fnTitle'] ?? forFnTitle;
       forFnToday = node['fnToday'] ?? forFnToday;
+      forFnTrim = node['fnTrim'] ?? forFnTrim;
+      forFnTrimLeft = node['fnTrimLeft'] ?? forFnTrimLeft;
+      forFnTrimRight = node['fnTrimRight'] ?? forFnTrimRight;
       forFnUpper = node['fnUpper'] ?? forFnUpper;
       forFnUtc = node['fnUtc'] ?? forFnUtc;
       forFnWhich = node['fnWhich'] ?? forFnWhich;

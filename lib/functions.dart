@@ -67,6 +67,9 @@ enum FunctionType {
   time,
   title,
   today,
+  trim,
+  trimLeft,
+  trimRight,
   upper,
   utc,
   which,
@@ -246,6 +249,10 @@ class Functions {
       case FunctionType.title:
       case FunctionType.upper:
         return _execToCase(type, todo, offset: offset);
+      case FunctionType.trim:
+      case FunctionType.trimLeft:
+      case FunctionType.trimRight:
+        return _execTrim(type, todo, offset: offset);
       default:
         return null;
     }
@@ -653,11 +660,20 @@ class Functions {
     var srcStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var dstStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if (srcStr.isEmpty) {
+    var isInpEmpty = inpStr.isEmpty;
+    var isSrcEmpty = srcStr.isEmpty;
+
+    if (!isInpEmpty && isSrcEmpty) {
       _fail(type, 'search string (2nd param) should not be empty');
     }
 
-    var resStr = inpStr.replaceAll(srcStr, dstStr);
+    String resStr;
+
+    if (isInpEmpty) {
+      resStr = (isSrcEmpty ? dstStr : '');
+    } else {
+      resStr = inpStr.replaceAll(srcStr, dstStr);
+    }
 
     if (logger.isVerbose) {
       logger.verbose('$type\n...input:  $inpStr\n...from:   $srcStr\n...to:     $dstStr\n...result: $resStr\n');
@@ -672,24 +688,28 @@ class Functions {
     var cnt = todo.length;
 
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-
-    if (inpStr.isEmpty) {
-      return inpStr;
-    }
-
     var srcPat = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if (srcPat.isEmpty) {
+    var isInpEmpty = inpStr.isEmpty;
+    var isSrcEmpty = srcPat.isEmpty;
+
+    if (!isInpEmpty && isSrcEmpty) {
       _fail(type, 'undefined search pattern (2nd param)');
     }
 
     var dstStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var flgStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    var resStr = RegExpEx.fromPattern(srcPat, flags: flgStr)?.replace(inpStr, dstStr);
+    String? resStr;
 
-    if (resStr == null) {
-      _fail(type, 'invalid regular expression $srcPat');
+    if (isInpEmpty) {
+      resStr = inpStr;
+    } else {
+      resStr = RegExpEx.fromPattern(srcPat, flags: flgStr)?.replace(inpStr, dstStr);
+
+      if (resStr == null) {
+        _fail(type, 'invalid regular expression $srcPat');
+      }
     }
 
     if (logger.isVerbose) {
@@ -698,34 +718,6 @@ class Functions {
 
     return resStr;
   }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  // String _execReplaceMatchProc(Match match, String dstStr) {
-  //   return dstStr.replaceAllMapped(_rexGroup, (groupMatch) {
-  //     var s = groupMatch[1];
-
-  //     if ((s != null) && s.isNotEmpty) {
-  //       return s[1];
-  //     }
-
-  //     s = groupMatch[2];
-
-  //     if ((s != null) && s.isNotEmpty) {
-  //       return s[1];
-  //     }
-
-  //     s = (groupMatch[4] ?? groupMatch[5]);
-  //     var groupNo = _toInt(s) ?? -1;
-
-  //     if ((groupNo >= 0) && (groupNo <= match.groupCount)) {
-  //       return match[groupNo] ?? '';
-  //     }
-  //     else {
-  //       return '';
-  //     }
-  //   });
-  // }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -786,11 +778,7 @@ class Functions {
     var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
     var sepStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
 
-    if (inpStr.isEmpty) {
-      return inpStr;
-    }
-
-    String? resStr;
+    String resStr;
 
     switch (type) {
       case FunctionType.lower:
@@ -803,6 +791,38 @@ class Functions {
         resStr = inpStr.toUpperCase();
         break;
       default:
+        resStr = inpStr;
+        break;
+    }
+
+    if (logger.isVerbose) {
+      logger.verbose('$type\n...input:  $inpStr\n...result: $resStr\n');
+    } 
+
+    return resStr;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String _execTrim(FunctionType type, List<Object?> todo, {int offset = 0}) {
+    var cnt = todo.length;
+
+    var inpStr = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
+
+    String resStr;
+
+    switch (type) {
+      case FunctionType.trim:
+        resStr = inpStr.trim();
+        break;
+      case FunctionType.trimLeft:
+        resStr = inpStr.trimLeft();
+        break;
+      case FunctionType.trimRight:
+        resStr = inpStr.trimRight();
+        break;
+      default:
+        resStr = inpStr;
         break;
     }
 
@@ -872,6 +892,9 @@ class Functions {
     nameTypeMap[_toName(keywords.forFnTime)] = FunctionType.time;
     nameTypeMap[_toName(keywords.forFnTitle)] = FunctionType.title;
     nameTypeMap[_toName(keywords.forFnToday)] = FunctionType.today;
+    nameTypeMap[_toName(keywords.forFnTrim)] = FunctionType.trim;
+    nameTypeMap[_toName(keywords.forFnTrimLeft)] = FunctionType.trimLeft;
+    nameTypeMap[_toName(keywords.forFnTrimRight)] = FunctionType.trimRight;
     nameTypeMap[_toName(keywords.forFnUpper)] = FunctionType.upper;
     nameTypeMap[_toName(keywords.forFnUtc)] = FunctionType.utc;
     nameTypeMap[_toName(keywords.forFnWhich)] = FunctionType.which;
