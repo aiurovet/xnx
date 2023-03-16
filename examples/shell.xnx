@@ -1,7 +1,7 @@
 // Portable (OS-independent) commands, used via import (see in sub-folders)
 {
   "shell": {
-    "{MAIN-CHROME-OPTS}": " --headless --default-background-color=0",
+    "{MAIN-CHROME-OPTS}": " --headless --default-background-color=000000",
  
     "{{-if-}}": { '("${OS}" ==/i "linux") || ("${OS}" ==/i "macos")': {
       "{convert}": "convert",

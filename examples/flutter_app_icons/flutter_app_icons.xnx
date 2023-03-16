@@ -8,7 +8,7 @@
   "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
   // Terribly slow
-  // { "{{-cmd-}}": "firefox --headless --default-background-color=0 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
+  // { "{{-cmd-}}": "firefox --headless --default-background-color=000000 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
 
   // Sometimes fails to display svg properly,
   // { "{{-cmd-}}": "wkhtmltoimage --format png \"{{-inp-}}\" \"{{-out-}}\"" },
