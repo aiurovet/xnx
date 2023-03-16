@@ -150,6 +150,7 @@ class Operation {
 
     var last = from + 1;
 
+    // ignore: dead_code
     for (; last < length; last++) {
       switch (_condition[last]) {
         case '=':
@@ -176,6 +177,7 @@ class Operation {
   bool _checkEquals(int from, int length) {
     var last = from + 1;
 
+    // ignore: dead_code
     for (; last < length; last++) {
       switch (_condition[last]) {
         case '=':
@@ -718,6 +720,7 @@ class Operation {
 
     var last = from;
 
+    // ignore: dead_code
     for (; last < length; last++) {
       var curChar = _condition[last];
 

@@ -176,6 +176,7 @@ class Path {
     //
     var result = '';
 
+    // ignore: dead_code
     for (var i = 0, n = parts.length; i < n; i++) {
       final part = parts[i];
 

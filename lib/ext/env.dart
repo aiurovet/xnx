@@ -104,7 +104,8 @@ class Env {
             ++currPos;
           }
 
-          for (fromPos = (++currPos); envVarName.isEmpty; currPos++) {
+          // ignore: dead_code
+          for (fromPos = ++currPos; envVarName.isEmpty; currPos++) {
             if (envVarName.isNotEmpty) {
               break;
             }
