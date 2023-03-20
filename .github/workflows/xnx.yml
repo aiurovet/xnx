@@ -69,7 +69,11 @@ jobs:
 
       - name: Building the application for Windows
         if: runner.os == 'Windows'
-        run: scripts\build
+        run: |
+          echo COMSPEC=%COMSPEC%
+          echo PATH=%PATH%
+          cmd /c dir
+          scripts\build
 
       ################################################################################
 
