@@ -66,6 +66,10 @@ class Command {
       parse(text);
     }
 
+    if (_logger?.isVerbose ?? false) {
+      _logger!.verbose('Running command:\n$path ${args.join(' ')}');
+    }
+
     var outLines = '';
 
     if (isInternal && args.isNotEmpty && (args[0] == _internalPrint)) {
