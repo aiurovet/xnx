@@ -77,7 +77,7 @@ echo "Copying the executable, installation guide, readme, license, app config an
 cp -pr "${EXE}" scripts/set-as-current INSTALL.md LICENSE README.md "default.${PRJ}config" examples "${OUT}"
 
 echo "Creating the icons and moving those to the output directory"
-"${EXE}" -v -d "scripts/mkicons" "${PRJ}" "../../${OUT}" ${@}
+"${EXE}" -d "scripts/mkicons" "${PRJ}" "../../${OUT}" ${@}
 
 ################################################################################
 

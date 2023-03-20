@@ -8,14 +8,16 @@
         "{exe-chrome}": "google-chrome",
         "{exe-firefox}": "firefox",
         "{exe-msedge}": "microsoft-edge-stable",
+        "{exe-shell}": "${SHELL:-bash}",
       }, "{{-else-}}": {
         "{exe-chrome}": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
         "{exe-firefox}": "/Applications/Firefox.app/Contents/MacOS/Firefox",
         "{exe-msedge}": "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+        "{exe-shell}": "${SHELL:-zsh}",
       }, },
       "{im-convert}": "convert",
       "{sleep_0_5s}": "sleep 0.5s",
-      "{shell}": "${SHELL} -c",
+      "{shell}": "${exe-shell} -c",
       "{TMPDIR}": "${TMPDIR:-/tmp}",
     }, "{{-else-}}": { "{{-if-}}": { '"${USER}" != ""': {
       "{exe-chrome}": "chrome",

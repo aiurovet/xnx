@@ -1,2 +1,0 @@
-#!/bin/sh
-rsvg-convert "${1}" > "${2}" || exit 1
