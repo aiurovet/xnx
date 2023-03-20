@@ -21,7 +21,7 @@ jobs:
 
       ################################################################################
 
-      - uses: actions/checkout@v2
+      #- uses: actions/checkout@v2
       #- uses: dart-lang/setup-dart@v1
 
       ################################################################################
@@ -29,7 +29,7 @@ jobs:
       - name: Checking the issue
         if: runner.os == 'Windows'
         run: |
-          run: choco install -y rsvg-convert --no-progress
+          choco install -y rsvg-convert --no-progress
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert"
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert\tools"
           rsvg-convert --help
