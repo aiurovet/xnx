@@ -70,8 +70,10 @@ jobs:
       - name: Building the application for Windows
         if: runner.os == 'Windows'
         run: |
-          echo COMSPEC=%COMSPEC%
-          echo PATH=%PATH%
+          echo COMSPEC=$env:COMSPEC
+          echo SystemRoot=$env:SystemRoot
+          echo WINDIR=$env:WINDIR
+          echo PATH=$env:PATH
           cmd /c dir
           scripts\build
 
