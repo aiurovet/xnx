@@ -11,16 +11,16 @@ class Command {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static const _localPrint = r'--print';
-  static const _optionChars = r'-+';
-  static const _shellChars = '|<>()&;';
+  static const _internalPrint = r'--print';
+  static final _internalRE = RegExp(r'(^[\-]+([^\s]+))(.*)');
+  static final _isShellRequiredRE = RegExp('^[^"\']*.*[|<>()&;]');
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
   List<String> args = [];
-  bool isLocal = false;
+  bool isInternal = false;
   bool isShellRequired = false;
   bool isToVar = false;
   String path = '';
@@ -68,15 +68,15 @@ class Command {
 
     var outLines = '';
 
-    if (isLocal && args.isNotEmpty && (args[0] == _localPrint)) {
+    if (isInternal && args.isNotEmpty && (args[0] == _internalPrint)) {
       return print(_logger, args.sublist(1), isToVar: isToVar);
     }
 
-    if (path.isEmpty && !isLocal) {
+    if (path.isEmpty && !isInternal) {
       return outLines;
     }
 
-    if (canShow && !isLocal) {
+    if (canShow && !isInternal) {
       _logger?.out(toString());
     }
 
@@ -94,7 +94,7 @@ class Command {
     var fullEnv = Env.getAll();
 
     try {
-      if (isLocal) {
+      if (isInternal) {
         Xnx(logger: _logger).exec(args);
         isSuccess = true;
       }
@@ -106,7 +106,7 @@ class Command {
 
         result = Process.runSync(path, args,
           environment: fullEnv,
-          runInShell: isShellRequired,
+          runInShell: false,
           workingDirectory: Path.currentDirectoryName
         );
 
@@ -120,7 +120,7 @@ class Command {
       errMsg = e.toString();
     }
 
-    if (!isLocal && (result != null)) {
+    if (!isInternal && (result != null)) {
       if (result.stdout?.isNotEmpty ?? false) {
         outLines = result.stdout;
       }
@@ -169,17 +169,77 @@ class Command {
 
   Command parse(String? input, {bool isFull = true}) {
     args.clear();
-
     path = '';
-    isLocal = false;
+    isInternal = false;
     isShellRequired = false;
 
-    var buffer = input?.trim() ?? '';
+    var inputEx = input?.trim() ?? '';
 
-    if (buffer.isEmpty) {
+    if (inputEx.isEmpty) {
       return this;
     }
 
+    isInternal = ((_internalRE.firstMatch(inputEx)?.start ?? -1) >= 0);
+    isShellRequired = !isInternal && _isShellRequiredRE.hasMatch(inputEx);
+
+    if (isShellRequired) {
+      path = Env.getShell();
+      args..add(Env.shellOpt)..add(inputEx);
+    } else {
+      _parseSimple(inputEx);
+    }
+
+    return this;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String print(Logger? logger, List<String> args, {bool isSilent = false, bool isToVar = false}) {
+    var out = args.join(' ');
+
+    if (isToVar) {
+      return out.trim();
+    }
+    else if (!isSilent) {
+      logger?.out(out);
+    }
+
+    return '';
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  @override
+  String toString() {
+    var str = path.quote();
+
+    for (var arg in args) {
+      if (str.isNotEmpty) {
+        str += ' ';
+      }
+      str += arg.quote();
+    }
+
+    return str;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void _addArg(String arg) {
+    if (arg.isEmpty) {
+      return;
+    }
+
+    if (isInternal || path.isNotEmpty) {
+      args.add(arg);
+    } else {
+      path = arg;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  Command _parseSimple(String buffer) {
     var isArgEnd = false;
     var isEscape = false;
     var isQuoted = 0;
@@ -232,19 +292,6 @@ class Command {
           isArgEnd = true;
         }
       }
-      else {
-        if ((isQuoted == 0) && _shellChars.contains(currChar)) {
-          if (isFull) {
-            isShellRequired = true;
-            _addArg(arg);
-            arg = currChar;
-          }
-          else {
-            currNo = lastNo; // stop to avoid shell command injection
-          }
-          isArgEnd = true;
-        }
-      }
 
       if (isArgEnd) {
         _addArg(arg);
@@ -257,61 +304,6 @@ class Command {
     }
 
     return this;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String print(Logger? logger, List<String> args, {bool isSilent = false, bool isToVar = false}) {
-    var out = args.join(' ');
-
-    if (isToVar) {
-      return out.trim();
-    }
-    else if (!isSilent) {
-      logger?.out(out);
-    }
-
-    return '';
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  @override
-  String toString() {
-    var str = path.quote();
-
-    for (var arg in args) {
-      if (str.isNotEmpty) {
-        str += ' ';
-      }
-      str += arg.quote();
-    }
-
-    return str;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void _addArg(String arg) {
-    if (arg.isEmpty) {
-      return;
-    }
-
-    var firstChar = arg[0];
-
-    var hasPath = (path.isNotEmpty || isLocal);
-
-    if (!hasPath) {
-      isLocal = _optionChars.contains(firstChar);
-      hasPath = isLocal;
-    }
-
-    if (hasPath) {
-      args.add(arg);
-    }
-    else {
-      path = arg;
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

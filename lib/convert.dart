@@ -187,7 +187,7 @@ class Convert {
       var cli = Command(text: command);
       var args = cli.args;
 
-      if (cli.isLocal && args.isNotEmpty) {
+      if (cli.isInternal && args.isNotEmpty) {
         final parser = ArgParser();
 
         Options.addFlag(parser, Options.expand, (value) {

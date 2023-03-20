@@ -19,19 +19,33 @@ jobs:
 
     steps:
 
+      # ################################################################################
+
+      # - uses: actions/checkout@v2
+      # - uses: browser-actions/setup-chrome@latest
+      # - uses: dart-lang/setup-dart@v1
+
+      # ################################################################################
+
+      # - name: Installing ImageMagick for Windows
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     choco install -y imagemagick.app --no-progress
+      #     Get-ChildItem -Path "${env:ProgramFiles}" | Where-Object {($_.Name -Like 'ImageMagick*')} | %{$_.FullName} | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+
       ################################################################################
 
-      - uses: actions/checkout@v2
-      - uses: browser-actions/setup-chrome@latest
-      - uses: dart-lang/setup-dart@v1
+      - name: Installing rsvg-convert for Linux
+        if: runner.os == 'Linux'
+        run: sudo apt install librsvg2-bin
 
-      ################################################################################
+      - name: Installing rsvg-convert for macOS
+        if: runner.os == 'macOS'
+        run: brew install librsvg
 
-      - name: Installing ImageMagick for Windows
+      - name: Installing rsvg-convert for Windows
         if: runner.os == 'Windows'
-        run: |
-          choco install -y imagemagick.app --no-progress
-          Get-ChildItem -Path "${env:ProgramFiles}" | Where-Object {($_.Name -Like 'ImageMagick*')} | %{$_.FullName} | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+        run: choco install -y rsvg-convert --no-progress
 
       ################################################################################
 

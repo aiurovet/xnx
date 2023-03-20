@@ -1,49 +1,37 @@
 // Portable (OS-independent) commands, used via import (see in sub-folders)
 {
   "shell": {
-    "{MAIN-CHROME-OPTS}": " --headless --default-background-color=000000",
- 
+    "{CHROME-OPTS}": "--disable-gpu --headless --default-background-color=000000",
+
     "{{-if-}}": { '("${OS}" ==/i "linux") || ("${OS}" ==/i "macos")': {
-      "{convert}": "convert",
-      "{sleep_0_5s}": "sleep 0.5s",
- 
-      "{{-if-}}": { '"${OS}" ==/i "linux"': {
-        "{shell}": "bash -c",
-
-        "{{-if-}}": { '-w microsoft-edge-stable': {
-          "{svg2png}": "microsoft-edge-stable {MAIN-CHROME-OPTS}",
-        }, "{{-else-}}": {
-          "{svg2png}": "google-chrome {MAIN-CHROME-OPTS}", // you can use chromium too
-        } },
+      "{{-if-}}": { '("${OS}" ==/i "linux")': {
+        "{exe-chrome}": "google-chrome",
+        "{exe-firefox}": "firefox",
+        "{exe-msedge}": "microsoft-edge-stable",
       }, "{{-else-}}": {
-        "{shell}": "zsh -c",
-        "{svg2png}": '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" {MAIN-CHROME-OPTS}',
-      } },
+        "{exe-chrome}": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "{exe-firefox}": "/Applications/Firefox.app/Contents/MacOS/Firefox",
+        "{exe-msedge}": "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+      }, },
+      "{sleep_0_5s}": "sleep 0.5s",
+      "{shell}": "${SHELL} -c",
+      "{TMPDIR}": "${TMPDIR:-/tmp}",
     }, "{{-else-}}": { "{{-if-}}": { '"${USER}" != ""': {
-      "{convert}": "magick convert",
-      "{shell}": "cmd /c",
+      "{exe-chrome}": "chrome",
+      "{exe-firefox}": "firefox",
+      "{exe-msedge}": "msedge",
+      "{shell}": "${COMSPEC} /c",
       "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500",
- 
-      "{app-root}": "${ProgramFiles}",
-      "{chrome-subd}": "Google\\Chrome\\Application",
-      "{msedge-subd}": "Microsoft\\Edge\\Application",
-      "{svg2png-exe}": "{app-root}\\{msedge-subd}\\msedge.exe",
-
-      "{{-if-}}": { '! -d "{app-root}\\{msedge-subd}"': {
-        "{app-root}": "${ProgramFiles(x86)}",
-
-        "{{-if-}}": { '! -d "{app-root}\\{msedge-subd}"': {
-          "{app-root}": "${ProgramFiles}",
-          "{svg2png-exe}": "{app-root}\\{chrome-subd}\\chrome.exe",
-
-          "{{-if-}}": { '! -d "{app-root}\\{chrome-subd}"': {
-            "{app-root}": "${ProgramFiles(x86)}",
-            "{svg2png-exe}": "{app-root}\\{chrome-subd}\\chrome.exe",
-          } },
-        } },
-      } },
-      
-      "{svg2png}": '"{svg2png-exe}" {MAIN-CHROME-OPTS} --disable-gpu',
+      "{TMPDIR}": "${TEMP}",
     } } } },
+
+    "{HEADLESS-OPTS}": '{CHROME-OPTS} --window-size={dim},{dim} --screenshot={{-out-}} "file://{{-inp-}}"',
+    "{svg2png-chrome}": '{exe-chrome} {HEADLESS-OPTS}',
+    "{svg2png-firefox}": '{exe-firefox} {HEADLESS-OPTS}',
+    "{svg2png-msedge}": '{exe-msedge} {HEADLESS-OPTS}',
+
+    "{svg2png-rsvg}": 'rsvg-convert "{{-inp-}}" > "{{-out-}}"',
+
+    "{svg2png}": "{svg2png-rsvg}",
   }
 }

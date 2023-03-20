@@ -64,7 +64,7 @@
       } },
 
       "{{-out-}}": "{{-cur-dir-}}/png/{icon-name}_{dim}x{dim}.png",
-      "{{-cmd-}}": '{svg2png} --window-size={dim},{dim} --screenshot={{-out-}} "file://{{-inp-}}"',
+      "{{-cmd-}}": '{svg2png}',
     },
 
     {

@@ -1,10 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="{d}" height="{d}">
+<svg xmlns="http://www.w3.org/2000/svg" width="{dim}" height="{dim}">
 
-<g style="fill: none; stroke: none;">
-    <rect width="100%" height="100%" />
-    <image x="0%" y="0%" width="100%" height="100%" xlink:href="file://{img-src-dir}/custom.svg" />
-	Sorry, your browser does not support SVG!
+<defs>
+	<style>
+		g {
+			fill: none;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+			stroke-width: 2;
+		}
+    rect {
+      fill: {fill};
+    }
+		text {
+			font-family: Sans Serif;
+			font-size: 200%;
+			vertical-align: middle;
+		}
+	</style>
+</defs>
+
+<rect width="100%" height="100%" />
+
+<g transform="scale({scale})">
+    <g transform="translate(150, 30) scale(3.25, 6)">
+        <g transform="translate(0, 26.5) skewY(-10)">
+            <text x="85" y="45" style="fill: red; stroke: red;">A</text>
+            <text x="115" y="45" style="fill: green; stroke: green;">B</text>
+            <text x="100" y="80" style="fill: blue; stroke: blue;">C</text>
+        </g>
+    </g>
+
+    Sorry, your browser does not support SVG!
 </g>
 
 </svg>
+

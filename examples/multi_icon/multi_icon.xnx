@@ -1,17 +1,18 @@
 {
   "{{-import-}}": "../shell.xnx",
 
-  // Do not enclose the output path {{-out-}} in quotes, as this will not work.
-  // So try to avoid paths containing spaces (existing bug in Chromium)
-  "{{-cmd-}}": '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
+  "{{-cmd-}}": "{svg2png}",
 
   "{{-can-expand-content-}}": true,
   "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
   "{img-src-dir}": "{{-cur-dir-}}/svg",
 
-  "{t}": [ "edit", "find", "save" ],
-  "{d}": [ 20, 40, 80, 160 ],
-  "{{-inp-}}": "{{-cur-dir-}}/resizer.svg",
-  "{{-out-}}": "{{-cur-dir-}}/png/icon-{t}-{d}x{d}.png",
+  "{typ}": [ "edit", "find", "save" ],
+  "{dim}": [ 20, 40, 80, 160 ],
+  "{{-func-}}": {
+    "{scale}": [ "=Div", "{dim}", "100" ],
+  },
+  "{{-inp-}}": "{{-cur-dir-}}/svg/{typ}.svg",
+  "{{-out-}}": "{{-cur-dir-}}/png/icon-{typ}-{dim}x{dim}.png",
 }

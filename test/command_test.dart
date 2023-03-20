@@ -17,6 +17,7 @@ void main() {
         Env.cmdEscape = '`';
 
         var c = Command();
+        var cmdShell = Env.getShell();
 
         expect(c.parse(null).path.isEmpty && c.args.isEmpty, true);
         expect(c.parse('').path.isEmpty && c.args.isEmpty, true);
@@ -24,13 +25,12 @@ void main() {
         expect((c.parse('abc def ghi').path.length == 3) && (c.args.length == 2), true);
         expect((c.parse('"abc" "d\'e\'f" \'g"hi"\'').path.length == 3) && (c.args.length == 2), true);
         expect((c.parse('"ab c" "d \'e\' f" \'g  "hi"\'').path.length == 4) && (c.args.length == 2), true);
-        expect((c.parse('abc def|ghi').path.length == 3) && (c.args.length == 3), true);
-        expect((c.parse('abc def|ghi', isFull: false).path.length == 3) && (c.args.length == 1), true);
-        expect((c.parse('abc def > ghi').path.length == 3) && (c.args.length == 3), true);
-        expect((c.parse('abc def\\| ghi').path.length == 3) && (c.args.length == 3), true);
-        expect((c.parse('abc def`| ghi').path.length == 3) && (c.args.length == 2), true);
-        expect((c.parse('abc def``| ghi').path.length == 3) && (c.args.length == 3), true);
-        expect(c.parse('abc "def``| ghi"').args[0], 'def``| ghi');
+        expect((c.parse('abc def|ghi').path == cmdShell) && c.isShellRequired && (c.args.length == 2), true);
+        expect((c.parse('abc def|ghi', isFull: false).path == cmdShell) && c.isShellRequired && (c.args.length == 2), true);
+        expect((c.parse('abc def > ghi').path == cmdShell) && c.isShellRequired && (c.args.length == 2), true);
+        expect((c.parse('abc def\\| ghi').path == cmdShell) && c.isShellRequired && (c.args.length == 2), true);
+        expect((c.parse('abc def`| ghi').path == cmdShell) && c.isShellRequired && (c.args.length == 2), true);
+        expect((c.parse('abc def``| ghi').path == cmdShell) && c.isShellRequired && (c.args.length == 2), true);
         expect(c.parse('abc def\\t\\r\\n').args[0], 'def\\t\\r\\n');
         expect(c.parse("abc 'def\\t\\r\\n'").args[0], 'def\\t\\r\\n');
         expect(c.parse('abc \'"d e f"\'').args[0], '"d e f"');

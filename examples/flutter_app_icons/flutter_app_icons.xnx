@@ -7,85 +7,87 @@
 
   "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
-  // Terribly slow
-  // { "{{-cmd-}}": "firefox --headless --default-background-color=000000 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
+  "{org-dim}": "750",
 
-  // Sometimes fails to display svg properly,
-  // { "{{-cmd-}}": "wkhtmltoimage --format png \"{{-inp-}}\" \"{{-out-}}\"" },
-
-  // Not the best quality
-  // { "{{-cmd-}}": "convert \"{{-inp-}}\" \"{{-out-}}\"" },
-
-  // Not the best quality
-  // { "{{-cmd-}}": "inkscape -z -e \"{{-out-}}\" -w {d} -h {d} \"{{-inp-}}\"" },
-
-  // The most accurate
-  // Do not enclose the output path {{-out-}} in quotes, as this will not work.
-  // So try to avoid paths containing spaces (existing bug in Chromium)
-
-  "{{-cmd-}}": '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
+  "{{-cmd-}}": "{svg2png}",
 
   "{img-src-dir}": "{{-cur-dir-}}/_assets/images",
 
   "{{-inp-}}": "{img-src-dir}/app{m}.svg",
 
+  "{solid-fill}": "#f5cba7",
+
   "{R}": [
     {
       "{suf}": [
-        { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" },
-        { "{m}": "", "{D}": "mipmap" }
+        { "{m}": [ "_background", "_foreground" ], "{D}": "drawable", "{fill}": "none" },
+        { "{m}": "_foreground", "{D}": "mipmap", "{fill}": "{solid-fill}" }
       ],
 
-      "{dim}": [
-        { "{d}":   48, "{r}": "m" },
-        { "{d}":   72, "{r}": "h" },
-        { "{d}":   96, "{r}": "xh" },
-        { "{d}":  144, "{r}": "xxh" },
-        { "{d}":  192, "{r}": "xxxh" }
+      "{dim-res-mul}": [
+        { "{dim}":   48, "{res}": "m" },
+        { "{dim}":   72, "{res}": "h" },
+        { "{dim}":   96, "{res}": "xh" },
+        { "{dim}":  144, "{res}": "xxh" },
+        { "{dim}":  192, "{res}": "xxxh" }
       ],
 
-      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
+      "{{-func-}}": {
+        "{scale}": [ "=Div", "{dim}", "{org-dim}" ],
+      },
+
+      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{res}dpi/ic_launcher{m}.png"
     },
 
     {
       "{suf}": null,
 
-      "{m}": "",
+      "{m}": "_foreground",
+      "{fill}": "{solid-fill}",
 
-      "{dim}": [
-        { "{d}": 1024, "{r}": 1024, "{k}": 1 },
-        { "{d}":   20, "{r}":   20, "{k}": 1 },
-        { "{d}":   40, "{r}":   20, "{k}": 2 },
-        { "{d}":   60, "{r}":   20, "{k}": 3 },
-        { "{d}":   29, "{r}":   29, "{k}": 1 },
-        { "{d}":   58, "{r}":   29, "{k}": 2 },
-        { "{d}":   87, "{r}":   29, "{k}": 3 },
-        { "{d}":   40, "{r}":   40, "{k}": 1 },
-        { "{d}":   80, "{r}":   40, "{k}": 2 },
-        { "{d}":  120, "{r}":   40, "{k}": 3 },
-        { "{d}":   50, "{r}":   50, "{k}": 1 },
-        { "{d}":  100, "{r}":   50, "{k}": 2 },
-        { "{d}":   57, "{r}":   57, "{k}": 1 },
-        { "{d}":  114, "{r}":   57, "{k}": 2 },
-        { "{d}":   60, "{r}":   60, "{k}": 1 },
-        { "{d}":  120, "{r}":   60, "{k}": 2 },
-        { "{d}":  180, "{r}":   60, "{k}": 3 },
-        { "{d}":   72, "{r}":   72, "{k}": 1 },
-        { "{d}":  144, "{r}":   72, "{k}": 2 },
-        { "{d}":   76, "{r}":   76, "{k}": 1 },
-        { "{d}":  152, "{r}":   76, "{k}": 2 },
-        { "{d}":  167, "{r}": 83.5, "{k}": 2 }
+      "{dim-res-mul}": [
+        { "{dim}": 1024, "{res}": 1024, "{mul}": 1 },
+        { "{dim}":   20, "{res}":   20, "{mul}": 1 },
+        { "{dim}":   40, "{res}":   20, "{mul}": 2 },
+        { "{dim}":   60, "{res}":   20, "{mul}": 3 },
+        { "{dim}":   29, "{res}":   29, "{mul}": 1 },
+        { "{dim}":   58, "{res}":   29, "{mul}": 2 },
+        { "{dim}":   87, "{res}":   29, "{mul}": 3 },
+        { "{dim}":   40, "{res}":   40, "{mul}": 1 },
+        { "{dim}":   80, "{res}":   40, "{mul}": 2 },
+        { "{dim}":  120, "{res}":   40, "{mul}": 3 },
+        { "{dim}":   50, "{res}":   50, "{mul}": 1 },
+        { "{dim}":  100, "{res}":   50, "{mul}": 2 },
+        { "{dim}":   57, "{res}":   57, "{mul}": 1 },
+        { "{dim}":  114, "{res}":   57, "{mul}": 2 },
+        { "{dim}":   60, "{res}":   60, "{mul}": 1 },
+        { "{dim}":  120, "{res}":   60, "{mul}": 2 },
+        { "{dim}":  180, "{res}":   60, "{mul}": 3 },
+        { "{dim}":   72, "{res}":   72, "{mul}": 1 },
+        { "{dim}":  144, "{res}":   72, "{mul}": 2 },
+        { "{dim}":   76, "{res}":   76, "{mul}": 1 },
+        { "{dim}":  152, "{res}":   76, "{mul}": 2 },
+        { "{dim}":  167, "{res}": 83.5, "{mul}": 2 }
       ],
 
-      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
+      "{{-func-}}": {
+        "{scale}": [ "=Div", "{dim}", "{org-dim}" ],
+      },
+
+      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{res}x{res}@{mul}x.png"
     },
 
     {
-      "{m}": "",
+      "{m}": "_foreground",
+      "{fill}": "{solid-fill}",
 
-      "{dim}": [
-        { "{d}": [ 16, 32, ], "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{d}x{d}.png" },
-        { "{d}": 180, "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png" }
+      "{dim-res-mul}": [
+        { "{dim}": [ 16, 32, ],
+          "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
+          "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{dim}x{dim}.png" },
+        { "{dim}": 180,
+          "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
+          "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png" }
       ],
     }
   ]

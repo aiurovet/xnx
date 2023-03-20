@@ -19,6 +19,8 @@ class Env {
   static final String homeKey = (isWindows ? 'USERPROFILE' : 'HOME');
   static final String pathKey = 'PATH';
   static final String userKey = (isWindows ? 'USERNAME' : 'USER');
+  static final String shellKey = (isWindows ? 'COMSPEC' : 'SHELL');
+  static final String shellOpt = (isWindows ? '/c' : '-c');
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -295,6 +297,7 @@ class Env {
   static String getHome() => get(homeKey);
   static Directory getHomeDirectory() => Path.fileSystem.directory(getHome());
   static String getOs() => Platform.operatingSystem;
+  static String getShell() => get(shellKey);
   static String getUser() => get(userKey);
 
   //////////////////////////////////////////////////////////////////////////////
