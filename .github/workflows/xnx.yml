@@ -32,7 +32,8 @@ jobs:
           choco install -y rsvg-convert --no-progress
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert"
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert\tools"
-          rsvg-convert --help
+          dir C:\Windows\system32\cmd.exe
+          C:\Windows\system32\cmd.exe /c rsvg-convert --help
 
       ################################################################################
 
