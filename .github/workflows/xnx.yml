@@ -22,8 +22,8 @@ jobs:
       # ################################################################################
 
       - name: Checking the issue
+        if: runner.os == 'Windows'
         run: |
-          if: runner.os == 'Windows'
           run: choco install -y rsvg-convert --no-progress
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert"
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert\tools"
