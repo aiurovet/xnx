@@ -19,7 +19,12 @@ jobs:
 
     steps:
 
-      # ################################################################################
+      ################################################################################
+
+      - uses: actions/checkout@v2
+      #- uses: dart-lang/setup-dart@v1
+
+      ################################################################################
 
       - name: Checking the issue
         if: runner.os == 'Windows'
@@ -28,9 +33,6 @@ jobs:
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert"
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert\tools"
           rsvg-convert --help
-
-      - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1
 
       ################################################################################
 
