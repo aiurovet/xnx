@@ -17,7 +17,7 @@
       }, },
       "{im-convert}": "convert",
       "{sleep_0_5s}": "sleep 0.5s",
-      "{shell}": "${exe-shell} -c",
+      "{shell}": '"${exe-shell}" -c',
       "{TMPDIR}": "${TMPDIR:-/tmp}",
     }, "{{-else-}}": { "{{-if-}}": { '"${USER}" != ""': {
       "{exe-chrome}": "chrome",

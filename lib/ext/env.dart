@@ -8,6 +8,7 @@ class Env {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static final bool isMacOS = Platform.isMacOS;
   static final bool isWindows = Platform.isWindows;
   static final String defCmdEscape = r'';
   static final String pathPathSeparator = (isWindows ? ';' : ':');
@@ -297,7 +298,7 @@ class Env {
   static String getHome() => get(homeKey);
   static Directory getHomeDirectory() => Path.fileSystem.directory(getHome());
   static String getOs() => Platform.operatingSystem;
-  static String getShell() => get(shellKey);
+  static String getShell() => get(shellKey, defValue: (isMacOS ? 'zsh' : (isWindows ? 'cmd' : 'bash')));
   static String getUser() => get(userKey);
 
   //////////////////////////////////////////////////////////////////////////////
