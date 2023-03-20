@@ -105,7 +105,7 @@
         ]
       }, "{{-else-}}": { "{{-if-}}": { '"${OS}" ==/i "windows"': {
         "{{-run-}}": [
-          '{convert} "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{out-dir}/{icon-name}.ico"',
+          '{im-convert} "{icon-pthp}_16x16.png" "{icon-pthp}_24x24.png" "{icon-pthp}_32x32.png" "{icon-pthp}_48x48.png" "{icon-pthp}_256x256.png" "{out-dir}/{icon-name}.ico"',
         ]
       } } } } } }
     },
