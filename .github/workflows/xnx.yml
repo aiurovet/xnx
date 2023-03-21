@@ -21,20 +21,8 @@ jobs:
 
       ################################################################################
 
-      #- uses: actions/checkout@v2
-      #- uses: dart-lang/setup-dart@v1
-
-      ################################################################################
-
-      - name: Checking the issue
-        if: runner.os == 'Windows'
-        run: |
-          choco install -y rsvg-convert --no-progress
-          dir "C:\ProgramData\chocolatey\lib\rsvg-convert"
-          dir "C:\ProgramData\chocolatey\lib\rsvg-convert\tools"
-          dir C:\Windows\system32\cmd.exe
-          echo PATH = $env:PATH
-          C:\Windows\system32\cmd.exe /c 'rsvg-convert --help'
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
 
       ################################################################################
 
@@ -48,7 +36,10 @@ jobs:
 
       - name: Installing rsvg-convert for Linux
         if: runner.os == 'Linux'
-        run: sudo apt install librsvg2-bin
+        run: |
+          sudo apt install librsvg2-bin
+          echo ${env:ProgramData}
+          echo ${env:ProgramData}\chocolatey\lib\rsvg-convert\tools | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       - name: Installing rsvg-convert for macOS
         if: runner.os == 'macOS'
