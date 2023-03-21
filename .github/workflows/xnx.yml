@@ -33,7 +33,8 @@ jobs:
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert"
           dir "C:\ProgramData\chocolatey\lib\rsvg-convert\tools"
           dir C:\Windows\system32\cmd.exe
-          C:\Windows\system32\cmd.exe /c rsvg-convert --help
+          echo PATH = $env:PATH
+          C:\Windows\system32\cmd.exe /c 'rsvg-convert --help'
 
       ################################################################################
 

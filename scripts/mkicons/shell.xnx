@@ -17,7 +17,7 @@
       }, },
       "{im-convert}": "convert",
       "{sleep_0_5s}": "sleep 0.5s",
-      "{shell}": "${exe-shell} -c",
+      "{shell}": '"${exe-shell}" -c',
       "{TMPDIR}": "${TMPDIR:-/tmp}",
     }, "{{-else-}}": { "{{-if-}}": { '"${USER}" != ""': {
       "{exe-chrome}": "chrome",
@@ -30,11 +30,11 @@
     } } } },
 
     "{HEADLESS-OPTS}": '{CHROME-OPTS} --window-size={dim},{dim} --screenshot={{-out-}} "file://{{-inp-}}"',
-    "{svg2png-chrome}": '{exe-chrome} {HEADLESS-OPTS}',
-    "{svg2png-firefox}": '{exe-firefox} {HEADLESS-OPTS}',
-    "{svg2png-msedge}": '{exe-msedge} {HEADLESS-OPTS}',
+    "{svg2png-chrome}": '{exe-chrome} {HEADLESS-OPTS}', // currently, produces 800x600 images only
+    "{svg2png-firefox}": '{exe-firefox} {HEADLESS-OPTS}', // very slow
+    "{svg2png-msedge}": '{exe-msedge} {HEADLESS-OPTS}', // same issue as in Chrome
 
-    "{svg2png-rsvg}": 'rsvg-convert "{{-inp-}}" > "{{-out-}}"',
+    "{svg2png-rsvg}": 'rsvg-convert "{{-inp-}}" > "{{-out-}}"', // the best, but requires librsvg to be installed
 
     "{svg2png}": "{svg2png-rsvg}",
   }
