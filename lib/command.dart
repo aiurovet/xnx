@@ -172,7 +172,7 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Command parse(String? input, {bool isFull = true}) {
+  Command parse(String? input) {
     args.clear();
     path = '';
     isInternal = false;
@@ -190,7 +190,7 @@ class Command {
     final inpArgs = shellSplit(inputEx);
 
     if (isShellRequired) {
-      path = Env.getShell();
+      path = Env.getShell(isQuoted: false);
       args.add(Env.shellOpt);
 
       if (!Env.isWindows) {
@@ -198,7 +198,7 @@ class Command {
         return this;
       }
     } else {
-      path = inpArgs[0];
+      path = inpArgs[0].unquote();
 
       if (!isInternal) {
         inpArgs.removeAt(0);

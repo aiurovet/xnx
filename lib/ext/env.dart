@@ -298,8 +298,23 @@ class Env {
   static String getHome() => get(homeKey);
   static Directory getHomeDirectory() => Path.fileSystem.directory(getHome());
   static String getOs() => Platform.operatingSystem;
-  static String getShell() => get(shellKey, defValue: (isMacOS ? 'zsh' : (isWindows ? 'cmd' : 'bash')));
   static String getUser() => get(userKey);
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String getShell({bool isQuoted = false}) {
+    final path = get(shellKey);
+    
+    if (path.isEmpty) {
+      return getShellDefault();
+    }
+
+    return (isQuoted ? path.quote() : path);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static String getShellDefault() => (isMacOS ? 'zsh' : (isWindows ? 'cmd' : 'bash'));
 
   //////////////////////////////////////////////////////////////////////////////
 
