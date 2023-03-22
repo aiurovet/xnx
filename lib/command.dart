@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:io/io.dart';
 import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
@@ -13,7 +14,7 @@ class Command {
 
   static const _internalPrint = r'--print';
   static final _internalRE = RegExp(r'(^[\-]+([^\s]+))(.*)');
-  static final _isShellRequiredRE = RegExp('^[^"\']*.*[|<>()&;]');
+  static final _isShellRequiredRE = RegExp('^[^"\']*.*[`|<>()&;]');
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -186,11 +187,28 @@ class Command {
     isInternal = ((_internalRE.firstMatch(inputEx)?.start ?? -1) >= 0);
     isShellRequired = !isInternal && _isShellRequiredRE.hasMatch(inputEx);
 
+    final inpArgs = shellSplit(inputEx);
+
     if (isShellRequired) {
       path = Env.getShell();
-      args..add(Env.shellOpt)..add(inputEx);
+      args.add(Env.shellOpt);
+
+      if (!Env.isWindows) {
+        args.add(inputEx);
+        return this;
+      }
     } else {
-      _parseSimple(inputEx);
+      path = inpArgs[0];
+
+      if (!isInternal) {
+        inpArgs.removeAt(0);
+      }
+    }
+
+    args.addAll(inpArgs);
+
+    for (var i = 0, n = args.length; i < n; i++) {
+      args[i] = args[i].unquote();
     }
 
     return this;
@@ -225,89 +243,6 @@ class Command {
     }
 
     return str;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void _addArg(String arg) {
-    if (arg.isEmpty) {
-      return;
-    }
-
-    if (isInternal || path.isNotEmpty) {
-      args.add(arg);
-    } else {
-      path = arg;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  Command _parseSimple(String buffer) {
-    var isArgEnd = false;
-    var isEscape = false;
-    var isQuoted = 0;
-
-    var currChar = '';
-    var nextChar = currChar;
-    var arg = '';
-
-    for (var currNo = 0, lastNo = buffer.length - 1; ; currNo++) {
-      if (currNo > lastNo) {
-        if (arg.isNotEmpty) {
-          _addArg(arg);
-        }
-        break;
-      }
-
-      currChar = (currNo == 0 ? buffer[0] : nextChar);
-      nextChar = (currNo < lastNo ? buffer[currNo + 1] : '');
-
-      if (!isEscape && (isQuoted == 0) && (currChar == Env.cmdEscape)) {
-        isEscape = true;
-        continue;
-      }
-      if (isEscape) {
-        isEscape = false;
-      }
-      else if ((currChar == ' ') || (currChar == '\t')) {
-        if (arg.isEmpty) {
-          continue;
-        }
-        isArgEnd = (isQuoted <= 0);
-      }
-      else if (currChar == "'") {
-        if (isQuoted <= 0) {
-          isQuoted = 1;
-          continue;
-        }
-        else if (isQuoted == 1) {
-          isQuoted = 0;
-          isArgEnd = true;
-        }
-      }
-      else if (currChar == '"') {
-        if (isQuoted <= 0) {
-          isQuoted = 2;
-          continue;
-        }
-        else if (isQuoted == 2) {
-          isQuoted = 0;
-          isArgEnd = true;
-        }
-      }
-
-      if (isArgEnd) {
-        _addArg(arg);
-        arg = '';
-        isArgEnd = false;
-      }
-      else {
-        arg += currChar;
-      }
-    }
-
-    return this;
   }
 
   //////////////////////////////////////////////////////////////////////////////
