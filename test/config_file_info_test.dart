@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:xnx/config_file_info.dart';
 
 void main() {
-  group('ConfigKeyData', () {
+  group('ConfigFileInfo', () {
     test('init', () {
       var x = ConfigFileInfo();
 

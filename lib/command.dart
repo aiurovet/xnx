@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:io/io.dart';
 import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
@@ -14,7 +13,10 @@ class Command {
 
   static const _internalPrint = r'--print';
   static final _internalRE = RegExp(r'(^[\-]+([^\s]+))(.*)');
-  static final _isShellRequiredRE = RegExp('^[^"\']*.*[`|<>()&;]');
+  static final _isShellRequiredRE = RegExp('^[^"\']*.*[$_shellChars]');
+  static final _shellChars = RegExp.escape('`&;|<>[](){}');
+  static final _splitArgRE = RegExp('([^$_shellChars]*)([$_shellChars]+)([^$_shellChars]*)');
+  static final _splitArgsRE = RegExp('(\'[^\']*\')|("[^"]*")|([^\\s]+)');
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
@@ -42,7 +44,7 @@ class Command {
         throw Exception('Either command text, or executable path with arguments expected');
       }
 
-      parse(text);
+      split(text);
     }
     else {
       if (path != null) {
@@ -64,7 +66,7 @@ class Command {
 
   String exec({String? text, bool canExec = true, bool canShow = true}) {
     if (text != null) {
-      parse(text);
+      split(text);
     }
 
     if (_logger?.isVerbose ?? false) {
@@ -155,8 +157,8 @@ class Command {
   //////////////////////////////////////////////////////////////////////////////
 
   static String getStartCommand({bool escapeQuotes = false}) {
-    var path = Platform.resolvedExecutable;
-    var args = <String>[];
+    final path = Platform.resolvedExecutable;
+    final args = <String>[];
 
     var scriptPath = Platform.script.path;
 
@@ -168,50 +170,6 @@ class Command {
     args.addAll(Platform.executableArguments);
 
     return Command(path: path, args: args).toString();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  Command parse(String? input) {
-    args.clear();
-    path = '';
-    isInternal = false;
-    isShellRequired = false;
-
-    var inputEx = input?.trim() ?? '';
-
-    if (inputEx.isEmpty) {
-      return this;
-    }
-
-    isInternal = ((_internalRE.firstMatch(inputEx)?.start ?? -1) >= 0);
-    isShellRequired = !isInternal && _isShellRequiredRE.hasMatch(inputEx);
-
-    final inpArgs = shellSplit(inputEx);
-
-    if (isShellRequired) {
-      path = Env.getShell(isQuoted: false);
-      args.add(Env.shellOpt);
-
-      if (!Env.isWindows) {
-        args.add(inputEx);
-        return this;
-      }
-    } else {
-      path = inpArgs[0].unquote();
-
-      if (!isInternal) {
-        inpArgs.removeAt(0);
-      }
-    }
-
-    args.addAll(inpArgs);
-
-    for (var i = 0, n = args.length; i < n; i++) {
-      args[i] = args[i].unquote();
-    }
-
-    return this;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -231,6 +189,36 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  Command split(String? input) {
+    args.clear();
+    path = '';
+    isInternal = false;
+    isShellRequired = false;
+
+    var inputEx = input?.trim() ?? '';
+
+    if (inputEx.isEmpty) {
+      return this;
+    }
+
+    isInternal = ((_internalRE.firstMatch(inputEx)?.start ?? -1) >= 0);
+    isShellRequired = _isShellRequiredRE.hasMatch(inputEx);
+
+    if (isShellRequired && !isInternal) {
+      path = Env.getShell(isQuoted: false);
+      args.insert(0, Env.shellOpt);
+
+      if (!Env.isWindows) {
+        args.add(inputEx);
+        return this;
+      }
+    }
+
+    return _splitArgs(inputEx);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   @override
   String toString() {
     var str = path.quote();
@@ -243,6 +231,66 @@ class Command {
     }
 
     return str;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  void _addArg(String arg) {
+    if (arg.isEmpty) {
+      return;
+    }
+
+    if (!isInternal && path.isEmpty) {
+      path = arg.unquote();
+    } else {
+      args.add(arg.unquote());
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  bool _splitArg(String input) {
+    var wasSplit = false;
+
+    input.replaceAllMapped(_splitArgRE, (m) {
+      wasSplit = true;
+
+      for (var i = 1; i <= 3; i++) {
+        var sub = m.group(i);
+
+        if ((sub != null) && sub.isNotEmpty) {
+          _addArg(sub);
+        }
+      }
+
+      return '';
+    });
+
+    return wasSplit;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  Command _splitArgs(String input) {
+    args.clear();
+
+    input.replaceAllMapped(_splitArgsRE, (m) {
+      for (var i = 1; i <= 3; i++) {
+        var arg = m.group(i);
+
+        if (arg == null) {
+          continue;
+        }
+
+        if ((i != 3)  || !_splitArg(arg)) {
+          _addArg(arg);
+        }
+      }
+
+      return '';
+    });
+
+    return this;
   }
 
   //////////////////////////////////////////////////////////////////////////////
