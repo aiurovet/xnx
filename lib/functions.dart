@@ -167,16 +167,6 @@ class Functions {
     if (numericPrecisionStr != null) {
       numericPrecision = (num.tryParse(numericPrecisionStr)?.floor() ?? numericPrecision);
     }
-
-    var cmdEscape = data[keywords.forCmdEscape]?.toString().trim() ?? Env.defCmdEscape;
-
-    if (cmdEscape.isEmpty) {
-      Env.cmdEscape = Env.defCmdEscape;
-    }
-
-    if (Path.rexSeparator.hasMatch(cmdEscape)) {
-      throw Exception('Invalid command escape character, as no kind of directory separator is allowed: / \\');
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

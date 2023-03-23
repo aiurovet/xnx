@@ -9,7 +9,6 @@ class Keywords {
   // The names for keys in the application configuration file itself
   //////////////////////////////////////////////////////////////////////////////
 
-  String forCmdEscape = 'cmdEscape';
   String forNumericPrecision = 'numericPrecision';
   String forKeyAsRegExp = 'keyAsRegExp';
 
@@ -107,6 +106,11 @@ class Keywords {
   String regExpPrefix = '/';
   String regExpSuffix = '/';
 
+  final shellNames = <String>[
+    'ash', 'bash', 'cmd', 'command', 'csh', 'fish', 'ion', 'ksh',
+    'pdksh', 'pwsh', 'powershell', 'scsh', 'sh', 'tcsh', 'zsh',
+  ];
+
   //////////////////////////////////////////////////////////////////////////////
   // Derived
   //////////////////////////////////////////////////////////////////////////////
@@ -143,6 +147,7 @@ class Keywords {
     if (logger != null) {
       this.logger = logger;
     }
+
     if (options != null) {
       this.options = options;
     }
@@ -153,6 +158,12 @@ class Keywords {
   //////////////////////////////////////////////////////////////////////////////
 
   void init(Map data) {
+    final newShellNames = data['shellNames'] as List?;
+
+    if (newShellNames != null) {
+      shellNames..clear()..addAll(newShellNames.map((x) => x.toString()));
+    }
+
     var rawNode = data['keywords'];
 
     if (rawNode != null) {
@@ -163,7 +174,6 @@ class Keywords {
 
       forCanExpandContent = node['kwCanExpandContent'] ?? forCanExpandContent;
       forCmd = node['kwCmd'] ?? forCmd;
-      forCmdEscape = node['kwCmdEscape'] ?? forCmdEscape;
       forCurDir = node['kwCurDir'] ?? forCurDir;
       forDetectPaths = node['kwDetectPaths'] ?? forDetectPaths;
       forEscapeMode = node['kwEscapeMode'] ?? forEscapeMode;

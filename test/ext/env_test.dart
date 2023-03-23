@@ -1,14 +1,15 @@
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:xnx/ext/env.dart';
+import 'package:xnx/ext/path.dart';
 import '../helper.dart';
 
 void main() {
   Helper.forEachMemoryFileSystem((fileSystem) {
+    Helper.initFileSystem(fileSystem);
+
     group('Environment', () {
       test('clearLocal', () {
-        Helper.initFileSystem(fileSystem);
-
         Env.clearLocal();
         expect(Env.getAllLocal().length, 0);
         Env.set('XNX_A', 'A');
@@ -18,8 +19,6 @@ void main() {
       });
 
       test('expand', () {
-        Helper.initFileSystem(fileSystem);
-
         Env.clearLocal();
         Env.set('XNX_A', 'A');
         Env.set('XNX_B', 'B');
@@ -33,15 +32,11 @@ void main() {
       });
 
       test('get', () {
-        Helper.initFileSystem(fileSystem);
-
         expect(Env.get(Env.homeKey), Platform.environment[Env.homeKey]);
         expect(Env.get(Env.homeKey.toLowerCase()), Env.isWindows ? Platform.environment[Env.homeKey] : '');
       });
 
       test('getAll', () {
-        Helper.initFileSystem(fileSystem);
-
         Env.clearLocal();
         expect(Env.getAll().length, Platform.environment.length);
         Env.set('XNX_A', 'A');
@@ -53,8 +48,6 @@ void main() {
       });
 
       test('getAllLocal', () {
-        Helper.initFileSystem(fileSystem);
-
         Env.clearLocal();
         expect(Env.getAllLocal().length, 0);
         Env.set('XNX_A', 'A');
@@ -66,18 +59,25 @@ void main() {
       });
 
       test('getHome', () {
-        Helper.initFileSystem(fileSystem);
-
         expect(Env.getHome(), Platform.environment[Env.isWindows ? 'USERPROFILE' : 'HOME']);
       });
       test('homeKey', () {
-        Helper.initFileSystem(fileSystem);
-
         expect(Env.homeKey, (Env.isWindows ? 'USERPROFILE' : 'HOME'));
       });
+      test('isShell', () {
+        final shellNames = <String>['ash'];
+        expect([
+          Env.isShell(null, shellNames),
+          Env.isShell('', shellNames),
+          Env.isShell('ash', shellNames),
+          Env.isShell('aash', shellNames),
+          Env.isShell('ashh', shellNames),
+          Env.isShell('ash.exe', shellNames),
+          Env.isShell('abc${Path.separator}ash', shellNames),
+          Env.isShell('abc${Path.separator}ash.com', shellNames),
+        ], [false, false, true, false, false, Env.isWindows, true, Env.isWindows]);
+      });
       test('set', () {
-        Helper.initFileSystem(fileSystem);
-
         Env.clearLocal();
         Env.set('XNX_A', 'A');
         expect(Env.get('XNX_A'), 'A');
@@ -90,8 +90,6 @@ void main() {
         expect(Env.get(Env.homeKey), 'A');
       });
       test('which', () {
-        Helper.initFileSystem(fileSystem);
-
         expect(Env.which('').isEmpty, true);
         expect(Env.which(Env.isWindows ? 'xcopy' : 'ls').isEmpty, true);
       });

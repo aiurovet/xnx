@@ -48,37 +48,25 @@ void main() {
       test('quote', () {
         Helper.initFileSystem(fileSystem);
 
-        // Env.setEscape(r'^');
-        // expect('a ^"\'b\'"c'.quote(), '\'a ^^"^\'b^\'"c\'');
-
-        // Env.setEscape();
         expect(''.quote(), '');
-        expect('"'.quote(), '"');
-        expect("'".quote(), "'");
+        expect(StringExt.quot.quote(), StringExt.quot);
+        expect(StringExt.apos.quote(), StringExt.apos);
         expect(' '.quote(), '" "');
         expect('a b c '.quote(), '"a b c "');
         expect('a"b"c'.quote(), 'a"b"c');
         expect('a "b"c'.quote(), '\'a "b"c\'');
         expect('a \'b\'c'.quote(), '"a \'b\'c"');
-        //expect('a \\"\'b\'"c'.quote(), '\'a \\\\"\\\'b\\\'"c\'');
       });
 
       test('unquote', () {
         Helper.initFileSystem(fileSystem);
 
-        // Env.setEscape(r'^');
-        // expect('\'a ^^"^\'b^\'"c\''.unquote(), 'a ^"\'b\'"c');
-
-        // Env.setEscape();
         expect(''.unquote(), '');
-        expect('"'.unquote(), '"');
-        expect("'".unquote(), "'");
+        expect(StringExt.apos.unquote(), StringExt.apos);
+        expect(StringExt.quot.unquote(), StringExt.quot);
         expect('" "'.unquote(), ' ');
         expect('"a b c "'.unquote(), 'a b c ');
         expect('a"b"c'.unquote(), 'a"b"c');
-        // expect('\'a "b"c\''.unquote(), 'a "b"c');
-        // expect('"a \'b\'c"'.unquote(), 'a \'b\'c');
-        // expect('\'a \\\\"\\\'b\\\'"c\''.unquote(), 'a \\"\'b\'"c');
       });
     });
   });

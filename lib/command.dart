@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:thin_logger/thin_logger.dart';
+import 'package:xnx/config.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
@@ -12,8 +13,6 @@ class Command {
   //////////////////////////////////////////////////////////////////////////////
 
   static const _internalPrint = r'--print';
-  static final _internalRE = RegExp(r'(^[\-]+([^\s]+))(.*)');
-  static final _isShellRequiredRE = RegExp('^[^"\']*.*[$_shellChars]');
   static final _shellChars = RegExp.escape('`&;|<>[](){}');
   static final _splitArgRE = RegExp('([^$_shellChars]*)([$_shellChars]+)([^$_shellChars]*)');
   static final _splitArgsRE = RegExp('(\'[^\']*\')|("[^"]*")|([^\\s]+)');
@@ -23,8 +22,8 @@ class Command {
   //////////////////////////////////////////////////////////////////////////////
 
   List<String> args = [];
+  bool isInShell = false;
   bool isInternal = false;
-  bool isShellRequired = false;
   bool isToVar = false;
   String path = '';
 
@@ -32,12 +31,14 @@ class Command {
   // Internals
   //////////////////////////////////////////////////////////////////////////////
 
+  Config? _config;
   Logger? _logger;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Command({String? path, List<String>? args, String? text, this.isToVar = false, Logger? logger}) {
+  Command({String? path, List<String>? args, String? text, Config? config, this.isInShell = false, this.isToVar = false, Logger? logger}) {
     _logger = logger;
+    _config = config;
 
     if (text?.isNotEmpty ?? false) {
       if ((path?.isNotEmpty ?? false) || (args?.isNotEmpty ?? false)) {
@@ -193,7 +194,6 @@ class Command {
     args.clear();
     path = '';
     isInternal = false;
-    isShellRequired = false;
 
     var inputEx = input?.trim() ?? '';
 
@@ -201,20 +201,31 @@ class Command {
       return this;
     }
 
-    isInternal = ((_internalRE.firstMatch(inputEx)?.start ?? -1) >= 0);
-    isShellRequired = _isShellRequiredRE.hasMatch(inputEx);
+    _splitArgs(inputEx);
 
-    if (isShellRequired && !isInternal) {
-      path = Env.getShell(isQuoted: false);
-      args.insert(0, Env.shellOpt);
-
-      if (!Env.isWindows) {
-        args.add(inputEx);
-        return this;
-      }
+    if (inputEx[0] == _internalPrint[0]) {
+      isInternal = true;
+      return this;
+    }
+    
+    if (!isInShell) {
+      isInShell = args.any((x) => _shellChars.contains(x));
+    }
+    
+    if (!isInShell || Env.isShell(path, _config?.keywords.shellNames)) {
+      return this;
     }
 
-    return _splitArgs(inputEx);
+    if (Env.isWindows) {
+      args.insertAll(0, [Env.shellOpt, path]);
+    } else {
+      inputEx = _removePath(inputEx, path);
+      args = [Env.shellOpt, '${path.quote()} $inputEx'];
+    }
+
+    path = Env.getShell();
+
+    return this;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -245,6 +256,27 @@ class Command {
     } else {
       args.add(arg.unquote());
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  String _removePath(String input, String path) {
+    var pathLen = path.length;
+
+    if (input.length < pathLen) {
+      return input;
+    }
+
+    switch (input[0]) {
+      case StringExt.apos:
+      case StringExt.quot:
+        pathLen += 2;
+        break;
+      default:
+        break;
+    }
+
+    return input.substring(pathLen).trim();
   }
 
   //////////////////////////////////////////////////////////////////////////////

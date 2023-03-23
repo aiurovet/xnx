@@ -10,18 +10,30 @@ class Env {
 
   static final bool isMacOS = Platform.isMacOS;
   static final bool isWindows = Platform.isWindows;
-  static final String defCmdEscape = r'';
-  static final String pathPathSeparator = (isWindows ? ';' : ':');
+  static final String searchPathSeparator = (isWindows ? ';' : ':');
 
-  static String cmdEscape = defCmdEscape;
-  static String escape = r'\'; // for any OS
+  static String escape = getDefaultEscape();
+  static const String escapePosix = r'\';
+  static const String escapeWin = '^';
+  static String escapeApos = escape + StringExt.apos;
   static String escapeEscape = (escape + escape);
+  static String escapeQuot = escape + StringExt.quot;
 
   static final String homeKey = (isWindows ? 'USERPROFILE' : 'HOME');
   static final String pathKey = 'PATH';
   static final String userKey = (isWindows ? 'USERNAME' : 'USER');
   static final String shellKey = (isWindows ? 'COMSPEC' : 'SHELL');
   static final String shellOpt = (isWindows ? '/c' : '-c');
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Avoid prepending any command with shell if its first argument's basename
+  // without extension represents one of the strings below. The extension is 
+  // checked as being empty, could also be either '.exe' or '.com' (Windows)
+  //
+  // Configurable via *.xnxconfig
+  //////////////////////////////////////////////////////////////////////////////
+
+  static final _shellExtns = (isWindows ? <String>[ '', 'exe', 'com' ] : <String>[ '' ]);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -295,6 +307,8 @@ class Env {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static String getDefaultEscape() => (isWindows ? escapeWin : escapePosix);
+  static String getDefaultShell() => (isMacOS ? 'zsh' : (isWindows ? 'cmd' : 'bash'));
   static String getHome() => get(homeKey);
   static Directory getHomeDirectory() => Path.fileSystem.directory(getHome());
   static String getOs() => Platform.operatingSystem;
@@ -306,15 +320,11 @@ class Env {
     final path = get(shellKey);
     
     if (path.isEmpty) {
-      return getShellDefault();
+      return getDefaultShell();
     }
 
     return (isQuoted ? path.quote() : path);
   }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String getShellDefault() => (isMacOS ? 'zsh' : (isWindows ? 'cmd' : 'bash'));
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -331,6 +341,30 @@ class Env {
     set('OS', Platform.operatingSystem);
     set('OS_FULL', Platform.operatingSystemVersion);
     set('TEMP', Path.fileSystem.systemTempDirectory.path);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  static bool isShell(String? command, List<String>? shellNames) {
+    if ((shellNames == null) || (command == null) || command.isEmpty) {
+      return false;
+    }
+
+    command = command.unquote().trim();
+
+    if (command.isEmpty || (command == getShell())) {
+      return false;
+    }
+
+    if (!_shellExtns.contains(Path.extension(command))) {
+      return false;
+    }
+
+    if (!shellNames.contains(Path.basenameWithoutExtension(command))) {
+      return false;
+    }
+
+    return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -367,9 +401,18 @@ class Env {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void setEscape([String? newEscape]) {
-    escape = newEscape ?? r'\';
-    escapeEscape = escape + escape;
+  static void setEscape({String? char, FileSystem? fileSystem}) {
+    if (char != null) {
+      escape = char;
+    } else if (fileSystem != null) {
+      escape = (Path.isWindowsFS ? escapeWin : escapePosix);
+    } else {
+      escape = getDefaultEscape();
+    }
+
+    escapeEscape = (escape + escape);
+    escapeApos = escape + StringExt.apos;
+    escapeQuot = escape + StringExt.quot;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -378,7 +421,7 @@ class Env {
     subPath = Path.adjust(subPath);
 
     if (!Path.isAbsolute(subPath)) {
-      final topPaths = Env.get(Env.pathKey).split(Env.pathPathSeparator);
+      final topPaths = Env.get(Env.pathKey).split(Env.searchPathSeparator);
 
       for (var topPath in topPaths) {
         final fullPath = Path.join(topPath, subPath);

@@ -8,6 +8,7 @@ import 'package:xnx/command.dart';
 import 'package:xnx/config_result.dart';
 import 'package:xnx/config_file_loader.dart';
 import 'package:xnx/config.dart';
+import 'package:xnx/ext/env.dart';
 import 'package:xnx/flat_map.dart';
 import 'package:xnx/file_oper.dart';
 import 'package:xnx/escape_mode.dart';
@@ -29,12 +30,9 @@ class Convert {
 
   static const String fileTypeTmp = '.tmp';
 
-  static final RegExp rexExeSub = RegExp(r'^[\s]*[\-]');
-  static final RegExp rexExeSubExpand = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
-  static final RegExp rexExeSubKeepTime = RegExp(r'(^|[\s])(--(copy|copy-newer|move|move-newer))([\s]|$)');
-  static final RegExp rexExeSubForce = RegExp(r'(^|[\s])(-f|--force)([\s]|$)');
-  static final RegExp rexExeSubPrint = RegExp(r'(^|[\s])(--print)([\s]|$)');
-  static final RegExp rexIsShellCmd = RegExp(r'[\$\(\)\[\]\<\>\`\&\|]');
+  static final RegExp isSubCmdRE = RegExp(r'^[\s]*[\-]');
+  static final RegExp isSubCmdExpandRE = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
+  static final RegExp isSubCmdKeepTimeRE = RegExp(r'(^|[\s])(--(copy|copy-newer|move|move-newer))([\s]|$)');
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -255,7 +253,7 @@ class Convert {
     if (!isForced && (inpFile != null) && (outFile != null) && !isSamePath) {
       var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
-      if (!isChanged && !rexExeSubKeepTime.hasMatch(command)) {
+      if (!isChanged && !isSubCmdKeepTimeRE.hasMatch(command)) {
         isChanged = (outFile.compareLastModifiedStampToSync(toLastModifiedStamp: _config.lastModifiedStamp) < 0);
       }
 
@@ -366,8 +364,8 @@ class Convert {
         command = getValue(mapCurr, key: _config.keywords.forCmd, canReplace: false);
       }
 
-      isSubRun = rexExeSub.hasMatch(command);
-      isExpandContentOnly = isSubRun && rexExeSubExpand.hasMatch(command);
+      isSubRun = isSubCmdRE.hasMatch(command);
+      isExpandContentOnly = isSubRun && isSubCmdExpandRE.hasMatch(command);
       canExpandContent = !options.isListOnly && (isExpandContentOnly || getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false).parseBool());
 
       if (!curDirName.isBlank()) {
@@ -519,10 +517,10 @@ Output path: "$outFilePathEx"
         case EscapeMode.xml:
           var vv = v
             .replaceAll('&', '&amp;')
-            .replaceAll("'", '&apos;')
+            .replaceAll(StringExt.apos, '&apos;')
             .replaceAll('>', '&gt;')
             .replaceAll('<', '&lt;')
-            .replaceAll('"', '&quot;');
+            .replaceAll(StringExt.quot, '&quot;');
 
           if (escapeMode == EscapeMode.html) {
             vv = vv
@@ -534,8 +532,8 @@ Output path: "$outFilePathEx"
         case EscapeMode.quotes:
           var vv = v
             .replaceAll(r'\', r'\\')
-            .replaceAll(r'"', r'\"')
-            .replaceAll(r"'", r"\'");
+            .replaceAll(StringExt.quot, Env.escapeQuot)
+            .replaceAll(StringExt.apos, Env.escapeApos);
 
           effectiveMap[k] = vv;
           return;
@@ -818,11 +816,6 @@ Output path: "$outFilePathEx"
 
     return (value ?? '');
   }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  bool isShellCommand(String command) =>
-      rexIsShellCmd.hasMatch(command);
 
   //////////////////////////////////////////////////////////////////////////////
 

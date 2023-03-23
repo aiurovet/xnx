@@ -1,5 +1,7 @@
 import 'dart:core';
 
+import 'package:xnx/ext/env.dart';
+
 
 extension StringExt on String {
 
@@ -7,9 +9,11 @@ extension StringExt on String {
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
+  static const String apos = "'";
   static const int eotCode = 4;
   static final String eot = String.fromCharCode(StringExt.eotCode);
   static const String newLine = '\n';
+  static const String quot = '"';
 
   static const String stdinDisplay = '<stdin>';
   static const String stdinPath = '-';
@@ -48,18 +52,16 @@ extension StringExt on String {
       return this;
     }
 
-    var q = (contains('"') ? "'" : '"');
+    var q = (contains(StringExt.quot) ? StringExt.apos : StringExt.quot);
 
-    return q + this + q;
+    var result = this;
 
-    // var result = this;
+    if (Env.escape.isNotEmpty && contains(q)) {
+      result = replaceAll(Env.escape, Env.escapeEscape);
+      result = result.replaceAll(q, Env.escape + q);
+    }
 
-    // if (Env.escape.isNotEmpty && contains(q)) {
-    //   result = replaceAll(Env.escape, Env.escapeEscape);
-    //   result = result.replaceAll(q, Env.escape + q);
-    // }
-
-    // return q + result + q;
+    return q + result + q;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -72,19 +74,20 @@ extension StringExt on String {
     }
 
     var q = this[0];
-    var hasQ = (((q == "'") || (q == '"')) && (q == this[len - 1]));
+    var isQuoted = (((q == StringExt.apos) || (q == StringExt.quot)) && (q == this[len - 1]));
 
-    return (hasQ ? substring(1, (len - 1)) : this);
+    var result = (isQuoted ? substring(1, (len - 1)) : this);
 
-    // var result = (hasQ ? substring(1, (len - 1)) : this);
+    if (!result.contains(Env.escape)) {
+      return result;
+    }
 
-    // if (result.contains(Env.escape)) {
-    //   result = result.replaceAll(Env.escape + "'", "'");
-    //   result = result.replaceAll(Env.escape + '"', '"');
-    //   result = result.replaceAll(Env.escapeEscape, Env.escape);
-    // }
-
-    // return result;
+    return result
+      .replaceAll(Env.escapeEscape, '\x01')
+      .replaceAll(Env.escapeApos, StringExt.apos)
+      .replaceAll(Env.escapeQuot, StringExt.quot)
+      .replaceAll(Env.escape, '')
+      .replaceAll('\x01', Env.escape);
   }
 
   //////////////////////////////////////////////////////////////////////////////

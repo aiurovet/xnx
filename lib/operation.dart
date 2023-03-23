@@ -552,13 +552,13 @@ class Operation {
       curChr = _condition[curPos];
 
       switch (curChr) {
-        case '"':
+        case StringExt.quot:
           _begPos = -1;
           if (!isQuote1) {
             isQuote2 = !isQuote2;
           }
           continue;
-        case "'":
+        case StringExt.apos:
           _begPos = -1;
           if (!isQuote2) {
             isQuote1 = !isQuote1;

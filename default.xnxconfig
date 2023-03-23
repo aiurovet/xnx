@@ -6,21 +6,19 @@
 // the application directory
 
 {
-  // An escape character to use in command-line arguments
-  // Both \ and / are disallowed in order to ensure correct path interpretation
-  // The most obvious candidate is the back-tick ` (like in PowerShell), but
-  // the whole concept is discouraged, as there will be situations when you
-  // won't be able to avoid using the backslash for apostrophes or quotes in
-  // JSON-compliant string data
-  // Having two kinds of escaping in a single string does not appeal to me,
-  // but in case you want that, you have such option
-  cmdEscape: '',
-
   // Treat a key as a regular expression if it starts with the noted prefix and ends with the noted suffix
   myKeyAsRegExp: { prefix: '/', suffix: '/', },
 
   // The precision to use in floating-point data and mathematical functions
   numericPrecision: 6,
+
+  // Avoid prepending any command with shell if its first argument's basename without extension
+  // represents one of the following strings. The extension is always checked as being empty or
+  // under Windows, also could be '.exe' or '.com':
+  shellNames: [
+    'ash', 'bash', 'cmd', 'command', 'csh', 'fish', 'ion', 'ksh',
+    'pdksh', 'pwsh', 'powershell', 'scsh', 'sh', 'tcsh', 'zsh',
+  ],
 
   keywords: {
     // A key to define in this file the keyword for numeric precision
@@ -28,9 +26,6 @@
 
     // A key to define in this file the keyword for keyAsRegExp property,
     kwKeyAsRegExp: 'myKeyAsRegExp',
-
-    // A key to define in this file the keyword for escape character for commands
-    kwCmdEscape: 'cmdEscape',
 
     // Boolean flag to allow automatic content expansion to a temporary file before executing the actual command
     kwCanExpandContent: '{{-can-expand-content-}}',

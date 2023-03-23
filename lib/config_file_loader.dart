@@ -233,9 +233,9 @@ class ConfigFileLoader {
 
     var lf = ConfigFileLoader(keywords: keywords, logger: _logger);
 
-    _text = _text.replaceAll(r'\\', '\x01');
-    _text = _text.replaceAll('\'', '\x02');
-    _text = _text.replaceAll(r'\"', '\x03');
+    _text = _text.replaceAll(Env.escapeEscape, '\x01');
+    _text = _text.replaceAll(Env.escapeApos, '\x02');
+    _text = _text.replaceAll(Env.escapeQuot, '\x03');
     _text = _text.replaceAllMapped(regExp, (match) {
       var impName = match.group(4);
 
@@ -271,9 +271,9 @@ class ConfigFileLoader {
 
       return result;
     });
-    _text = _text.replaceAll('\x03', r'\"');
-    _text = _text.replaceAll('\x02', '\'');
-    _text = _text.replaceAll('\x01', r'\\');
+    _text = _text.replaceAll('\x03', Env.escapeQuot);
+    _text = _text.replaceAll('\x02', Env.escapeApos);
+    _text = _text.replaceAll('\x01', Env.escapeEscape);
 
     return this;
   }

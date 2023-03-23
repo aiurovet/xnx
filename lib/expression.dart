@@ -107,8 +107,8 @@ class Expression {
       }
 
       switch (curChar) {
-        case '"':
-        case "'":
+        case StringExt.apos:
+        case StringExt.quot:
           if (!isEscaped) {
             if (isQuoted) {
               if (curChar == quote) {

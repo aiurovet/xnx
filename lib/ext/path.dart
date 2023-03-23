@@ -1,6 +1,7 @@
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:xnx/ext/directory.dart';
+import 'package:xnx/ext/env.dart';
 import 'string.dart';
 
 class Path {
@@ -224,6 +225,8 @@ class Path {
     isCaseSensitive = !Path.equals('A', 'a');
 
     driveSeparator = (isWindowsFS ? ':' : '');
+
+    Env.setEscape(fileSystem: newFileSystem);
   }
 
   //////////////////////////////////////////////////////////////////////////////
