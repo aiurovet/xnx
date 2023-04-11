@@ -7,8 +7,9 @@ import 'helper.dart';
 /// Test entry point
 ///
 void main() {
-  var c = Command();
+  ShellCmd.resetShell();
   var n = ShellCmd.lineBreak;
+  var c = Command();
 
   Helper.forEachMemoryFileSystem((fs) {
     Helper.initFileSystem(fs);
