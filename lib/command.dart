@@ -98,15 +98,6 @@ class Command extends ShellCmd {
       errMsg = e.toString();
     }
 
-    if (!isSuccess) {
-      stderr.writeln('''
-*** DBG: command: $text
-*** DBG: exited:  ${result?.exitCode ?? ''}
-*** DBG: stdout:  ${result?.stdout ?? ''}
-*** DBG: stderr:  ${result?.stderr ?? ''}
-''');
-    }
-
     if (!isInternal && (result != null)) {
       outLines = result.stdout ?? '';
 

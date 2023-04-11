@@ -100,8 +100,8 @@ jobs:
       - name: Running Integration Test 4 - multi_icon
         run: |
           bin/${{runner.os}}/xnx -d examples/multi_icon
-          scripts/Check-Count.ps1 -Expected 12 -Path "examples/multi_icon/png"
-          bin/${{runner.os}}/xnx -d examples/multi_icon --remove png
+          scripts/Check-Count.ps1 -Expected 12 -Path "examples/multi_icon/out"
+          bin/${{runner.os}}/xnx -d examples/multi_icon --remove out
 
       ################################################################################
 
