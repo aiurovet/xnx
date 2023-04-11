@@ -7,7 +7,6 @@ import 'helper.dart';
 /// Test entry point
 ///
 void main() {
-  ShellCmd.resetShell();
   var n = ShellCmd.lineBreak;
   var c = Command();
 

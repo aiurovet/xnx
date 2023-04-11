@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:shell_cmd/shell_cmd.dart';
 import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/convert.dart';
 import 'package:xnx/ext/env.dart';
@@ -13,7 +12,6 @@ class Xnx {
 
   Xnx({Logger? logger}) {
     Env.init();
-    ShellCmd.resetShell();
 
     if (logger != null) {
       _logger = logger;

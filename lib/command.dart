@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:shell_cmd/shell_cmd.dart';
 import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/config.dart';
-import 'package:xnx/ext/directory.dart';
 import 'package:xnx/ext/env.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
@@ -88,10 +87,7 @@ class Command extends ShellCmd {
           throw Exception('Executable is not defined for $text');
         }
 
-        result = runSync(
-          environment: fullEnv,
-          runInShell: runInShell,
-          workingDirectory: DirectoryExt.curDirAbbr);
+        result = runSync(environment: fullEnv, runInShell: runInShell);
         isSuccess = (result.exitCode == 0);
       }
     }

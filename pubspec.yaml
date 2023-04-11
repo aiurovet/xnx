@@ -17,7 +17,7 @@ dependencies:
   glob: ^2.1.0
   meta: ^1.8.0
   path: ^1.8.2
-  shell_cmd: ^0.2.2
+  shell_cmd: ^0.2.4
   string_scanner: ^1.2.0
   thin_logger: ^0.2.0
 
