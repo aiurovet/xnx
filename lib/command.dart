@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:shell_cmd/shell_cmd.dart';
 import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/config.dart';
 import 'package:xnx/ext/env.dart';
@@ -6,86 +7,59 @@ import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
 import 'package:xnx/xnx.dart';
 
-class Command {
+class Command extends ShellCmd {
 
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
   static const _internalPrint = r'--print';
-  static final _shellChars = RegExp.escape('`&;|<>[](){}');
-  static final _splitArgRE = RegExp('([^$_shellChars]*)([$_shellChars]+)([^$_shellChars]*)');
-  static final _splitArgsRE = RegExp('(\'[^\']*\')|("[^"]*")|([^\\s]+)');
 
   //////////////////////////////////////////////////////////////////////////////
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  List<String> args = [];
   bool isInShell = false;
   bool isInternal = false;
   bool isToVar = false;
-  String path = '';
 
   //////////////////////////////////////////////////////////////////////////////
   // Internals
   //////////////////////////////////////////////////////////////////////////////
 
-  Config? _config;
   Logger? _logger;
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Command({String? path, List<String>? args, String? text, Config? config, this.isInShell = false, this.isToVar = false, Logger? logger}) {
+  Command({String? source, Config? config, this.isToVar = false, Logger? logger}) : super(source) {
     _logger = logger;
-    _config = config;
-
-    if (text?.isNotEmpty ?? false) {
-      if ((path?.isNotEmpty ?? false) || (args?.isNotEmpty ?? false)) {
-        throw Exception('Either command text, or executable path with arguments expected');
-      }
-
-      split(text);
-    }
-    else {
-      if (path != null) {
-        this.path = path;
-      }
-      if (args != null) {
-        if (this.path.isNotEmpty) {
-          this.args = args;
-        }
-        else {
-          this.path = args[0];
-          this.args = args.sublist(1);
-        }
-      }
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String exec({String? text, bool canExec = true, bool canShow = true}) {
-    if (text != null) {
-      split(text);
+  String exec({String? newText, bool canExec = true, bool? runInShell, bool canShow = true}) {
+    if (newText != null) {
+      parse(newText);
     }
 
     if (_logger?.isVerbose ?? false) {
-      _logger!.verbose('Running command:\n$path ${args.join(' ')}');
+      _logger!.verbose('Running command:\n$text');
     }
 
     var outLines = '';
 
-    if (isInternal && args.isNotEmpty && (args[0] == _internalPrint)) {
-      return print(_logger, args.sublist(1), isToVar: isToVar);
-    }
-
-    if (path.isEmpty && !isInternal) {
+    if (program.isEmpty) {
       return outLines;
     }
 
+    if (isInternal && args.isNotEmpty) {
+      if (program == _internalPrint) {
+        return print(_logger, args, isToVar: isToVar);
+      }
+    }
+
     if (canShow && !isInternal) {
-      _logger?.out(toString());
+      _logger?.out(text);
     }
 
     if (!canExec) {
@@ -103,20 +77,19 @@ class Command {
 
     try {
       if (isInternal) {
+        args.insert(0, program);
         Xnx(logger: _logger).exec(args);
         isSuccess = true;
       }
       else {
-        if (path.isBlank()) {
+        if (program.isBlank()) {
           // Shouldn't happen, but just in case
-          throw Exception('Executable is not defined for $args');
+          throw Exception('Executable is not defined for $text');
         }
 
-        result = Process.runSync(path, args,
+        result = runSync(
           environment: fullEnv,
-          runInShell: false,
-          workingDirectory: Path.currentDirectoryName
-        );
+          runInShell: runInShell);
 
         isSuccess = (result.exitCode == 0);
       }
@@ -157,20 +130,28 @@ class Command {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getStartCommand({bool escapeQuotes = false}) {
-    final path = Platform.resolvedExecutable;
+  static String getStartCommandText({bool escapeQuotes = false}) {
+    final program = Platform.resolvedExecutable;
     final args = <String>[];
 
     var scriptPath = Platform.script.path;
 
-    if (Path.basenameWithoutExtension(path) !=
+    if (Path.basenameWithoutExtension(program) !=
         Path.basenameWithoutExtension(scriptPath)) {
       args.add(scriptPath);
     }
 
     args.addAll(Platform.executableArguments);
 
-    return Command(path: path, args: args).toString();
+    return ShellCmd.fromParsed(program, args).text;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  @override
+  void parse([String? text]) {
+    super.parse(text);
+    isInternal = program.startsWith('-');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -186,143 +167,6 @@ class Command {
     }
 
     return '';
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  Command split(String? input) {
-    args.clear();
-    path = '';
-    isInternal = false;
-
-    var inputEx = input?.trim() ?? '';
-
-    if (inputEx.isEmpty) {
-      return this;
-    }
-
-    _splitArgs(inputEx);
-
-    if (inputEx[0] == _internalPrint[0]) {
-      isInternal = true;
-      return this;
-    }
-    
-    if (!isInShell) {
-      isInShell = args.any((x) => _shellChars.contains(x));
-    }
-    
-    if (!isInShell || Env.isShell(path, _config?.keywords.shellNames)) {
-      return this;
-    }
-
-    if (Env.isWindows) {
-      args.insertAll(0, [Env.shellOpt, path]);
-    } else {
-      inputEx = _removePath(inputEx, path);
-      args = [Env.shellOpt, '${path.quote()} $inputEx'];
-    }
-
-    path = Env.getShell();
-
-    return this;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  @override
-  String toString() {
-    var str = path.quote();
-
-    for (var arg in args) {
-      if (str.isNotEmpty) {
-        str += ' ';
-      }
-      str += arg.quote();
-    }
-
-    return str;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  void _addArg(String arg) {
-    if (arg.isEmpty) {
-      return;
-    }
-
-    if (!isInternal && path.isEmpty) {
-      path = arg.unquote();
-    } else {
-      args.add(arg.unquote());
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  String _removePath(String input, String path) {
-    var pathLen = path.length;
-
-    if (input.length < pathLen) {
-      return input;
-    }
-
-    switch (input[0]) {
-      case StringExt.apos:
-      case StringExt.quot:
-        pathLen += 2;
-        break;
-      default:
-        break;
-    }
-
-    return input.substring(pathLen).trim();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  bool _splitArg(String input) {
-    var wasSplit = false;
-
-    input.replaceAllMapped(_splitArgRE, (m) {
-      wasSplit = true;
-
-      for (var i = 1; i <= 3; i++) {
-        var sub = m.group(i);
-
-        if ((sub != null) && sub.isNotEmpty) {
-          _addArg(sub);
-        }
-      }
-
-      return '';
-    });
-
-    return wasSplit;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  Command _splitArgs(String input) {
-    args.clear();
-
-    input.replaceAllMapped(_splitArgsRE, (m) {
-      for (var i = 1; i <= 3; i++) {
-        var arg = m.group(i);
-
-        if (arg == null) {
-          continue;
-        }
-
-        if ((i != 3)  || !_splitArg(arg)) {
-          _addArg(arg);
-        }
-      }
-
-      return '';
-    });
-
-    return this;
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -30,16 +30,16 @@ class Convert {
 
   static const String fileTypeTmp = '.tmp';
 
-  static final RegExp isSubCmdRE = RegExp(r'^[\s]*[\-]');
-  static final RegExp isSubCmdExpandRE = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
-  static final RegExp isSubCmdKeepTimeRE = RegExp(r'(^|[\s])(--(copy|copy-newer|move|move-newer))([\s]|$)');
+  static final RegExp rexIsSubCmd = RegExp(r'^[\s]*[\-]');
+  static final RegExp rexIsSubCmdExpand = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
+  static final RegExp rexIsSubCmdKeepTime = RegExp(r'(^|[\s])(--(copy|copy-newer|move|move-newer))([\s]|$)');
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
   //////////////////////////////////////////////////////////////////////////////
 
   bool canExpandContent = false;
-  RegExp? detectPathsRE;
+  RegExp? rexDetectPaths;
   bool isExpandContentOnly = false;
   bool isProcessed = false;
   bool isStdIn = false;
@@ -65,7 +65,7 @@ class Convert {
   //////////////////////////////////////////////////////////////////////////////
 
   void exec(List<String> args) {
-    startCmd = Command.getStartCommand();
+    startCmd = Command.getStartCommandText();
     isProcessed = false;
 
     _config = Config(_logger);
@@ -97,7 +97,7 @@ class Convert {
 
     if (isPrintEnv) {
       Platform.environment.forEach((key, value) {
-        _logger.out('Env: $key => $value');
+        _logger.out('$key=$value');
       });
       return true;
     }
@@ -182,7 +182,7 @@ class Convert {
     var escapeMode = _config.escapeMode;
 
     if (isExpandContentOnly) {
-      var cli = Command(text: command);
+      var cli = Command(source: command);
       var args = cli.args;
 
       if (cli.isInternal && args.isNotEmpty) {
@@ -253,7 +253,7 @@ class Convert {
     if (!isForced && (inpFile != null) && (outFile != null) && !isSamePath) {
       var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
-      if (!isChanged && !isSubCmdKeepTimeRE.hasMatch(command)) {
+      if (!isChanged && !rexIsSubCmdKeepTime.hasMatch(command)) {
         isChanged = (outFile.compareLastModifiedStampToSync(toLastModifiedStamp: _config.lastModifiedStamp) < 0);
       }
 
@@ -279,7 +279,7 @@ class Convert {
       command = Path.replaceAll(command, inpFilePath, tmpFilePath);
     }
 
-    Command(text: command, logger: _logger)
+    Command(source: command, logger: _logger)
       .exec(canExec: !options.isListOnly && !isExpandContentOnly, canShow: true);
 
     tmpFile?.deleteIfExistsSync();
@@ -352,10 +352,10 @@ class Convert {
       var detectPathsPattern = getValue(mapCurr, key: _config.keywords.forDetectPaths, canReplace: true);
 
       if (detectPathsPattern.isBlank()) {
-        detectPathsRE = null;
+        rexDetectPaths = null;
       }
       else {
-        detectPathsRE = RegExp(detectPathsPattern, caseSensitive: false);
+        rexDetectPaths = RegExp(detectPathsPattern, caseSensitive: false);
       }
 
       var command = getValue(mapCurr, key: _config.keywords.forRun, canReplace: false);
@@ -364,8 +364,8 @@ class Convert {
         command = getValue(mapCurr, key: _config.keywords.forCmd, canReplace: false);
       }
 
-      isSubRun = isSubCmdRE.hasMatch(command);
-      isExpandContentOnly = isSubRun && isSubCmdExpandRE.hasMatch(command);
+      isSubRun = rexIsSubCmd.hasMatch(command);
+      isExpandContentOnly = isSubRun && rexIsSubCmdExpand.hasMatch(command);
       canExpandContent = !options.isListOnly && (isExpandContentOnly || getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false).parseBool());
 
       if (!curDirName.isBlank()) {

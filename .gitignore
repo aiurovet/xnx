@@ -22,10 +22,13 @@ doc/api/
 
 # Application-related
 examples/flutter_app_icons/android/
+examples/flutter_app_icons/linux/
+examples/flutter_app_icons/macos/
 examples/flutter_app_icons/ios/
 examples/flutter_app_icons/web/
+examples/flutter_app_icons/windows/
 examples/multi_conf/out/
-examples/multi_icon/png/
+examples/multi_icon/out/
 examples/ms_office/*.dir/
 examples/ms_office/out/
 examples/ms_office/unz/

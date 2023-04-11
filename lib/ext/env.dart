@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:file/file.dart';
+import 'package:shell_cmd/shell_cmd.dart';
 import 'package:xnx/ext/ascii.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
@@ -31,10 +32,6 @@ class Env {
   // checked as being empty, could also be either '.exe' or '.com' (Windows)
   //
   // Configurable via *.xnxconfig
-  //////////////////////////////////////////////////////////////////////////////
-
-  static final _shellExtns = (isWindows ? <String>[ '', 'exe', 'com' ] : <String>[ '' ]);
-
   //////////////////////////////////////////////////////////////////////////////
 
   static final Map<String, String> _local = {};
@@ -308,23 +305,10 @@ class Env {
   //////////////////////////////////////////////////////////////////////////////
 
   static String getDefaultEscape() => (isWindows ? escapeWin : escapePosix);
-  static String getDefaultShell() => (isMacOS ? 'zsh' : (isWindows ? 'cmd' : 'bash'));
   static String getHome() => get(homeKey);
   static Directory getHomeDirectory() => Path.fileSystem.directory(getHome());
   static String getOs() => Platform.operatingSystem;
   static String getUser() => get(userKey);
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  static String getShell({bool isQuoted = false}) {
-    final path = get(shellKey);
-    
-    if (path.isEmpty) {
-      return getDefaultShell();
-    }
-
-    return (isQuoted ? path.quote() : path);
-  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -341,30 +325,10 @@ class Env {
     set('OS', Platform.operatingSystem);
     set('OS_FULL', Platform.operatingSystemVersion);
     set('TEMP', Path.fileSystem.systemTempDirectory.path);
-  }
 
-  //////////////////////////////////////////////////////////////////////////////
-
-  static bool isShell(String? command, List<String>? shellNames) {
-    if ((shellNames == null) || (command == null) || command.isEmpty) {
-      return false;
-    }
-
-    command = command.unquote().trim();
-
-    if (command.isEmpty || (command == getShell())) {
-      return false;
-    }
-
-    if (!_shellExtns.contains(Path.extension(command))) {
-      return false;
-    }
-
-    if (!shellNames.contains(Path.basenameWithoutExtension(command))) {
-      return false;
-    }
-
-    return true;
+    final shell = ShellCmd.shell;
+    set('SHELL', shell.program);
+    set('SHCMD', shell.text);
   }
 
   //////////////////////////////////////////////////////////////////////////////

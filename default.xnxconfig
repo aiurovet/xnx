@@ -12,14 +12,6 @@
   // The precision to use in floating-point data and mathematical functions
   numericPrecision: 6,
 
-  // Avoid prepending any command with shell if its first argument's basename without extension
-  // represents one of the following strings. The extension is always checked as being empty or
-  // under Windows, also could be '.exe' or '.com':
-  shellNames: [
-    'ash', 'bash', 'cmd', 'command', 'csh', 'fish', 'ion', 'ksh',
-    'pdksh', 'pwsh', 'powershell', 'scsh', 'sh', 'tcsh', 'zsh',
-  ],
-
   keywords: {
     // A key to define in this file the keyword for numeric precision
     kwNumericPrecision: 'numericPrecision',
@@ -110,6 +102,10 @@
     // Similar to cmd with the only difference that will be executed immediately without expecting 'inp' and/or 'out' to be defined
     // In this case, it is impossible to check whether the output file is up to date and no execution is required, unless forced
     kwRun: '{{-run-}}',
+
+    // Placeholder for the shell command including command-line options. Default: "${SHELL} -c" or "%COMSPEC% /c".
+    // If SHELL (POSIX) or COMSPEC (Windows) is undefined, falls back to 'sh -c' or 'cmd /c' respectively
+    kwShell: '{{-shell-}}',
 
     // Stop execution immediately, the value under this key might be either null or a string to be displayed as an error message
     // The exit code will be 1 (failure)

@@ -715,7 +715,7 @@ class Functions {
     var cnt = todo.length;
 
     var txt = (cnt <= (++offset) ? null : exec(todo[offset])?.toString()) ?? '';
-    var cmd = Command(text: txt, isToVar: true);
+    var cmd = Command(source: txt, isToVar: true);
 
     if (logger.isVerbose) {
       logger.verbose('$type\n...command: ${cmd.toString()}\n');

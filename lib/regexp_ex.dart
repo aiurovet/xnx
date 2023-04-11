@@ -1,5 +1,5 @@
 class RegExpEx {
-  static final RegExp _rexGroup = RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
+  static final RegExp _rexGroupRef = RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
 
   RegExp regExp;
   bool isGlobal = false;
@@ -73,7 +73,7 @@ class RegExpEx {
   //////////////////////////////////////////////////////////////////////////////
 
   String _replaceMatchProc(Match match, String dstStr) {
-    return dstStr.replaceAllMapped(_rexGroup, (groupMatch) {
+    return dstStr.replaceAllMapped(_rexGroupRef, (groupMatch) {
       var s = groupMatch[1];
 
       if ((s != null) && s.isNotEmpty) {

@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:xnx/ext/env.dart';
-import 'package:xnx/ext/path.dart';
 import '../helper.dart';
 
 void main() {
@@ -63,19 +62,6 @@ void main() {
       });
       test('homeKey', () {
         expect(Env.homeKey, (Env.isWindows ? 'USERPROFILE' : 'HOME'));
-      });
-      test('isShell', () {
-        final shellNames = <String>['ash'];
-        expect([
-          Env.isShell(null, shellNames),
-          Env.isShell('', shellNames),
-          Env.isShell('ash', shellNames),
-          Env.isShell('aash', shellNames),
-          Env.isShell('ashh', shellNames),
-          Env.isShell('ash.exe', shellNames),
-          Env.isShell('abc${Path.separator}ash', shellNames),
-          Env.isShell('abc${Path.separator}ash.com', shellNames),
-        ], [false, false, true, false, false, Env.isWindows, true, Env.isWindows]);
       });
       test('set', () {
         Env.clearLocal();

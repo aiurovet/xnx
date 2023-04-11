@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:shell_cmd/shell_cmd.dart';
 import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/convert.dart';
 import 'package:xnx/ext/env.dart';
@@ -12,6 +13,7 @@ class Xnx {
 
   Xnx({Logger? logger}) {
     Env.init();
+    ShellCmd.resetShell();
 
     if (logger != null) {
       _logger = logger;
@@ -56,8 +58,8 @@ class Xnx {
       return false;
     }
     else {
-      var errDecorRE = RegExp(r'^(Exception[\:\s]*)+', caseSensitive: false);
-      errMsg = errMsg.replaceFirst(errDecorRE, '');
+      var rexErrDecor = RegExp(r'^(Exception[\:\s]*)+', caseSensitive: false);
+      errMsg = errMsg.replaceFirst(rexErrDecor, '');
 
       if (errMsg.isBlank()) {
         return false;

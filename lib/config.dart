@@ -35,7 +35,7 @@ class Config {
   @protected late final Functions functions;
 
   Map all = {};
-  RegExp? detectPathsRE;
+  RegExp? rexDetectPaths;
   EscapeMode escapeMode = EscapeMode.none;
   PathFilter skip = PathFilter();
   PathFilter take = PathFilter();
@@ -319,7 +319,7 @@ class Config {
     var isEmpty = dataStr.isBlank();
 
     if (keyEx == keywords.forDetectPaths) {
-      detectPathsRE = (isEmpty ? null : RegExp(dataStr));
+      rexDetectPaths = (isEmpty ? null : RegExp(dataStr));
       return result;
     }
 
@@ -339,7 +339,7 @@ class Config {
     if (!isEmpty) {
       var isKeyForGlob = keywords.allForGlob.contains(keyEx);
       var isKeyForPath = keywords.allForPath.contains(keyEx);
-      var isDetectPaths = (detectPathsRE?.hasMatch(keyEx) ?? false);
+      var isDetectPaths = (rexDetectPaths?.hasMatch(keyEx) ?? false);
       var hasPath = (isKeyForGlob || isKeyForPath || isDetectPaths);
 
       if (hasPath) {
@@ -468,7 +468,7 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   void print(String? msg, {bool isSilent = false}) {
-    if (isSilent) {
+    if (!isSilent) {
       _logger.out(msg ?? '');
     }
   }

@@ -915,7 +915,7 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
     dirName = _setOtherDir(runDirName, dirName);
 
     if ((dirName != null) && !Path.equals(Path.currentDirectoryName, dirName)) {
-      _logger.out('cd "$dirName"\n');
+      _logger.info('cd "$dirName"\n');
       Path.currentDirectoryName = dirName;
     }
 

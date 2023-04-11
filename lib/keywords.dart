@@ -41,6 +41,7 @@ class Keywords {
   String forOnce = '{{-once-}}';
   String forOut = '{{-out-}}';
   String forRun = '{{-run-}}';
+  String forShell = '{{-shell-}}';
   String forStop = '{{-stop-}}';
   String forThis = '{{-this-}}';
 
@@ -106,11 +107,6 @@ class Keywords {
   String regExpPrefix = '/';
   String regExpSuffix = '/';
 
-  final shellNames = <String>[
-    'ash', 'bash', 'cmd', 'command', 'csh', 'fish', 'ion', 'ksh',
-    'pdksh', 'pwsh', 'powershell', 'scsh', 'sh', 'tcsh', 'zsh',
-  ];
-
   //////////////////////////////////////////////////////////////////////////////
   // Derived
   //////////////////////////////////////////////////////////////////////////////
@@ -158,12 +154,6 @@ class Keywords {
   //////////////////////////////////////////////////////////////////////////////
 
   void init(Map data) {
-    final newShellNames = data['shellNames'] as List?;
-
-    if (newShellNames != null) {
-      shellNames..clear()..addAll(newShellNames.map((x) => x.toString()));
-    }
-
     var rawNode = data['keywords'];
 
     if (rawNode != null) {
@@ -198,6 +188,7 @@ class Keywords {
       forOnce = node['kwOnce'] ?? forOnce;
       forOut = node['kwOut'] ?? forOut;
       forRun = node['kwRun'] ?? forRun;
+      forShell = node['kwShell'] ?? forShell;
       forStop = node['kwStop'] ?? forStop;
       forThis = node['kwThis'] ?? forThis;
     }

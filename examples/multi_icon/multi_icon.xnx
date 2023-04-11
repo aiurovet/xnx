@@ -14,5 +14,5 @@
     "{scale}": [ "=Div", "{dim}", "100" ],
   },
   "{{-inp-}}": "{{-cur-dir-}}/svg/{typ}.svg",
-  "{{-out-}}": "{{-cur-dir-}}/png/icon-{typ}-{dim}x{dim}.png",
+  "{{-out-}}": "{{-cur-dir-}}/out/icon-{typ}-{dim}x{dim}.png",
 }

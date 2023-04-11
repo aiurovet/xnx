@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:shell_cmd/shell_cmd.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/keywords.dart';
 import 'package:xnx/regexp_ex.dart';
@@ -30,7 +31,15 @@ class FlatMap {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  FlatMap({this.keywords});
+  FlatMap({this.keywords}) {
+    final key = keywords?.forShell;
+
+    if ((key != null) && key.isNotEmpty) {
+      if (!map.containsKey(key)) {
+        map[key] = ShellCmd.shell.text;
+      }
+    }
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // Getter

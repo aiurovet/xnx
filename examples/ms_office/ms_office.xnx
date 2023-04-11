@@ -35,6 +35,7 @@
         '-p {compression} --zip --move "{unz-dir}/*" "{out-file}"',
       ],
     },
+
     {
       // Remove all possible temporary directories and files
       "{{-run-}}": '--delete "{{-cur-dir-}}/unz"',

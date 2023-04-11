@@ -89,6 +89,17 @@
           "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
           "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png" }
       ],
-    }
+    },
+
+    {
+      "{m}": "_foreground",
+      "{fill}": "{solid-fill}",
+
+      "{dim}": 192,
+      "{sub}": ['windows', 'linux', 'macos'],
+
+      "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
+      "{{-out-}}":  "{{-cur-dir-}}/{sub}/icon-{dim}x{dim}.png",
+    },
   ]
 }

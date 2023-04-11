@@ -109,7 +109,7 @@ class ConfigFileLoader {
     }
 
     var argCount = (args?.length ?? 0);
-    var startCmd = Command.getStartCommand(escapeQuotes: true);
+    var startCmd = Command.getStartCommandText(escapeQuotes: true);
 
     _text = _text.replaceAll('\$\$', '\x01');
     _text = _text.replaceAllMapped(rexCmdLineArgs, (match) {
