@@ -103,7 +103,12 @@ class Command extends ShellCmd {
     }
 
     if (!isSuccess) {
-      stderr.writeln('\n*** DBG: failed with stdout: ${result?.stdout ?? ''}\n');
+      stderr.writeln('''
+*** DBG: command: $text
+*** DBG: exited:  ${result?.exitCode ?? ''}
+*** DBG: stdout:  ${result?.stdout ?? ''}
+*** DBG: stderr:  ${result?.stderr ?? ''}
+''');
     }
 
     if (!isInternal && (result != null)) {
