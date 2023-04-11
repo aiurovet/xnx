@@ -11,10 +11,9 @@
 // SHCMD   - shell executable with an option: 'bash -c', 'zsh -c' or 'cmd /c'
 // TEMP    - temporary directory path
 // USER    - current user
-//
 {
   "shell": {
-    "{CHROME-OPTS}": "--disable-gpu --headless --default-background-color 000000",
+    "{CHROME-OPTS}": "--disable-gpu --headless --default-background-color=000000",
 
     "{{-if-}}": { '("${OS}" ==/i "linux") || ("${OS}" ==/i "macos")': {
       "{{-if-}}": { '("${OS}" ==/i "linux")': {
@@ -36,15 +35,12 @@
       "{sleep_0_5s}": "ping 127.0.0.1 -n 2 -w 500",
     } } } },
 
-    "{{-if-}}": { '-x "rsvg-convert"': {
-      "{svg2png}": 'rsvg-convert "{{-inp-}}" > "{{-out-}}"', // the best, but requires librsvg to be installed
-    }, "{{-else-}}": {
-      "{HEADLESS-OPTS}": '{CHROME-OPTS} --window-size {dim},{dim} --screenshot {{-out-}} "file://{{-inp-}}"',
-      "{svg2png-chrome}": '"{exe-chrome}" {HEADLESS-OPTS}', // produces 800x600 images only, to be fixed in v113
-      "{svg2png-firefox}": '"{exe-firefox}" {HEADLESS-OPTS}', // super-slow
-      "{svg2png-msedge}": '"{exe-msedge}" {HEADLESS-OPTS}', // similar to Chrome
+    "{HEADLESS-OPTS}": '{CHROME-OPTS} --window-size={dim},{dim} --screenshot={{-out-}} "file://{{-inp-}}"',
+    "{svg2png-chrome}": '"{exe-chrome}" {HEADLESS-OPTS}', // very accurate, but not the fastest
+    "{svg2png-firefox}": '"{exe-firefox}" {HEADLESS-OPTS}', // super-slow
+    "{svg2png-msedge}": '"{exe-msedge}" {HEADLESS-OPTS}', // similar to Chrome
+    "{svg2png-rsvg}": 'rsvg-convert "{{-inp-}}" > "{{-out-}}"', // the best, but requires librsvg to be installed
 
-      "{svg2png}": '{svg2png-firefox}',
-    }, },
+    "{svg2png}": '{svg2png-rsvg}', // current choice
   }
 }
