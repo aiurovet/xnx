@@ -102,6 +102,10 @@ class Command extends ShellCmd {
       errMsg = e.toString();
     }
 
+    if (!isSuccess) {
+      stderr.writeln('\nDBG: failed with stderr: ${result?.stderr ?? ''}');
+    }
+
     if (!isInternal && (result != null)) {
       outLines = result.stdout ?? '';
 
