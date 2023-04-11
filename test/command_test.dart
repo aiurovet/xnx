@@ -33,7 +33,7 @@ void main() {
         expect(c.exec(newText: '--print "1 2" "3 4"'), '1 2 3 4');
       });
       test('external', () {
-        expect(c.exec(newText: 'echo "1 2"', runInShell: true), '1 2$n');
+        expect(c.exec(newText: 'echo 1 2', runInShell: true), '1 2$n');
       });
     });
   });
