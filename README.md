@@ -1,35 +1,31 @@
 ## xnx v0.1.0
 
-**Copyright © Alexander Iurovetski 2020 - 2021**
+### Copyright © Alexander Iurovetski 2020 - 2021**
 
 A command-line utility to eXpand text content by replacing placeholders with the actual data aNd to eXecute external utilities.
 
-##### USAGE:
+#### USAGE
 
 ```
-xnx 0.1.0 (C) Alexander Iurovetski 2020 - 2021
-
-A command-line utility to eXpand text content aNd to eXecute external utilities.
-
-USAGE:
-
 xnx [OPTIONS]
 
 -h, --help                   this help screen
--c, --config=<FILE>          configuration file in json5 format https://json5.org/,
+-c, --app-config=<FILE>      xnx application configuration file in JSON5 format https://json5.org/,
+                             defaults to default.xnxconfig in the directory where .xnx file is from
+-x, --xnx=<FILE>             the actual JSON5 file to process, see https://json5.org/,
                              default extension: .xnx
--X, --xnx                    same as -c, --config
--d, --dir=<DIR>              startup directory,
-                             the application will define environment variable _XNX_START_DIR
+-d, --dir=<DIR>              directory to start in
+-i, --import-dir=<DIR>       default directory for .xnx files being imported into other .xnx files,
+                             the application will define environment variable _XNX_IMPORT_DIR
+-m, --escape=<MODE>          how to escape special characters before the expansion: quotes, xml, html (default: none),
+                             the application will define environment variable _XNX_ESCAPE
 -q, --quiet                  quiet mode (no output, same as verbosity 0),
                              the application will define environment variable _XNX_QUIET
--v, --verbosity=<LEVEL>      how much information to show: (0-6, or: quiet, errors, normal, warnings, info, debug),
-                             defaults to "info",
-                             the application will define environment variable _XNX_COMPRESSION,
+-v, --verbose                Shows detailed log, the application will define environment variable _XNX_VERBOSE,
 -e, --each                   treat each plain argument independently (e.g. can pass multiple filenames as arguments)
-                             see also -x, --xargs
--a, --xargs                  similar to the above, but reads arguments from stdin
-                             useful in a pipe with a file finding command
+                             see also -x/--xargs
+-a, --xargs                  similar to -e/--each, but reads arguments from stdin
+                             useful in a pipe with a file path finding command
 -l, --list-only              display all commands, but do not execute those; if no command specified, then show config,
                              the application will define environment variable _XNX_LIST_ONLY
 -s, --append-sep             append record separator "," when filtering input config file (for "list-only" exclusively),
@@ -38,7 +34,13 @@ xnx [OPTIONS]
                              the application will define environment variable _XNX_FORCE
 -p, --compression=<LEVEL>    compression level for archiving-related operations (1..9) excepting BZip2,
                              the application will define environment variable _XNX_COMPRESSION
+-W, --wait-always            always wait for a user to press <Enter> upon completion
+-w, --wait-err               wait for a user to press <Enter> upon unsuccessful completion
+    --find                   just find recursively all files and sub-directories matching the glob pattern
+                             in a given or the current directory and print those to stdout
     --print                  just print the arguments to stdout
+    --env                    just print all environment variables to stdout
+    --pwd                    just print the current working directory to stdout
     --copy                   just copy file(s) and/or directorie(s) passed as plain argument(s),
                              glob patterns are allowed
     --copy-newer             just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s),
@@ -73,17 +75,17 @@ xnx [OPTIONS]
                              can be used with --move
     --untargz                just a combination of --untar and --ungz,
                              can be used with --move
-    --tarZ                   just a combination of --tar and --Z,
+    --tarz                   just a combination of --tar and --Z,
                              can be used with --move
-    --untarZ                 just a combination of --untar and --unZ,
+    --untarz                 just a combination of --untar and --unz,
                              can be used with --move
     --zip                    just zip source files and/or directories to a single destination
                              archive file, can be used with --move to delete the source
     --unzip                  just unzip single archive file to destination directory,
                              can be used with --move to delete the source
-    --Z                      just compress a single source file to a single Z file,
+    --z                      just compress a single source file to a single Z file,
                              can be used with --move to delete the source
-    --unZ                    just decompress a single Z file to a single destination file,
+    --unz                    just decompress a single Z file to a single destination file,
                              can be used with --move to delete the source
     --pack                   just compress source files and/or directories to a single destination
                              archive file depending on its extension, can be used with --move
@@ -93,7 +95,7 @@ xnx [OPTIONS]
 For more details, see README.md
 ```
 
-##### DETAILS:
+#### DETAILS
 
 ##### More about command-line options
 
@@ -226,97 +228,108 @@ Configuration file is expected in JSON format with the following guidelines:
 
 See the details of the imported file `shell.xnx` beyond this configuration
 
-```
-// A sample configuration file to generate PNG icons for Flutter app (all needed platforms and sizes)
-
+```json5
 {
-  import: "../shell.xnx",
+  "{{-import-}}": "../shell.xnx",
 
-  {{-can-expand-content-}}: true,
+  "{{-can-expand-content-}}": true,
 
-  '{{-detect-paths-}}': "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
+  "{{-detect-paths-}}": "\\{[^\\{\\}]+\\-(dir|path|pthp)\\}",
 
-  // Terribly slow
-  // { cmd: "firefox --headless --default-background-color=000000 --window-size={d},{d} --screenshot={{-out-}} \"file://{{-inp-}}\"" },
+  "{org-dim}": "750",
 
-  // Sometimes fails to display svg properly,
-  // { cmd: "wkhtmltoimage --format png \"{{-inp-}}\" \"{{-out-}}\"" },
-
-  // Not the best quality
-  // { cmd: "convert \"{{-inp-}}\" \"{{-out-}}\"" },
-
-  // Not the best quality
-  // { cmd: "inkscape -z -e \"{{-out-}}\" -w {d} -h {d} \"{{-inp-}}\"" },
-
-  // The most accurate
-  // Do not enclose the output path {{-out-}} in quotes, as this will not work.
-  // So try to avoid paths containing spaces (existing bug in Chromium)
-
-  cmd: '{svg2png} --window-size={d},{d} --screenshot={{-out-}} "file://{{-inp-}}"',
+  "{{-cmd-}}": "{svg2png}",
 
   "{img-src-dir}": "{{-cur-dir-}}/_assets/images",
 
   "{{-inp-}}": "{img-src-dir}/app{m}.svg",
 
+  "{solid-fill}": "#f5cba7",
+
   "{R}": [
     {
       "{suf}": [
-        { "{m}": [ "_background", "_foreground" ], "{D}": "drawable" },
-        { "{m}": "", "{D}": "mipmap" }
+        { "{m}": [ "_background", "_foreground" ], "{D}": "drawable", "{fill}": "none" },
+        { "{m}": "_foreground", "{D}": "mipmap", "{fill}": "{solid-fill}" }
       ],
 
-      "{dim}": [
-        { "{d}":   48, "{r}": "m" },
-        { "{d}":   72, "{r}": "h" },
-        { "{d}":   96, "{r}": "xh" },
-        { "{d}":  144, "{r}": "xxh" },
-        { "{d}":  192, "{r}": "xxxh" }
+      "{dim-res-mul}": [
+        { "{dim}":   48, "{res}": "m" },
+        { "{dim}":   72, "{res}": "h" },
+        { "{dim}":   96, "{res}": "xh" },
+        { "{dim}":  144, "{res}": "xxh" },
+        { "{dim}":  192, "{res}": "xxxh" }
       ],
 
-      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{r}dpi/ic_launcher{m}.png"
+      "{{-func-}}": {
+        "{scale}": [ "=Div", "{dim}", "{org-dim}" ],
+      },
+
+      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{res}dpi/ic_launcher{m}.png"
     },
 
     {
       "{suf}": null,
 
-      "{m}": "",
+      "{m}": "_foreground",
+      "{fill}": "{solid-fill}",
 
-      "{dim}": [
-        { "{d}": 1024, "{r}": 1024, "{k}": 1 },
-        { "{d}":   20, "{r}":   20, "{k}": 1 },
-        { "{d}":   40, "{r}":   20, "{k}": 2 },
-        { "{d}":   60, "{r}":   20, "{k}": 3 },
-        { "{d}":   29, "{r}":   29, "{k}": 1 },
-        { "{d}":   58, "{r}":   29, "{k}": 2 },
-        { "{d}":   87, "{r}":   29, "{k}": 3 },
-        { "{d}":   40, "{r}":   40, "{k}": 1 },
-        { "{d}":   80, "{r}":   40, "{k}": 2 },
-        { "{d}":  120, "{r}":   40, "{k}": 3 },
-        { "{d}":   50, "{r}":   50, "{k}": 1 },
-        { "{d}":  100, "{r}":   50, "{k}": 2 },
-        { "{d}":   57, "{r}":   57, "{k}": 1 },
-        { "{d}":  114, "{r}":   57, "{k}": 2 },
-        { "{d}":   60, "{r}":   60, "{k}": 1 },
-        { "{d}":  120, "{r}":   60, "{k}": 2 },
-        { "{d}":  180, "{r}":   60, "{k}": 3 },
-        { "{d}":   72, "{r}":   72, "{k}": 1 },
-        { "{d}":  144, "{r}":   72, "{k}": 2 },
-        { "{d}":   76, "{r}":   76, "{k}": 1 },
-        { "{d}":  152, "{r}":   76, "{k}": 2 },
-        { "{d}":  167, "{r}": 83.5, "{k}": 2 }
+      "{dim-res-mul}": [
+        { "{dim}": 1024, "{res}": 1024, "{mul}": 1 },
+        { "{dim}":   20, "{res}":   20, "{mul}": 1 },
+        { "{dim}":   40, "{res}":   20, "{mul}": 2 },
+        { "{dim}":   60, "{res}":   20, "{mul}": 3 },
+        { "{dim}":   29, "{res}":   29, "{mul}": 1 },
+        { "{dim}":   58, "{res}":   29, "{mul}": 2 },
+        { "{dim}":   87, "{res}":   29, "{mul}": 3 },
+        { "{dim}":   40, "{res}":   40, "{mul}": 1 },
+        { "{dim}":   80, "{res}":   40, "{mul}": 2 },
+        { "{dim}":  120, "{res}":   40, "{mul}": 3 },
+        { "{dim}":   50, "{res}":   50, "{mul}": 1 },
+        { "{dim}":  100, "{res}":   50, "{mul}": 2 },
+        { "{dim}":   57, "{res}":   57, "{mul}": 1 },
+        { "{dim}":  114, "{res}":   57, "{mul}": 2 },
+        { "{dim}":   60, "{res}":   60, "{mul}": 1 },
+        { "{dim}":  120, "{res}":   60, "{mul}": 2 },
+        { "{dim}":  180, "{res}":   60, "{mul}": 3 },
+        { "{dim}":   72, "{res}":   72, "{mul}": 1 },
+        { "{dim}":  144, "{res}":   72, "{mul}": 2 },
+        { "{dim}":   76, "{res}":   76, "{mul}": 1 },
+        { "{dim}":  152, "{res}":   76, "{mul}": 2 },
+        { "{dim}":  167, "{res}": 83.5, "{mul}": 2 }
       ],
 
-      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{r}x{r}@{k}x.png"
+      "{{-func-}}": {
+        "{scale}": [ "=Div", "{dim}", "{org-dim}" ],
+      },
+
+      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{res}x{res}@{mul}x.png"
     },
 
     {
-      "{m}": "",
+      "{m}": "_foreground",
+      "{fill}": "{solid-fill}",
 
-      "{dim}": [
-        { "{d}": [ 16, 32, ], "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{d}x{d}.png" },
-        { "{d}": 180, "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png" }
+      "{dim-res-mul}": [
+        { "{dim}": [ 16, 32, ],
+          "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
+          "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{dim}x{dim}.png" },
+        { "{dim}": 180,
+          "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
+          "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png" }
       ],
-    }
+    },
+
+    {
+      "{m}": "_foreground",
+      "{fill}": "{solid-fill}",
+
+      "{dim}": 192,
+      "{sub}": ['windows', 'linux', 'macos'],
+
+      "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
+      "{{-out-}}":  "{{-cur-dir-}}/{sub}/icon-{dim}x{dim}.png",
+    },
   ]
 }
 ```
