@@ -87,10 +87,7 @@ class Command extends ShellCmd {
           throw Exception('Executable is not defined for $text');
         }
 
-        result = runSync(
-          environment: fullEnv,
-          runInShell: runInShell);
-
+        result = runSync(environment: fullEnv, runInShell: runInShell);
         isSuccess = (result.exitCode == 0);
       }
     }
@@ -102,9 +99,7 @@ class Command extends ShellCmd {
     }
 
     if (!isInternal && (result != null)) {
-      if (result.stdout?.isNotEmpty ?? false) {
-        outLines = result.stdout;
-      }
+      outLines = result.stdout ?? '';
 
       if (isSuccess) {
         if (!isToVar) {
@@ -125,7 +120,7 @@ class Command extends ShellCmd {
       throw Exception(errMsg.isEmpty ? '\nExecution failed' : errMsg);
     }
 
-    return outLines.trim();
+    return outLines;
   }
 
   //////////////////////////////////////////////////////////////////////////////

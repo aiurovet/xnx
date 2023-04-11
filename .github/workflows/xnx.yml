@@ -76,7 +76,7 @@ jobs:
       - name: Running Integration Test 1 - flutter_app_icons
         run: |
           bin/${{runner.os}}/xnx -d examples/flutter_app_icons
-          scripts/Check-Count.ps1 -Expected 40 -Recurse -Path "examples/flutter_app_icons" -Include "*.png"
+          scripts/Check-Count.ps1 -Expected 43 -Recurse -Path "examples/flutter_app_icons" -Include "*.png"
           bin/${{runner.os}}/xnx -d examples/flutter_app_icons --remove andriod ios web
 
       ################################################################################

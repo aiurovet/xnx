@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:shell_cmd/shell_cmd.dart';
 import 'package:test/test.dart';
 import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/ext/env.dart';
@@ -121,7 +122,7 @@ void main() {
       expect(flatMap['{iif}'], 'Yes2');
       expect(flatMap['{weird}'], 'ababVablop');
       expect(flatMap['{groups}'], r'ad$2\ef$2\hi');
-      expect(flatMap['{echo}'], '1 2');
+      expect(flatMap['{echo}'], '1 2${ShellCmd.lineBreak}');
     });
     test('execFile', () {
       Helper.forEachMemoryFileSystem((fileSystem) {

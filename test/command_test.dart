@@ -1,3 +1,4 @@
+import 'package:shell_cmd/shell_cmd.dart';
 import 'package:test/test.dart';
 import 'package:xnx/command.dart';
 
@@ -7,6 +8,7 @@ import 'helper.dart';
 ///
 void main() {
   var c = Command();
+  var n = ShellCmd.lineBreak;
 
   Helper.forEachMemoryFileSystem((fs) {
     Helper.initFileSystem(fs);
@@ -28,10 +30,10 @@ void main() {
         expect(c.exec(newText: ''), '');
       });
       test('internal', () {
-        expect(c.exec(newText: '--print "1 2"'), '1 2');
+        expect(c.exec(newText: '--print "1 2" "3 4"'), '1 2 3 4');
       });
       test('external', () {
-        expect(c.exec(newText: 'echo "1 2"', runInShell: true), '1 2');
+        expect(c.exec(newText: 'echo "1 2"', runInShell: true), '1 2$n');
       });
     });
   });
