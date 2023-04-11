@@ -20,6 +20,11 @@ class Env {
   static String escapeEscape = (escape + escape);
   static String escapeQuot = escape + StringExt.quot;
 
+  static String jsonEscape = r'\';
+  static String jsonEscapeApos = jsonEscape + StringExt.apos;
+  static String jsonEscapeEscape = (jsonEscape + jsonEscape);
+  static String jsonEscapeQuot = jsonEscape + StringExt.quot;
+
   static final String homeKey = (isWindows ? 'USERPROFILE' : 'HOME');
   static final String pathKey = 'PATH';
   static final String userKey = (isWindows ? 'USERNAME' : 'USER');
@@ -254,7 +259,7 @@ class Env {
         }
         else if (value.isNotEmpty) {
           if (canEscape) {
-            value = value.replaceAll(escape, escapeEscape);
+            value = value.replaceAll(jsonEscape, jsonEscapeEscape);
           }
           result += value;
         }

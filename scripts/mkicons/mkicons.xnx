@@ -1,7 +1,7 @@
 // Generate icons for this application using itself
 // The file designed for runs primarily on Linux
 // Requires: Google Chrome as well as iconutil (macOS only) and ImageMagick's convert (Windows only)
-
+//
 {
   "{{-once-}}": {
     "{prj}": "$~1",

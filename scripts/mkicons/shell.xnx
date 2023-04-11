@@ -11,6 +11,7 @@
 // SHCMD   - shell executable with an option: 'bash -c', 'zsh -c' or 'cmd /c'
 // TEMP    - temporary directory path
 // USER    - current user
+//
 {
   "shell": {
     "{CHROME-OPTS}": "--disable-gpu --headless --default-background-color 000000",

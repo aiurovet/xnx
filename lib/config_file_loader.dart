@@ -233,9 +233,9 @@ class ConfigFileLoader {
 
     var lf = ConfigFileLoader(keywords: keywords, logger: _logger);
 
-    _text = _text.replaceAll(Env.escapeEscape, '\x01');
-    _text = _text.replaceAll(Env.escapeApos, '\x02');
-    _text = _text.replaceAll(Env.escapeQuot, '\x03');
+    _text = _text.replaceAll(Env.jsonEscapeEscape, '\x01');
+    _text = _text.replaceAll(Env.jsonEscapeApos, '\x02');
+    _text = _text.replaceAll(Env.jsonEscapeQuot, '\x03');
     _text = _text.replaceAllMapped(regExp, (match) {
       var impName = match.group(4);
 
@@ -271,9 +271,9 @@ class ConfigFileLoader {
 
       return result;
     });
-    _text = _text.replaceAll('\x03', Env.escapeQuot);
-    _text = _text.replaceAll('\x02', Env.escapeApos);
-    _text = _text.replaceAll('\x01', Env.escapeEscape);
+    _text = _text.replaceAll('\x03', Env.jsonEscapeQuot);
+    _text = _text.replaceAll('\x02', Env.jsonEscapeApos);
+    _text = _text.replaceAll('\x01', Env.jsonEscapeEscape);
 
     return this;
   }
@@ -289,9 +289,7 @@ class ConfigFileLoader {
       loadImportsSync();
     }
 
-    //expandCmdLineArgs(appPlainArgs);
     _text = Env.expand(_text, args: appPlainArgs, canEscape: true);
-
     _data = json5Decode(_text);
     _text = '';
 
@@ -350,7 +348,9 @@ class ConfigFileLoader {
       var jsonPath = JsonPath(fileInfo.jsonPath);
       var decoded = json5Decode(_text);
 
-      if (decoded != null) {
+      if (decoded == null) {
+        _data = [];
+      } else {
         data.addAll(jsonPath.read(decoded).map((x) => x.value));
         _data = data;
       }
