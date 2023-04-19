@@ -36,7 +36,8 @@
         "{scale}": [ "=Div", "{dim}", "{org-dim}" ],
       },
 
-      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{res}dpi/ic_launcher{m}.png"
+      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{res}dpi/ic_launcher{m}.png",
+
     },
 
     {
@@ -74,7 +75,7 @@
         "{scale}": [ "=Div", "{dim}", "{org-dim}" ],
       },
 
-      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{res}x{res}@{mul}x.png"
+      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{res}x{res}@{mul}x.png",
     },
 
     {
@@ -84,10 +85,10 @@
       "{dim-res-mul}": [
         { "{dim}": [ 16, 32, ],
           "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
-          "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{dim}x{dim}.png" },
+          "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{dim}x{dim}.png", },
         { "{dim}": 180,
           "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
-          "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png" }
+          "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png", },
       ],
     },
 

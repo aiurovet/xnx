@@ -238,8 +238,6 @@ See the details of the imported file `shell.xnx` beyond this configuration
 
   "{org-dim}": "750",
 
-  "{{-cmd-}}": "{svg2png}",
-
   "{img-src-dir}": "{{-cur-dir-}}/_assets/images",
 
   "{{-inp-}}": "{img-src-dir}/app{m}.svg",
@@ -265,7 +263,8 @@ See the details of the imported file `shell.xnx` beyond this configuration
         "{scale}": [ "=Div", "{dim}", "{org-dim}" ],
       },
 
-      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{res}dpi/ic_launcher{m}.png"
+      "{{-out-}}": "{{-cur-dir-}}/android/app/src/main/res/{D}-{res}dpi/ic_launcher{m}.png",
+      "{{-run-}}": "{svg2png}",
     },
 
     {
@@ -303,7 +302,8 @@ See the details of the imported file `shell.xnx` beyond this configuration
         "{scale}": [ "=Div", "{dim}", "{org-dim}" ],
       },
 
-      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{res}x{res}@{mul}x.png"
+      "{{-out-}}": "{{-cur-dir-}}/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-{res}x{res}@{mul}x.png",
+      "{{-run-}}": "{svg2png}",
     },
 
     {
@@ -313,10 +313,12 @@ See the details of the imported file `shell.xnx` beyond this configuration
       "{dim-res-mul}": [
         { "{dim}": [ 16, 32, ],
           "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
-          "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{dim}x{dim}.png" },
+          "{{-out-}}":  "{{-cur-dir-}}/web/icons/favicon-{dim}x{dim}.png",
+          "{{-run-}}": "{svg2png}", },
         { "{dim}": 180,
           "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
-          "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png" }
+          "{{-out-}}":  "{{-cur-dir-}}/web/icons/apple-touch-icon.png",
+          "{{-run-}}": "{svg2png}", },
       ],
     },
 
@@ -329,6 +331,7 @@ See the details of the imported file `shell.xnx` beyond this configuration
 
       "{{-func-}}": { "{scale}": [ "=Div", "{dim}", "{org-dim}" ], },
       "{{-out-}}":  "{{-cur-dir-}}/{sub}/icon-{dim}x{dim}.png",
+      "{{-run-}}": "{svg2png}",
     },
   ]
 }
