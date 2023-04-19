@@ -794,7 +794,7 @@ can be used with --move to delete the source''',
   void printUsage(ArgParser parser, {String? error}) {
     if (!_logger.isQuiet) {
       stderr.writeln('''
-$appName $appVersion (C) Alexander Iurovetski 2020 - 2021
+$appName $appVersion (C) Alexander Iurovetski 2020-2023
 
 A command-line utility to eXpand text content aNd to eXecute external utilities.
 

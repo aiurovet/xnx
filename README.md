@@ -1,6 +1,6 @@
 ## xnx v0.1.0
 
-### Copyright © Alexander Iurovetski 2020 - 2021**
+### Copyright © Alexander Iurovetski 2020 - 2023**
 
 A command-line utility to eXpand text content by replacing placeholders with the actual data aNd to eXecute external utilities.
 

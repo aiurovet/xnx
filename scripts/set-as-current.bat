@@ -1,7 +1,7 @@
 @echo off
 
 @rem **************************************************************************
-@rem * Copyright (C) Alexander Iurovetski 2021. All rights reserved
+@rem * Copyright (C) Alexander Iurovetski 2023. All rights reserved
 @rem *
 @rem * The script to run after unpacking the installation archive in order to
 @rem * point to this version (the deepest-level containing sub-directory)
