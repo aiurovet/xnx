@@ -796,12 +796,20 @@ Output path: "$outFilePathEx"
         map.forEach((k, v) {
           if ((k != key) && !k.isBlank()) {
             value = value?.replaceAll(k, v);
+
+            if (isPathKey(k)) {
+              value = Path.adjust(value);
+            }
           }
         });
       }
 
       if ((key != null) && (value?.contains(key) ?? false) && map.containsKey(key)) {
         value = value?.replaceAll(key, map[key] ?? '');
+
+        if (isPathKey(key)) {
+          value = Path.adjust(value);
+        }
       }
 
       if (isKeyCurDir) {
@@ -816,6 +824,20 @@ Output path: "$outFilePathEx"
 
     return (value ?? '');
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  bool isPathKey(String key) {
+    if (_config.keywords.allForPath.contains(key)) {
+      return true;
+    }
+
+    if ((rexDetectPaths != null) && rexDetectPaths!.hasMatch(key)) {
+      return true;
+    }
+
+    return false;
+ }
 
   //////////////////////////////////////////////////////////////////////////////
 
