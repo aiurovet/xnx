@@ -11,18 +11,19 @@ set DIR=%~dp0
 @rem ***************************************************************************
 
 for %%d in (
-    %DIR%flutter_app_icons\android,
-    %DIR%flutter_app_icons\ios,
-    %DIR%flutter_app_icons\linux,
-    %DIR%flutter_app_icons\macos,
-    %DIR%flutter_app_icons\web,
-    %DIR%flutter_app_icons\windows,
-    %DIR%ms_office\out,
-    %DIR%ms_office\unz,
-    %DIR%multi_conf\out,
-    %DIR%multi_icon\out,
-    %DIR%site_env\ReleaseFiles,
-    %DIR%web_config\out
+    %DIR%..\examples\flutter_app_icons\android,
+    %DIR%..\examples\flutter_app_icons\ios,
+    %DIR%..\examples\flutter_app_icons\linux,
+    %DIR%..\examples\flutter_app_icons\macos,
+    %DIR%..\examples\flutter_app_icons\web,
+    %DIR%..\examples\flutter_app_icons\windows,
+    %DIR%..\examples\ms_office\out,
+    %DIR%..\examples\ms_office\unz,
+    %DIR%..\examples\multi_conf\out,
+    %DIR%..\examples\multi_icon\out,
+    %DIR%..\examples\site_env\ReleaseFiles,
+    %DIR%..\examples\web_config\out
+    %DIR%..\out
   ) do (
   if exist "%%d" (
     echo.
