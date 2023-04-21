@@ -76,15 +76,15 @@ jobs:
       - name: Running Integration Test 1 - flutter_app_icons
         run: |
           bin/${{runner.os}}/xnx -d examples/flutter_app_icons
-          scripts/Check-Count.ps1 -Expected 43 -Recurse -Path "examples/flutter_app_icons" -Include "*.png"
-          bin/${{runner.os}}/xnx -d examples/flutter_app_icons --remove andriod ios web
+          bin/${{runner.os}}/chest -no-content -expect 43 -files "examples/flutter_app_icons/**.png"
+          bin/${{runner.os}}/xnx -d examples/flutter_app_icons --remove android ios linux macos web windows
 
       ################################################################################
 
       - name: Running Integration Test 2 - ms_office
         run: |
           bin/${{runner.os}}/xnx -d examples/ms_office
-          scripts/Check-Count.ps1 -Expected 12 -Path "examples/ms_office/out"
+          bin/${{runner.os}}/chest -no-content -expect 12 -files "examples/ms_office/out/*"
           bin/${{runner.os}}/xnx -d examples/ms_office --remove out
 
       ################################################################################
@@ -92,7 +92,7 @@ jobs:
       - name: Running Integration Test 3 - multi_conf
         run: |
           bin/${{runner.os}}/xnx -d examples/multi_conf
-          scripts/Check-Count.ps1 -Expected 6 -Path "examples/multi_conf/out"
+          bin/${{runner.os}}/chest -no-content -expect 6 -files "examples/multi_conf/out/*"
           bin/${{runner.os}}/xnx -d examples/multi_conf --remove out
 
       ################################################################################
@@ -100,7 +100,7 @@ jobs:
       - name: Running Integration Test 4 - multi_icon
         run: |
           bin/${{runner.os}}/xnx -d examples/multi_icon
-          scripts/Check-Count.ps1 -Expected 12 -Path "examples/multi_icon/out"
+          bin/${{runner.os}}/chest -no-content -expect 12 -files "examples/multi_icon/out/*"
           bin/${{runner.os}}/xnx -d examples/multi_icon --remove out
 
       ################################################################################
@@ -108,8 +108,8 @@ jobs:
       - name: Running Integration Test 5 - setver_azx
         run: |
           bin/${{runner.os}}/xnx -d examples/setver_azx "0.1.45"
-          scripts/Check-Count.ps1 -Expected 4 -Pattern '"version": "0.1.45"' -Path "examples/setver_azx/*.json"
-          scripts/Check-Count.ps1 -Expected 3 -Pattern '"Major": 0,|"Minor": 1,|"Patch": 45' -Path "examples/setver_azx/task.json"
+          bin/${{runner.os}}/chest -expect 4 -plain '"version": "0.1.45"' -files "examples/setver_azx/*.json"
+          bin/${{runner.os}}/chest -expect 3 -regex '"Major": 0,|"Minor": 1,|"Patch": 45' -files "examples/setver_azx/task.json"
           bin/${{runner.os}}/xnx -d examples/setver_azx "0.1.44"
 
       ################################################################################
@@ -117,7 +117,7 @@ jobs:
       - name: Running Integration Test 6 - site_env
         run: |
           bin/${{runner.os}}/xnx -d examples/site_env
-          scripts/Check-Count.ps1 -Expected 64 -Recurse -Path "examples/site_env/ReleaseFiles" -Include "*.txt"
+          bin/${{runner.os}}/chest -no-content -expect 64 -files "examples/site_env/ReleaseFiles/**.txt"
           bin/${{runner.os}}/xnx -d examples/site_env --remove ReleaseFiles
 
       ################################################################################
@@ -125,9 +125,9 @@ jobs:
       - name: Running Integration Test 7 - web_config
         run: |
           bin/${{runner.os}}/xnx -d examples/web_config -x xnx/appconfig.xnx Web.X.config Dev Local=service,eighth
-          scripts/Check-Count.ps1 -Expected 1 -Recurse -Path "examples/web_config/out"
-          scripts/Check-Count.ps1 -Expected 2 -Recurse -Path "examples/web_config/out/Web.config" -Pattern "localhost"
-          scripts/Check-Count.ps1 -Expected 5 -Recurse -Path "examples/web_config/out/Web.config" -Pattern "\.au"
+          bin/${{runner.os}}/chest -no-content -expect 1 -files "examples/web_config/out/*"
+          bin/${{runner.os}}/chest -expect 2 -plain "localhost" -files "examples/web_config/out/Web.config"
+          bin/${{runner.os}}/chest -expect 5 -plain ".au" -files "examples/web_config/out/Web.config"
           bin/${{runner.os}}/xnx -d examples/web_config --remove out
 
       ################################################################################
