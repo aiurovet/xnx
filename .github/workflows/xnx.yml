@@ -132,16 +132,26 @@ jobs:
 
       ################################################################################
 
+      - name: Pulling the latest changes before pushing the binary
+        run: git pull
+
+      ################################################################################
+
       - name: Pushing the new binary to the version control
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
           message: 'Pushing the new binary back to the version control'
           add: 'bin/${{runner.os}}/* --force'
 
       ################################################################################
 
+      - name: Pulling the latest changes before pushing the application package
+        run: git pull
+
+      ################################################################################
+
       - name: Pushing the new application package back to the version control
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
           message: 'Pushing the new application package back to the version control'
           add: 'app/${{runner.os}}/* --force'
