@@ -21,7 +21,7 @@ class Options {
 
   static const String appName = 'xnx';
   static const String appConfigName = 'default${fileTypeCfg}config';
-  static const String appVersion = '0.1.1';
+  static const String appVersion = '0.1.0';
   static const String fileTypeCfg = '.$appName';
   static const String fileMaskCfg = '${GlobExt.all}$fileTypeCfg';
   static const String helpMin = '-?';
