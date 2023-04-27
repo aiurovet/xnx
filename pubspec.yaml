@@ -1,7 +1,8 @@
 name: xnx
-version: 0.1.0
+version: 0.1.1
 description: A command-line utility to eXpand text content aNd to eXecute external utilities.
-# homepage: https://www.example.com
+homepage: https://aiurovet.com/
+repository: https://github.com/aiurovet/xnx/
 
 environment:
   sdk: '>=2.19.4 <3.0.0'
