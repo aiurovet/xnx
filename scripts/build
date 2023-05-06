@@ -44,16 +44,16 @@ OUT="${OUP}/${PRJ}/${VER}"
 
 EXE="${BIN}/${PRJ}"
 
-#PKG="${APP}/${PRJ}-${VER}-${OS_LOWER}";
-#[[ "${OS_TYPE}" != "macOS" ]] && PKG="${PKG}-amd64"
+PKG="${APP}/${PRJ}-${VER}-${OS_LOWER}";
+[[ "${OS_TYPE}" != "macOS" ]] && PKG="${PKG}-amd64"
 
-PKG="${APP}/${PRJ}-${VER}"
+# PKG="${APP}/${PRJ}-${VER}"
 
-if [[ "${OS_LOWER}" == "linux" ]]; then
-  PKG="${PKG}.x86_64_linux.bottle"
-elif [[ "${OS_LOWER}" == "macos" ]]; then
-  PKG="${PKG}.big_sur.bottle"
-fi
+# if [[ "${OS_LOWER}" == "linux" ]]; then
+#   PKG="${PKG}.x86_64_linux.bottle"
+# elif [[ "${OS_LOWER}" == "macos" ]]; then
+#   PKG="${PKG}.big_sur.bottle"
+# fi
 
 ################################################################################
 
@@ -91,7 +91,6 @@ echo "Creating the icons and moving those to the output directory"
 
 echo "Creating and compressing the application package"
 "${EXE}" --move --pack "${OUP}/${PRJ}" "${PKG}.tar.gz"
-#tar cvfz "${PKG}.tar.gz" "${OUP}/${PRJ}"
 
 if [[ -d "${OUP}" ]]; then
   echo "Removing the output parent directory \"${OUP}\""
