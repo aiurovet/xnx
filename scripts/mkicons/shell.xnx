@@ -43,6 +43,6 @@
     "{svg2png-msedge}": '"{exe-msedge}" {HEADLESS-OPTS-CR}', // similar to Chrome
     "{svg2png-rsvg}": 'rsvg-convert "{{-inp-}}" > "{{-out-}}"', // accurate for non-animated, very fast, but requires librsvg to be installed
 
-    "{svg2png}": '{svg2png-chrome}', // current choice
+    "{svg2png}": '{svg2png-rsvg}', // current choice
   }
 }
