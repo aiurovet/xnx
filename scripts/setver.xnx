@@ -9,9 +9,17 @@
 
   "{new-ver}": "0.2.0", // the new value
 
-  "{{-inp-}}": [ "LICENSE", "pubspec.yaml", "README.md", "lib/options.dart", "scripts/build*", ],
+  "{{-inp-}}": [
+    "LICENSE",
+    "pubspec.yaml",
+    "README.md",
+    "lib/options.dart",
+    "scripts/build*",
+    "scripts/install/brew/*.rb",
+    // "scripts/install/choco/*.ps1",
+  ],
   
-  "/(v|ver=[\\\"\\']?|version\\s*[\\=\\:]?\\s*[\\\"\\']?)(\\d+\\.\\d+\\.\\d+(-\\d+)?)/i":
+  "/(v|ver=['\"]?|version\\s*[\\=\\:]?\\s*['\"]?)(\\d+\\.\\d+\\.\\d+(-\\d+)?)/i":
     '${1}{new-ver}',
 
   "{{-run-}}": '--expand "{{-inp-}}"', // non-incremental (always enforced)

@@ -47,14 +47,6 @@ EXE="${BIN}/${PRJ}"
 PKG="${APP}/${PRJ}-${VER}-${OS_LOWER}";
 [[ "${OS_TYPE}" != "macOS" ]] && PKG="${PKG}-amd64"
 
-# PKG="${APP}/${PRJ}-${VER}"
-
-# if [[ "${OS_LOWER}" == "linux" ]]; then
-#   PKG="${PKG}.x86_64_linux.bottle"
-# elif [[ "${OS_LOWER}" == "macos" ]]; then
-#   PKG="${PKG}.big_sur.bottle"
-# fi
-
 ################################################################################
 
 if [[ ! -d "${APP}" ]]; then
