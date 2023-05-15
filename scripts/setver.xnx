@@ -1,0 +1,18 @@
+{
+  "{{-once-}}": {
+    "{ver-arg}": "$~1",
+
+    "{{-if-}}": { '{$~#} > 1': { "{{-stop-}}": "Too many arguments passed!", }, },
+
+    "{{-func-}}": {
+      "{new-ver}": [ "=Trim", "{ver-arg}" ],
+    },
+  },
+
+  "{{-inp-}}": [ "LICENSE", "pubspec.yaml", "README.md", "lib/options.dart", "scripts/build*", ],
+  
+  "/(v|ver=[\"\']?|version\s*[\=\:]?\s*[\"\']?)(\d+\.\d+\.\d+(-\d+)?)/i":
+    '${1}{new-ver}',
+
+  "{{-run-}}": '--expand "{{-inp-}}"', // non-incremental (always enforced)
+}
