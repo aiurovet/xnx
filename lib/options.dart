@@ -21,7 +21,7 @@ class Options {
 
   static const String appName = 'xnx';
   static const String appConfigName = 'default${fileTypeCfg}config';
-  static const String appVersion = '0.1.0';
+  static const String appVersion = '0.2.0';
   static const String fileTypeCfg = '.$appName';
   static const String fileMaskCfg = '${GlobExt.all}$fileTypeCfg';
   static const String helpMin = '-?';
@@ -34,6 +34,7 @@ class Options {
   static const String _envImportDir = '${_envAppKeyPrefix}IMPORT_DIR';
   static const String _envListOnly = '${_envAppKeyPrefix}LIST_ONLY';
   static const String _envEscape = '${_envAppKeyPrefix}ESCAPE';
+  static const String _envMinExpand = '${_envAppKeyPrefix}MIN_EXPAND';
   static const String _envQuiet = '${_envAppKeyPrefix}QUIET';
   static const String _envVerbose = '${_envAppKeyPrefix}VERBOSE';
 
@@ -97,6 +98,14 @@ the application will define environment variable $_envForce''',
     'abbr': 'h',
     'help': 'this help screen',
     'negatable': false,
+  };
+  static final Map<String, Object?> minExpand = {
+    'abbr': 'M',
+    'name': 'min-expand',
+    'negatable': false,
+    'help': '''disallow expansion of environment and language variables as well as positional command-line
+arguments (useful when doing find/replace in scripts and other code files), the application will define
+environment variable $_envMinExpand''',
   };
   static final Map<String, Object?> importDir = {
     'name': 'import-dir',
@@ -403,6 +412,9 @@ can be used with --move to delete the source''',
   PackType? _archType;
   PackType? get archType => _archType;
 
+  bool _isMinExpand = true;
+  bool get isMinExpand => _isMinExpand;
+
   bool _isCmdCompress = false;
   bool get isCmdCompress => _isCmdCompress;
 
@@ -544,6 +556,9 @@ can be used with --move to delete the source''',
     });
     addFlag(parser, appendSep, (value) {
       _isAppendSep = _getBool(_envAppendSep, appendSep, value);
+    });
+    addFlag(parser, minExpand, (value) {
+      _isMinExpand = _getBool(_envMinExpand, minExpand, value);
     });
     addFlag(parser, forceConvert, (value) {
       _isForced = _getBool(_envForce, forceConvert, value);

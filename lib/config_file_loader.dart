@@ -282,7 +282,7 @@ class ConfigFileLoader {
   // Methods
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {List<String>? appPlainArgs}) {
+  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {bool isMinExpand = false, List<String>? appPlainArgs}) {
     loadSyncEx(fileInfo);
 
     if (!keywords.forImport.isBlank()) {

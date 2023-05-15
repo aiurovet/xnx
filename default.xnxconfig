@@ -1,7 +1,7 @@
 // Application configuration file for xnx
 // The content can be changed according to your preference
 //
-// When the applicatiopn starts, it first looks for a file under option -c or --config,
+// When the application starts, it first looks for a file under option -c or --config,
 // then for a file with this apecific name under the current directory, then under
 // the application directory
 
@@ -92,6 +92,10 @@
     // The value should represent explicit filename or file path
     // The content of that file will be embedded before the full application file parsing (similar to #include in C/C++)
     kwImport: '{{-import-}}',
+
+    // When set, positional command-line arguments, environment and language variables are not expanded
+    // Useful for scripts and other code files
+    kwMinExpand: '{{-min-expand-}}',
 
     // Anything under the value (hash map) for this key will be processed just once (useful for initialisation)
     kwOnce: '{{-once-}}',
