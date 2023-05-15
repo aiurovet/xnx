@@ -37,6 +37,21 @@ class Command extends ShellCmd {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static void chmod(int mode, String path) {
+    mode = mode & 0x1FF; // UNIX permissions only
+
+    // If the file has all write permissions and is not executable, then ignore
+
+    if (((mode & 0x92) == 0x92) &&  ((mode & 0x49) == 0x00)) {
+      return;
+    }
+
+    var text = 'chmod ${(mode | 0x100).toRadixString(8)} "$path"';
+    Command(source: text).exec();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String exec({String? newText, bool canExec = true, bool? runInShell, bool canShow = true}) {
     if (newText != null) {
       parse(newText);

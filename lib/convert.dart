@@ -501,8 +501,9 @@ Output path: "$outFilePathEx"
 
     _logger.out('Expanding: "$inpPath"$outPath${isExpandContentOnly ? '' : '\n'}');
 
-    // Load the input as a text string
+    // Get permissions and load the input as a text string
 
+    var permissions = inpFile?.statSync();
     var text = (inpFile == null ? stdin.readAsStringSync() : inpFile.readAsStringSync());
 
     // Remove keywords and escape special characters
@@ -667,6 +668,9 @@ Output path: "$outFilePathEx"
           }
           tmpFile.renameSync(outFilePath);
         }
+      }
+      if (permissions != null) {
+        Command.chmod(permissions.mode, outFilePath);
       }
     }
 
