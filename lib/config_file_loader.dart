@@ -282,14 +282,22 @@ class ConfigFileLoader {
   // Methods
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {List<String>? appPlainArgs}) {
+  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {bool isMinExpand = false, List<String>? appPlainArgs}) {
     loadSyncEx(fileInfo);
 
     if (!keywords.forImport.isBlank()) {
       loadImportsSync();
     }
 
-    _text = Env.expand(_text, args: appPlainArgs, canEscape: true);
+    if (!isMinExpand) {
+      var ins = RegExp.escape(keywords.forMinExpand);
+      var pat = "[\\\"\\']$ins[\\\"\\']\\s*:\\s*true";
+
+      if (!RegExp(pat, multiLine: true).hasMatch(_text)) {
+        _text = Env.expand(_text, args: appPlainArgs, canEscape: true);
+      }
+    }
+
     _data = json5Decode(_text);
     _text = '';
 

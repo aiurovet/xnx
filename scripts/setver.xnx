@@ -2,7 +2,10 @@
   "{{-once-}}": {
     "{ver-arg}": "$~1",
 
-    "{{-if-}}": { '{$~#} > 1': { "{{-stop-}}": "Too many arguments passed!", }, },
+    "{{-if-}}": { '$# < 1': { "{{-stop-}}": "No new version found!", }, },
+    "{{-if-}}": { '$# > 1': { "{{-stop-}}": "Too many arguments passed!", }, },
+
+    "{{-min-expand-}}": true,
 
     "{{-func-}}": {
       "{new-ver}": [ "=Trim", "{ver-arg}" ],

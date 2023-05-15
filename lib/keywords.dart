@@ -38,6 +38,7 @@ class Keywords {
   String forInpSubDir = '{{-inp-sub-dir-}}';
   String forInpSubPath = '{{-inp-sub-path-}}';
   String forImport = '{{-import-}}';
+  String forMinExpand = '{{-min-expand-}}';
   String forOnce = '{{-once-}}';
   String forOut = '{{-out-}}';
   String forRun = '{{-run-}}';
@@ -183,6 +184,7 @@ class Keywords {
       forInpSubDir = node['kwInpSubDir'] ?? forInpSubDir;
       forInpSubPath = node['kwInpSubPath'] ?? forInpSubPath;
       forImport = node['kwImport'] ?? forImport;
+      forMinExpand = node['kwMinExpand'] ?? forMinExpand;
       forKeyAsRegExp = node['kwKeyAsRegExp'] ?? forKeyAsRegExp;
       forNumericPrecision = node['kwNumericPrecision'] ?? forNumericPrecision;
       forOnce = node['kwOnce'] ?? forOnce;
@@ -305,6 +307,7 @@ class Keywords {
 
     if (key.startsWith(forCanExpandContent)) { return forCanExpandContent; }
     if (key.startsWith(forImport)) { return forImport; }
+    if (key.startsWith(forMinExpand)) { return forMinExpand; }
     if (key.startsWith(forThis)) { return forThis; }
 
     return (prefixForOthers == null ? key : prefixForOthers + key);
@@ -319,8 +322,8 @@ class Keywords {
       forCanExpandContent, forCmd, forCurDir, forDetectPaths,
       forFunc, forInp, forInpDir, forInpExt, forInpName,
       forInpNameExt, forInpPath,  forInpSubDir, forInpSubPath,
-      forImport, forOnce, forOut, forRun, forFilesSkip, forStop,
-      forFilesTake, forThis,
+      forImport, forOnce, forOut, forRun, forFilesSkip,
+      forStop, forFilesTake, forThis,
     ]);
 
     allForExe..clear()..addAll([
