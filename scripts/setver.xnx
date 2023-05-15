@@ -1,10 +1,5 @@
 {
   "{{-once-}}": {
-    "{ver-arg}": "$~1",
-
-    "{{-if-}}": { '$# < 1': { "{{-stop-}}": "No new version found!", }, },
-    "{{-if-}}": { '$# > 1': { "{{-stop-}}": "Too many arguments passed!", }, },
-
     "{{-min-expand-}}": true,
 
     "{{-func-}}": {
@@ -12,9 +7,11 @@
     },
   },
 
+  "{new-ver}": "0.2.0", // the new value
+
   "{{-inp-}}": [ "LICENSE", "pubspec.yaml", "README.md", "lib/options.dart", "scripts/build*", ],
   
-  "/(v|ver=[\"\']?|version\s*[\=\:]?\s*[\"\']?)(\d+\.\d+\.\d+(-\d+)?)/i":
+  "/(v|ver=[\\\"\\']?|version\\s*[\\=\\:]?\\s*[\\\"\\']?)(\\d+\\.\\d+\\.\\d+(-\\d+)?)/i":
     '${1}{new-ver}',
 
   "{{-run-}}": '--expand "{{-inp-}}"', // non-incremental (always enforced)

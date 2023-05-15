@@ -289,15 +289,7 @@ class ConfigFileLoader {
       loadImportsSync();
     }
 
-    if (!isMinExpand) {
-      var ins = RegExp.escape(keywords.forMinExpand);
-      var pat = "[\\\"\\']$ins[\\\"\\']\\s*:\\s*true";
-
-      if (!RegExp(pat, multiLine: true).hasMatch(_text)) {
-        _text = Env.expand(_text, args: appPlainArgs, canEscape: true);
-      }
-    }
-
+    _text = Env.expand(_text, args: appPlainArgs, canEscape: true);
     _data = json5Decode(_text);
     _text = '';
 

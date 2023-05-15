@@ -1,4 +1,4 @@
-## xnx v0.1.0
+## xnx v0.2.0
 
 ### Copyright © Alexander Iurovetski 2020 - 2023**
 

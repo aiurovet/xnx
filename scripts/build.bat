@@ -7,7 +7,7 @@ setlocal EnableDelayedExpansion
 @rem ***************************************************************************
 
 set PRJ=xnx
-set VER=0.1.0
+set VER=0.2.0
 
 @rem ***************************************************************************
 @rem Initialising directory paths

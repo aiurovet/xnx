@@ -198,8 +198,8 @@ class Keywords {
     rawNode = data[forKeyAsRegExp];
 
     if (rawNode is Map) {
-      regExpPrefix = rawNode[forKeyAsRegExp]?.prefix ?? '';
-      regExpSuffix = rawNode[forKeyAsRegExp]?.suffix ?? '';
+      regExpPrefix = rawNode[forKeyAsRegExp]?.prefix ?? regExpPrefix;
+      regExpSuffix = rawNode[forKeyAsRegExp]?.suffix ?? regExpSuffix;
     }
 
     _initRepeatable();

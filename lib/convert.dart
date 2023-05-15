@@ -30,6 +30,7 @@ class Convert {
 
   static const String fileTypeTmp = '.tmp';
 
+  static final RegExp rexIsKeyEnvVarName = RegExp(r'^\$');
   static final RegExp rexIsSubCmd = RegExp(r'^[\s]*[\-]');
   static final RegExp rexIsSubCmdExpand = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
   static final RegExp rexIsSubCmdKeepTime = RegExp(r'(^|[\s])(--(copy|copy-newer|move|move-newer))([\s]|$)');
@@ -41,6 +42,7 @@ class Convert {
   bool canExpandContent = false;
   RegExp? rexDetectPaths;
   bool isExpandContentOnly = false;
+  bool isMinExpand = false;
   bool isProcessed = false;
   bool isStdIn = false;
   bool isStdOut = false;
@@ -367,6 +369,7 @@ class Convert {
       isSubRun = rexIsSubCmd.hasMatch(command);
       isExpandContentOnly = isSubRun && rexIsSubCmdExpand.hasMatch(command);
       canExpandContent = !options.isListOnly && (isExpandContentOnly || getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false).parseBool());
+      isMinExpand = getValue(mapCurr, key: _config.keywords.forMinExpand, canReplace: false).parseBool();
 
       if (!curDirName.isBlank()) {
         if (_logger.isVerbose) {
@@ -509,6 +512,10 @@ Output path: "$outFilePathEx"
 
     map.forEach((k, v) {
       if (allKeywords.contains(k)) {
+        return;
+      }
+
+      if (isMinExpand && rexIsKeyEnvVarName.hasMatch(k)) {
         return;
       }
 
