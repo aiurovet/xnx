@@ -650,6 +650,10 @@ Output path: "$outFilePathEx"
 
         Path.fileSystem.file(outFilePath)
           .writeAsStringSync(text);
+
+        if (permissions != null) {
+          Command.chmod(permissions.mode, outFilePath);
+        }
       }
       else {
         tmpFile = Path.fileSystem.file(tmpFilePath);
@@ -662,15 +666,16 @@ Output path: "$outFilePathEx"
           ..deleteIfExistsSync()
           ..writeAsStringSync(text);
 
-        if (Path.equals(inpFilePath, outFilePath)) {
+        if (permissions != null) {
+          Command.chmod(permissions.mode, outFilePath);
+        }
+
+        if (Path.equals(inpFilePath, tmpFile.path)) {
           if (_logger.isVerbose) {
             _logger.verbose('...renaming temp file to $outFilePath');
           }
           tmpFile.renameSync(outFilePath);
         }
-      }
-      if (permissions != null) {
-        Command.chmod(permissions.mode, outFilePath);
       }
     }
 
