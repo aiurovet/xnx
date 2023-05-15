@@ -341,7 +341,7 @@ class PackOper {
         toDir.createSync(recursive: true);
       }
 
-      final cmd = (Env.isWindows || isTar || isListOnly ? null : Command(isToVar: true));
+      final cmd = (Env.isWindows || isListOnly ? null : Command(isToVar: true));
 
       for (final entity in archive) {
         if (entity.name.isEmpty) {
@@ -366,10 +366,7 @@ class PackOper {
           }
 
           if (cmd != null) {
-            if (((entity.mode & 0x49) != 0x00) || // has at least one execution permission
-                ((entity.mode & 0x92) != 0x92)) { // doesn't have all write permissions
-              cmd.exec(newText: 'chmod ${(entity.unixPermissions | 0x100).toRadixString(8)} "$toPath"');
-            }
+            Command.chmod(entity.mode, toPath);
           }
         }
         else {

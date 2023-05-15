@@ -37,6 +37,35 @@ class Command extends ShellCmd {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  static void chmod(int newMode, String path) {
+    // Skip if the OS is Windows: no chmod there
+
+    if (Env.isWindows) {
+      return;
+    }
+
+    // Get curent mode
+
+    final curStat = File(path).statSync();
+    final isFound = (curStat.type != FileSystemEntityType.notFound);
+    final curMode = (isFound ? (curStat.mode & 0x1FF) : null);
+
+    // Skip if the file is not found or the mode is the same
+  
+    newMode = newMode & 0x1FF; // UNIX permissions only
+
+    if ((curMode == null) || (newMode == curMode)) {
+      return;
+    }
+
+    // Execute the mode change
+  
+    var text = 'chmod ${newMode.toRadixString(8)} "$path"';
+    Command(source: text).exec();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
   String exec({String? newText, bool canExec = true, bool? runInShell, bool canShow = true}) {
     if (newText != null) {
       parse(newText);

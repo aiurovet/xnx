@@ -7,7 +7,7 @@
     { "name": "---- mkicons ----", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "scripts/mkicons", "xnx", "../../out" ], },
     { "name": "ad-hoc", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-d", "examples/multi_icon", "--remove", "png1" ], },
+      "args": [ "--untargz", "app/Linux/xnx-0.2.0-linux-amd64.tar.gz" ], },
     { "name": "app-config", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-c ../../", "-f", "-d", "examples/multi_conf", ], },
     { "name": "help", "request": "launch", "type": "dart", "program": "bin/main.dart",
