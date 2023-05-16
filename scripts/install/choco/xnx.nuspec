@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>xnx</id>
+    <version>0.1.0</version>
+    <authors>Alexander Iurovetski</authors>
+    <owners>Alexander Iurovetski</owners>
+    <copyright>2023 Alexander Iurovetski</copyright>
+    <projectUrl>https://github.com/aiurovet/xnx/tree/0.1.0</projectUrl>
+    <docsUrl>https://aiurovet.com/applications/xnx</docsUrl>
+    <summary>
+      Smart search and replace followed by calling external executables.
+    </summary>
+    <description>
+      Command-line utility for Linux, macOS and Windows performing sophisticated
+      search and replace followed by calling external executables. It can be
+      considered a kind of JSON shell.
+    </description>
+  </metadata>
+  <files>
+    <file src="..\..\..\bin\Windows\xnx.exe" target="" />
+    <file src="..\..\..\examples\**" target="examples" />
+    <file src="..\..\..\*.md" target="" />
+    <file src="..\..\..\LICENSE*" target="" />
+  </files>
+</package>

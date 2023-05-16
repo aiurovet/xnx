@@ -26,12 +26,25 @@ for d in \
     "${DIR}/../examples/multi_icon/out" \
     "${DIR}/../examples/site_env/ReleaseFiles" \
     "${DIR}/../examples/web_config/out" \
-    "${DIR}/../out"
+    "${DIR}/../out" \
+    "${DIR}/../scripts/choco/*.nupkg"
 do
   if [ -d "${d}" ]; then
     HAS="1"
     echo "Cleaning: \"${d}\""
     rm -rf "${d}"
+  fi
+done
+
+################################################################################
+
+for f in \
+    "${DIR}/../scripts/choco/*.nupkg"
+do
+  if [ -f "${f}" ]; then
+    HAS="1"
+    echo "Cleaning: \"${f}\""
+    rm -f "${f}"
   fi
 done
 

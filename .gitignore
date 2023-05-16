@@ -35,4 +35,5 @@ examples/ms_office/unz/
 examples/site_env/ReleaseFiles/
 examples/web_config/out/
 out/
+scripts/install/choco/*.nupkg
 scripts/mkicons/png/

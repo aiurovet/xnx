@@ -22,13 +22,26 @@ for %%d in (
     %DIR%..\examples\multi_conf\out,
     %DIR%..\examples\multi_icon\out,
     %DIR%..\examples\site_env\ReleaseFiles,
-    %DIR%..\examples\web_config\out
+    %DIR%..\examples\web_config\out,
     %DIR%..\out
   ) do (
   if exist "%%d" (
     echo.
     echo Cleaning: "%%d"
     rmdir /Q /S "%%d"
+    if errorlevel 1 goto FAIL
+  )
+)
+
+@rem ***************************************************************************
+
+for %%f in (
+    %DIR%..\scripts\install\choco\*.nupkg
+  ) do (
+  if exist "%%f" (
+    echo.
+    echo Cleaning: "%%f"
+    del /Q "%%f"
     if errorlevel 1 goto FAIL
   )
 )
