@@ -1,7 +1,11 @@
 #
-#   brew tap aiurovet/xnx && brew install xnx
+# Copyright (c) 2023 Alexander Iurovetski
 #
-#   brew uninstall xnx && brew untap aiurovet/xnx
+# brew tap aiurovet/xnx && brew install xnx
+# brew uninstall xnx && brew untap aiurovet/xnx
+#
+# Upon any change, this file should be copied
+# from xnx/scripts/install/brew to homebrew-xnx/
 #
 class Xnx < Formula
   # Getting short class name, as "#{name}" gets stripped off the namespace only
