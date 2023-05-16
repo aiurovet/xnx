@@ -25,11 +25,10 @@
   } },
 
   "{{-run-}}": [
-    './myecho "OS Name: <${OS}> OS Full: <${OS_FULL}>, User: <${USER}>, Home: <${HOME}>, Temp: ${TEMP}, Host: <${HOST}>, Locale: <${LOCALE}>"',
     '--print "OS Name: <${OS}>\nOS Full: <${OS_FULL}>\nUser: <${USER}>\nHome: <${HOME}>\nTemp: <${TEMP}>\nHost: <${HOST}>,\nLocale: <${LOCALE}>"',
   ],
 
   "{{-run-}}": [
-    '--print "Run #2"',
+    '--print "Print #3"',
   ],
 }
