@@ -8,6 +8,7 @@
     <copyright>2023 Alexander Iurovetski</copyright>
     <projectUrl>https://github.com/aiurovet/xnx/tree/0.1.0</projectUrl>
     <docsUrl>https://aiurovet.com/applications/xnx</docsUrl>
+    <tags>utility cli</tags>
     <summary>
       Smart search and replace followed by calling external executables.
     </summary>
@@ -19,7 +20,7 @@
   </metadata>
   <files>
     <file src="..\..\..\bin\Windows\xnx.exe" target="" />
-    <file src="..\..\..\*.ico" target="" />
+    <file src="*.ico" target="" />
     <file src="..\..\..\*.md" target="" />
     <file src="..\..\..\LICENSE*" target="" />
     <file src="..\..\..\examples\**" target="examples" />
