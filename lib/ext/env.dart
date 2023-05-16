@@ -67,7 +67,7 @@ class Env {
     var result = '';
 
     for (var currPos = 0, lastPos = input.length - 1; currPos <= lastPos; currPos++) {
-      currCodeUnit = input.codeUnitAt(currPos); // (currPos == 0 ? input.codeUnitAt(0) : nextCodeUnit);
+      currCodeUnit = input.codeUnitAt(currPos);
       nextCodeUnit = (currPos < lastPos ? input.codeUnitAt(currPos + 1) : 0);
 
       switch (currCodeUnit) {

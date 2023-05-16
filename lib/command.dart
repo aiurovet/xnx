@@ -40,7 +40,7 @@ class Command extends ShellCmd {
   static void chmod(int newMode, String path) {
     // Skip if the OS is Windows: no chmod there
 
-    if (Env.isWindows) {
+    if (Env.isWindows || (newMode == 0)) {
       return;
     }
 

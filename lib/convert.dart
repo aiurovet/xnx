@@ -667,10 +667,10 @@ Output path: "$outFilePathEx"
           ..writeAsStringSync(text);
 
         if (permissions != null) {
-          Command.chmod(permissions.mode, outFilePath);
+          Command.chmod(permissions.mode, tmpFile.path);
         }
 
-        if (Path.equals(inpFilePath, tmpFile.path)) {
+        if (Path.equals(inpFilePath, outFilePath)) {
           if (_logger.isVerbose) {
             _logger.verbose('...renaming temp file to $outFilePath');
           }
