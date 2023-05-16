@@ -19,8 +19,9 @@
   </metadata>
   <files>
     <file src="..\..\..\bin\Windows\xnx.exe" target="" />
-    <file src="..\..\..\examples\**" target="examples" />
+    <file src="..\..\..\*.ico" target="" />
     <file src="..\..\..\*.md" target="" />
     <file src="..\..\..\LICENSE*" target="" />
+    <file src="..\..\..\examples\**" target="examples" />
   </files>
 </package>

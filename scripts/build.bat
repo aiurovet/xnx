@@ -16,7 +16,7 @@ set VER=0.2.0
 set APP=app\Windows
 set BIN=bin\Windows
 set OUP=out\Windows
-set OUT=%OUP%\%PRJ%\%VER%
+set OUT=%OUP%\%PRJ%
 
 @rem ***************************************************************************
 @rem Initialising file paths

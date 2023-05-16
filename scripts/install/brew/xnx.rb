@@ -25,7 +25,7 @@ class Xnx < Formula
   #
   $setups = [{
     "os_name" => "Linux",
-    "tar_name" => "#{$name}-#{version}-linux-amd64.tar.gz",
+    "tar_name" => "#{$name}-#{version}-linux-x86_64.tar.gz",
     "base_url" => "https://github.com/aiurovet/#{$name}/raw/release/#{version}/app/Linux/",
     "sha_256" => "f4556de71342b80c0233c0acff6a3ca037d321f25d33cdd61c798b1d87c723a6",
   }, {
