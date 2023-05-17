@@ -74,8 +74,6 @@
       "{png-dir}": "{{-cur-dir-}}/png",
       "{icon-pthp}": "{png-dir}/{icon-name}",
 
-      "{exe-pthp}": "{out-dir}/{prj}",
-
       "{{-if-}}": { '"${OS}" ==/i "linux"': {
         "{{-run-}}": [
           '--move "{icon-pthp}_192x192.png" "{out-dir}/{icon-name}.png"'

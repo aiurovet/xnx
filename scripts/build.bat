@@ -15,6 +15,7 @@ set VER=0.2.0
 
 set APP=app\Windows
 set BIN=bin\Windows
+set CHO=scripts\install\choco
 set OUP=out\Windows
 set OUT=%OUP%\%PRJ%
 
@@ -77,36 +78,12 @@ echo Compiling "%EXE%"
 dart compile exe bin\main.dart -o "%EXE%"
 if errorlevel 1 exit /B 1
 
-echo Copying the executable file to the output directory
-copy /Y "%EXE%" "%OUT%"
-if errorlevel 1 exit /B 1
-
-echo Copying the change log to the output directory
-copy /Y CHANGELOG.md "%OUT%"
-if errorlevel 1 exit /B 1
-
-echo Copying the installation guide to the output directory
-copy /Y INSTALL.md "%OUT%"
-if errorlevel 1 exit /B 1
-
-echo Copying the license to the output directory
-copy /Y LICENSE "%OUT%"
-if errorlevel 1 exit /B 1
-
-echo Copying the application configuration file to the output directory
-xcopy /Y "default.%PRJ%config" "%OUT%"
-if errorlevel 1 exit /B 1
-
-echo Copying the examples to the output directory
-xcopy /I /Q /S examples "%OUT%\examples"
-if errorlevel 1 exit /B 1
-
 echo Creating the icons in the output directory
 "%EXE%" -d scripts\mkicons "%PRJ%" "..\..\%OUT%" %ARGS%
 if errorlevel 1 exit /B 1
 
-echo Creating and compressing the application package
-"%EXE%" --move --pack "%OUP%\%PRJ%" "%PKG%.zip"
+echo Creating the Chocolatey package
+choco pack "%CHO%\%PRJ%.nuspec" --outdir %APP%
 
 @rem ***************************************************************************
 
