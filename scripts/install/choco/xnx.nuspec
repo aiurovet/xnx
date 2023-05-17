@@ -7,7 +7,7 @@
     <owners>Alexander Iurovetski</owners>
     <copyright>2023 Alexander Iurovetski</copyright>
     <projectUrl>https://github.com/aiurovet/xnx/tree/0.1.0</projectUrl>
-    <docsUrl>https://aiurovet.com/applications/xnx</docsUrl>
+    <docsUrl>https://aiurovet.com/applications/xnx.html</docsUrl>
     <tags>utility cli</tags>
     <summary>
       Smart search and replace followed by calling external executables.
