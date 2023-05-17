@@ -21,6 +21,7 @@
   <files>
     <file src="..\..\..\bin\Windows\xnx.exe" target="" />
     <file src="*.ico" target="" />
+    <file src="..\..\..\*.xnxconfig" target="" />
     <file src="..\..\..\*.md" target="" />
     <file src="..\..\..\LICENSE*" target="" />
     <file src="..\..\..\examples\**" target="examples" />
