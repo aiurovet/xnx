@@ -7,6 +7,6 @@ To verify the files using the project source:
 1. Please go to the project source location and download the release matching the package version.
 2. Use Get-FileHash -Path <FILE TO VERIFY> to get the file hash value from both the official release file (from step 1 above) and the file from the package and compare them.
 
-x64 URL: https://github.com/aiurovet/xnx/raw/0.1.0/bin/Windows/xnx.exe
+x64 URL: https://github.com/aiurovet/xnx/raw/0.2.0/bin/Windows/xnx.exe
 x64 Checksum Type: SHA256
-x64 Checksum: 601658E765E9E5979AE3F559FE2A9188ED3FDF041C3AD6E7806EC1F6744AF686
+x64 Checksum: 007D48B77E794CF6D5DC79053D9E99A02B2F888897AC7A500265CA92414BF71B
