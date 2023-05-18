@@ -60,7 +60,7 @@
       "{{-inp-}}": "{{-cur-dir-}}/{prj}.svg",
       "{sample}": "{{-cur-dir-}}/{icon-name}_{dim}x{dim}.svg",
 
-      "{{-if-}}": { '({dim} == 192) && ("{look}" == "_dark") && ({sample} -fol {{-inp-}})': {
+      "{{-if-}}": { '({dim} == 192) && ({sample} -fol {{-inp-}})': {
         "{{-run-}}": '--expand "{{-inp-}}" "{sample}"',
       } },
 
