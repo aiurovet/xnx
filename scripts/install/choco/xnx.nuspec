@@ -7,7 +7,7 @@
     <owners>Alexander Iurovetski</owners>
     <copyright>Copyright (c) 2023 Alexander Iurovetski</copyright>
     <docsUrl>https://aiurovet.com/applications/xnx.html</docsUrl>
-    <iconUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/scripts/mkicons/xnx_192x192.svg</iconUrl>
+    <iconUrl>https://github.com/aiurovet/xnx/blob/0.2.0/scripts/mkicons/xnx_192x192.svg</iconUrl>
     <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE</licenseUrl>
     <projectUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectUrl>
     <releaseNotes>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
