@@ -94,7 +94,7 @@ function ReplaceHash {
   $Hash = Get-FileHash -Path $ExePath -Algorithm SHA256 | ForEach-Object {$_.Hash}
   $File = "$ChocoDir\tools\VERIFICATION.txt"
   $Text = Get-Content -Path $File
-  $Text = $Text -replace "(\s*x64\s*Checksum:\s*)[0-9A-Fa-f]+.*", "`${1}$Hash"
+  $Text = $Text -replace "(\s*x64\s*Checksum:\s*)[0-9A-Fa-f]+(.*)", "`${1}$Hash`${2}"
   Set-Content -Path $File -Value $Text
 }
 
