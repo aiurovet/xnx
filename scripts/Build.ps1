@@ -3,6 +3,9 @@
 # Copyright (c) 2023 Alexander Iurovetski
 ################################################################################
 
+using namespace System.IO
+using namespace System.Text.RegularExpressions
+
 $ProjectName = "xnx"
 $ProjectVer = "0.2.0"
 $StartupDir = Get-Location
@@ -12,7 +15,7 @@ $StartupDir = Get-Location
 ################################################################################
 
 $ScriptPath = $MyInvocation.MyCommand.Path
-$ScriptBaseName = [IO.Path]::GetFileName($ScriptPath)
+$ScriptBaseName = [Path]::GetFileName($ScriptPath)
 $ProjectDir = (Get-Item $ScriptPath).Directory.Parent.FullName
 
 ################################################################################
@@ -29,18 +32,20 @@ $OSName      = if ($IsOSLinux) {"Linux"} `
                else {if ($IsOSWindows) {"Windows"} `
                else {$null}}}
 
-$AppDir = [IO.Path]::Combine($ProjectDir, "app", $OSName)
-$BinDir = [IO.Path]::Combine($ProjectDir, "bin", $OSName)
-$ChocoDir = [IO.Path]::Combine($ProjectDir, "scripts", "install", "choco")
-$ExePath = [IO.Path]::Combine($BinDir, "$ProjectName.exe")
-$OutParentDir = [IO.Path]::Combine($ProjectDir, "out", $OSName)
-$OutDir = [IO.Path]::Combine($OutParentDir, $ProjectName)
+$AppDir = [Path]::Combine($ProjectDir, "app", $OSName)
+$BinDir = [Path]::Combine($ProjectDir, "bin", $OSName)
+$ChocoDir = [Path]::Combine($ProjectDir, "scripts", "install", "choco")
+$ExeExt = if ($IsOSWindows) {".exe"} else {""}
+$ExePath = [Path]::Combine($BinDir, "$ProjectName$ExeExt")
+$OutParentDir = [Path]::Combine($ProjectDir, "out", $OSName)
+$OutDir = [Path]::Combine($OutParentDir, $ProjectName)
 
 $Yes = "Yes"
 $No = "No"
 
 $global:OptBrew = $false
-$global:OptChoco = $false
+$global:OptChocoBuild = $false
+$global:OptChocoPush = $false
 $global:OptCompile = $false
 
 ################################################################################
@@ -64,23 +69,31 @@ function AppRun() {
       RunCommand "dart" @("pub", "get")
 
       Write-Output "Compiling $ProjectName $ProjectVer"
-      $Script = [IO.Path]::Combine($ProjectDir, "bin", "main.dart")
+      $Script = [Path]::Combine($ProjectDir, "bin", "main.dart")
       RunCommand "dart" @("compile", "exe", $Script, "-o", $ExePath)
     }
 
     if ($global:OptIcons) {
       Write-Output "Creating the icons in the output directory"
-      $Script = [IO.Path]::Combine($ProjectDir, "scripts", "mkicons")
+      $Script = [Path]::Combine($ProjectDir, "scripts", "mkicons")
       RunCommand $ExePath @("-d", $Script, $ProjectName, $OutDir)
     }
 
-    if ($global:OptChoco) {
+    if ($global:OptChocoBuild) {
       Write-Output "Replacing hash in the verification file"
-      ReplaceHash
+      ReplaceHash $ExePath
+      ReplaceHash ([Path]::Combine($ChocoDir, "xnx.ico"))
+      ReplaceHash ([Path]::Combine($ChocoDir, "xnx_dark.ico"))
 
       Write-Output "Creating the Chocolatey package in `"$AppDir`""
-      $NuspecPath = [IO.Path]::Combine($ChocoDir, "$ProjectName.nuspec")
+      $NuspecPath = [Path]::Combine($ChocoDir, "$ProjectName.nuspec")
       RunCommand "choco" @("pack", $NuspecPath, "--outdir", $AppDir)
+    }
+
+    if ($global:OptChocoPush) {
+      Set-Location $AppDir
+      RunCommand "choco" @("push")
+      Set-Location $ProjectDir
     }
 
     Write-Output "The build successfully completed"
@@ -125,11 +138,11 @@ function CreateDirIfNotExists {
 ################################################################################
 
 function LoadOptions {
-  $oldExt = [IO.Path]::GetExtension($ScriptBaseName)
+  $oldExt = [Path]::GetExtension($ScriptBaseName)
   $newExt = ".options"
 
   if ($oldExt) {
-    $optPath = [IO.Path]::ChangeExtension($ScriptPath, $NewExt)
+    $optPath = [Path]::ChangeExtension($ScriptPath, $NewExt)
   } else {
     $optPath = "$ScriptPath$NewExt"
   }
@@ -138,7 +151,8 @@ function LoadOptions {
   $text = $LineBreak + $text.Replace("[ `t]+", "").ToLower() + $LineBreak
 
   $global:OptBrew = $text.Contains("$LineBreak-brew$LineBreak")
-  $global:OptChoco = $text.Contains("$LineBreak-choco$LineBreak" )
+  $global:OptChocoBuild = $text.Contains("$LineBreak-choco-build$LineBreak" )
+  $global:OptChocoPush = $text.Contains("$LineBreak-choco-push$LineBreak" )
   $global:OptCompile = $text.Contains("$LineBreak-compile$LineBreak")
   $global:OptIcons = $text.Contains("$LineBreak-icons$LineBreak")
 
@@ -146,7 +160,8 @@ function LoadOptions {
   $optStr += ", compile=$(if ($global:OptCompile) {$Yes} else {$No})"
   $optStr += ", icons=$(if ($global:OptIcons) {$Yes} else {$No})"
   $optStr += ", brew=$(if ($global:OptBrew) {$Yes} else {$No})"
-  $optStr += ", choco=$(if ($global:OptChoco) {$Yes} else {$No})"
+  $optStr += ", choco-build=$(if ($global:OptChocoBuild) {$Yes} else {$No})"
+  $optStr += ", choco-push=$(if ($global:OptChocoPush) {$Yes} else {$No})"
   if (!$optStr) {$optStr += "<none>"}
 
   return $optStr.Substring(2)
@@ -155,26 +170,34 @@ function LoadOptions {
 ################################################################################
 
 function ReplaceHash {
-  Write-Output "Getting hash for $ExePath"
-  $Hash = Get-FileHash -Path $ExePath -Algorithm SHA256 | ForEach-Object {$_.Hash}
+  param ([string]$Path)
+
+  $LASTEXITCODE = 0
+
+  Write-Output "Getting hash for $Path"
+  $Hash = Get-FileHash $Path -Algorithm SHA256 | ForEach-Object {$_.Hash}
 
   if ($LASTEXITCODE -ne 0) {
     throw
   }
 
-  $File = [IO.Path]::Combine($ChocoDir, "tools", "VERIFICATION.txt")
-  Write-Output "Loading file `"$File`""
+  $HashPath = [Path]::Combine($ChocoDir, "tools", "VERIFICATION.txt")
+  Write-Output "Loading file `"$HashPath`""
 
-  $Text = Get-Content -Path $File
+  $Text = (Get-Content $HashPath) -join "`n"
 
   if ($LASTEXITCODE -ne 0) {
     throw
   }
 
-  $Text = $Text -replace "(\s*x64\s*Checksum:\s*)[0-9A-Fa-f]+(.*)", "`${1}$Hash`${2}"
+  $Pattern = "(?i)(\s*x64\s*URL:.*[`\`\`\/]" + `
+             [Regex]::Escape([Path]::GetFileName($Path)) + `
+             "\s*x64\s*Checksum\s*Type:\s*SHA[0-9]+\s*x64\s*Checksum:\s*)[0-9A-Fa-f]+(.*)"
 
-  Write-Output "Updating file `"$File`""
-  Set-Content -Path $File -Value $Text
+  $Text = $Text -replace $Pattern, "`${1}$Hash`${2}"
+
+  Write-Output "Updating file `"$HashPath`""
+  Set-Content $HashPath -Value $Text
 
   if ($LASTEXITCODE -ne 0) {
     throw

@@ -73,8 +73,8 @@ dart pub get
 echo "Compiling \"${EXE}\""
 dart compile exe bin/main.dart -o "${EXE}"
 
-echo "Copying the executable, installation guide, readme, license, app config and examples to the output directory"
-cp -pr "${EXE}" LICENSE *.md "default.${PRJ}config" examples "${OUT}"
+echo "Copying the executable, installation guide, readme, license, and app config to the output directory"
+cp -pr "${EXE}" "default.${PRJ}config" *.md *.txt "${OUT}"
 
 echo "Creating the icons and moving those to the output directory"
 "${EXE}" -d "scripts/mkicons" "${PRJ}" "../../${OUT}" ${@}
