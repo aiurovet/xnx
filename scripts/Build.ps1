@@ -1,3 +1,5 @@
+#!/bin/pwsh
+
 ################################################################################
 # Application build script (Windows only)
 # Copyright (c) 2023 Alexander Iurovetski
@@ -54,6 +56,8 @@ $global:OptCompile = $false
 
 function AppRun() {
   try {
+    $LASTEXITCODE = 0
+
     Set-Location $ProjectDir
     Write-Output "Running the build for $OSName with $(LoadOptions)"
 
@@ -138,6 +142,8 @@ function CreateDirIfNotExists {
 ################################################################################
 
 function LoadOptions {
+  $LASTEXITCODE = 0
+
   $oldExt = [Path]::GetExtension($ScriptBaseName)
   $newExt = ".options"
 
@@ -148,6 +154,11 @@ function LoadOptions {
   }
 
   $text = Get-Content $optPath -Raw
+
+  if ($LASTEXITCODE -ne 0) {
+    throw
+  }
+
   $text = $LineBreak + $text.Replace("[ `t]+", "").ToLower() + $LineBreak
 
   $global:OptBrew = $text.Contains("$LineBreak-brew$LineBreak")
@@ -208,7 +219,9 @@ function ReplaceHash {
 
 function RunCommand {
   param ([string]$CmdPath, [string[]]$CmdArgs)
-  
+
+  $LASTEXITCODE = 0
+
   & $CmdPath $CmdArgs
 
   if ($LASTEXITCODE -ne 0) {

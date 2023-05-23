@@ -23,10 +23,11 @@
     </description>
   </metadata>
   <files>
-    <file src="..\..\..\bin\Windows\xnx.exe" target="" />
     <file src="*.ico" target="" />
-    <file src="..\..\..\*.xnxconfig" target="" />
+    <file src="..\..\..\bin\Windows\xnx*" target="" />
     <file src="..\..\..\*.md" target="" />
     <file src="..\..\..\*.txt" target="" />
+    <file src="..\..\..\*.xnxconfig" target="" />
+    <file src="tools\**" target="tools" />
   </files>
 </package>
