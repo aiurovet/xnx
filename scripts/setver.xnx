@@ -22,5 +22,8 @@
   "/(v|ver=['\"]?|version\\s*[\\=\\:]?\\s*['\"]?)(\\d+\\.\\d+\\.\\d+(-\\d+)?)/i":
     '${1}{new-ver}',
 
+  "/([>/])[\\d]+\.[\\d]+\.[\\d]+([</])/":
+    '${1}{new-ver}${2}',
+
   "{{-run-}}": '--expand "{{-inp-}}"', // non-incremental (always enforced)
 }

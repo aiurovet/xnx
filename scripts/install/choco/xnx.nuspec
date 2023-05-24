@@ -6,14 +6,16 @@
     <authors>Alexander Iurovetski</authors>
     <owners>Alexander Iurovetski</owners>
     <copyright>Copyright (c) 2023 Alexander Iurovetski</copyright>
+    <bugTrackerUrl>https://github.com/aiurovet/xnx/issues</bugTrackerUrl>
     <docsUrl>https://aiurovet.com/applications/xnx.html</docsUrl>
     <iconUrl>https://github.com/aiurovet/xnx/blob/0.2.0/scripts/mkicons/xnx_192x192.svg</iconUrl>
     <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE</licenseUrl>
-    <packageSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0</packageSourceUrl>
-    <projectUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectUrl>
+    <packageSourceUrl>https://community.chocolatey.org/packages/xnx/0.2.0</packageSourceUrl>
+    <projectSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectUrl>
+    <projectUrl>https://aiurovet.com/applications/xnx.html</Url>
     <releaseNotes>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
     <tags>utility cli</tags>
-    <title>Xnx</title>
+    <title>xnx</title>
     <summary>
       Smart search and replace followed by calling external executables.
     </summary>
