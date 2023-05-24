@@ -1,4 +1,4 @@
-﻿From: https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE
+From: https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE
 
 LICENSE
 

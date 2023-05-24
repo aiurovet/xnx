@@ -10,19 +10,21 @@
   "{new-ver}": "0.2.0", // the new value
 
   "{{-inp-}}": [
-    "LICENSE",
+    "LICENSE.txt",
+    "scripts/install/choco/tools/LICENSE.txt",
     "pubspec.yaml",
     "README.md",
     "lib/options.dart",
     "scripts/build*",
     "scripts/install/brew/*.rb",
-    // "scripts/install/choco/*.ps1",
+    "scripts/install/choco/tools/*.ps1",
+    "scripts/install/choco/tools/*.txt",
   ],
   
   "/(v|ver=['\"]?|version\\s*[\\=\\:]?\\s*['\"]?)(\\d+\\.\\d+\\.\\d+(-\\d+)?)/i":
     '${1}{new-ver}',
 
-  "/([>/])[\\d]+\.[\\d]+\.[\\d]+([</])/":
+  "/([>/])[\\d]+\.[\\d]+\.[\\d]+([</])/g":
     '${1}{new-ver}${2}',
 
   "{{-run-}}": '--expand "{{-inp-}}"', // non-incremental (always enforced)
