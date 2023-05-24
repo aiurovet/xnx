@@ -2,9 +2,9 @@
 # Use '-' (dash) to turn on, and '+' (plus) to turn off
 #
 
--Compile
--Icons
++Compile
++Icons
 
 +Brew
 -Choco-Build
--Choco-Push
++Choco-Push

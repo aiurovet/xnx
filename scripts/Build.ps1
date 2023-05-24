@@ -85,9 +85,10 @@ function AppRun() {
 
     if ($global:OptChocoBuild) {
       Write-Output "Replacing hash in the verification file"
-      ReplaceHash $ExePath
-      ReplaceHash ([Path]::Combine($ChocoDir, "xnx.ico"))
-      ReplaceHash ([Path]::Combine($ChocoDir, "xnx_dark.ico"))
+      ReplaceChecksum $ExePath
+      ReplaceChecksum $ExePath -ToName "chocolateyinstall.ps1" -Pattern "(-Checksum64\s*[`"'])[0-9A-Fa-f]+"
+      ReplaceChecksum ([Path]::Combine($ChocoDir, "xnx.ico"))
+      ReplaceChecksum ([Path]::Combine($ChocoDir, "xnx_dark.ico"))
 
       Write-Output "Creating the Chocolatey package in `"$AppDir`""
       $NuspecPath = [Path]::Combine($ChocoDir, "$ProjectName.nuspec")
@@ -98,6 +99,8 @@ function AppRun() {
       Set-Location $AppDir
       RunCommand "choco" @("push")
       Set-Location $ProjectDir
+    } elseif ($global:OptChocoBuild) {
+      Write-Output "`nPlease run ** choco push ** if needed`n"
     }
 
     Write-Output "The build successfully completed"
@@ -180,10 +183,16 @@ function LoadOptions {
 
 ################################################################################
 
-function ReplaceHash {
-  param ([string]$Path)
+function ReplaceChecksum {
+  param ([string]$Path, [string]$ToName, [string]$Pattern)
 
   $LASTEXITCODE = 0
+
+  if (!$ToName) {
+    $ToName = "VERIFICATION.txt"
+  }
+
+  $ToPath = [Path]::Combine($ChocoDir, "tools", $ToName)
 
   Write-Output "Getting hash for $Path"
   $Hash = Get-FileHash $Path -Algorithm SHA256 | ForEach-Object {$_.Hash}
@@ -192,23 +201,24 @@ function ReplaceHash {
     throw
   }
 
-  $HashPath = [Path]::Combine($ChocoDir, "tools", "VERIFICATION.txt")
-  Write-Output "Loading file `"$HashPath`""
+  Write-Output "...loading `"$ToPath`""
 
-  $Text = (Get-Content $HashPath) -join "`n"
+  $Text = (Get-Content $ToPath) -join "`n"
 
   if ($LASTEXITCODE -ne 0) {
     throw
   }
 
-  $Pattern = "(?i)(\s*x64\s*URL:.*[`\`\`\/]" + `
-             [Regex]::Escape([Path]::GetFileName($Path)) + `
-             "\s*x64\s*Checksum\s*Type:\s*SHA[0-9]+\s*x64\s*Checksum:\s*)[0-9A-Fa-f]+(.*)"
+  if (!$Pattern) {
+    $Pattern = "(?i)(\s*x64\s*URL:.*[`\`\`\/]" + `
+              [Regex]::Escape([Path]::GetFileName($Path)) + `
+              "\s*x64\s*Checksum\s*Type:\s*SHA[0-9]+\s*x64\s*Checksum:\s*)[0-9A-Fa-f]+"
+  }
 
-  $Text = $Text -replace $Pattern, "`${1}$Hash`${2}"
+  $Text = $Text -replace $Pattern, "`${1}$Hash"
 
-  Write-Output "Updating file `"$HashPath`""
-  Set-Content $HashPath -Value $Text
+  Write-Output "...updating"
+  Set-Content $ToPath -Value $Text
 
   if ($LASTEXITCODE -ne 0) {
     throw

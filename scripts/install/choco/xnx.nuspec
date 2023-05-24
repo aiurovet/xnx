@@ -9,6 +9,7 @@
     <docsUrl>https://aiurovet.com/applications/xnx.html</docsUrl>
     <iconUrl>https://github.com/aiurovet/xnx/blob/0.2.0/scripts/mkicons/xnx_192x192.svg</iconUrl>
     <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE</licenseUrl>
+    <packageSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0</packageSourceUrl>
     <projectUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectUrl>
     <releaseNotes>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
     <tags>utility cli</tags>
@@ -24,7 +25,6 @@
   </metadata>
   <files>
     <file src="*.ico" target="" />
-    <file src="..\..\..\bin\Windows\xnx*" target="" />
     <file src="..\..\..\*.md" target="" />
     <file src="..\..\..\*.txt" target="" />
     <file src="..\..\..\*.xnxconfig" target="" />
