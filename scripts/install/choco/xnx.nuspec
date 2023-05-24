@@ -6,13 +6,14 @@
     <authors>Alexander Iurovetski</authors>
     <owners>Alexander Iurovetski</owners>
     <copyright>Copyright (c) 2023 Alexander Iurovetski</copyright>
-    <bugTrackerUrl>https://github.com/aiurovet/xnx/issues</bugTrackerUrl>
-    <docsUrl>https://aiurovet.com/applications/xnx.html</docsUrl>
-    <iconUrl>https://github.com/aiurovet/xnx/blob/0.2.0/scripts/mkicons/xnx_192x192.svg</iconUrl>
-    <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE.txt</licenseUrl>
     <packageSourceUrl>https://community.chocolatey.org/packages/xnx/0.2.0</packageSourceUrl>
-    <projectSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectUrl>
     <projectUrl>https://aiurovet.com/applications/xnx.html</Url>
+    <docsUrl>https://aiurovet.com/applications/xnx.html</docsUrl>
+    <wikiUrl>https://aiurovet.com/applications/xnx.html</wikiUrl>
+    <projectSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectUrl>
+    <bugTrackerUrl>https://github.com/aiurovet/xnx/issues</bugTrackerUrl>
+    <iconUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/scripts/mkicons/xnx_192x192.svg</iconUrl>
+    <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE.txt</licenseUrl>
     <releaseNotes>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
     <tags>utility cli</tags>
     <title>xnx</title>
@@ -26,10 +27,10 @@
     </description>
   </metadata>
   <files>
-    <file src="*.ico" target="" />
+    <file src="*.ico" target="tools" />
     <file src="..\..\..\*.md" target="" />
     <file src="..\..\..\*.txt" target="" />
-    <file src="..\..\..\*.xnxconfig" target="" />
+    <file src="..\..\..\*.xnxconfig" target="tools" />
     <file src="tools\**" target="tools" />
   </files>
 </package>
