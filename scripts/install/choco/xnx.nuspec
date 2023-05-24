@@ -9,7 +9,7 @@
     <bugTrackerUrl>https://github.com/aiurovet/xnx/issues</bugTrackerUrl>
     <docsUrl>https://aiurovet.com/applications/xnx.html</docsUrl>
     <iconUrl>https://github.com/aiurovet/xnx/blob/0.2.0/scripts/mkicons/xnx_192x192.svg</iconUrl>
-    <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE</licenseUrl>
+    <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE.txt</licenseUrl>
     <packageSourceUrl>https://community.chocolatey.org/packages/xnx/0.2.0</packageSourceUrl>
     <projectSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectUrl>
     <projectUrl>https://aiurovet.com/applications/xnx.html</Url>
