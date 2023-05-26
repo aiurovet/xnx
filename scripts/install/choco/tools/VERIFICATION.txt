@@ -9,7 +9,7 @@ To verify the files using the project source:
 
 x64 URL: https://github.com/aiurovet/xnx/raw/0.2.0/bin/Windows/xnx.exe
 x64 Checksum Type: SHA256
-x64 Checksum: 007D48B77E794CF6D5DC79053D9E99A02B2F888897AC7A500265CA92414BF71B
+x64 Checksum: E6835D5B05B94C4A5C6EA430CA551403E3F12B403F7493F8A1ED584F9A06B799
 
 x64 URL: https://github.com/aiurovet/xnx/raw/0.2.0/scripts/install/choco/xnx.ico
 x64 Checksum Type: SHA256
@@ -17,4 +17,4 @@ x64 Checksum: B46A24E8290786D1FE6D8A241F48354A81F087207C70358552848C22F85B192E
 
 x64 URL: https://github.com/aiurovet/xnx/raw/0.2.0/scripts/install/choco/xnx_dark.ico
 x64 Checksum Type: SHA256
-x64 Checksum: B46A24E8290786D1FE6D8A241F48354A81F087207C70358552848C22F85B192E
+x64 Checksum: DE3B4A0ECBE1690D1EEE6D7761F5E21E396A8AC45EC50097DD0B55EF95EC3C33
