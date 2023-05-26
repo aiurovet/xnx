@@ -17,7 +17,7 @@
     { "name": "if", "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/if" ], },
     { "name": "mkicons", "request": "launch", "type": "dart", "program": "bin/main.dart",
-      "args": [ "-f", "-d", "scripts/mkicons", "xnx", "../../out" ], },
+      "args": [ "-f", "-d", "scripts/mkicons", "xnx", "../../out/Windows/xnx" ], },
     { "name": "ms_office",   "request": "launch", "type": "dart", "program": "bin/main.dart",
       "args": [ "-f", "-d", "examples/ms_office" ], },
     { "name": "multi_conf",  "request": "launch", "type": "dart", "program": "bin/main.dart",

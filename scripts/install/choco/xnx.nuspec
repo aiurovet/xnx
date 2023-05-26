@@ -6,14 +6,16 @@
     <authors>Alexander Iurovetski</authors>
     <owners>Alexander Iurovetski</owners>
     <copyright>Copyright (c) 2023 Alexander Iurovetski</copyright>
-    <packageSourceUrl>https://community.chocolatey.org/packages/xnx/0.2.0</packageSourceUrl>
     <projectUrl>https://aiurovet.com/applications/xnx.html</projectUrl>
     <docsUrl>https://aiurovet.com/applications/xnx.html</docsUrl>
     <wikiUrl>https://aiurovet.com/applications/xnx.html</wikiUrl>
     <projectSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectSourceUrl>
+    <packageSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0/scripts/install/choco/</packageSourceUrl>
     <bugTrackerUrl>https://github.com/aiurovet/xnx/issues</bugTrackerUrl>
-    <iconUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/scripts/mkicons/xnx_192x192.svg</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/scripts/mkicons/xnx_192x192.png</iconUrl>
     <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <mailingListUrl>mailto:aiurovet@gmail.com</mailingListUrl>
     <releaseNotes>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
     <tags>utility cli</tags>
     <title>xnx</title>

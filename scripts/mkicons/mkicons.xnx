@@ -58,14 +58,20 @@
       },
 
       "{{-inp-}}": "{{-cur-dir-}}/{prj}.svg",
-      "{sample}": "{{-cur-dir-}}/{icon-name}_{dim}x{dim}.svg",
+      "{sample}": "{{-cur-dir-}}/{icon-name}_{dim}x{dim}",
+      "{sample-png}": "{sample}.png",
+      "{sample-svg}": "{sample}.svg",
 
-      "{{-if-}}": { '({dim} == 192) && ({sample} -fol {{-inp-}})': {
-        "{{-run-}}": '--expand "{{-inp-}}" "{sample}"',
+      "{{-if-}}": { '({dim} == 192) && ({sample-svg} -fol {{-inp-}})': {
+        "{{-run-}}": '--expand "{{-inp-}}" "{sample-svg}"',
       } },
 
       "{{-out-}}": "{{-cur-dir-}}/png/{icon-name}_{dim}x{dim}.png",
       "{{-cmd-}}": '{svg2png}',
+
+      "{{-if-}}": { '({dim} == 192) && ({sample-png} -fol {{-inp-}})': {
+        "{{-run-}}": '--copy "{{-cur-dir-}}/png/{icon-name}_{dim}x{dim}.png" "{sample-png}"',
+      } },
     },
 
     {
@@ -78,12 +84,6 @@
         "{{-run-}}": [
           '--move "{icon-pthp}_192x192.png" "{out-dir}/{icon-name}.png"'
         ],
-
-        // /* Uncomment the section below if you need to generate a PNG icon in {{-cur-dir-}} */
-
-        // "{{-if-}}": { '("{look}" == "") && ({sample} -fol {{-inp-}})': {
-        //   "{{-run-}}": '--copy "{icon-pthp}_128x128.png" "{{-cur-dir-}}"',
-        // } },
       }, "{{-else-}}": { "{{-if-}}": { '"${OS}" ==/i "macos"': {
         "{png-dir-mac}": "{png-dir}.iconset",
         "{{-run-}}": [
