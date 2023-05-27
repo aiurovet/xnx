@@ -15,12 +15,11 @@
     <iconUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/scripts/mkicons/xnx_192x192.png</iconUrl>
     <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <mailingListUrl>mailto:aiurovet@gmail.com</mailingListUrl>
     <releaseNotes>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
     <tags>utility cli</tags>
-    <title>xnx</title>
+    <title>Xnx - expand and execute</title>
     <summary>
-      Smart search and replace followed by calling external executables.
+      Smart expand (search and replace) followed by calling external executables.
     </summary>
     <description>
       Command-line utility for Linux, macOS and Windows performing sophisticated
