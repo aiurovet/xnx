@@ -12,10 +12,10 @@
     <projectSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0</projectSourceUrl>
     <packageSourceUrl>https://github.com/aiurovet/xnx/tree/0.2.0/scripts/install/choco/</packageSourceUrl>
     <bugTrackerUrl>https://github.com/aiurovet/xnx/issues</bugTrackerUrl>
-    <iconUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/scripts/mkicons/xnx_192x192.png</iconUrl>
-    <licenseUrl>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/LICENSE.txt</licenseUrl>
+    <iconUrl>https://cdn.statically.io/gh/aiurovet/xnx/0.2.0/scripts/mkicons/xnx_192x192.png</iconUrl>
+    <licenseUrl>https://cdn.statically.io/gh/aiurovet/xnx/0.2.0/LICENSE.txt</licenseUrl>
+    <releaseNotes>https://cdn.statically.io/gh/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <releaseNotes>https://raw.githubusercontent.com/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
     <tags>utility cli</tags>
     <title>Xnx - expand and execute</title>
     <summary>
