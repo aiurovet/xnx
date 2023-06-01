@@ -17,9 +17,9 @@
     <releaseNotes>https://cdn.statically.io/gh/aiurovet/xnx/0.2.0/CHANGELOG.md</releaseNotes>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>utility cli</tags>
-    <title>Xnx - expand and execute</title>
+    <title>Xnx</title>
     <summary>
-      Smart expand (search and replace) followed by calling external executables.
+      Smart string expansion (search and replace) in text file(s) followed by calling external executables.
     </summary>
     <description>
       Command-line utility for Linux, macOS and Windows performing sophisticated
@@ -29,8 +29,7 @@
   </metadata>
   <files>
     <file src="*.ico" target="tools" />
-    <file src="..\..\..\*.md" target="" />
-    <file src="..\..\..\*.txt" target="" />
+    <file src="..\..\..\CHANGELOG.md" target="tools" />
     <file src="..\..\..\*.xnxconfig" target="tools" />
     <file src="tools\**" target="tools" />
   </files>

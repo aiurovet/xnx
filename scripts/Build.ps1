@@ -1,8 +1,11 @@
 #!/bin/pwsh
 
 ################################################################################
-# Application build script (Windows only)
+# Application build script
 # Copyright (c) 2023 Alexander Iurovetski
+#
+# Expects ResourceHacker installed (Windows only). This can be done as follows:
+# choco install reshack
 ################################################################################
 
 using namespace System.IO
@@ -39,6 +42,7 @@ $BinDir = [Path]::Combine($ProjectDir, "bin", $OSName)
 $ChocoDir = [Path]::Combine($ProjectDir, "scripts", "install", "choco")
 $ExeExt = if ($IsOSWindows) {".exe"} else {""}
 $ExePath = [Path]::Combine($BinDir, "$ProjectName$ExeExt")
+#$InjIcoExePath = [Path]::Combine("${env:ProgramFiles(x86)}", "Resource Hacker", "ResourceHacker.exe")
 $OutParentDir = [Path]::Combine($ProjectDir, "out", $OSName)
 $OutDir = [Path]::Combine($OutParentDir, $ProjectName)
 
@@ -68,6 +72,11 @@ function AppRun() {
       CreateDirIfNotExists $OutDir "output"
     }
 
+    $IcoPaths = @(
+      [Path]::Combine($ChocoDir, "xnx.ico"),
+      [Path]::Combine($ChocoDir, "xnx_dark.ico")
+    )
+
     if ($global:OptCompile) {
       Write-Output "Getting the latest version of the packages"
       RunCommand "dart" @("pub", "get")
@@ -83,12 +92,17 @@ function AppRun() {
       RunCommand $ExePath @("-d", $Script, $ProjectName, $OutDir)
     }
 
+    #if ($global:OptCompile -and $IsOSWindows) {
+    #  InjectIcoFile $ExePath $IcoPaths[0] "MAINICON" 1
+    #  InjectIcoFile $ExePath $IcoPaths[1] "MAINICON_DARK" 0
+    #}
+
     if ($global:OptChocoBuild) {
       Write-Output "Replacing hash in the verification file"
       ReplaceChecksum $ExePath
       ReplaceChecksum $ExePath -ToName "chocolateyinstall.ps1" -Pattern "(-Checksum64\s*[`"'])[0-9A-Fa-f]+"
-      ReplaceChecksum ([Path]::Combine($ChocoDir, "xnx.ico"))
-      ReplaceChecksum ([Path]::Combine($ChocoDir, "xnx_dark.ico"))
+      ReplaceChecksum $IcoPaths[0]
+      ReplaceChecksum $IcoPaths[1]
 
       Write-Output "Creating the Chocolatey package in `"$AppDir`""
       $NuspecPath = [Path]::Combine($ChocoDir, "$ProjectName.nuspec")
@@ -141,6 +155,37 @@ function CreateDirIfNotExists {
     throw
   }
 }
+
+################################################################################
+
+# function InjectIcoFile {
+#   param ([string]$ExePath, [string]$IcoPath, [string]$IcoId, [int]$SleepMsec)
+
+#   if (-not (Test-Path $InjIcoExePath -PathType Leaf)) {
+#     Write-Output "The Resource Hacker path not found"
+#     return
+#   }
+  
+#   $IcoName = [IO.Path]::GetFileName($IcoPath)
+#   Write-Output "Injecting the icon `"$IcoName`" into the executable"
+
+#   if (-not (Test-Path $IcoPath -PathType Leaf)) {
+#     Write-Output "... the icon not found - skipping"
+#     return
+#   }
+
+#   RunCommand "$InjIcoExePath" @( `
+#     "-open", "$ExePath", `
+#     "-save", "$ExePath", `
+#     "-action", "addskip", `
+#     "-res", "$IcoPath", `
+#     "-mask", "ICONGROUP,$IcoId,"
+#   )
+
+#   if ($SleepMsec -gt 0) {
+#     Start-Sleep -MilliSeconds $SleepMsec
+#   }
+# }
 
 ################################################################################
 
@@ -227,12 +272,31 @@ function ReplaceChecksum {
 
 ################################################################################
 
+function QuotePath {
+  param ([string]$Path)
+
+  if ((-not ($Path -contains " ") -or ($Path[0] -eq "`""))) {
+    return $Path
+  }
+
+  return "`"" + $Path.Replace("``").Replace("````").Replace("`"").Replace("```"") + "`""
+}
+
+################################################################################
+
 function RunCommand {
   param ([string]$CmdPath, [string[]]$CmdArgs)
 
   $LASTEXITCODE = 0
 
-  & $CmdPath $CmdArgs
+  $NewCmdPath = QuotePath $CmdPath
+  $NewCmdArgs = @()
+
+  foreach ($Arg in $CmdArgs) {
+    $NewCmdArgs += (QuotePath $Arg)
+  }
+
+  & $NewCmdPath $NewCmdArgs
 
   if ($LASTEXITCODE -ne 0) {
     throw
