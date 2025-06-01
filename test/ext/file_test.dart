@@ -34,7 +34,11 @@ void main() {
 
         expect(outFile2.compareLastModifiedToSync(toFile: outFile1) > 0, true);
         expect(outFile1.compareLastModifiedToSync(toFile: outFile2) < 0, true);
-        expect(outFile2.compareLastModifiedToSync(toLastModified: DateTime.now()) <= 0, true);
+        expect(
+            outFile2.compareLastModifiedToSync(
+                    toLastModified: DateTime.now()) <=
+                0,
+            true);
 
         outFile1.deleteSync();
         outFile2.deleteSync();
@@ -93,10 +97,15 @@ void main() {
         var srcLastMod = src.lastModifiedSync().millisecondsSinceEpoch;
 
         sleep(Duration(milliseconds: delay));
-        src.xferSync(dst.path, isMove: false, isNewerOnly: false, isSilent: true, isListOnly: true);
+        src.xferSync(dst.path,
+            isMove: false,
+            isNewerOnly: false,
+            isSilent: true,
+            isListOnly: true);
         expect(dst.existsSync(), false);
 
-        src.xferSync(dst.path, isMove: false, isNewerOnly: false, isSilent: true);
+        src.xferSync(dst.path,
+            isMove: false, isNewerOnly: false, isSilent: true);
 
         expect(dst.lengthSync(), src.lengthSync());
         expect(srcLastMod, dst.lastModifiedSync().millisecondsSinceEpoch);

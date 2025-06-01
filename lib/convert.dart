@@ -23,7 +23,6 @@ import 'package:xnx/ext/string.dart';
 import 'package:xnx/regexp_ex.dart';
 
 class Convert {
-
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
@@ -32,8 +31,10 @@ class Convert {
 
   static final RegExp rexIsKeyEnvVarName = RegExp(r'^\$');
   static final RegExp rexIsSubCmd = RegExp(r'^[\s]*[\-]');
-  static final RegExp rexIsSubCmdExpand = RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
-  static final RegExp rexIsSubCmdKeepTime = RegExp(r'(^|[\s])(--(copy|copy-newer|move|move-newer))([\s]|$)');
+  static final RegExp rexIsSubCmdExpand =
+      RegExp(r'^(^|[\s])(-E|--expand)([\s]|$)');
+  static final RegExp rexIsSubCmdKeepTime =
+      RegExp(r'(^|[\s])(--(copy|copy-newer|move|move-newer))([\s]|$)');
 
   //////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -78,8 +79,7 @@ class Convert {
 
     if (options.isCmd) {
       execBuiltin(options.plainArgs);
-    }
-    else {
+    } else {
       _config.exec(args: args, execFlatMap: execMapWithArgs);
     }
 
@@ -102,8 +102,7 @@ class Convert {
         _logger.out('$key=$value');
       });
       return true;
-    }
-    else if (isPrintCwd) {
+    } else if (isPrintCwd) {
       _logger.out(Path.currentDirectoryName);
       return true;
     }
@@ -118,9 +117,9 @@ class Convert {
 
     if (isPrint) {
       Command.print(_logger, options.plainArgs, isSilent: isSilent);
-    }
-    else if (isCompress || isDecompress) {
-      final archPath = (isDecompress ? arg1 : args[argCount < 0 ? 0 : argCount]);
+    } else if (isCompress || isDecompress) {
+      final archPath =
+          (isDecompress ? arg1 : args[argCount < 0 ? 0 : argCount]);
       final archType = PackOper.getPackType(options.archType, archPath);
 
       if (archType != null) {
@@ -128,45 +127,54 @@ class Convert {
 
         if (isTar || (archType == PackType.zip)) {
           if (isCompress) {
-            PackOper.archiveSync(archType, args, isListOnly: isListOnly, isMove: isMove, isSilent: isSilent);
+            PackOper.archiveSync(archType, args,
+                isListOnly: isListOnly, isMove: isMove, isSilent: isSilent);
+          } else if (arg1 != null) {
+            PackOper.unarchiveSync(archType, arg1, arg2,
+                isListOnly: isListOnly, isMove: isMove, isSilent: isSilent);
           }
-          else if (arg1 != null) {
-            PackOper.unarchiveSync(archType, arg1, arg2, isListOnly: isListOnly, isMove: isMove, isSilent: isSilent);
-          }
-        }
-        else if (arg1 != null) {
+        } else if (arg1 != null) {
           if (isCompress) {
-            PackOper.compressSync(archType, arg1, toPath: arg2, isListOnly: isListOnly, isMove: true, isSilent: isSilent);
-          }
-          else {
-            PackOper.uncompressSync(archType, arg1, toPath: arg2, isListOnly: isListOnly, isMove: true, isSilent: isSilent);
+            PackOper.compressSync(archType, arg1,
+                toPath: arg2,
+                isListOnly: isListOnly,
+                isMove: true,
+                isSilent: isSilent);
+          } else {
+            PackOper.uncompressSync(archType, arg1,
+                toPath: arg2,
+                isListOnly: isListOnly,
+                isMove: true,
+                isSilent: isSilent);
           }
         }
-      }
-      else if (archPath == null) {
+      } else if (archPath == null) {
         throw Exception('Undefined archive file');
-      }
-      else {
+      } else {
         throw Exception('Undefined type of archiving');
       }
-    }
-    else {
+    } else {
       if (options.isCmdCopy || options.isCmdCopyNewer) {
-        FileOper.xferSync(args, isListOnly: isListOnly, isMove: false, isNewerOnly: options.isCmdCopyNewer, isSilent: isSilent);
-      }
-      else if (options.isCmdMove || options.isCmdMoveNewer) {
-        FileOper.xferSync(args, isListOnly: isListOnly, isMove: true, isNewerOnly: options.isCmdMoveNewer, isSilent: isSilent);
-      }
-      else if (options.isCmdCreateDir) {
-        FileOper.createDirSync(args, isListOnly: isListOnly, isSilent: isSilent);
-      }
-      else if (options.isCmdDelete) {
-        FileOper.deleteSync(args, isListOnly: isListOnly, isSilent: isSilent, isRequired: false);
-      }
-      else if (options.isCmdFind) {
+        FileOper.xferSync(args,
+            isListOnly: isListOnly,
+            isMove: false,
+            isNewerOnly: options.isCmdCopyNewer,
+            isSilent: isSilent);
+      } else if (options.isCmdMove || options.isCmdMoveNewer) {
+        FileOper.xferSync(args,
+            isListOnly: isListOnly,
+            isMove: true,
+            isNewerOnly: options.isCmdMoveNewer,
+            isSilent: isSilent);
+      } else if (options.isCmdCreateDir) {
+        FileOper.createDirSync(args,
+            isListOnly: isListOnly, isSilent: isSilent);
+      } else if (options.isCmdDelete) {
+        FileOper.deleteSync(args,
+            isListOnly: isListOnly, isSilent: isSilent, isRequired: false);
+      } else if (options.isCmdFind) {
         FileOper.findSync(args, isSilent: isSilent);
-      }
-      else {
+      } else {
         return false;
       }
     }
@@ -176,8 +184,10 @@ class Convert {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool execFile(String cmdTemplate, String inpFilePath, String outFilePath, FlatMap map) {
-    var command = expandInpNames(cmdTemplate.replaceAll(_config.keywords.forOut, outFilePath), map);
+  bool execFile(
+      String cmdTemplate, String inpFilePath, String outFilePath, FlatMap map) {
+    var command = expandInpNames(
+        cmdTemplate.replaceAll(_config.keywords.forOut, outFilePath), map);
     command = command.replaceAll(_config.keywords.forCurDir, curDirName);
 
     var isForced = options.isForced;
@@ -215,8 +225,7 @@ class Convert {
 
           if (pathCount > 1) {
             outFilePath = paths[1];
-          }
-          else {
+          } else {
             outFilePath = inpFilePath;
             isForced = true;
           }
@@ -224,23 +233,30 @@ class Convert {
       }
     }
 
-    var hasInpFile = (!isStdIn && !inpFilePath.isBlank() && Path.contains(command, inpFilePath));
+    var hasInpFile = (!isStdIn &&
+        !inpFilePath.isBlank() &&
+        Path.contains(command, inpFilePath));
 
     if (isExpandContentOnly && !hasInpFile) {
-      throw Exception('Input file path "$inpFilePath" is empty or not found in ${Path.adjust(command)}');
+      throw Exception(
+          'Input file path "$inpFilePath" is empty or not found in ${Path.adjust(command)}');
     }
 
     var inpFile = (hasInpFile ? Path.fileSystem.file(inpFilePath) : null);
 
     if ((inpFile != null) && !inpFile.existsSync()) {
-      throw Exception(Path.appendCurDirIfPathIsRelative('Input file is not found: ', inpFilePath));
+      throw Exception(Path.appendCurDirIfPathIsRelative(
+          'Input file is not found: ', inpFilePath));
     }
 
-    var hasOutFile = (!isStdOut && !outFilePath.isBlank() && !Path.fileSystem.directory(outFilePath).existsSync());
+    var hasOutFile = (!isStdOut &&
+        !outFilePath.isBlank() &&
+        !Path.fileSystem.directory(outFilePath).existsSync());
 
     var tmpFilePath = '';
 
-    var isSamePath = (hasInpFile && hasOutFile && Path.equals(inpFilePath, outFilePath));
+    var isSamePath =
+        (hasInpFile && hasOutFile && Path.equals(inpFilePath, outFilePath));
 
     if (canExpandContent && (!isExpandContentOnly || isSamePath)) {
       tmpFilePath = getActualInpFilePath(inpFilePath, outFilePath);
@@ -253,10 +269,13 @@ class Convert {
     var outFile = (hasOutFile ? Path.fileSystem.file(outFilePath) : null);
 
     if (!isForced && (inpFile != null) && (outFile != null) && !isSamePath) {
-      var isChanged = (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
+      var isChanged =
+          (outFile.compareLastModifiedStampToSync(toFile: inpFile) < 0);
 
       if (!isChanged && !rexIsSubCmdKeepTime.hasMatch(command)) {
-        isChanged = (outFile.compareLastModifiedStampToSync(toLastModifiedStamp: _config.lastModifiedStamp) < 0);
+        isChanged = (outFile.compareLastModifiedStampToSync(
+                toLastModifiedStamp: _config.lastModifiedStamp) <
+            0);
       }
 
       if (!isChanged) {
@@ -275,14 +294,15 @@ class Convert {
 
     command = getValue(map, value: command, canReplace: true);
 
-    var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
+    var tmpFile =
+        (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
     if (tmpFile != null) {
       command = Path.replaceAll(command, inpFilePath, tmpFilePath);
     }
 
-    Command(source: command, logger: _logger)
-      .exec(canExec: !options.isListOnly && !isExpandContentOnly, canShow: true);
+    Command(source: command, logger: _logger).exec(
+        canExec: !options.isListOnly && !isExpandContentOnly, canShow: true);
 
     tmpFile?.deleteIfExistsSync();
 
@@ -294,10 +314,12 @@ class Convert {
   bool execMap(List<String> plainArgs, FlatMap map) {
     var mapCurr = FlatMap();
 
-    map[ConfigFileLoader.allArgs] = (plainArgs.isEmpty ? '' : plainArgs.map((x) => x.quote()).join(' '));
+    map[ConfigFileLoader.allArgs] =
+        (plainArgs.isEmpty ? '' : plainArgs.map((x) => x.quote()).join(' '));
     curDirName = getCurDirName(map, true);
 
-    var inpFilePath = getValue(map, key: _config.keywords.forInp, canReplace: true);
+    var inpFilePath =
+        getValue(map, key: _config.keywords.forInp, canReplace: true);
     var hasInpFile = !inpFilePath.isBlank();
 
     if (hasInpFile) {
@@ -319,7 +341,9 @@ class Convert {
       inpFilePath = Path.getFullPath(inpFilePath);
     }
 
-    var subStart = (hasInpFile ? (inpFilePath.length - Path.basename(inpFilePath).length) : 0);
+    var subStart = (hasInpFile
+        ? (inpFilePath.length - Path.basename(inpFilePath).length)
+        : 0);
     var inpFilePaths = getInpFilePaths(inpFilePath, curDirName);
 
     for (var inpFilePathCurr in inpFilePaths) {
@@ -327,49 +351,66 @@ class Convert {
 
       mapCurr = expandMap(map, curDirName, inpFilePathEx);
 
-      if (!_config.take.isEmpty && _config.take.finalize(
-          maskPattern: getValue(mapCurr, value: _config.take.maskPattern, canReplace: true),
-          regexPattern: getValue(mapCurr, value: _config.take.regexPattern, canReplace: true),
-        )) {
+      if (!_config.take.isEmpty &&
+          _config.take.finalize(
+            maskPattern: getValue(mapCurr,
+                value: _config.take.maskPattern, canReplace: true),
+            regexPattern: getValue(mapCurr,
+                value: _config.take.regexPattern, canReplace: true),
+          )) {
         if (!_config.take.hasMatch(inpFilePathEx)) {
           if (_logger.isVerbose) {
-            _logger.verbose('Does not match the take pattern: "$inpFilePathCurr"');
+            _logger
+                .verbose('Does not match the take pattern: "$inpFilePathCurr"');
           }
           continue;
         }
       }
 
-      if (!_config.skip.isEmpty && _config.skip.finalize(
-          maskPattern: getValue(mapCurr, value: _config.skip.maskPattern, canReplace: true),
-          regexPattern: getValue(mapCurr, value: _config.skip.regexPattern, canReplace: true),
-        )) {
+      if (!_config.skip.isEmpty &&
+          _config.skip.finalize(
+            maskPattern: getValue(mapCurr,
+                value: _config.skip.maskPattern, canReplace: true),
+            regexPattern: getValue(mapCurr,
+                value: _config.skip.regexPattern, canReplace: true),
+          )) {
         if (_config.skip.hasMatch(inpFilePathEx)) {
           if (_logger.isVerbose) {
-            _logger.verbose('Skipping: "$inpFilePathCurr" (matches ${_config.skip.regexPattern ?? _config.skip.maskPattern})');
+            _logger.verbose(
+                'Skipping: "$inpFilePathCurr" (matches ${_config.skip.regexPattern ?? _config.skip.maskPattern})');
           }
           continue;
         }
       }
 
-      var detectPathsPattern = getValue(mapCurr, key: _config.keywords.forDetectPaths, canReplace: true);
+      var detectPathsPattern = getValue(mapCurr,
+          key: _config.keywords.forDetectPaths, canReplace: true);
 
       if (detectPathsPattern.isBlank()) {
         rexDetectPaths = null;
-      }
-      else {
+      } else {
         rexDetectPaths = RegExp(detectPathsPattern, caseSensitive: false);
       }
 
-      var command = getValue(mapCurr, key: _config.keywords.forRun, canReplace: false);
+      var command =
+          getValue(mapCurr, key: _config.keywords.forRun, canReplace: false);
 
       if (command.isBlank()) {
-        command = getValue(mapCurr, key: _config.keywords.forCmd, canReplace: false);
+        command =
+            getValue(mapCurr, key: _config.keywords.forCmd, canReplace: false);
       }
 
       isSubRun = rexIsSubCmd.hasMatch(command);
       isExpandContentOnly = isSubRun && rexIsSubCmdExpand.hasMatch(command);
-      canExpandContent = !options.isListOnly && (isExpandContentOnly || getValue(mapCurr, key: _config.keywords.forCanExpandContent, canReplace: false).parseBool());
-      isMinExpand = getValue(mapCurr, key: _config.keywords.forMinExpand, canReplace: false).parseBool();
+      canExpandContent = !options.isListOnly &&
+          (isExpandContentOnly ||
+              getValue(mapCurr,
+                      key: _config.keywords.forCanExpandContent,
+                      canReplace: false)
+                  .parseBool());
+      isMinExpand = getValue(mapCurr,
+              key: _config.keywords.forMinExpand, canReplace: false)
+          .parseBool();
 
       if (!curDirName.isBlank()) {
         if (_logger.isVerbose) {
@@ -381,12 +422,14 @@ class Convert {
 
       if (command.isBlank()) {
         if (_config.options.isListOnly) {
-          _logger.out(jsonEncode(mapCurr) + (_config.options.isAppendSep ? ConfigFileLoader.recordSep : ''));
+          _logger.out(jsonEncode(mapCurr) +
+              (_config.options.isAppendSep ? ConfigFileLoader.recordSep : ''));
         }
         return true;
       }
 
-      var outFilePath = Path.adjust(getValue(mapCurr, key: _config.keywords.forOut, canReplace: true));
+      var outFilePath = Path.adjust(
+          getValue(mapCurr, key: _config.keywords.forOut, canReplace: true));
       var hasOutFile = outFilePath.isNotEmpty;
 
       isStdIn = (inpFilePath == StringExt.stdinPath);
@@ -399,12 +442,15 @@ class Convert {
         var inpNameExt = Path.basename(inpFilePathEx);
 
         mapCurr[_config.keywords.forInpDir] = dirName;
-        mapCurr[_config.keywords.forInpSubDir] = (dirName.length <= subStart ? '' : dirName.substring(subStart));
+        mapCurr[_config.keywords.forInpSubDir] =
+            (dirName.length <= subStart ? '' : dirName.substring(subStart));
         mapCurr[_config.keywords.forInpNameExt] = inpNameExt;
         mapCurr[_config.keywords.forInpExt] = Path.extension(inpNameExt);
-        mapCurr[_config.keywords.forInpName] = Path.basenameWithoutExtension(inpNameExt);
+        mapCurr[_config.keywords.forInpName] =
+            Path.basenameWithoutExtension(inpNameExt);
         mapCurr[_config.keywords.forInpPath] = inpFilePathEx;
-        mapCurr[_config.keywords.forInpSubPath] = inpFilePathEx.substring(subStart);
+        mapCurr[_config.keywords.forInpSubPath] =
+            inpFilePathEx.substring(subStart);
         mapCurr[_config.keywords.forThis] = startCmd;
 
         mapCurr.forEach((k, v) {
@@ -415,7 +461,8 @@ class Convert {
 
         if (hasOutFile) {
           outFilePathEx = expandInpNames(outFilePathEx, mapCurr);
-          outFilePathEx = Path.getFullPath(Path.join(curDirName, outFilePathEx));
+          outFilePathEx =
+              Path.getFullPath(Path.join(curDirName, outFilePathEx));
         }
 
         outFilePathEx = Path.adjust(outFilePathEx);
@@ -445,15 +492,16 @@ Output path: "$outFilePathEx"
       }
 
       if (isStdOut && !isExpandContentOnly) {
-        throw Exception('Command execution is not supported for the output to ${StringExt.stdoutDisplay}. Use pipe and a separate configuration file per each output.');
+        throw Exception(
+            'Command execution is not supported for the output to ${StringExt.stdoutDisplay}. Use pipe and a separate configuration file per each output.');
       }
 
-      var isOK = execFile(command.replaceAll(inpFilePath, inpFilePathEx), inpFilePathEx, outFilePathEx, mapCurr);
+      var isOK = execFile(command.replaceAll(inpFilePath, inpFilePathEx),
+          inpFilePathEx, outFilePathEx, mapCurr);
 
       if (isOK) {
         isProcessed = true;
-      }
-      else {
+      } else {
         // File is up to date (in case of an error, execFile() throws an exception)
       }
     }
@@ -470,7 +518,7 @@ Output path: "$outFilePathEx"
     _inpParamNames = _config.keywords.allForInp;
 
     if (plainArgs.isEmpty) {
-      plainArgs = [ '' ];
+      plainArgs = [''];
     }
 
     if (options.isEach) {
@@ -481,8 +529,7 @@ Output path: "$outFilePathEx"
           isProcessed = true;
         }
       }
-    }
-    else {
+    } else {
       if (execMap(plainArgs, map)) {
         isProcessed = true;
       }
@@ -493,18 +540,25 @@ Output path: "$outFilePathEx"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath, EscapeMode escapeMode, FlatMap map) {
-    var tmpFile = (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
+  File? expandInpContent(File? inpFile, String outFilePath, String tmpFilePath,
+      EscapeMode escapeMode, FlatMap map) {
+    var tmpFile =
+        (tmpFilePath.isBlank() ? null : Path.fileSystem.file(tmpFilePath));
 
     var inpPath = (inpFile?.path ?? StringExt.stdinDisplay);
-    var outPath = (Path.equals(inpPath, outFilePath) ? '' : ' => "${tmpFile?.path ?? outFilePath}"');
+    var outPath = (Path.equals(inpPath, outFilePath)
+        ? ''
+        : ' => "${tmpFile?.path ?? outFilePath}"');
 
-    _logger.out('Expanding: "$inpPath"$outPath${isExpandContentOnly ? '' : '\n'}');
+    _logger
+        .out('Expanding: "$inpPath"$outPath${isExpandContentOnly ? '' : '\n'}');
 
     // Get permissions and load the input as a text string
 
     var permissions = inpFile?.statSync();
-    var text = (inpFile == null ? stdin.readAsStringSync() : inpFile.readAsStringSync());
+    var text = (inpFile == null
+        ? stdin.readAsStringSync()
+        : inpFile.readAsStringSync());
 
     // Remove keywords and escape special characters
 
@@ -524,24 +578,23 @@ Output path: "$outFilePathEx"
         case EscapeMode.html:
         case EscapeMode.xml:
           var vv = v
-            .replaceAll('&', '&amp;')
-            .replaceAll(StringExt.apos, '&apos;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('<', '&lt;')
-            .replaceAll(StringExt.quot, '&quot;');
+              .replaceAll('&', '&amp;')
+              .replaceAll(StringExt.apos, '&apos;')
+              .replaceAll('>', '&gt;')
+              .replaceAll('<', '&lt;')
+              .replaceAll(StringExt.quot, '&quot;');
 
           if (escapeMode == EscapeMode.html) {
-            vv = vv
-              .replaceAll('\x09', '&#9;');
+            vv = vv.replaceAll('\x09', '&#9;');
           }
 
           effectiveMap[k] = vv;
           return;
         case EscapeMode.quotes:
           var vv = v
-            .replaceAll(r'\', r'\\')
-            .replaceAll(StringExt.quot, Env.escapeQuot)
-            .replaceAll(StringExt.apos, Env.escapeApos);
+              .replaceAll(r'\', r'\\')
+              .replaceAll(StringExt.quot, Env.escapeQuot)
+              .replaceAll(StringExt.apos, Env.escapeApos);
 
           effectiveMap[k] = vv;
           return;
@@ -566,7 +619,8 @@ Output path: "$outFilePathEx"
 
         var newText = '';
 
-        var rx = RegExpEx.fromDecoratedPattern(k, prefix: regExpPrefix, suffix: regExpSuffix);
+        var rx = RegExpEx.fromDecoratedPattern(k,
+            prefix: regExpPrefix, suffix: regExpSuffix);
 
         if (_logger.isVerbose) {
           _logger.verbose('......replacing $k with $v');
@@ -574,8 +628,7 @@ Output path: "$outFilePathEx"
 
         if (rx == null) {
           newText = text.replaceAll(k, v);
-        }
-        else {
+        } else {
           newText = rx.replace(text, v.toString());
         }
 
@@ -602,8 +655,7 @@ Output path: "$outFilePathEx"
       _logger.out(text);
 
       tmpFile = null;
-    }
-    else {
+    } else {
       var inpFilePath = inpFile?.path ?? '';
 
       var inpDirName = Path.dirname(inpFilePath);
@@ -632,7 +684,9 @@ Output path: "$outFilePathEx"
       }
 
       if (Path.fileSystem.directory(outFilePath).existsSync()) {
-        outFileName = (inpFilePath.startsWith(curDirName) ? inpFilePath.substring(curDirName.length) : Path.basename(inpFilePath));
+        outFileName = (inpFilePath.startsWith(curDirName)
+            ? inpFilePath.substring(curDirName.length)
+            : Path.basename(inpFilePath));
 
         var rootPrefixLen = Path.rootPrefix(outFileName).length;
 
@@ -648,14 +702,12 @@ Output path: "$outFilePathEx"
           _logger.verbose('...writing result to $outFilePath');
         }
 
-        Path.fileSystem.file(outFilePath)
-          .writeAsStringSync(text);
+        Path.fileSystem.file(outFilePath).writeAsStringSync(text);
 
         if (permissions != null) {
           Command.chmod(permissions.mode, outFilePath);
         }
-      }
-      else {
+      } else {
         tmpFile = Path.fileSystem.file(tmpFilePath);
 
         if (_logger.isVerbose) {
@@ -715,11 +767,9 @@ Output path: "$outFilePathEx"
       }
       if (k == paramNameCurDir) {
         newMap[k] = curDirName;
-      }
-      else if (k == paramNameInp) {
+      } else if (k == paramNameInp) {
         newMap[k] = inpFilePath;
-      }
-      else {
+      } else {
         if (v.contains(paramNameCurDir)) {
           newMap[k] = v.replaceAll(paramNameCurDir, curDirName);
         }
@@ -734,22 +784,22 @@ Output path: "$outFilePathEx"
   //////////////////////////////////////////////////////////////////////////////
 
   String getActualInpFilePath(String inpFilePath, String outFilePath) {
-    if (isStdIn || (isExpandContentOnly && !Path.equals(inpFilePath, outFilePath)) || !canExpandContent) {
+    if (isStdIn ||
+        (isExpandContentOnly && !Path.equals(inpFilePath, outFilePath)) ||
+        !canExpandContent) {
       return inpFilePath;
-    }
-    else if (!isStdOut) {
+    } else if (!isStdOut) {
       if (outFilePath.isBlank()) {
         return '';
-      }
-      else {
+      } else {
         var tmpFileName = (Path.basenameWithoutExtension(outFilePath) +
-            fileTypeTmp + Path.extension(inpFilePath));
+            fileTypeTmp +
+            Path.extension(inpFilePath));
         var tmpDirName = Path.dirname(outFilePath);
 
         return Path.join(tmpDirName, tmpFileName);
       }
-    }
-    else {
+    } else {
       return inpFilePath;
     }
   }
@@ -757,21 +807,25 @@ Output path: "$outFilePathEx"
   //////////////////////////////////////////////////////////////////////////////
 
   String getCurDirName(FlatMap map, bool canReplace) {
-    var curDirName = (getValue(map, key: _config.keywords.forCurDir, canReplace: canReplace));
-    curDirName = (curDirName.isBlank() ? Path.currentDirectoryName : Path.getFullPath(curDirName));
+    var curDirName = (getValue(map,
+        key: _config.keywords.forCurDir, canReplace: canReplace));
+    curDirName = (curDirName.isBlank()
+        ? Path.currentDirectoryName
+        : Path.getFullPath(curDirName));
 
     return curDirName;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<String> getDirList(String pattern) => DirectoryExt.pathListExSync(pattern);
+  static List<String> getDirList(String pattern) =>
+      DirectoryExt.pathListExSync(pattern);
 
   //////////////////////////////////////////////////////////////////////////////
 
   static List<String> getInpFilePaths(String filePath, String curDirName) {
     if (filePath.isBlank()) {
-      return [ filePath ]; // ensure at least one pass in a loop
+      return [filePath]; // ensure at least one pass in a loop
     }
 
     var filePathTrim = filePath.trim();
@@ -780,8 +834,7 @@ Output path: "$outFilePathEx"
 
     if (filePath == StringExt.stdinPath) {
       lst.add(filePath);
-    }
-    else {
+    } else {
       if (!Path.isAbsolute(filePathTrim)) {
         filePathTrim = Path.getFullPath(Path.join(curDirName, filePathTrim));
       }
@@ -798,7 +851,8 @@ Output path: "$outFilePathEx"
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String getValue(FlatMap map, {String? key, String? value, required bool canReplace}) {
+  String getValue(FlatMap map,
+      {String? key, String? value, required bool canReplace}) {
     if ((value == null) && (key != null) && map.containsKey(key)) {
       value = map[key];
     }
@@ -806,7 +860,7 @@ Output path: "$outFilePathEx"
     var isKeyCurDir = key?.startsWith(_config.keywords.forCurDir) ?? false;
 
     if (canReplace && (value != null) && !value.isBlank()) {
-      for (String? oldValue; (oldValue != value); ) {
+      for (String? oldValue; (oldValue != value);) {
         oldValue = value;
 
         map.forEach((k, v) {
@@ -820,7 +874,9 @@ Output path: "$outFilePathEx"
         });
       }
 
-      if ((key != null) && (value?.contains(key) ?? false) && map.containsKey(key)) {
+      if ((key != null) &&
+          (value?.contains(key) ?? false) &&
+          map.containsKey(key)) {
         value = value?.replaceAll(key, map[key] ?? '');
 
         if (isPathKey(key)) {
@@ -834,7 +890,8 @@ Output path: "$outFilePathEx"
       }
     }
 
-    if (!isKeyCurDir && (value?.contains(_config.keywords.forCurDir) ?? false)) {
+    if (!isKeyCurDir &&
+        (value?.contains(_config.keywords.forCurDir) ?? false)) {
       value = value?.replaceAll(_config.keywords.forCurDir, curDirName);
     }
 
@@ -853,8 +910,7 @@ Output path: "$outFilePathEx"
     }
 
     return false;
- }
+  }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

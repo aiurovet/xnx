@@ -20,12 +20,12 @@ enum PackType {
 }
 
 class PackOper {
-
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
 
-  static final Map<PackType, String> defaultExtensions = { // case-insensitive
+  static final Map<PackType, String> defaultExtensions = {
+    // case-insensitive
     PackType.bz2: '.bz2',
     PackType.gz: '.gz',
     PackType.tar: '.tar',
@@ -46,8 +46,10 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void archiveSync(PackType? packType, List<String> paths, {bool isListOnly = false, bool isMove = false, bool isSilent = false}) {
-    var pathLists = Path.argsToLists(paths, oper: 'archive', isLastSeparate: true);
+  static void archiveSync(PackType? packType, List<String> paths,
+      {bool isListOnly = false, bool isMove = false, bool isSilent = false}) {
+    var pathLists =
+        Path.argsToLists(paths, oper: 'archive', isLastSeparate: true);
 
     if (packType == null) {
       throw Exception('Archive type is not defined');
@@ -63,7 +65,8 @@ class PackOper {
     final isTar = isPackTypeTar(packType);
     final isTarPacked = (isTar && (packType != PackType.tar));
 
-    var toPathEx = (isTarPacked ? getUnpackPath(packType, toPath, null) :  toPath);
+    var toPathEx =
+        (isTarPacked ? getUnpackPath(packType, toPath, null) : toPath);
     var toFile = Path.fileSystem.file(toPathEx);
     print('${isListOnly ? 'Will create' : 'Creating'} archive "$toPathEx"');
 
@@ -73,8 +76,7 @@ class PackOper {
     if (!isListOnly) {
       if (!hadToDir) {
         toDir.createSync(recursive: true);
-      }
-      else {
+      } else {
         toFile.deleteIfExistsSync();
       }
     }
@@ -90,59 +92,56 @@ class PackOper {
       zipFileEncoder?.create(toPathEx, level: compression);
 
       FileOper.listSync(pathLists[0],
-        repeats: (isMove ? 2 : 1),
-        isSilent: isSilent,
-        isSorted: true,
-        isMinimal: true,
-        listProc: (entities, entityNo, repeatNo, subPath) {
-          if (entityNo < 0) { // empty list
-            throw Exception(Path.appendCurDirIfPathIsRelative('Source is not found: ', paths[0]));
-          }
-
-          var entity = entities[entityNo];
-          var isDir = (entity is Directory);
-          var isDirOnly = entity.path.endsWith(Path.separator);
-
-          if (repeatNo == 0) {
-            if (!isSilent) {
-              print('${isListOnly ? 'Will add' : 'Adding'} ${isDir ? 'dir' : 'file'} "${entity.path}"');
-            }
-
-            if (!isListOnly) {
-              if (isTar) {
-                if (isDir) {
-                  tarFileEncoder?.addDirectory(entity);
-                }
-                else if (!isDirOnly) {
-                  tarFileEncoder?.addFile(entity as File);
-                }
-              }
-              else if (isZip) {
-                if (isDir) {
-                  zipFileEncoder?.addDirectory(entity);
-                }
-                else if (!isDirOnly) {
-                  zipFileEncoder?.addFile(entity as File);
-                }
-              }
-            }
-          }
-          else if (isMove && (repeatNo == 1)) {
-            if (entity.existsSync()) {
-              if (!isSilent) {
-                print('${isListOnly ? 'Will delete' : 'Deleting'} ${isDir ? 'dir' : 'file'} "${entity.path}"');
-              }
-              if (!isListOnly) {
-                entity.deleteSync(recursive: true);
-              }
-            }
-          }
-
-          return true;
+          repeats: (isMove ? 2 : 1),
+          isSilent: isSilent,
+          isSorted: true,
+          isMinimal: true, listProc: (entities, entityNo, repeatNo, subPath) {
+        if (entityNo < 0) {
+          // empty list
+          throw Exception(Path.appendCurDirIfPathIsRelative(
+              'Source is not found: ', paths[0]));
         }
-      );
-    }
-    catch (e) {
+
+        var entity = entities[entityNo];
+        var isDir = (entity is Directory);
+        var isDirOnly = entity.path.endsWith(Path.separator);
+
+        if (repeatNo == 0) {
+          if (!isSilent) {
+            print(
+                '${isListOnly ? 'Will add' : 'Adding'} ${isDir ? 'dir' : 'file'} "${entity.path}"');
+          }
+
+          if (!isListOnly) {
+            if (isTar) {
+              if (isDir) {
+                tarFileEncoder?.addDirectory(entity);
+              } else if (!isDirOnly) {
+                tarFileEncoder?.addFile(entity as File);
+              }
+            } else if (isZip) {
+              if (isDir) {
+                zipFileEncoder?.addDirectory(entity);
+              } else if (!isDirOnly) {
+                zipFileEncoder?.addFile(entity as File);
+              }
+            }
+          }
+        } else if (isMove && (repeatNo == 1)) {
+          if (entity.existsSync()) {
+            if (!isSilent) {
+              print(
+                  '${isListOnly ? 'Will delete' : 'Deleting'} ${isDir ? 'dir' : 'file'} "${entity.path}"');
+            }
+            if (!isListOnly) {
+              entity.deleteSync(recursive: true);
+            }
+          }
+        }
+
+        return true;
+      });
+    } catch (e) {
       if (!isListOnly) {
         toFile.deleteIfExistsSync();
 
@@ -152,20 +151,27 @@ class PackOper {
       }
 
       rethrow;
-    }
-    finally {
+    } finally {
       tarFileEncoder?.close();
       zipFileEncoder?.close();
     }
 
     if (isTarPacked) {
-      compressSync(packType, toPathEx, toPath: toPath, isListOnly: isListOnly, isMove: true, isSilent: isSilent);
+      compressSync(packType, toPathEx,
+          toPath: toPath,
+          isListOnly: isListOnly,
+          isMove: true,
+          isSilent: isSilent);
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String compressSync(PackType packType, String fromPath, {String? toPath, bool isListOnly = false, bool isMove = true, bool isSilent = false}) {
+  static String compressSync(PackType packType, String fromPath,
+      {String? toPath,
+      bool isListOnly = false,
+      bool isMove = true,
+      bool isSilent = false}) {
     final fromFile = FileExt.getIfExistsSync(fromPath);
 
     if (fromFile == null) {
@@ -202,9 +208,11 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getPackPath(PackType packType, String fromPath, String? toPath) {
+  static String getPackPath(
+      PackType packType, String fromPath, String? toPath) {
     if (toPath != null) {
-      if ((packType == PackType.zip) || (!toPath.isBlank() && (toPath != fromPath))) {
+      if ((packType == PackType.zip) ||
+          (!toPath.isBlank() && (toPath != fromPath))) {
         return toPath;
       }
     }
@@ -260,7 +268,8 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String getUnpackPath(PackType? packType, String fromPath, String? toPath) {
+  static String getUnpackPath(
+      PackType? packType, String fromPath, String? toPath) {
     packType ??= getPackType(packType, fromPath);
 
     if (packType == null) {
@@ -274,7 +283,8 @@ class PackOper {
     var fileTitle = Path.basenameWithoutExtension(fromPath);
     var extTar = defaultExtensions[PackType.tar] ?? '';
 
-    if (isPackTypeTar(packType) && !fileTitle.toLowerCase().endsWith(extTar.toLowerCase())) {
+    if (isPackTypeTar(packType) &&
+        !fileTitle.toLowerCase().endsWith(extTar.toLowerCase())) {
       fileTitle += extTar;
     }
 
@@ -282,8 +292,7 @@ class PackOper {
       if (Path.fileSystem.directory(toPath).existsSync()) {
         toPath = Path.join(toPath, fileTitle);
       }
-    }
-    else {
+    } else {
       toPath = Path.join(Path.dirname(fromPath), fileTitle);
     }
 
@@ -292,13 +301,16 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool isPackTypeTar(PackType packType) =>
-    ((packType == PackType.tar) || (packType == PackType.tarBz2) ||
-    (packType == PackType.tarGz) || (packType == PackType.tarZ));
+  static bool isPackTypeTar(PackType packType) => ((packType == PackType.tar) ||
+      (packType == PackType.tarBz2) ||
+      (packType == PackType.tarGz) ||
+      (packType == PackType.tarZ));
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void unarchiveSync(PackType packType, String fromPath, String? toDirName, {bool isListOnly = false, bool isMove = false, bool isSilent = false}) {
+  static void unarchiveSync(
+      PackType packType, String fromPath, String? toDirName,
+      {bool isListOnly = false, bool isMove = false, bool isSilent = false}) {
     final isTar = isPackTypeTar(packType);
     final isZip = (packType == PackType.zip);
 
@@ -310,13 +322,17 @@ class PackOper {
     String fromPathEx;
 
     if (isTarPack) {
-      fromPathEx = uncompressSync(packType, fromPath, toPath: null, isListOnly: isListOnly, isMove: isMove, isSilent: isSilent);
-    }
-    else {
+      fromPathEx = uncompressSync(packType, fromPath,
+          toPath: null,
+          isListOnly: isListOnly,
+          isMove: isMove,
+          isSilent: isSilent);
+    } else {
       fromPathEx = fromPath;
     }
 
-    final fromFileEx = FileExt.getIfExistsSync(fromPathEx, description: 'Archive');
+    final fromFileEx =
+        FileExt.getIfExistsSync(fromPathEx, description: 'Archive');
 
     if (fromFileEx == null) {
       return;
@@ -326,11 +342,13 @@ class PackOper {
     final toDir = Path.fileSystem.directory(toDirName);
 
     if (!isSilent) {
-      print('${isListOnly ? 'Will extract' : 'Extracting'} from archive "$fromPathEx" to "$toDirName"');
+      print(
+          '${isListOnly ? 'Will extract' : 'Extracting'} from archive "$fromPathEx" to "$toDirName"');
     }
 
     final toDirExisted = toDir.existsSync();
-    final archive = _decodeArchSync((isTarPack ? PackType.tar : packType), fromFileEx);
+    final archive =
+        _decodeArchSync((isTarPack ? PackType.tar : packType), fromFileEx);
 
     if (archive == null) {
       return;
@@ -349,16 +367,19 @@ class PackOper {
         }
 
         final toPath = Path.adjust(Path.join(toDirName, entity.name));
-        final isFile = entity.isFile && !entity.name.endsWith(Path.separatorPosix);
+        final isFile =
+            entity.isFile && !entity.name.endsWith(Path.separatorPosix);
 
         if (!isSilent) {
-          print('${isListOnly ? 'Will extract' : 'Extracting'} ${isFile ? 'file' : 'dir'} "${entity.name}"');
+          print(
+              '${isListOnly ? 'Will extract' : 'Extracting'} ${isFile ? 'file' : 'dir'} "${entity.name}"');
         }
 
         if (isFile) {
           if (!isListOnly) {
-            Path.fileSystem.directory(Path.dirname(toPath))
-              .createSync(recursive: true);
+            Path.fileSystem
+                .directory(Path.dirname(toPath))
+                .createSync(recursive: true);
 
             Path.fileSystem.file(toPath)
               ..createSync(recursive: false)
@@ -368,11 +389,9 @@ class PackOper {
           if (cmd != null) {
             Command.chmod(entity.mode, toPath);
           }
-        }
-        else {
+        } else {
           if (!isListOnly) {
-            Path.fileSystem.directory(toPath)
-              .createSync(recursive: true);
+            Path.fileSystem.directory(toPath).createSync(recursive: true);
           }
         }
       }
@@ -380,7 +399,8 @@ class PackOper {
       if (isMove || isTarPack) {
         if (isTarPack) {
           if (!isSilent) {
-            print('${isListOnly ? 'Will delete' : 'Deleting'} archive "$fromPathEx"'); // current path
+            print(
+                '${isListOnly ? 'Will delete' : 'Deleting'} archive "$fromPathEx"'); // current path
           }
           if (!isListOnly) {
             fromFileEx.deleteSync();
@@ -389,15 +409,15 @@ class PackOper {
 
         if (!isTarPack || isMove) {
           if (!isSilent) {
-            print('${isListOnly ? 'Will delete' : 'Deleting'} archive "$fromPath"'); // original path
+            print(
+                '${isListOnly ? 'Will delete' : 'Deleting'} archive "$fromPath"'); // original path
           }
           if (!isListOnly) {
             Path.fileSystem.file(fromPath).deleteIfExistsSync();
           }
         }
       }
-    }
-    catch (e) {
+    } catch (e) {
       if (!isListOnly) {
         if (isTarPack) {
           fromFileEx.deleteIfExistsSync();
@@ -413,7 +433,11 @@ class PackOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String uncompressSync(PackType packType, String fromPath, {String? toPath, bool isListOnly = false, bool isMove = true, bool isSilent = false}) {
+  static String uncompressSync(PackType packType, String fromPath,
+      {String? toPath,
+      bool isListOnly = false,
+      bool isMove = true,
+      bool isSilent = false}) {
     final fromFile = FileExt.getIfExistsSync(fromPath);
 
     if (fromFile == null) {
@@ -421,7 +445,8 @@ class PackOper {
     }
 
     if (!isSilent) {
-      print('${isListOnly ? 'Will uncompress' : 'Uncompressing'} "${fromFile.path}"');
+      print(
+          '${isListOnly ? 'Will uncompress' : 'Uncompressing'} "${fromFile.path}"');
     }
 
     final toPathEx = getUnpackPath(packType, fromPath, toPath);
@@ -451,11 +476,9 @@ class PackOper {
 
     if (packType == PackType.tar) {
       return TarDecoder().decodeBytes(bytes);
-    }
-    else if (packType == PackType.zip) {
+    } else if (packType == PackType.zip) {
       return ZipDecoder().decodeBytes(bytes);
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -513,5 +536,4 @@ class PackOper {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

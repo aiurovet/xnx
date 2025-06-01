@@ -16,7 +16,6 @@ import 'package:xnx/escape_mode.dart';
 import 'package:xnx/pack_oper.dart';
 
 class Options {
-
   //////////////////////////////////////////////////////////////////////////////
 
   static const String appName = 'xnx';
@@ -47,7 +46,8 @@ class Options {
   static final Map<String, Object?> appConfig = {
     'name': 'app-config',
     'abbr': 'c',
-    'help': '''$appName application configuration file in JSON5 format https://json5.org/,
+    'help':
+        '''$appName application configuration file in JSON5 format https://json5.org/,
 defaults to $appConfigName in the directory where $fileTypeCfg file is from''',
     'valueHelp': 'FILE',
     'defaultsTo': null,
@@ -55,14 +55,16 @@ defaults to $appConfigName in the directory where $fileTypeCfg file is from''',
   static final Map<String, Object?> appendSep = {
     'name': 'append-sep',
     'abbr': 's',
-    'help': '''append record separator "${ConfigFileLoader.recordSep}" when filtering input config file (for "${listOnly['name']}" exclusively),
+    'help':
+        '''append record separator "${ConfigFileLoader.recordSep}" when filtering input config file (for "${listOnly['name']}" exclusively),
 the application will define environment variable $_envAppendSep''',
     'negatable': false,
   };
   static final Map<String, Object?> compressionLevel = {
     'name': 'compression',
     'abbr': 'p',
-    'help': '''compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2,
+    'help':
+        '''compression level for archiving-related operations (${Deflate.BEST_SPEED}..${Deflate.BEST_COMPRESSION}) excepting BZip2,
 the application will define environment variable $_envCompression''',
     'valueHelp': 'LEVEL',
     'defaultsTo': null,
@@ -70,14 +72,16 @@ the application will define environment variable $_envCompression''',
   static final Map<String, Object?> each = {
     'name': 'each',
     'abbr': 'e',
-    'help': '''treat each plain argument independently (e.g. can pass multiple filenames as arguments)
+    'help':
+        '''treat each plain argument independently (e.g. can pass multiple filenames as arguments)
 see also -x/--xargs''',
     'negatable': false,
   };
   static final Map<String, Object?> escape = {
     'name': 'escape',
     'abbr': 'm',
-    'help': '''how to escape special characters before the expansion: quotes, xml, html (default: none),
+    'help':
+        '''how to escape special characters before the expansion: quotes, xml, html (default: none),
 the application will define environment variable $_envEscape''',
     'valueHelp': 'MODE',
     'defaultsTo': null,
@@ -103,14 +107,16 @@ the application will define environment variable $_envForce''',
     'abbr': 'M',
     'name': 'min-expand',
     'negatable': false,
-    'help': '''disallow expansion of environment and language variables as well as positional command-line
+    'help':
+        '''disallow expansion of environment and language variables as well as positional command-line
 arguments (useful when doing find/replace in scripts and other code files), the application will define
 environment variable $_envMinExpand''',
   };
   static final Map<String, Object?> importDir = {
     'name': 'import-dir',
     'abbr': 'i',
-    'help': '''default directory for $fileTypeCfg files being imported into other $fileTypeCfg files,
+    'help':
+        '''default directory for $fileTypeCfg files being imported into other $fileTypeCfg files,
 the application will define environment variable $_envImportDir''',
     'valueHelp': 'DIR',
     'defaultsTo': null,
@@ -118,7 +124,8 @@ the application will define environment variable $_envImportDir''',
   static final Map<String, Object?> listOnly = {
     'name': 'list-only',
     'abbr': 'l',
-    'help': '''display all commands, but do not execute those; if no command specified, then show config,
+    'help':
+        '''display all commands, but do not execute those; if no command specified, then show config,
 the application will define environment variable $_envListOnly''',
     'negatable': false,
   };
@@ -139,7 +146,8 @@ the application will define environment variable $_envQuiet''',
   static final Map<String, Object?> verbose = {
     'name': 'verbose',
     'abbr': 'v',
-    'help': '''Shows detailed log, the application will define environment variable $_envVerbose,''',
+    'help':
+        '''Shows detailed log, the application will define environment variable $_envVerbose,''',
     'negatable': false,
   };
   static final Map<String, Object?> waitAlways = {
@@ -171,25 +179,29 @@ default extension: $fileTypeCfg''',
   };
   static final Map<String, Object?> cmdFind = {
     'name': 'find',
-    'help': '''just find recursively all files and sub-directories matching the glob pattern
+    'help':
+        '''just find recursively all files and sub-directories matching the glob pattern
 in a given or the current directory and print those to stdout''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdCopy = {
     'name': 'copy',
-    'help': '''just copy file(s) and/or directorie(s) passed as plain argument(s),
+    'help':
+        '''just copy file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdCopyNewer = {
     'name': 'copy-newer',
-    'help': '''just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s),
+    'help':
+        '''just copy more recently updated file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdDelete = {
     'name': 'delete',
-    'help': '''just delete file(s) and/or directorie(s) passed as plain argument(s),
+    'help':
+        '''just delete file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
@@ -200,13 +212,15 @@ glob patterns are allowed''',
   };
   static final Map<String, Object?> cmdMove = {
     'name': 'move',
-    'help': '''just move file(s) and/or directorie(s) passed as plain argument(s),
+    'help':
+        '''just move file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdMoveNewer = {
     'name': 'move-newer',
-    'help': '''just move more recently updated file(s) and/or directorie(s) passed as plain argument(s),
+    'help':
+        '''just move more recently updated file(s) and/or directorie(s) passed as plain argument(s),
 glob patterns are allowed''',
     'negatable': false,
   };
@@ -242,7 +256,8 @@ glob patterns are allowed''',
   };
   static final Map<String, Object?> cmdBz2 = {
     'name': 'bz2',
-    'help': '''just compress a single source file to a single destination BZip2 file,
+    'help':
+        '''just compress a single source file to a single destination BZip2 file,
 can be used with --move''',
     'negatable': false,
   };
@@ -266,19 +281,22 @@ can be used with --move''',
   };
   static final Map<String, Object?> cmdPack = {
     'name': 'pack',
-    'help': '''just compress source files and/or directories to a single destination
+    'help':
+        '''just compress source files and/or directories to a single destination
 archive file depending on its extension, can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdUnPack = {
     'name': 'unpack',
-    'help': '''just decompress a single source archive file to destination files and/or
+    'help':
+        '''just decompress a single source archive file to destination files and/or
 directories depending on the source extension, can be used with --move''',
     'negatable': false,
   };
   static final Map<String, Object?> cmdTar = {
     'name': 'tar',
-    'help': '''just create a single destination archive file containing source files and/or
+    'help':
+        '''just create a single destination archive file containing source files and/or
 directories, can be used with --move''',
     'negatable': false,
   };
@@ -374,13 +392,13 @@ can be used with --move to delete the source''',
 
   bool _isForced = false;
   bool get isForced => _isForced;
-  
+
   bool _isListOnly = false;
   bool get isListOnly => _isListOnly;
-  
+
   bool _isWaitAlways = false;
   bool get isWaitAlways => _isWaitAlways;
-  
+
   bool _isWaitOnErr = false;
   bool get isWaitOnErr => _isWaitOnErr;
 
@@ -398,14 +416,18 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool get isCmd => (
-    _isCmdFind ||
-    _isCmdPrint || _isCmdPrintCwd || _isCmdPrintEnv ||
-    _isCmdCopy || _isCmdCopyNewer ||
-    _isCmdDelete || _isCmdCreate ||
-    _isCmdMove || _isCmdMoveNewer ||
-    _isCmdCompress || isCmdDecompress
-  );
+  bool get isCmd => (_isCmdFind ||
+      _isCmdPrint ||
+      _isCmdPrintCwd ||
+      _isCmdPrintEnv ||
+      _isCmdCopy ||
+      _isCmdCopyNewer ||
+      _isCmdDelete ||
+      _isCmdCreate ||
+      _isCmdMove ||
+      _isCmdMoveNewer ||
+      _isCmdCompress ||
+      isCmdDecompress);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -461,27 +483,25 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addFlag(ArgParser parser, Map<String, Object?> option, void Function(bool)? callback) {
-    parser.addFlag(
-      option['name']?.toString() ?? '',
-      abbr: option['abbr']?.toString(),
-      help: option['help']?.toString(),
-      negatable: (option['negatable'] as bool?) ?? false,
-      callback: callback
-    );
+  static void addFlag(ArgParser parser, Map<String, Object?> option,
+      void Function(bool)? callback) {
+    parser.addFlag(option['name']?.toString() ?? '',
+        abbr: option['abbr']?.toString(),
+        help: option['help']?.toString(),
+        negatable: (option['negatable'] as bool?) ?? false,
+        callback: callback);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void addOption(ArgParser parser, Map<String, Object?> option, void Function(String?)? callback) {
-    parser.addOption(
-      option['name']?.toString() ?? '',
-      abbr: option['abbr']?.toString(),
-      help: option['help']?.toString(),
-      valueHelp: option['valueHelp']?.toString(),
-      defaultsTo: option['defaultsTo']?.toString(),
-      callback: callback
-    );
+  static void addOption(ArgParser parser, Map<String, Object?> option,
+      void Function(String?)? callback) {
+    parser.addOption(option['name']?.toString() ?? '',
+        abbr: option['abbr']?.toString(),
+        help: option['help']?.toString(),
+        valueHelp: option['valueHelp']?.toString(),
+        defaultsTo: option['defaultsTo']?.toString(),
+        callback: callback);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -564,7 +584,8 @@ can be used with --move to delete the source''',
       _isForced = _getBool(_envForce, forceConvert, value);
     });
     addOption(parser, compressionLevel, (value) {
-      _compression = _getInt(_envCompression, value, defValue: PackOper.defaultCompression);
+      _compression = _getInt(_envCompression, value,
+          defValue: PackOper.defaultCompression);
     });
     addFlag(parser, waitAlways, (value) {
       _isWaitAlways = value;
@@ -779,8 +800,7 @@ can be used with --move to delete the source''',
           }
         }
       }
-    }
-    catch (e) {
+    } catch (e) {
       errMsg = (isHelp ? '' : e.toString());
       isHelp = true;
     }
@@ -794,14 +814,17 @@ can be used with --move to delete the source''',
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static EscapeMode parseEscapeMode(String? value, {EscapeMode defValue = EscapeMode.none}) {
+  static EscapeMode parseEscapeMode(String? value,
+      {EscapeMode defValue = EscapeMode.none}) {
     if (value == null) {
       return defValue;
     }
 
     var valueEx = 'escapemode.${value.toLowerCase()}';
 
-    return EscapeMode.values.firstWhereOrNull((x) => x.toString().toLowerCase() == valueEx) ?? EscapeMode.none;
+    return EscapeMode.values
+            .firstWhereOrNull((x) => x.toString().toLowerCase() == valueEx) ??
+        EscapeMode.none;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -820,8 +843,7 @@ $appName [OPTIONS]
 ${parser.usage}
 
 For more details, see README.md
-'''
-      );
+''');
     }
 
     throw Exception(error?.isBlank() ?? true ? help['name'] ?? '' : error);
@@ -855,8 +877,7 @@ For more details, see README.md
 
       if (stat.type == FileSystemEntityType.file) {
         isFound = true;
-      }
-      else {
+      } else {
         if (stat.type == FileSystemEntityType.directory) {
           _appConfigPath = Path.join(_appConfigPath, appConfigName);
 
@@ -873,8 +894,7 @@ For more details, see README.md
 
       if (Path.fileSystem.file(_appConfigPath).existsSync()) {
         isFound = true;
-      }
-      else {
+      } else {
         if (!Path.equals(_startDirName, configDirName)) {
           _appConfigPath = Path.join(_startDirName, appConfigName);
 
@@ -884,7 +904,8 @@ For more details, see README.md
         }
 
         if (!isFound) {
-          _appConfigPath = Path.join(Path.dirname(Platform.script.path), appConfigName);
+          _appConfigPath =
+              Path.join(Path.dirname(Platform.script.path), appConfigName);
 
           if (Path.fileSystem.file(_appConfigPath).existsSync()) {
             isFound = true;
@@ -894,7 +915,8 @@ For more details, see README.md
     }
 
     if (_logger.isVerbose) {
-      _logger.verbose('App config file was${isFound ? '' : ' not'} found: "$appConfigPath"\n');
+      _logger.verbose(
+          'App config file was${isFound ? '' : ' not'} found: "$appConfigPath"\n');
     }
 
     if (!isFound) {
@@ -958,19 +980,23 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
       if (files.isNotEmpty) {
         var paths = files.map((x) => x.path).toList()..sort();
 
-        configPath = paths.firstWhereOrNull((x) => Path.extension(x) == fileTypeCfg);
+        configPath =
+            paths.firstWhereOrNull((x) => Path.extension(x) == fileTypeCfg);
       }
     }
 
     if ((configPath == null) || configPath.isBlank()) {
-      throw Exception('No file of type $fileTypeCfg exists in "$_startDirName"');
+      throw Exception(
+          'No file of type $fileTypeCfg exists in "$_startDirName"');
     }
 
     configPath = Path.getFullPath(configPath);
-    _configFileInfo = ConfigFileInfo(input: configPath, importDirName: _importDirName);
+    _configFileInfo =
+        ConfigFileInfo(input: configPath, importDirName: _importDirName);
 
     if (_logger.isVerbose) {
-      _logger.verbose('Start dir: "$_startDirName"\nInput file: "${_configFileInfo.filePath}"\n');
+      _logger.verbose(
+          'Start dir: "$_startDirName"\nInput file: "${_configFileInfo.filePath}"\n');
     }
 
     setAppConfigPath();
@@ -979,7 +1005,9 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
   //////////////////////////////////////////////////////////////////////////////
 
   void setCmdStartDirName(String? dirName) {
-    if ((dirName == null) || dirName.isEmpty || (dirName == DirectoryExt.curDirAbbr)) {
+    if ((dirName == null) ||
+        dirName.isEmpty ||
+        (dirName == DirectoryExt.curDirAbbr)) {
       return;
     }
 
@@ -993,7 +1021,8 @@ Arg inp file: ${configPath == null ? StringExt.unknown : '"$configPath"'}
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool _getBool(String envKey, Map<String, Object?> option, bool? value, {bool defValue = false}) {
+  bool _getBool(String envKey, Map<String, Object?> option, bool? value,
+      {bool defValue = false}) {
     var strValue = _getValue(envKey, value?.toString());
     var result = (strValue.isBlank() ? defValue : strValue.parseBool());
 

@@ -2,9 +2,7 @@ import 'dart:core';
 
 import 'package:xnx/ext/env.dart';
 
-
 extension StringExt on String {
-
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
@@ -26,24 +24,26 @@ extension StringExt on String {
   static final RegExp rexBlank = RegExp(r'^[\s]*$');
 
   // Taken from https://stackoverflow.com/questions/24518020/comprehensive-regexp-to-remove-javascript-comments/24518413#24518413
-  static final RegExp rexComments = RegExp(r"""/((["'])(?:\\[\s\S]|.)*?\2|(?:[^\w\s]|^)\s*\/(?![*\/])(?:\\.|\[(?:\\.|.)\]|.)*?\/(?=[gmiy]{0,4}\s*(?![*\/])(?:\W|$)))|\/\/.*?$|\/\*[\s\S]*?\*\/""", multiLine: true);
+  static final RegExp rexComments = RegExp(
+      r"""/((["'])(?:\\[\s\S]|.)*?\2|(?:[^\w\s]|^)\s*\/(?![*\/])(?:\\.|\[(?:\\.|.)\]|.)*?\/(?=[gmiy]{0,4}\s*(?![*\/])(?:\W|$)))|\/\/.*?$|\/\*[\s\S]*?\*\/""",
+      multiLine: true);
 
-  static final RegExp rexCmdLine = RegExp(r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""", caseSensitive: false);
+  static final RegExp rexCmdLine = RegExp(
+      r"""(([^\"\'\s]+)|([\"]([^\"]*)[\"])+|([\']([^\']*)[\']))+""",
+      caseSensitive: false);
   static final RegExp rexInteger = RegExp(r'^\d+$', caseSensitive: false);
-  static final RegExp rexProtocol = RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
+  static final RegExp rexProtocol =
+      RegExp(r'^[A-Z]+[\:][\/][\/]+', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool isBlank() =>
-    trim().isEmpty; // faster than regex
+  bool isBlank() => trim().isEmpty; // faster than regex
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool parseBool() =>
-    (toLowerCase() == 'true');
+  bool parseBool() => (toLowerCase() == 'true');
 
-  String removeComments() =>
-    replaceAll(rexComments, r'$1');
+  String removeComments() => replaceAll(rexComments, r'$1');
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,8 @@ extension StringExt on String {
     }
 
     var q = this[0];
-    var isQuoted = (((q == StringExt.apos) || (q == StringExt.quot)) && (q == this[len - 1]));
+    var isQuoted = (((q == StringExt.apos) || (q == StringExt.quot)) &&
+        (q == this[len - 1]));
 
     var result = (isQuoted ? substring(1, (len - 1)) : this);
 
@@ -83,11 +84,11 @@ extension StringExt on String {
     }
 
     return result
-      .replaceAll(Env.escapeEscape, '\x01')
-      .replaceAll(Env.escapeApos, StringExt.apos)
-      .replaceAll(Env.escapeQuot, StringExt.quot)
-      .replaceAll(Env.escape, '')
-      .replaceAll('\x01', Env.escape);
+        .replaceAll(Env.escapeEscape, '\x01')
+        .replaceAll(Env.escapeApos, StringExt.apos)
+        .replaceAll(Env.escapeQuot, StringExt.quot)
+        .replaceAll(Env.escape, '')
+        .replaceAll('\x01', Env.escape);
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -22,17 +22,24 @@ void main() {
         Env.set('XNX_A', 'A');
         Env.set('XNX_B', 'B');
         expect(Env.expand('a \$XNX_A \$XNX_B \$XNX_C d'), 'a A B  d');
-        expect(Env.expand('a \$XNX_A \$XNX_B\x01 \$#\$~1 \$~2 \\\$XNX_C \\\$ d', args: [ 'a1', 'a2' ]), 'a A B\x01 2a1 a2 \$XNX_C \$ d');
+        expect(
+            Env.expand('a \$XNX_A \$XNX_B\x01 \$#\$~1 \$~2 \\\$XNX_C \\\$ d',
+                args: ['a1', 'a2']),
+            'a A B\x01 2a1 a2 \$XNX_C \$ d');
         expect(Env.expand('a \${Y:-\${Z:=\${XNX_A}}} b \${XNX_B}'), 'a A b B');
         expect(Env.expand('a \$#XNX_A b \${#XNX_B}'), 'a 1 b 1');
-        expect(Env.expand('a \$#~1 b \${#~2} \${3:-No #3}', args: [ 'a1', 'ab2' ]), 'a 2 b 3 No #3');
-        expect(Env.expand('a \$@ \$~* \${#~@}', args: [ 'a1', 'a2', 'a 3' ]), 'a a1 a2 "a 3" a1 a2 "a 3" 11');
-        expect(Env.expand('a \$@@ \${**}', args: [ 'a1', 'a2' ]), 'a a1 a2@ ');
+        expect(
+            Env.expand('a \$#~1 b \${#~2} \${3:-No #3}', args: ['a1', 'ab2']),
+            'a 2 b 3 No #3');
+        expect(Env.expand('a \$@ \$~* \${#~@}', args: ['a1', 'a2', 'a 3']),
+            'a a1 a2 "a 3" a1 a2 "a 3" 11');
+        expect(Env.expand('a \$@@ \${**}', args: ['a1', 'a2']), 'a a1 a2@ ');
       });
 
       test('get', () {
         expect(Env.get(Env.homeKey), Platform.environment[Env.homeKey]);
-        expect(Env.get(Env.homeKey.toLowerCase()), Env.isWindows ? Platform.environment[Env.homeKey] : '');
+        expect(Env.get(Env.homeKey.toLowerCase()),
+            Env.isWindows ? Platform.environment[Env.homeKey] : '');
       });
 
       test('getAll', () {
@@ -58,7 +65,8 @@ void main() {
       });
 
       test('getHome', () {
-        expect(Env.getHome(), Platform.environment[Env.isWindows ? 'USERPROFILE' : 'HOME']);
+        expect(Env.getHome(),
+            Platform.environment[Env.isWindows ? 'USERPROFILE' : 'HOME']);
       });
       test('homeKey', () {
         expect(Env.homeKey, (Env.isWindows ? 'USERPROFILE' : 'HOME'));

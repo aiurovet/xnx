@@ -23,7 +23,9 @@ final keywords = Keywords();
 void init(FileSystem fileSystem) {
   Helper.initFileSystem(fileSystem);
 
-  var root = (Path.fileSystem is MemoryFileSystem ? Path.getFullPath(Path.separator) : Env.getHome());
+  var root = (Path.fileSystem is MemoryFileSystem
+      ? Path.getFullPath(Path.separator)
+      : Env.getHome());
   var path = Path.join(root, 'test-dir', 'sub-dir');
   var dir = Path.fileSystem.directory(path);
 
@@ -43,7 +45,11 @@ void main() {
 
         var flatMap = FlatMap();
         var logger = Logger();
-        var x = Expression(flatMap: flatMap, keywords: Keywords(), operation: Operation(flatMap: flatMap, logger: logger), logger: logger);
+        var x = Expression(
+            flatMap: flatMap,
+            keywords: Keywords(),
+            operation: Operation(flatMap: flatMap, logger: logger),
+            logger: logger);
 
         expect(x.exec(setIf('false')), blockElse);
         expect(x.exec(setIf('true')), blockThen);

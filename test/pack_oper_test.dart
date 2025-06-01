@@ -13,11 +13,11 @@ void doneLocal(int i) {
   getLocalToDir(i).deleteIfExistsSync(recursive: true);
 }
 
-Directory getLocalFromDir(int testId) =>
-  Path.fileSystem.directory(Path.join(Path.join(Env.getHome(), 'dir-$testId'), 'sub-dir'));
+Directory getLocalFromDir(int testId) => Path.fileSystem
+    .directory(Path.join(Path.join(Env.getHome(), 'dir-$testId'), 'sub-dir'));
 
 Directory getLocalToDir(int testId) =>
-  Path.fileSystem.directory(Path.join(Env.getHome(), 'pack-$testId'));
+    Path.fileSystem.directory(Path.join(Env.getHome(), 'pack-$testId'));
 
 List<Directory> initLocal(int testId) {
   Env.init();
@@ -25,12 +25,24 @@ List<Directory> initLocal(int testId) {
   var fromDir = getLocalFromDir(testId);
   var toDir = getLocalToDir(testId);
 
-  Path.fileSystem.directory(Path.join(fromDir.path, 'sub-sub-dir')).createSync(recursive: true);
-  Path.fileSystem.file(Path.join(fromDir.path, 'a.txt'))..createSync()..writeAsStringSync('A');
-  Path.fileSystem.file(Path.join(fromDir.path, 'b.txt'))..createSync()..writeAsStringSync('B B');
-  Path.fileSystem.file(Path.join(fromDir.path, 'c.txt'))..createSync()..writeAsStringSync('C C C');
-  Path.fileSystem.file(Path.join(fromDir.path, 'd.txt'))..createSync()..writeAsStringSync('D D D D');
-  Path.fileSystem.file(Path.join(fromDir.path, 'sub-sub-dir', 'e.csv'))..createSync()..writeAsStringSync('E E');
+  Path.fileSystem
+      .directory(Path.join(fromDir.path, 'sub-sub-dir'))
+      .createSync(recursive: true);
+  Path.fileSystem.file(Path.join(fromDir.path, 'a.txt'))
+    ..createSync()
+    ..writeAsStringSync('A');
+  Path.fileSystem.file(Path.join(fromDir.path, 'b.txt'))
+    ..createSync()
+    ..writeAsStringSync('B B');
+  Path.fileSystem.file(Path.join(fromDir.path, 'c.txt'))
+    ..createSync()
+    ..writeAsStringSync('C C C');
+  Path.fileSystem.file(Path.join(fromDir.path, 'd.txt'))
+    ..createSync()
+    ..writeAsStringSync('D D D D');
+  Path.fileSystem.file(Path.join(fromDir.path, 'sub-sub-dir', 'e.csv'))
+    ..createSync()
+    ..writeAsStringSync('E E');
 
   toDir.createSync(recursive: true);
 
@@ -46,19 +58,26 @@ void main() {
         var fromPath = Path.join('dir', 'a.txt');
         var toPath = Path.join('dir', 'b.txt');
 
-        expect(PackOper.getPackPath(PackType.bz2, fromPath, null), '$fromPath.bz2');
+        expect(PackOper.getPackPath(PackType.bz2, fromPath, null),
+            '$fromPath.bz2');
         expect(PackOper.getPackPath(PackType.bz2, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.gz, fromPath, null), '$fromPath.gz');
+        expect(
+            PackOper.getPackPath(PackType.gz, fromPath, null), '$fromPath.gz');
         expect(PackOper.getPackPath(PackType.gz, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.tar, fromPath, null), '$fromPath.tar');
+        expect(PackOper.getPackPath(PackType.tar, fromPath, null),
+            '$fromPath.tar');
         expect(PackOper.getPackPath(PackType.tar, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.tarBz2, fromPath, null), '$fromPath.bz2');
+        expect(PackOper.getPackPath(PackType.tarBz2, fromPath, null),
+            '$fromPath.bz2');
         expect(PackOper.getPackPath(PackType.tarBz2, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.tarGz, fromPath, null), '$fromPath.gz');
+        expect(PackOper.getPackPath(PackType.tarGz, fromPath, null),
+            '$fromPath.gz');
         expect(PackOper.getPackPath(PackType.tarGz, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.tarZ, fromPath, null), '$fromPath.Z');
+        expect(
+            PackOper.getPackPath(PackType.tarZ, fromPath, null), '$fromPath.Z');
         expect(PackOper.getPackPath(PackType.tarZ, fromPath, toPath), toPath);
-        expect(PackOper.getPackPath(PackType.zip, fromPath, null), '$fromPath.zip');
+        expect(PackOper.getPackPath(PackType.zip, fromPath, null),
+            '$fromPath.zip');
         expect(PackOper.getPackPath(PackType.zip, fromPath, toPath), toPath);
       });
       test('getPackType - by pack type', () {
@@ -106,20 +125,32 @@ void main() {
         var fromPath = Path.join(dirName, 'a.txt');
         var toPath = Path.join(dirName, 'b.txt');
 
-        expect(PackOper.getUnpackPath(PackType.bz2, '$fromPath.bz2', null), fromPath);
-        expect(PackOper.getUnpackPath(PackType.bz2, '$fromPath.bz2', toPath), toPath);
+        expect(PackOper.getUnpackPath(PackType.bz2, '$fromPath.bz2', null),
+            fromPath);
+        expect(PackOper.getUnpackPath(PackType.bz2, '$fromPath.bz2', toPath),
+            toPath);
         expect(PackOper.getUnpackPath(null, '$fromPath.bz2', null), fromPath);
-        expect(PackOper.getUnpackPath(null, '$fromPath.bz2', dirName), fromPath);
+        expect(
+            PackOper.getUnpackPath(null, '$fromPath.bz2', dirName), fromPath);
 
-        expect(PackOper.getUnpackPath(PackType.tarZ, '$fromPath.tar.Z', null), '$fromPath.tar');
-        expect(PackOper.getUnpackPath(PackType.tarZ, '$fromPath.tar.Z', toPath), toPath);
-        expect(PackOper.getUnpackPath(null, '$fromPath.tar.Z', null), '$fromPath.tar');
-        expect(PackOper.getUnpackPath(null, '$fromPath.tar.Z', dirName), '$fromPath.tar');
+        expect(PackOper.getUnpackPath(PackType.tarZ, '$fromPath.tar.Z', null),
+            '$fromPath.tar');
+        expect(PackOper.getUnpackPath(PackType.tarZ, '$fromPath.tar.Z', toPath),
+            toPath);
+        expect(PackOper.getUnpackPath(null, '$fromPath.tar.Z', null),
+            '$fromPath.tar');
+        expect(PackOper.getUnpackPath(null, '$fromPath.tar.Z', dirName),
+            '$fromPath.tar');
 
-        expect(PackOper.getUnpackPath(PackType.tarGz, '$fromPath.tar.gz', null), '$fromPath.tar');
-        expect(PackOper.getUnpackPath(PackType.tarGz, '$fromPath.tar.gz', toPath), toPath);
-        expect(PackOper.getUnpackPath(null, '$fromPath.tar.gz', null), '$fromPath.tar');
-        expect(PackOper.getUnpackPath(null, '$fromPath.tar.gz', dirName), '$fromPath.tar');
+        expect(PackOper.getUnpackPath(PackType.tarGz, '$fromPath.tar.gz', null),
+            '$fromPath.tar');
+        expect(
+            PackOper.getUnpackPath(PackType.tarGz, '$fromPath.tar.gz', toPath),
+            toPath);
+        expect(PackOper.getUnpackPath(null, '$fromPath.tar.gz', null),
+            '$fromPath.tar');
+        expect(PackOper.getUnpackPath(null, '$fromPath.tar.gz', dirName),
+            '$fromPath.tar');
       });
       test('isPackTypeTar', () {
         Helper.initFileSystem(fileSystem);
@@ -190,8 +221,7 @@ void main() {
 
         expect(Path.fileSystem.file(toPath).existsSync(), true);
         expect(fromDir.listSync().length, 5);
-      }
-      finally {
+      } finally {
         doneLocal(testId);
       }
     });
@@ -236,8 +266,7 @@ void main() {
 
         expect(Path.fileSystem.file(toPath).existsSync(), true);
         expect(fromDir.listSync().length, 5);
-      }
-      finally {
+      } finally {
         doneLocal(testId);
       }
     });

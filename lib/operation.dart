@@ -36,7 +36,6 @@ enum OperationType {
 }
 
 class Operation {
-
   //////////////////////////////////////////////////////////////////////////////
   // Straight -> opposite operation type mapping
   //////////////////////////////////////////////////////////////////////////////
@@ -84,9 +83,12 @@ class Operation {
   // Private members
   //////////////////////////////////////////////////////////////////////////////
 
-  @protected final FlatMap flatMap;
-  @protected final Logger logger;
-  @protected final RegExp rexQuoted = RegExp('^(".*"|\'.*\')\$');
+  @protected
+  final FlatMap flatMap;
+  @protected
+  final Logger logger;
+  @protected
+  final RegExp rexQuoted = RegExp('^(".*"|\'.*\')\$');
 
   var _condition = '';
   var _isOpposite = false;
@@ -154,8 +156,9 @@ class Operation {
     for (; last < length; last++) {
       switch (_condition[last]) {
         case '=':
-          type = (type == OperationType.less ? OperationType.lessOrEquals :
-          OperationType.greaterOrEquals);
+          type = (type == OperationType.less
+              ? OperationType.lessOrEquals
+              : OperationType.greaterOrEquals);
           continue;
         default:
           break;
@@ -310,19 +313,16 @@ class Operation {
 
     if ((from >= length) || (conditionLC == 'false')) {
       type = OperationType.alwaysFalse;
-    }
-    else {
+    } else {
       var n = num.tryParse(conditionLC);
 
       if ((n ?? -1) == 0) {
         type = OperationType.alwaysFalse;
-      }
-      else {
+      } else {
         if (conditionLC == 'true') {
           type = OperationType.alwaysTrue;
-        }
-        else {
-          if ((n != null) && (n != 0)){
+        } else {
+          if ((n != null) && (n != 0)) {
             type = OperationType.alwaysTrue;
           }
         }
@@ -336,8 +336,7 @@ class Operation {
     if (_isOpposite) {
       if (type == OperationType.alwaysFalse) {
         type = OperationType.alwaysTrue;
-      }
-      else {
+      } else {
         type = OperationType.alwaysFalse;
       }
       _isOpposite = false;
@@ -359,23 +358,28 @@ class Operation {
 
     if ((n1 != null) && (n2 != null)) {
       cmpResult = (n1 < n2 ? -1 : (n1 > n2 ? 1 : 0));
-    }
-    else {
-      cmpResult = (isCaseSensitive ? o1 : o1.toLowerCase()).compareTo(isCaseSensitive ? o2 : o2.toLowerCase());
+    } else {
+      cmpResult = (isCaseSensitive ? o1 : o1.toLowerCase())
+          .compareTo(isCaseSensitive ? o2 : o2.toLowerCase());
     }
 
-    var isThen = (
-      type == OperationType.less ? (cmpResult <  0) :
-      type == OperationType.lessOrEquals ? (cmpResult <= 0) :
-      type == OperationType.greaterOrEquals ? (cmpResult >= 0) :
-      type == OperationType.greater ? (cmpResult >  0) :
-      type == OperationType.equals ? (cmpResult == 0) :
-      type == OperationType.notEquals ? (cmpResult != 0) :
-      false
-    );
+    var isThen = (type == OperationType.less
+        ? (cmpResult < 0)
+        : type == OperationType.lessOrEquals
+            ? (cmpResult <= 0)
+            : type == OperationType.greaterOrEquals
+                ? (cmpResult >= 0)
+                : type == OperationType.greater
+                    ? (cmpResult > 0)
+                    : type == OperationType.equals
+                        ? (cmpResult == 0)
+                        : type == OperationType.notEquals
+                            ? (cmpResult != 0)
+                            : false);
 
     if (logger.isVerbose) {
-      logger.verbose('$type\n...op1: $o1\n...op2: $o2\n...${isThen ? 'true' : 'false'}\n');
+      logger.verbose(
+          '$type\n...op1: $o1\n...op2: $o2\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return isThen;
@@ -419,7 +423,8 @@ class Operation {
     }
 
     if (logger.isVerbose) {
-      logger.verbose('$type\n...path1: $path1\n...path2: $path2\n...${isThen ? 'true' : 'false'}\n');
+      logger.verbose(
+          '$type\n...path1: $path1\n...path2: $path2\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return isThen;
@@ -437,15 +442,18 @@ class Operation {
       switch (type) {
         case OperationType.exists:
         case OperationType.notExists:
-          isThen = FileSystemEntityExt.tryPatternExistsSync(mask, isDirectory: false, isFile: false);
+          isThen = FileSystemEntityExt.tryPatternExistsSync(mask,
+              isDirectory: false, isFile: false);
           break;
         case OperationType.existsDir:
         case OperationType.notExistsDir:
-          isThen = FileSystemEntityExt.tryPatternExistsSync(mask, isDirectory: true, isFile: false);
+          isThen = FileSystemEntityExt.tryPatternExistsSync(mask,
+              isDirectory: true, isFile: false);
           break;
         case OperationType.existsFile:
         case OperationType.notExistsFile:
-          isThen = FileSystemEntityExt.tryPatternExistsSync(mask, isDirectory: false, isFile: true);
+          isThen = FileSystemEntityExt.tryPatternExistsSync(mask,
+              isDirectory: false, isFile: true);
           break;
         case OperationType.existsWhich:
         case OperationType.notExistsWhich:
@@ -457,7 +465,8 @@ class Operation {
     }
 
     if (logger.isVerbose) {
-      logger.verbose('$type\n...mask: $mask\n...${isThen ? 'true' : 'false'}\n');
+      logger
+          .verbose('$type\n...mask: $mask\n...${isThen ? 'true' : 'false'}\n');
     }
 
     switch (type) {
@@ -488,17 +497,18 @@ class Operation {
       }
     }
 
-    var isThen = (pat.isEmpty ? false : RegExp(
-      pat,
-      caseSensitive: isCaseSensitive,
-      dotAll: isDotAll,
-      multiLine: isMultiLine,
-      unicode: isUnicode
-    ).hasMatch(inp));
-
+    var isThen = (pat.isEmpty
+        ? false
+        : RegExp(pat,
+                caseSensitive: isCaseSensitive,
+                dotAll: isDotAll,
+                multiLine: isMultiLine,
+                unicode: isUnicode)
+            .hasMatch(inp));
 
     if (logger.isVerbose) {
-      logger.verbose('$type\n...input:   "$inp"\n...pattern: "$pat"\n...${isThen ? 'true' : 'false'}\n');
+      logger.verbose(
+          '$type\n...input:   "$inp"\n...pattern: "$pat"\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return (type == OperationType.notMatches ? !isThen : isThen);
@@ -518,8 +528,8 @@ class Operation {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Never _fail(String condition, [String? details]) =>
-    throw Exception('Invalid condition $condition${details?.isNotEmpty ?? false ? ': $details' : ''}');
+  Never _fail(String condition, [String? details]) => throw Exception(
+      'Invalid condition $condition${details?.isNotEmpty ?? false ? ': $details' : ''}');
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -548,7 +558,9 @@ class Operation {
     var isQuote2 = false;
     var length = _condition.length;
 
-    for (var isFound = false, curPos = 0; (curPos < length) && !isFound; curPos++) {
+    for (var isFound = false, curPos = 0;
+        (curPos < length) && !isFound;
+        curPos++) {
       curChr = _condition[curPos];
 
       switch (curChr) {
@@ -648,21 +660,19 @@ class Operation {
       _fail(_condition);
     }
 
-    var isBinary = (
-      (type == OperationType.fileEquals) ||
-      (type == OperationType.fileNewer) ||
-      (type == OperationType.fileNotEquals) ||
-      (type == OperationType.fileOlder) ||
-      (type == OperationType.equals) ||
-      (type == OperationType.greater) ||
-      (type == OperationType.greaterOrEquals) ||
-      (type == OperationType.less) ||
-      (type == OperationType.lessOrEquals) ||
-      (type == OperationType.equals) ||
-      (type == OperationType.matches) ||
-      (type == OperationType.notEquals) ||
-      (type == OperationType.notMatches)
-    );
+    var isBinary = ((type == OperationType.fileEquals) ||
+        (type == OperationType.fileNewer) ||
+        (type == OperationType.fileNotEquals) ||
+        (type == OperationType.fileOlder) ||
+        (type == OperationType.equals) ||
+        (type == OperationType.greater) ||
+        (type == OperationType.greaterOrEquals) ||
+        (type == OperationType.less) ||
+        (type == OperationType.lessOrEquals) ||
+        (type == OperationType.equals) ||
+        (type == OperationType.matches) ||
+        (type == OperationType.notEquals) ||
+        (type == OperationType.notMatches));
 
     var expArgCount = (isBinary ? 2 : 1);
     var isUnary = (expArgCount == 1);
@@ -678,8 +688,12 @@ class Operation {
     var length = _condition.length;
 
     var begPos = (isUnary ? 0 : _begPos);
-    var o1 = (isUnary ? null : (begPos >= 0 ? _condition.substring(0, begPos).trim() : _condition));
-    var o2 = (begPos >= 0 ? _condition.substring(_endPos < length ? _endPos : length).trim() : null);
+    var o1 = (isUnary
+        ? null
+        : (begPos >= 0 ? _condition.substring(0, begPos).trim() : _condition));
+    var o2 = (begPos >= 0
+        ? _condition.substring(_endPos < length ? _endPos : length).trim()
+        : null);
 
     num? n1;
 
@@ -703,8 +717,7 @@ class Operation {
       if (((n1 != null) && (n1 == 0)) || (o1?.isEmpty ?? true)) {
         if (_isOpposite) {
           type = OperationType.alwaysTrue;
-        }
-        else {
+        } else {
           type = OperationType.alwaysFalse;
         }
       }
@@ -741,5 +754,4 @@ class Operation {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

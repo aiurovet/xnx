@@ -12,7 +12,8 @@ void main() {
 
         expect(Path.adjust(null), '');
         expect(Path.adjust(''), '');
-        expect(Path.adjust(r'\a\bc/def'), '${pathSep}a${pathSep}bc${pathSep}def');
+        expect(
+            Path.adjust(r'\a\bc/def'), '${pathSep}a${pathSep}bc${pathSep}def');
       });
       test('appendCurDirIfPathIsRelative', () {
         Helper.initFileSystem(fileSystem);
@@ -23,9 +24,20 @@ void main() {
         var curDir = Path.currentDirectoryName;
         var sep = Path.separator;
 
-        expect(Path.appendCurDirIfPathIsRelative('File not found: ', 'aaa.txt').contains(curDir), true);
-        expect(Path.appendCurDirIfPathIsRelative('File not found: ', 'b${sep}aaa.txt').contains(curDir), true);
-        expect(Path.appendCurDirIfPathIsRelative('File not found: ', '${sep}aaa.txt').contains(curDir), false);
+        expect(
+            Path.appendCurDirIfPathIsRelative('File not found: ', 'aaa.txt')
+                .contains(curDir),
+            true);
+        expect(
+            Path.appendCurDirIfPathIsRelative(
+                    'File not found: ', 'b${sep}aaa.txt')
+                .contains(curDir),
+            true);
+        expect(
+            Path.appendCurDirIfPathIsRelative(
+                    'File not found: ', '${sep}aaa.txt')
+                .contains(curDir),
+            false);
 
         Path.currentDirectory = oldDir;
         dir.deleteSync();
@@ -34,10 +46,26 @@ void main() {
         Helper.initFileSystem(fileSystem);
 
         var fromPaths = <String>[];
-        expect(Path.argsToListAndDestination(fromPaths, path: '', paths: []).isEmpty && fromPaths.isEmpty, true);
-        expect(Path.argsToListAndDestination(fromPaths, path: 'a', paths: []).isEmpty && (fromPaths.length == 1), true);
-        expect(Path.argsToListAndDestination(fromPaths, path: '', paths: ['a']).isEmpty && (fromPaths.length == 1), true);
-        expect(Path.argsToListAndDestination(fromPaths, path: 'a', paths: ['b', 'c']).isEmpty && (fromPaths.length == 3), true);
+        expect(
+            Path.argsToListAndDestination(fromPaths, path: '', paths: [])
+                    .isEmpty &&
+                fromPaths.isEmpty,
+            true);
+        expect(
+            Path.argsToListAndDestination(fromPaths, path: 'a', paths: [])
+                    .isEmpty &&
+                (fromPaths.length == 1),
+            true);
+        expect(
+            Path.argsToListAndDestination(fromPaths, path: '', paths: ['a'])
+                    .isEmpty &&
+                (fromPaths.length == 1),
+            true);
+        expect(
+            Path.argsToListAndDestination(fromPaths,
+                    path: 'a', paths: ['b', 'c']).isEmpty &&
+                (fromPaths.length == 3),
+            true);
       });
       test('contains', () {
         Helper.initFileSystem(fileSystem);
@@ -70,15 +98,28 @@ void main() {
         expect(Path.equals(Path.getFullPath(''), curDir), true);
         expect(Path.equals(Path.getFullPath('.'), curDir), true);
         expect(Path.equals(Path.getFullPath('..'), Path.dirname(curDir)), true);
-        expect(Path.equals(Path.getFullPath('..${sep}a${sep}bc'), '${Path.dirname(curDir)}${sep}a${sep}bc'), true);
-        expect(Path.equals(Path.getFullPath('${sep}a${sep}bc'), '${sep}a${sep}bc'), true);
-        expect(Path.equals(Path.getFullPath('${sep}Abc.txt'), r'Abc.txt'), true);
-        expect(Path.equals(Path.getFullPath('$sepСаша.Текст'), '$sepСаша.Текст'), true);
+        expect(
+            Path.equals(Path.getFullPath('..${sep}a${sep}bc'),
+                '${Path.dirname(curDir)}${sep}a${sep}bc'),
+            true);
+        expect(
+            Path.equals(Path.getFullPath('${sep}a${sep}bc'), '${sep}a${sep}bc'),
+            true);
+        expect(
+            Path.equals(Path.getFullPath('${sep}Abc.txt'), r'Abc.txt'), true);
+        expect(
+            Path.equals(Path.getFullPath('$sepСаша.Текст'), '$sepСаша.Текст'),
+            true);
       });
       test('replaceAll', () {
         Helper.initFileSystem(fileSystem);
 
-        expect(Path.equals(Path.replaceAll(r'a \b/c\d/e \b/c\d/ee \b/c\d/e f', r'/b/c/d/e', r'/g/h'), r'a /g/h \b/c\d/ee /g/h f'), true);
+        expect(
+            Path.equals(
+                Path.replaceAll(
+                    r'a \b/c\d/e \b/c\d/ee \b/c\d/e f', r'/b/c/d/e', r'/g/h'),
+                r'a /g/h \b/c\d/ee /g/h f'),
+            true);
       });
     });
   });

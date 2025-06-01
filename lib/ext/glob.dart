@@ -5,17 +5,17 @@ import 'package:xnx/ext/path.dart';
 import 'string.dart';
 
 extension GlobExt on Glob {
-
   //////////////////////////////////////////////////////////////////////////////
 
   static const String all = '*';
 
-  static final RegExp _rexRecursive = RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
+  static final RegExp _rexRecursive =
+      RegExp(r'\*\*|[\*\?].*[\/\\]', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
   static bool isRecursive(String? pattern) =>
-    ((pattern != null) && _rexRecursive.hasMatch(pattern));
+      ((pattern != null) && _rexRecursive.hasMatch(pattern));
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -36,23 +36,23 @@ extension GlobExt on Glob {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  List<FileSystemEntity> listSync({String? root, bool? recursive, bool followLinks = false}) {
+  List<FileSystemEntity> listSync(
+      {String? root, bool? recursive, bool followLinks = false}) {
     var that = this;
 
-    var fullRoot = (root == null ? Path.currentDirectoryName : Path.getFullPath(root));
+    var fullRoot =
+        (root == null ? Path.currentDirectoryName : Path.getFullPath(root));
 
     var lst = Path.fileSystem
-      .directory(fullRoot)
-      .listSync(
-        recursive: recursive ?? isRecursive(pattern),
-        followLinks: followLinks
-      )
-      .where((x) {
-        var hasMatch = that.matches(Path.toPosix(Path.relative(x.path, from: fullRoot)));
-        return hasMatch;
-      })
-      .toList()
-    ;
+        .directory(fullRoot)
+        .listSync(
+            recursive: recursive ?? isRecursive(pattern),
+            followLinks: followLinks)
+        .where((x) {
+      var hasMatch =
+          that.matches(Path.toPosix(Path.relative(x.path, from: fullRoot)));
+      return hasMatch;
+    }).toList();
 
     return lst;
   }
@@ -63,7 +63,8 @@ extension GlobExt on Glob {
     var dirName = '';
 
     if (pattern.isEmpty || !pattern.contains(Path.separator)) {
-      if (Path.driveSeparator.isEmpty || !pattern.contains(Path.driveSeparator)) {
+      if (Path.driveSeparator.isEmpty ||
+          !pattern.contains(Path.driveSeparator)) {
         return [dirName, pattern];
       }
     }
@@ -76,8 +77,7 @@ extension GlobExt on Glob {
       }
       if (part.isEmpty) {
         dirName += Path.separator;
-      }
-      else {
+      } else {
         dirName = Path.join(dirName, part);
       }
     }
@@ -90,16 +90,13 @@ extension GlobExt on Glob {
   static Glob toGlob(String? pattern, {bool? isPath, FileSystem? fileSystem}) {
     var patternEx = ((pattern == null) || pattern.isBlank() ? all : pattern);
 
-    var filter = Glob(
-      Path.toPosix(patternEx),
-      context: Path.fileSystem.path,
-      recursive: isRecursive(patternEx),
-      caseSensitive: Path.isCaseSensitive
-    );
+    var filter = Glob(Path.toPosix(patternEx),
+        context: Path.fileSystem.path,
+        recursive: isRecursive(patternEx),
+        caseSensitive: Path.isCaseSensitive);
 
     return filter;
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

@@ -1,11 +1,10 @@
-
 import 'package:xnx/ext/path.dart';
 
 class ConfigFileInfo {
-
   //////////////////////////////////////////////////////////////////////////////
 
-  static final RegExp _rexPath = RegExp(r'(.*)(path\=)(.*)', caseSensitive: false);
+  static final RegExp _rexPath =
+      RegExp(r'(.*)(path\=)(.*)', caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +27,8 @@ class ConfigFileInfo {
     this.filePath = filePath?.trim() ?? '';
     this.jsonPath = jsonPath?.trim() ?? '';
 
-    this.importDirName = importDirName ?? Path.fileSystem.path.dirname(this.filePath);
+    this.importDirName =
+        importDirName ?? Path.fileSystem.path.dirname(this.filePath);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -44,8 +44,7 @@ class ConfigFileInfo {
     if (input == null) {
       filePath = '';
       jsonPath = '';
-    }
-    else {
+    } else {
       filePath = input.substring(0, foundAt);
 
       var filters = input.substring(foundAt + 1);

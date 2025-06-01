@@ -4,7 +4,6 @@ import 'package:thin_logger/thin_logger.dart';
 import 'package:xnx/options.dart';
 
 class Keywords {
-
   //////////////////////////////////////////////////////////////////////////////
   // The names for keys in the application configuration file itself
   //////////////////////////////////////////////////////////////////////////////
@@ -124,8 +123,10 @@ class Keywords {
   // Dependencies
   //////////////////////////////////////////////////////////////////////////////
 
-  @protected late final Logger logger;
-  @protected late final Options options;
+  @protected
+  late final Logger logger;
+  @protected
+  late final Options options;
 
   //////////////////////////////////////////////////////////////////////////////
   // Pre-defined commands
@@ -270,45 +271,93 @@ class Keywords {
   //////////////////////////////////////////////////////////////////////////////
 
   String? refine(String? key, {String? prefixForOthers}) {
-    if (key == null) { return key; }
+    if (key == null) {
+      return key;
+    }
 
     // Frequency level 1
-    
-    if (key.startsWith(forOnce)) { return forOnce; }
-    if (key.startsWith(forFunc)) { return forFunc; }
-    if (key.startsWith(forCmd)) { return forCmd; }
+
+    if (key.startsWith(forOnce)) {
+      return forOnce;
+    }
+    if (key.startsWith(forFunc)) {
+      return forFunc;
+    }
+    if (key.startsWith(forCmd)) {
+      return forCmd;
+    }
 
     // Frequency level 2
 
-    if (key.startsWith(forIf)) { return forIf; }
-    if (key.startsWith(forCurDir)) { return forCurDir; }
-    if (key.startsWith(forRun)) { return forRun; }
-    if (key.startsWith(forDetectPaths)) { return forDetectPaths; }
+    if (key.startsWith(forIf)) {
+      return forIf;
+    }
+    if (key.startsWith(forCurDir)) {
+      return forCurDir;
+    }
+    if (key.startsWith(forRun)) {
+      return forRun;
+    }
+    if (key.startsWith(forDetectPaths)) {
+      return forDetectPaths;
+    }
 
     // Frequency level 3
 
-    if (key.startsWith(forStop)) { return forStop; }
-    if (key.startsWith(forFilesSkip)) { return forFilesSkip; }
-    if (key.startsWith(forFilesTake)) { return forFilesTake; }
+    if (key.startsWith(forStop)) {
+      return forStop;
+    }
+    if (key.startsWith(forFilesSkip)) {
+      return forFilesSkip;
+    }
+    if (key.startsWith(forFilesTake)) {
+      return forFilesTake;
+    }
 
     // Frequency level 4
 
-    if (key.startsWith(forInp)) { return forInp; }
-    if (key.startsWith(forInpDir)) { return forInpDir; }
-    if (key.startsWith(forInpExt)) { return forInpExt; }
-    if (key.startsWith(forInpName)) { return forInpName; }
-    if (key.startsWith(forInpNameExt)) { return forInpNameExt; }
-    if (key.startsWith(forInpPath)) { return forInpPath; }
-    if (key.startsWith(forInpSubDir)) { return forInpSubDir; }
-    if (key.startsWith(forInpSubPath)) { return forInpSubPath; }
-    if (key.startsWith(forOut)) { return forOut; }
+    if (key.startsWith(forInp)) {
+      return forInp;
+    }
+    if (key.startsWith(forInpDir)) {
+      return forInpDir;
+    }
+    if (key.startsWith(forInpExt)) {
+      return forInpExt;
+    }
+    if (key.startsWith(forInpName)) {
+      return forInpName;
+    }
+    if (key.startsWith(forInpNameExt)) {
+      return forInpNameExt;
+    }
+    if (key.startsWith(forInpPath)) {
+      return forInpPath;
+    }
+    if (key.startsWith(forInpSubDir)) {
+      return forInpSubDir;
+    }
+    if (key.startsWith(forInpSubPath)) {
+      return forInpSubPath;
+    }
+    if (key.startsWith(forOut)) {
+      return forOut;
+    }
 
     // Frequency level 5
 
-    if (key.startsWith(forCanExpandContent)) { return forCanExpandContent; }
-    if (key.startsWith(forImport)) { return forImport; }
-    if (key.startsWith(forMinExpand)) { return forMinExpand; }
-    if (key.startsWith(forThis)) { return forThis; }
+    if (key.startsWith(forCanExpandContent)) {
+      return forCanExpandContent;
+    }
+    if (key.startsWith(forImport)) {
+      return forImport;
+    }
+    if (key.startsWith(forMinExpand)) {
+      return forMinExpand;
+    }
+    if (key.startsWith(forThis)) {
+      return forThis;
+    }
 
     return (prefixForOthers == null ? key : prefixForOthers + key);
   }
@@ -318,39 +367,82 @@ class Keywords {
   //////////////////////////////////////////////////////////////////////////////
 
   void _initDerived() {
-    all..clear()..addAll([
-      forCanExpandContent, forCmd, forCurDir, forDetectPaths,
-      forFunc, forInp, forInpDir, forInpExt, forInpName,
-      forInpNameExt, forInpPath,  forInpSubDir, forInpSubPath,
-      forImport, forOnce, forOut, forRun, forFilesSkip,
-      forStop, forFilesTake, forThis,
-    ]);
+    all
+      ..clear()
+      ..addAll([
+        forCanExpandContent,
+        forCmd,
+        forCurDir,
+        forDetectPaths,
+        forFunc,
+        forInp,
+        forInpDir,
+        forInpExt,
+        forInpName,
+        forInpNameExt,
+        forInpPath,
+        forInpSubDir,
+        forInpSubPath,
+        forImport,
+        forOnce,
+        forOut,
+        forRun,
+        forFilesSkip,
+        forStop,
+        forFilesTake,
+        forThis,
+      ]);
 
-    allForExe..clear()..addAll([
-      forCmd, forRun,
-    ]);
+    allForExe
+      ..clear()
+      ..addAll([
+        forCmd,
+        forRun,
+      ]);
 
-    allForGlob..clear()..addAll([
-      forInp, forInpDir, forInpName, forInpNameExt, forInpPath,
-      forInpSubDir, forInpSubPath,
-    ]);
+    allForGlob
+      ..clear()
+      ..addAll([
+        forInp,
+        forInpDir,
+        forInpName,
+        forInpNameExt,
+        forInpPath,
+        forInpSubDir,
+        forInpSubPath,
+      ]);
 
-    allForInp..clear()..addAll([
-      forInp, forInpDir, forInpExt, forInpName, forInpNameExt,
-      forInpPath, forInpSubDir, forInpSubPath,
-    ]);
+    allForInp
+      ..clear()
+      ..addAll([
+        forInp,
+        forInpDir,
+        forInpExt,
+        forInpName,
+        forInpNameExt,
+        forInpPath,
+        forInpSubDir,
+        forInpSubPath,
+      ]);
 
-    allForPath..clear()..addAll([
-      forInp, forInpDir, forInpPath, forInpSubDir, forInpSubPath,
-      forOut, forCurDir,
-    ]);
+    allForPath
+      ..clear()
+      ..addAll([
+        forInp,
+        forInpDir,
+        forInpPath,
+        forInpSubDir,
+        forInpSubPath,
+        forOut,
+        forCurDir,
+      ]);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void _initRepeatable() =>
-    rexRepeatable = RegExp('(${RegExp.escape(forCanExpandContent)}|${RegExp.escape(forCmd)}|${RegExp.escape(forDetectPaths)}|${RegExp.escape(forFunc)}|${RegExp.escape(forIf)}|${RegExp.escape(forImport)}|${RegExp.escape(forOnce)}|${RegExp.escape(forRun)}|${RegExp.escape(forStop)}|${RegExp.escape(forThis)})(\\s*[\'"]\\:)', caseSensitive: false);
+  void _initRepeatable() => rexRepeatable = RegExp(
+      '(${RegExp.escape(forCanExpandContent)}|${RegExp.escape(forCmd)}|${RegExp.escape(forDetectPaths)}|${RegExp.escape(forFunc)}|${RegExp.escape(forIf)}|${RegExp.escape(forImport)}|${RegExp.escape(forOnce)}|${RegExp.escape(forRun)}|${RegExp.escape(forStop)}|${RegExp.escape(forThis)})(\\s*[\'"]\\:)',
+      caseSensitive: false);
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

@@ -5,7 +5,6 @@ import 'package:xnx/ext/env.dart';
 import 'string.dart';
 
 class Path {
-
   //////////////////////////////////////////////////////////////////////////////
   // Dependency injection
   //////////////////////////////////////////////////////////////////////////////
@@ -31,8 +30,8 @@ class Path {
     }
 
     return path
-      .trim()
-      .replaceAll(isWindowsFS ? separatorPosix : separatorWindows, separator);
+        .trim()
+        .replaceAll(isWindowsFS ? separatorPosix : separatorWindows, separator);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -107,10 +106,12 @@ class Path {
   //////////////////////////////////////////////////////////////////////////////
 
   static Directory get currentDirectory => fileSystem.currentDirectory;
-  static set currentDirectory(Directory value) => fileSystem.currentDirectory = value;
+  static set currentDirectory(Directory value) =>
+      fileSystem.currentDirectory = value;
 
   static String get currentDirectoryName => fileSystem.currentDirectory.path;
-  static set currentDirectoryName(String value) => fileSystem.currentDirectory = value;
+  static set currentDirectoryName(String value) =>
+      fileSystem.currentDirectory = value;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -235,9 +236,16 @@ class Path {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String join(String part1, [String? part2, String? part3, String? part4,
-                     String? part5, String? part6, String? part7, String? part8]) =>
-    fileSystem.path.join(part1, part2, part3, part4, part5, part6, part7, part8);
+  static String join(String part1,
+          [String? part2,
+          String? part3,
+          String? part4,
+          String? part5,
+          String? part6,
+          String? part7,
+          String? part8]) =>
+      fileSystem.path
+          .join(part1, part2, part3, part4, part5, part6, part7, part8);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -255,7 +263,7 @@ class Path {
     var pattern = "(^|[\\s\"']|\\:[\\/\\\\]+)";
 
     pattern += RegExp.escape(fromPath.replaceAll(rexSeparator, '\x01'))
-      .replaceAll('\x01', Path.rexSeparator.pattern);
+        .replaceAll('\x01', Path.rexSeparator.pattern);
 
     pattern += "([\\s\"']|\$)";
 
@@ -272,35 +280,43 @@ class Path {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<List<String>> argsToLists(List<String> paths, {String? oper, bool isFirstSeparate = false, bool isLastSeparate = false}) {
+  static List<List<String>> argsToLists(List<String> paths,
+      {String? oper,
+      bool isFirstSeparate = false,
+      bool isLastSeparate = false}) {
     var pathCount = paths.length;
     var hasOper = ((pathCount <= 1) && !(oper?.isBlank() ?? true));
 
     if (pathCount <= 0) {
       if (hasOper) {
         throw Exception('No argument to $oper');
-      }
-      else {
+      } else {
         return [];
       }
     }
 
     if ((pathCount <= 1) && (isFirstSeparate || isLastSeparate)) {
       if (hasOper) {
-        throw Exception('Unable to $oper "${paths[0]}": destination is not specifed');
-      }
-      else {
+        throw Exception(
+            'Unable to $oper "${paths[0]}": destination is not specifed');
+      } else {
         return [];
       }
     }
 
     if (isFirstSeparate) {
-      return [[paths[0]], paths.sublist(1, pathCount)];
+      return [
+        [paths[0]],
+        paths.sublist(1, pathCount)
+      ];
     }
 
     if (isLastSeparate) {
       var last = pathCount - 1;
-      return [paths.sublist(0, last), [paths[last]]];
+      return [
+        paths.sublist(0, last),
+        [paths[last]]
+      ];
     }
 
     return [paths];
@@ -311,5 +327,4 @@ class Path {
   static String toPosix(String path) => path.replaceAll('\\', '/');
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

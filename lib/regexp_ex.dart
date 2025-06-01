@@ -1,17 +1,21 @@
 class RegExpEx {
-  static final RegExp _rexGroupRef = RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
+  static final RegExp _rexGroupRef =
+      RegExp(r'(\\\\)|(\\\$)|(\$([\d]+))|\$\{([\d]+)\}');
 
   RegExp regExp;
   bool isGlobal = false;
 
   RegExpEx(this.regExp, this.isGlobal);
 
-  static RegExpEx? fromDecoratedPattern(String pattern, {String? prefix, String? suffix}) {
+  static RegExpEx? fromDecoratedPattern(String pattern,
+      {String? prefix, String? suffix}) {
     var prefixLen = prefix?.length ?? 0;
 
     if ((prefixLen > 0) && (prefix != null) && pattern.startsWith(prefix)) {
       var keyLen = pattern.length;
-      var endPatPos = ((suffix?.isEmpty ?? true) || (suffix  == null) ? keyLen : pattern.lastIndexOf(suffix));
+      var endPatPos = ((suffix?.isEmpty ?? true) || (suffix == null)
+          ? keyLen
+          : pattern.lastIndexOf(suffix));
 
       if (endPatPos == 0) {
         endPatPos = keyLen;
@@ -54,16 +58,15 @@ class RegExpEx {
 
     if (dstStr.contains(r'$')) {
       if (isGlobal) {
-        resStr = inpStr.replaceAllMapped(regExp, (match) => _replaceMatchProc(match, dstStr));
+        resStr = inpStr.replaceAllMapped(
+            regExp, (match) => _replaceMatchProc(match, dstStr));
+      } else {
+        resStr = inpStr.replaceFirstMapped(
+            regExp, (match) => _replaceMatchProc(match, dstStr));
       }
-      else {
-        resStr = inpStr.replaceFirstMapped(regExp, (match) => _replaceMatchProc(match, dstStr));
-      }
-    }
-    else if (isGlobal) {
+    } else if (isGlobal) {
       resStr = inpStr.replaceAll(regExp, dstStr);
-    }
-    else {
+    } else {
       resStr = inpStr.replaceFirst(regExp, dstStr);
     }
 
@@ -91,8 +94,7 @@ class RegExpEx {
 
       if ((groupNo >= 0) && (groupNo <= match.groupCount)) {
         return match[groupNo] ?? '';
-      }
-      else {
+      } else {
         return '';
       }
     });

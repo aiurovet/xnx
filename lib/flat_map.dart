@@ -5,13 +5,14 @@ import 'package:xnx/keywords.dart';
 import 'package:xnx/regexp_ex.dart';
 
 class FlatMap {
-
   /////////////////////////////////////////////////////////////////////////////
   // Internals
   /////////////////////////////////////////////////////////////////////////////
 
-  @protected final Keywords? keywords;
-  @protected final Map<String, String> map = {};
+  @protected
+  final Keywords? keywords;
+  @protected
+  final Map<String, String> map = {};
 
   /////////////////////////////////////////////////////////////////////////////
   // Interface
@@ -25,9 +26,11 @@ class FlatMap {
   void add(FlatMap other) => map.addAll(other.map);
   void addAll(Map<String, String> other) => map.addAll(other);
   bool containsKey(String key) => map.containsKey(key);
-  void forEach(void Function(String key, String value) action) => map.forEach(action);
+  void forEach(void Function(String key, String value) action) =>
+      map.forEach(action);
   void remove(String key) => map.remove(key);
-  void removeWhere(bool Function(String key, String value) test) => map.removeWhere(test);
+  void removeWhere(bool Function(String key, String value) test) =>
+      map.removeWhere(test);
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -58,8 +61,7 @@ class FlatMap {
 
     if (value == null) {
       map.remove(key);
-    }
-    else {
+    } else {
       map[key] = value;
     }
   }
@@ -93,8 +95,7 @@ class FlatMap {
           if (safeValue.contains(k)) {
             safeValue = safeValue.replaceAll(k, vs);
           }
-        }
-        else {
+        } else {
           safeValue = rx.replace(safeValue, vs);
         }
       });
@@ -104,5 +105,4 @@ class FlatMap {
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
 }

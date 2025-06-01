@@ -42,33 +42,136 @@ void main() {
       expect(o.parse('1 == 2'), OperationType.equals);
       expect(o.parse('aa != bbb'), OperationType.notEquals);
       expect(o.parse('0 !== 1'), OperationType.notEquals);
-      expect((o.parse('ab =/i AB') == OperationType.equals) && !o.isCaseSensitive, true);
-      expect((o.parse('ab ==/i AB') == OperationType.equals) && !o.isCaseSensitive, true);
-      expect((o.parse('a !=/i ') == OperationType.notEquals) && !o.isCaseSensitive, true);
-      expect((o.parse('a !==/i B') == OperationType.notEquals) && !o.isCaseSensitive, true);
+      expect(
+          (o.parse('ab =/i AB') == OperationType.equals) && !o.isCaseSensitive,
+          true);
+      expect(
+          (o.parse('ab ==/i AB') == OperationType.equals) && !o.isCaseSensitive,
+          true);
+      expect(
+          (o.parse('a !=/i ') == OperationType.notEquals) && !o.isCaseSensitive,
+          true);
+      expect(
+          (o.parse('a !==/i B') == OperationType.notEquals) &&
+              !o.isCaseSensitive,
+          true);
 
-      expect((o.parse('a~a') == OperationType.matches) && o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('ab~b') == OperationType.matches) && o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('Ab~/iB') == OperationType.matches) && !o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('a\nb~/m^[ab]\\\$') == OperationType.matches) && o.isCaseSensitive && !o.isDotAll && o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('a~/s b') == OperationType.matches) && o.isCaseSensitive && o.isDotAll && !o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('a~/u b') == OperationType.matches)  && o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && o.isUnicode, true);
-      expect((o.parse('a~/is b') == OperationType.matches) && !o.isCaseSensitive && o.isDotAll && !o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('a~/mi b') == OperationType.matches) && !o.isCaseSensitive && !o.isDotAll && o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('a~/iu b') == OperationType.matches) && !o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && o.isUnicode, true);
-      expect((o.parse('a~/misu b') == OperationType.matches) && !o.isCaseSensitive && o.isDotAll && o.isMultiLine && o.isUnicode, true);
-      expect((o.parse('a!~/i') == OperationType.notMatches) && !o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('a!~/i') == OperationType.notMatches) && !o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && !o.isUnicode, true);
-      expect((o.parse('a!~/u') == OperationType.notMatches) && o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && o.isUnicode, true);
-      expect((o.parse('a!~/u') == OperationType.notMatches) && o.isCaseSensitive && !o.isDotAll && !o.isMultiLine && o.isUnicode, true);
-      expect((o.parse('a!~/umsi') == OperationType.notMatches) && !o.isCaseSensitive && o.isDotAll && o.isMultiLine && o.isUnicode, true);
+      expect(
+          (o.parse('a~a') == OperationType.matches) &&
+              o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('ab~b') == OperationType.matches) &&
+              o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('Ab~/iB') == OperationType.matches) &&
+              !o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('a\nb~/m^[ab]\\\$') == OperationType.matches) &&
+              o.isCaseSensitive &&
+              !o.isDotAll &&
+              o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('a~/s b') == OperationType.matches) &&
+              o.isCaseSensitive &&
+              o.isDotAll &&
+              !o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('a~/u b') == OperationType.matches) &&
+              o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              o.isUnicode,
+          true);
+      expect(
+          (o.parse('a~/is b') == OperationType.matches) &&
+              !o.isCaseSensitive &&
+              o.isDotAll &&
+              !o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('a~/mi b') == OperationType.matches) &&
+              !o.isCaseSensitive &&
+              !o.isDotAll &&
+              o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('a~/iu b') == OperationType.matches) &&
+              !o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              o.isUnicode,
+          true);
+      expect(
+          (o.parse('a~/misu b') == OperationType.matches) &&
+              !o.isCaseSensitive &&
+              o.isDotAll &&
+              o.isMultiLine &&
+              o.isUnicode,
+          true);
+      expect(
+          (o.parse('a!~/i') == OperationType.notMatches) &&
+              !o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('a!~/i') == OperationType.notMatches) &&
+              !o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              !o.isUnicode,
+          true);
+      expect(
+          (o.parse('a!~/u') == OperationType.notMatches) &&
+              o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              o.isUnicode,
+          true);
+      expect(
+          (o.parse('a!~/u') == OperationType.notMatches) &&
+              o.isCaseSensitive &&
+              !o.isDotAll &&
+              !o.isMultiLine &&
+              o.isUnicode,
+          true);
+      expect(
+          (o.parse('a!~/umsi') == OperationType.notMatches) &&
+              !o.isCaseSensitive &&
+              o.isDotAll &&
+              o.isMultiLine &&
+              o.isUnicode,
+          true);
 
       expect((o.parse('-d abc.def') == OperationType.existsDir), true);
       expect((o.parse('-e abc.def') == OperationType.exists), true);
       expect((o.parse('-f abc.def') == OperationType.existsFile), true);
-      expect((o.parse('-w ${Env.isWindows ? 'xcopy' : 'ls'}') == OperationType.existsWhich), true);
+      expect(
+          (o.parse('-w ${Env.isWindows ? 'xcopy' : 'ls'}') ==
+              OperationType.existsWhich),
+          true);
       expect((o.parse('a1.txt -feq s2.txt') == OperationType.fileEquals), true);
-      expect((o.parse('a1.txt -fne s2.txt') == OperationType.fileNotEquals), true);
+      expect(
+          (o.parse('a1.txt -fne s2.txt') == OperationType.fileNotEquals), true);
       expect((o.parse('a1.txt -fnw') == OperationType.fileNewer), true);
       expect((o.parse('a1.txt -fnw a2.txt') == OperationType.fileNewer), true);
       expect((o.parse('a1.txt -fol a2.txt') == OperationType.fileOlder), true);
@@ -85,13 +188,17 @@ void main() {
 
         Path.fileSystem.directory('dir2').createSync();
         Helper.shortSleep();
-        
+
         expect(o.exec('dir1 -fol dir2'), true);
 
-        Path.fileSystem.file('file1')..createSync()..writeAsStringSync('A');
+        Path.fileSystem.file('file1')
+          ..createSync()
+          ..writeAsStringSync('A');
         Helper.shortSleep();
 
-        Path.fileSystem.file('file2')..createSync()..writeAsStringSync('Ab');
+        Path.fileSystem.file('file2')
+          ..createSync()
+          ..writeAsStringSync('Ab');
         Helper.shortSleep();
 
         expect(o.exec('file1 -fnw file3'), true);

@@ -6,7 +6,6 @@ import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
 
 class Env {
-
   //////////////////////////////////////////////////////////////////////////////
 
   static final bool isMacOS = Platform.isMacOS;
@@ -33,7 +32,7 @@ class Env {
 
   //////////////////////////////////////////////////////////////////////////////
   // Avoid prepending any command with shell if its first argument's basename
-  // without extension represents one of the strings below. The extension is 
+  // without extension represents one of the strings below. The extension is
   // checked as being empty, could also be either '.exe' or '.com' (Windows)
   //
   // Configurable via *.xnxconfig
@@ -47,7 +46,8 @@ class Env {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String expand(String input, {List<String>? args, bool canEscape = false}) {
+  static String expand(String input,
+      {List<String>? args, bool canEscape = false}) {
     var argCount = (args?.length ?? 0);
 
     if (argCount <= 0) {
@@ -66,7 +66,9 @@ class Env {
     var nextCodeUnit = 0;
     var result = '';
 
-    for (var currPos = 0, lastPos = input.length - 1; currPos <= lastPos; currPos++) {
+    for (var currPos = 0, lastPos = input.length - 1;
+        currPos <= lastPos;
+        currPos++) {
       currCodeUnit = input.codeUnitAt(currPos);
       nextCodeUnit = (currPos < lastPos ? input.codeUnitAt(currPos + 1) : 0);
 
@@ -77,8 +79,7 @@ class Env {
           if (nextCodeUnit == Ascii.dollar) {
             if (isEscaped) {
               ++currPos;
-            }
-            else {
+            } else {
               continue;
             }
           }
@@ -88,8 +89,10 @@ class Env {
           hasBraces = (nextCodeUnit == Ascii.braceOpen);
 
           if (!hasBraces) {
-            if (((nextCodeUnit < Ascii.lowerA) || (nextCodeUnit > Ascii.lowerZ)) &&
-                ((nextCodeUnit < Ascii.upperA) || (nextCodeUnit > Ascii.upperZ)) &&
+            if (((nextCodeUnit < Ascii.lowerA) ||
+                    (nextCodeUnit > Ascii.lowerZ)) &&
+                ((nextCodeUnit < Ascii.upperA) ||
+                    (nextCodeUnit > Ascii.upperZ)) &&
                 (nextCodeUnit != Ascii.asterisk) &&
                 (nextCodeUnit != Ascii.at) &&
                 (nextCodeUnit != Ascii.hash) &&
@@ -98,14 +101,16 @@ class Env {
                 (nextCodeUnit != Ascii.tilde)) {
               break;
             }
-            if ((nextCodeUnit >= Ascii.digitZero) && (nextCodeUnit <= Ascii.digitNine)) {
+            if ((nextCodeUnit >= Ascii.digitZero) &&
+                (nextCodeUnit <= Ascii.digitNine)) {
               break;
             }
           }
 
           if (hasBraces) {
             var thirdPos = (currPos + 2);
-            var thirdCodeUnit = (thirdPos <= lastPos ? input.codeUnitAt(thirdPos) : 0);
+            var thirdCodeUnit =
+                (thirdPos <= lastPos ? input.codeUnitAt(thirdPos) : 0);
 
             if (thirdCodeUnit == Ascii.braceOpen) {
               break;
@@ -136,14 +141,14 @@ class Env {
             }
 
             currCodeUnit = input.codeUnitAt(currPos);
-            nextCodeUnit = (currPos < lastPos ? input.codeUnitAt(currPos + 1) : 0);
+            nextCodeUnit =
+                (currPos < lastPos ? input.codeUnitAt(currPos + 1) : 0);
 
             switch (currCodeUnit) {
               case Ascii.braceOpen:
                 if (hasBraces) {
                   ++braceCount;
-                }
-                else {
+                } else {
                   envVarName = input.substring(fromPos, currPos);
                 }
                 continue;
@@ -158,24 +163,25 @@ class Env {
                 }
                 if ((currCodeUnit == Ascii.tilde)) {
                   continue;
-                }
-                else if ((currCodeUnit == Ascii.asterisk) ||
-                         (currCodeUnit == Ascii.at) ||
-                         (currCodeUnit == Ascii.hash)) {
+                } else if ((currCodeUnit == Ascii.asterisk) ||
+                    (currCodeUnit == Ascii.at) ||
+                    (currCodeUnit == Ascii.hash)) {
                   if (isSpecialAllowed) {
                     isSpecialAllowed = hasBraces;
                     continue;
                   }
-                }
-                else if (((currCodeUnit >= Ascii.lowerA) && (currCodeUnit <= Ascii.lowerZ)) ||
-                         ((currCodeUnit >= Ascii.upperA) && (currCodeUnit <= Ascii.upperZ)) ||
-                         ((currCodeUnit >= Ascii.digitZero) && (currCodeUnit <= Ascii.digitNine)) ||
-                         (currCodeUnit == Ascii.parenthesisOpen) ||
-                         (currCodeUnit == Ascii.parenthesisShut) ||
-                         (currCodeUnit == Ascii.tilde) ||
-                         (currCodeUnit == Ascii.underscore)) {
+                } else if (((currCodeUnit >= Ascii.lowerA) &&
+                        (currCodeUnit <= Ascii.lowerZ)) ||
+                    ((currCodeUnit >= Ascii.upperA) &&
+                        (currCodeUnit <= Ascii.upperZ)) ||
+                    ((currCodeUnit >= Ascii.digitZero) &&
+                        (currCodeUnit <= Ascii.digitNine)) ||
+                    (currCodeUnit == Ascii.parenthesisOpen) ||
+                    (currCodeUnit == Ascii.parenthesisShut) ||
+                    (currCodeUnit == Ascii.tilde) ||
+                    (currCodeUnit == Ascii.underscore)) {
                   isSpecialAllowed = hasBraces;
-                  continue;                  
+                  continue;
                 }
 
                 envVarName = input.substring(fromPos, currPos);
@@ -189,7 +195,8 @@ class Env {
           }
 
           if (!isArg) {
-            argNo = int.tryParse(isArg ? envVarName.substring(1) : envVarName) ?? 0;
+            argNo =
+                int.tryParse(isArg ? envVarName.substring(1) : envVarName) ?? 0;
 
             if (argNo > 0) {
               result += (hasBraces ? '\${$argNo}' : '\$$argNo'.toString());
@@ -211,21 +218,21 @@ class Env {
           envVarName = envVarName.substring(1);
         }
 
-        argNo = (envVarName.startsWith('~') ? int.tryParse(envVarName.substring(1), radix: 10) ?? 0 : 0);
+        argNo = (envVarName.startsWith('~')
+            ? int.tryParse(envVarName.substring(1), radix: 10) ?? 0
+            : 0);
         var value = '';
 
         if (argNo != 0) {
           if ((argNo > 0) && (argNo <= argCount) && (args != null)) {
             value = args[argNo - 1];
           }
-        }
-        else if (envVarName.isEmpty) {
+        } else if (envVarName.isEmpty) {
           if (isLength) {
             value = (args?.length ?? 0).toString();
             isLength = false;
           }
-        }
-        else {
+        } else {
           switch (envVarName) {
             case '*':
             case '@':
@@ -249,15 +256,18 @@ class Env {
         if (value.isEmpty) {
           var breakPos = envVarName.indexOf(':');
 
-          if (value.isEmpty && (breakPos >= 0) && (breakPos < (envVarName.length - 1) && '-='.contains(envVarName[breakPos + 1]))) {
-            value = expand(envVarName.substring(breakPos + 2), args: args, canEscape: canEscape);
+          if (value.isEmpty &&
+              (breakPos >= 0) &&
+              (breakPos < (envVarName.length - 1) &&
+                  '-='.contains(envVarName[breakPos + 1]))) {
+            value = expand(envVarName.substring(breakPos + 2),
+                args: args, canEscape: canEscape);
           }
         }
 
         if (isLength) {
           result += value.length.toString();
-        }
-        else if (value.isNotEmpty) {
+        } else if (value.isNotEmpty) {
           if (canEscape) {
             value = value.replaceAll(jsonEscape, jsonEscapeEscape);
           }
@@ -347,8 +357,7 @@ class Env {
 
     if ((value == null) && (defValue == null)) {
       _local.remove(keyEx);
-    }
-    else {
+    } else {
       var sysValue = Platform.environment[keyEx];
       var newValue = ((value ?? defValue)?.toString() ?? '');
 
@@ -402,12 +411,12 @@ class Env {
     }
 
     if (canThrow) {
-      throw Exception('$subPath is not found under any of ${Env.pathKey} directories');
+      throw Exception(
+          '$subPath is not found under any of ${Env.pathKey} directories');
     }
 
     return '';
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

@@ -5,7 +5,6 @@ import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
 
 extension FileSystemEntityExt on FileSystemEntity {
-
   //////////////////////////////////////////////////////////////////////////////
 
   void deleteIfExistsSync({recursive = false}) {
@@ -19,8 +18,7 @@ extension FileSystemEntityExt on FileSystemEntity {
   bool tryExistsSync({recursive = false}) {
     try {
       return existsSync();
-    }
-    catch (e) {
+    } catch (e) {
       // Suppressed
     }
 
@@ -29,7 +27,8 @@ extension FileSystemEntityExt on FileSystemEntity {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static bool tryPatternExistsSync(String entityName, {bool isDirectory = false, bool isFile = false, recursive = false}) {
+  static bool tryPatternExistsSync(String entityName,
+      {bool isDirectory = false, bool isFile = false, recursive = false}) {
     FileSystemEntity? entity;
 
     try {
@@ -56,8 +55,7 @@ extension FileSystemEntityExt on FileSystemEntity {
             return false;
         }
       });
-    }
-    catch (e) {
+    } catch (e) {
       // Suppressed
     }
 
@@ -65,5 +63,4 @@ extension FileSystemEntityExt on FileSystemEntity {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

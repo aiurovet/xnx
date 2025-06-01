@@ -6,15 +6,26 @@ import 'package:xnx/keywords.dart';
 import 'package:xnx/operation.dart';
 
 class Expression {
-  static final RegExp rexEndsWithTrue = RegExp(r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',);
-  static final RegExp rexEndsWithFalse = RegExp(r'(^|[\s\(\&])(false|[0]+)[\s\)[\&]*$');
+  static final RegExp rexEndsWithTrue = RegExp(
+    r'(^|[\s\(\|])(true|[1-9][0-9]*)[\s\)[\|]*$',
+  );
+  static final RegExp rexEndsWithFalse =
+      RegExp(r'(^|[\s\(\&])(false|[0]+)[\s\)[\&]*$');
 
-  @protected final FlatMap flatMap;
-  @protected final Keywords keywords;
-  @protected final Logger logger;
-  @protected final Operation operation;
+  @protected
+  final FlatMap flatMap;
+  @protected
+  final Keywords keywords;
+  @protected
+  final Logger logger;
+  @protected
+  final Operation operation;
 
-  Expression({required this.flatMap, required this.keywords, required this.operation, required this.logger});
+  Expression(
+      {required this.flatMap,
+      required this.keywords,
+      required this.operation,
+      required this.logger});
 
   Object? exec(Map<String, Object?> mapIf) {
     var firstEntry = mapIf.entries.first;
@@ -29,7 +40,8 @@ class Expression {
     var isThen = _exec(condition);
 
     if (logger.isVerbose) {
-      logger.verbose('Condition: $condition\n...${isThen ? 'true' : 'false'}\n');
+      logger
+          .verbose('Condition: $condition\n...${isThen ? 'true' : 'false'}\n');
     }
 
     return (isThen ? blockThen : blockElse);
@@ -40,7 +52,7 @@ class Expression {
       return false;
     }
 
-    for (; ;) {
+    for (;;) {
       var chunk = _getFirstChunk(condition);
       var start = chunk[0];
       var end = chunk[1];
@@ -115,8 +127,7 @@ class Expression {
                 quote = '';
                 isQuoted = false;
               }
-            }
-            else {
+            } else {
               quote = curChar;
               isQuoted = true;
             }

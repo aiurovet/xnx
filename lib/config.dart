@@ -23,16 +23,19 @@ typedef ConfigFlatMapProc = ConfigResult Function(FlatMap map);
 ////////////////////////////////////////////////////////////////////////////////
 
 class Config {
-
   //////////////////////////////////////////////////////////////////////////////
   // Properties
   //////////////////////////////////////////////////////////////////////////////
 
-  @protected late final Expression expression;
-  @protected late final FlatMap flatMap;
+  @protected
+  late final Expression expression;
+  @protected
+  late final FlatMap flatMap;
   late final Keywords keywords;
-  @protected late final Operation operation;
-  @protected late final Functions functions;
+  @protected
+  late final Operation operation;
+  @protected
+  late final Functions functions;
 
   Map all = {};
   RegExp? rexDetectPaths;
@@ -60,8 +63,13 @@ class Config {
     keywords = Keywords(options: options, logger: _logger);
     flatMap = FlatMap(keywords: keywords);
     operation = Operation(flatMap: flatMap, logger: _logger);
-    expression = Expression(flatMap: flatMap, keywords: keywords, operation: operation, logger: _logger);
-    functions = Functions(flatMap: flatMap, keywords: keywords, logger: _logger);
+    expression = Expression(
+        flatMap: flatMap,
+        keywords: keywords,
+        operation: operation,
+        logger: _logger);
+    functions =
+        Functions(flatMap: flatMap, keywords: keywords, logger: _logger);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -107,10 +115,9 @@ class Config {
     if (all.isEmpty) {
       _logger.info('Nothing found');
       return false;
-    }
-    else {
+    } else {
       loadAppConfig();
-      
+
       _logger.info('Processing actions\n');
 
       topData = all;
@@ -122,7 +129,8 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execData(String? key, Object? data, ConfigFlatMapProc? execFlatMap) {
+  ConfigResult execData(
+      String? key, Object? data, ConfigFlatMapProc? execFlatMap) {
     if (data == null) {
       var keyEx = keywords.refine(key);
       flatMap[keyEx] = null;
@@ -140,10 +148,10 @@ class Config {
     }
 
     if (data is List) {
-      if (key?.startsWith(keywords.forRun) ?? false) { // direct execution in a loop
+      if (key?.startsWith(keywords.forRun) ?? false) {
+        // direct execution in a loop
         return execDataListRun(key, data, execFlatMap);
-      }
-      else {
+      } else {
         return execDataList(key, data, execFlatMap);
       }
     }
@@ -151,8 +159,7 @@ class Config {
     if (data is Map<String, Object?>) {
       if (key?.startsWith(keywords.forIf) ?? false) {
         return execDataMapIf(data, execFlatMap);
-      }
-      else {
+      } else {
         return execDataMap(key, data, execFlatMap);
       }
     }
@@ -162,14 +169,14 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataList(String? key, List data, ConfigFlatMapProc? execFlatMap) {
+  ConfigResult execDataList(
+      String? key, List data, ConfigFlatMapProc? execFlatMap) {
     var isCmd = false;
 
     if (key != null) {
       if (key.startsWith(keywords.forOnce)) {
         _once.add(data);
-      }
-      else if (key.startsWith(keywords.forFunc)) {
+      } else if (key.startsWith(keywords.forFunc)) {
         functions.exec(data);
         return ConfigResult.ok;
       }
@@ -200,8 +207,7 @@ class Config {
     if (isCmd) {
       flatMap[keywords.forCmd] = null;
       flatMap[keywords.forOut] = null;
-    }
-    else {
+    } else {
       flatMap[keywords.refine(key)] = null;
     }
 
@@ -210,7 +216,8 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataListRun(String? key, List data, ConfigFlatMapProc? execFlatMap) {
+  ConfigResult execDataListRun(
+      String? key, List data, ConfigFlatMapProc? execFlatMap) {
     if (key == null) {
       return ConfigResult.stop;
     }
@@ -236,32 +243,28 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataMap(String? key, Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
+  ConfigResult execDataMap(
+      String? key, Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
     if (key != null) {
       if (key.startsWith(keywords.forOnce)) {
         _once.add(data);
-      }
-      else if (key.startsWith(keywords.forFilesSkip)) {
+      } else if (key.startsWith(keywords.forFilesSkip)) {
         skip.init(
-          isNot: (data[keywords.forFilesIsNot] as bool?),
-          isPath: (data[keywords.forFilesIsPath] as bool?),
-          mask: (data[keywords.forFilesMask] as String?),
-          regex: (data[keywords.forFilesRegex] as String?)
-        );
+            isNot: (data[keywords.forFilesIsNot] as bool?),
+            isPath: (data[keywords.forFilesIsPath] as bool?),
+            mask: (data[keywords.forFilesMask] as String?),
+            regex: (data[keywords.forFilesRegex] as String?));
         return result;
-      }
-      else if (key.startsWith(keywords.forFilesTake)) {
+      } else if (key.startsWith(keywords.forFilesTake)) {
         take.init(
-          isNot: (data[keywords.forFilesIsNot] as bool?),
-          isPath: (data[keywords.forFilesIsPath] as bool?),
-          mask: (data[keywords.forFilesMask] as String?),
-          regex: (data[keywords.forFilesRegex] as String?)
-        );
+            isNot: (data[keywords.forFilesIsNot] as bool?),
+            isPath: (data[keywords.forFilesIsPath] as bool?),
+            mask: (data[keywords.forFilesMask] as String?),
+            regex: (data[keywords.forFilesRegex] as String?));
         return result;
-      }
-      else if (key.startsWith(keywords.forFunc)) {
+      } else if (key.startsWith(keywords.forFunc)) {
         functions.exec(data);
         return result;
       }
@@ -278,7 +281,8 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataMapIf(Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
+  ConfigResult execDataMapIf(
+      Map<String, Object?> data, ConfigFlatMapProc? execFlatMap) {
     var result = ConfigResult.ok;
 
     var resolvedData = expression.exec(data);
@@ -295,7 +299,8 @@ class Config {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigResult execDataPlain(String? key, Object data, ConfigFlatMapProc? execFlatMap) {
+  ConfigResult execDataPlain(
+      String? key, Object data, ConfigFlatMapProc? execFlatMap) {
     if (key == null) {
       _logger.error('The key is null');
       return ConfigResult.stop;
@@ -323,7 +328,8 @@ class Config {
       return result;
     }
 
-    if ((keyEx == keywords.forEscapeMode) && (options.escapeMode == EscapeMode.none)) {
+    if ((keyEx == keywords.forEscapeMode) &&
+        (options.escapeMode == EscapeMode.none)) {
       escapeMode = Options.parseEscapeMode(dataStr);
       return result;
     }
@@ -431,8 +437,7 @@ class Config {
 
     if (options.appConfigPath.isEmpty) {
       text = '{x: null}';
-    }
-    else {
+    } else {
       var file = Path.fileSystem.file(options.appConfigPath);
       text = file.readAsStringSync();
     }
@@ -447,7 +452,8 @@ class Config {
 
   Map<String, Object?> loadSync() {
     var lf = ConfigFileLoader(keywords: keywords, logger: _logger);
-    lf.loadJsonSync(options.configFileInfo, isMinExpand: options.isMinExpand, appPlainArgs: options.plainArgs);
+    lf.loadJsonSync(options.configFileInfo,
+        isMinExpand: options.isMinExpand, appPlainArgs: options.plainArgs);
 
     lastModifiedStamp = lf.lastModifiedStamp;
 
@@ -459,9 +465,8 @@ class Config {
 
     if (data is Map<String, Object?>) {
       return data;
-    }
-    else {
-      return <String, Object?>{ '+': data};
+    } else {
+      return <String, Object?>{'+': data};
     }
   }
 
@@ -494,8 +499,7 @@ class Config {
   void setTrailFor(Object currData, String? toKey, Object? toData) {
     if (toKey == null) {
       _trail.remove(currData);
-    }
-    else {
+    } else {
       _trail[currData] = ConfigKeyData(toKey, toData);
     }
   }
@@ -503,12 +507,10 @@ class Config {
   //////////////////////////////////////////////////////////////////////////////
 
   String sortAndEncodeFlatMap() {
-    var list = flatMap.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    var list = flatMap.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
 
-    var result = '{${list.map((x) =>
-      '${x.key.quote()}:${x.value.quote()}'
-    ).join(',')}';
+    var result =
+        '{${list.map((x) => '${x.key.quote()}:${x.value.quote()}').join(',')}';
 
     if (_logger.isVerbose) {
       _logger.verbose(result);
@@ -518,5 +520,4 @@ class Config {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

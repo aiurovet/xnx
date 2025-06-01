@@ -8,14 +8,14 @@ import 'string.dart';
 //
 
 extension FileExt on File {
-
   //////////////////////////////////////////////////////////////////////////////
 
   int compareLastModifiedToSync({File? toFile, DateTime? toLastModified}) {
     var toLastModStamp = (toFile?.lastModifiedStampSync() ??
         toLastModified?.millisecondsSinceEpoch);
 
-    var result = compareLastModifiedStampToSync(toLastModifiedStamp: toLastModStamp);
+    var result =
+        compareLastModifiedStampToSync(toLastModifiedStamp: toLastModStamp);
 
     return result;
   }
@@ -24,16 +24,20 @@ extension FileExt on File {
 
   int compareLastModifiedStampToSync({File? toFile, int? toLastModifiedStamp}) {
     var lastModStamp = (lastModifiedStampSync() ?? -1);
-    var toLastModStamp = (toFile?.lastModifiedStampSync() ?? toLastModifiedStamp ?? -1);
+    var toLastModStamp =
+        (toFile?.lastModifiedStampSync() ?? toLastModifiedStamp ?? -1);
 
-    var result = (lastModStamp == toLastModStamp ? 0 : (lastModStamp < toLastModStamp ? -1 : 1));
+    var result = (lastModStamp == toLastModStamp
+        ? 0
+        : (lastModStamp < toLastModStamp ? -1 : 1));
 
     return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String formatSize(int fileSize, String format, {int decimals = 2, String? units}) {
+  static String formatSize(int fileSize, String format,
+      {int decimals = 2, String? units}) {
     if (fileSize <= 0) {
       return fileSize.toString();
     }
@@ -70,16 +74,17 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static File? getIfExistsSync(String path, {bool canThrow = true, String? description}) {
+  static File? getIfExistsSync(String path,
+      {bool canThrow = true, String? description}) {
     final file = (path.isBlank() ? null : Path.fileSystem.file(path));
 
     if (!(file?.existsSync() ?? false)) {
       if (canThrow) {
         var descEx = (description == null ? 'File' : '$description file');
         var pathEx = (file == null ? '' : path);
-        throw Exception(Path.appendCurDirIfPathIsRelative('$descEx is not found: ', pathEx));
-      }
-      else {
+        throw Exception(Path.appendCurDirIfPathIsRelative(
+            '$descEx is not found: ', pathEx));
+      } else {
         return null;
       }
     }
@@ -94,8 +99,7 @@ extension FileExt on File {
 
     if (info.type == FileSystemEntityType.notFound) {
       return null;
-    }
-    else {
+    } else {
       return info.modified.millisecondsSinceEpoch;
     }
   }
@@ -122,7 +126,8 @@ extension FileExt on File {
     var newStamp = newStat.modified.millisecondsSinceEpoch;
 
     if (newStamp < stamp) {
-      stamp = ((newStamp + Duration.millisecondsPerSecond) - (newStamp % Duration.millisecondsPerSecond));
+      stamp = ((newStamp + Duration.millisecondsPerSecond) -
+          (newStamp % Duration.millisecondsPerSecond));
       modified = DateTime.fromMillisecondsSinceEpoch(stamp);
 
       setLastModifiedSync(modified);
@@ -142,19 +147,21 @@ extension FileExt on File {
   //////////////////////////////////////////////////////////////////////////////
 
   void setTimeStampSync(int? modified) =>
-     setTimeSync((modified == null) || (modified == 0) ? null : DateTime.fromMillisecondsSinceEpoch(modified));
+      setTimeSync((modified == null) || (modified == 0)
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(modified));
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static File? truncateIfExistsSync(String path, {bool canThrow = true, String? description}) {
+  static File? truncateIfExistsSync(String path,
+      {bool canThrow = true, String? description}) {
     final file = (path.isBlank() ? null : Path.fileSystem.file(path));
 
     if (file == null) {
       if (canThrow) {
         var descEx = (description == null ? 'File' : '$description file');
         throw Exception('$descEx path is empty');
-      }
-      else {
+      } else {
         return null;
       }
     }
@@ -168,17 +175,23 @@ extension FileExt on File {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void xferSync(String toPath, {bool isListOnly = false, bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
+  void xferSync(String toPath,
+      {bool isListOnly = false,
+      bool isMove = false,
+      bool isNewerOnly = false,
+      bool isSilent = false}) {
     // Ensuring source file exists
 
     if (!tryExistsSync()) {
-      throw Exception('${isListOnly ? 'Will fail to copy' : 'Copy failed'}, as source file "$path" is not found');
+      throw Exception(
+          '${isListOnly ? 'Will fail to copy' : 'Copy failed'}, as source file "$path" is not found');
     }
 
     // Sanity check
 
     if (Path.equals(path, toPath)) {
-      throw Exception('${isListOnly ? 'Will not' : 'Unable to'} copy: source and target are the same: "$path"');
+      throw Exception(
+          '${isListOnly ? 'Will not' : 'Unable to'} copy: source and target are the same: "$path"');
     }
 
     // Getting destination path and directory, as well as checking what's newer
@@ -209,8 +222,7 @@ extension FileExt on File {
         if (!isListOnly) {
           renameSync(toPathEx);
         }
-      }
-      else {
+      } else {
         if (!isSilent) {
           print('${isListOnly ? 'Will delete' : 'Deleting'} file "$path"');
         }
@@ -218,8 +230,7 @@ extension FileExt on File {
           deleteSync();
         }
       }
-    }
-    else if (canDo) {
+    } else if (canDo) {
       if (!isSilent) {
         print('${isListOnly ? 'Will copy' : 'Copying'} file "$path"');
       }
@@ -234,5 +245,4 @@ extension FileExt on File {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

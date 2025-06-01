@@ -20,8 +20,7 @@ class Xnx {
     _convert = Convert(_logger);
   }
 
-  void exec(List<String> args) =>
-    _convert.exec(args);
+  void exec(List<String> args) => _convert.exec(args);
 
   void finish(bool isOK) {
     if ((isOK && _convert.options.isWaitAlways) ||
@@ -40,11 +39,9 @@ class Xnx {
     try {
       app.exec(args);
       isOK = true;
-    }
-    on Error catch (e, stackTrace) {
+    } on Error catch (e, stackTrace) {
       isOK = app.onError(e.toString(), stackTrace);
-    }
-    on Exception catch (e, stackTrace) {
+    } on Exception catch (e, stackTrace) {
       isOK = app.onError(e.toString(), stackTrace);
     }
 
@@ -54,22 +51,21 @@ class Xnx {
   bool onError(String errMsg, StackTrace stackTrace) {
     if (errMsg.isBlank()) {
       return false;
-    }
-    else {
+    } else {
       var rexErrDecor = RegExp(r'^(Exception[\:\s]*)+', caseSensitive: false);
       errMsg = errMsg.replaceFirst(rexErrDecor, '');
 
       if (errMsg.isBlank()) {
         return false;
-      }
-      else if (errMsg == Options.help['name']) {
+      } else if (errMsg == Options.help['name']) {
         return true;
-      }
-      else if (_logger.isQuiet) {
+      } else if (_logger.isQuiet) {
         return false;
       }
 
-      var errDtl = (_logger.level >= Logger.levelVerbose ? '\n\n${stackTrace.toString()}' : '');
+      var errDtl = (_logger.level >= Logger.levelVerbose
+          ? '\n\n${stackTrace.toString()}'
+          : '');
       errMsg = '\n*** ERROR: $errMsg$errDtl\n';
 
       _logger.error(errMsg);

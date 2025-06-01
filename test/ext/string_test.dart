@@ -15,10 +15,14 @@ void main() {
         expect(Path.equals(Path.getFullPath(''), curDir), true);
         expect(Path.equals(Path.getFullPath('.'), curDir), true);
         expect(Path.equals(Path.getFullPath('..'), Path.dirname(curDir)), true);
-        expect(Path.equals(Path.getFullPath('..${pathSep}a${pathSep}bc'),
-          Path.join(Path.dirname(curDir), 'a', 'bc')), true);
-        expect(Path.equals(Path.getFullPath('${pathSep}a${pathSep}bc'),
-          '${pathSep}a${pathSep}bc'), true);
+        expect(
+            Path.equals(Path.getFullPath('..${pathSep}a${pathSep}bc'),
+                Path.join(Path.dirname(curDir), 'a', 'bc')),
+            true);
+        expect(
+            Path.equals(Path.getFullPath('${pathSep}a${pathSep}bc'),
+                '${pathSep}a${pathSep}bc'),
+            true);
       });
 
       test('isBlank', () {

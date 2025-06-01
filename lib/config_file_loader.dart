@@ -27,7 +27,8 @@ class ConfigFileLoader {
   static const String recordSep = ',';
 
   static final String allArgs = r'${@}';
-  static final RegExp rexCmdLineArgs = RegExp(r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$~([0-9]+))|(\$\{~([1-9][0-9]*)\})');
+  static final RegExp rexCmdLineArgs = RegExp(
+      r'(\$\*|\$\@|\$\{\*\}|\${\@\})|(\$~([0-9]+))|(\$\{~([1-9][0-9]*)\})');
   static final RegExp rexImpFileKeyBadChars = RegExp(r'[\\\/\.,;]');
   static final RegExp rexJsonMapBraces = RegExp(r'^[\s\{]+|[\s\}]+$');
 
@@ -59,13 +60,20 @@ class ConfigFileLoader {
   // Internals
   //////////////////////////////////////////////////////////////////////////////
 
-  @protected late final Keywords keywords;
+  @protected
+  late final Keywords keywords;
 
   //////////////////////////////////////////////////////////////////////////////
   // Construction
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader({bool isStdIn = false, File? file, String? text, String? importDirName, Keywords? keywords, Logger? logger}) {
+  ConfigFileLoader(
+      {bool isStdIn = false,
+      File? file,
+      String? text,
+      String? importDirName,
+      Keywords? keywords,
+      Logger? logger}) {
     _file = file;
     _isStdIn = isStdIn;
     _lastModifiedStamp = (file?.lastModifiedStampSync() ?? 0);
@@ -155,7 +163,8 @@ class ConfigFileLoader {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String importFiles(String paramNameImport, {String? impPath, String? impPathsSerialized}) {
+  String importFiles(String paramNameImport,
+      {String? impPath, String? impPathsSerialized}) {
     try {
       var fullText = '';
       var keyPrefix = 'import';
@@ -163,16 +172,14 @@ class ConfigFileLoader {
       if ((impPath != null) && !impPath.isBlank()) {
         loadSync(impPath);
         fullText = text;
-      }
-      else {
+      } else {
         var jsonData = json5Decode('{"$paramNameImport": $impPathsSerialized}');
         var jsonText = '';
         var impPaths = jsonData[paramNameImport];
 
         if ((impPaths == null) || impPaths.isEmpty) {
           impPath = null;
-        }
-        else {
+        } else {
           if (impPaths is List) {
             fullText += '{';
 
@@ -187,8 +194,7 @@ class ConfigFileLoader {
               var map = <String, Object?>{};
               map[key] = json5Decode(text);
 
-              jsonText = jsonEncode(map)
-                  .replaceAll(rexJsonMapBraces, '');
+              jsonText = jsonEncode(map).replaceAll(rexJsonMapBraces, '');
               fullText += jsonText;
             }
 
@@ -205,11 +211,11 @@ class ConfigFileLoader {
 
       clear(isFull: false);
 
-      var result = '"${getImportFileKey(keyPrefix, impPath: impPath)}": $fullText';
+      var result =
+          '"${getImportFileKey(keyPrefix, impPath: impPath)}": $fullText';
 
       return result;
-    }
-    catch (e) {
+    } catch (e) {
       throw Exception('Failed to parse file: "$impPath"\n\n${e.toString()}');
     }
   }
@@ -259,7 +265,9 @@ class ConfigFileLoader {
       final impPathsSerialized = match.group(5);
       final elemSep = match.group(6) ?? '';
 
-      final result = lf.importFiles(keywords.forImport, impPath: impPath, impPathsSerialized: impPathsSerialized) + elemSep;
+      final result = lf.importFiles(keywords.forImport,
+              impPath: impPath, impPathsSerialized: impPathsSerialized) +
+          elemSep;
 
       if (_lastModifiedStamp < lf._lastModifiedStamp) {
         _lastModifiedStamp = lf._lastModifiedStamp;
@@ -282,7 +290,8 @@ class ConfigFileLoader {
   // Methods
   //////////////////////////////////////////////////////////////////////////////
 
-  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo, {bool isMinExpand = false, List<String>? appPlainArgs}) {
+  ConfigFileLoader loadJsonSync(ConfigFileInfo fileInfo,
+      {bool isMinExpand = false, List<String>? appPlainArgs}) {
     loadSyncEx(fileInfo);
 
     if (!keywords.forImport.isBlank()) {
@@ -317,13 +326,13 @@ class ConfigFileLoader {
     if (_isStdIn) {
       _file = null;
       _text = stdin.readAsStringSync();
-    }
-    else {
+    } else {
       var file = Path.fileSystem.file(filePath);
       var stat = file.statSync();
 
       if (stat.type == FileSystemEntityType.notFound) {
-        throw Exception(Path.appendCurDirIfPathIsRelative('File is not found: ', displayName));
+        throw Exception(Path.appendCurDirIfPathIsRelative(
+            'File is not found: ', displayName));
       }
 
       var fileLastModifiedStamp = stat.modified.millisecondsSinceEpoch;
@@ -341,8 +350,7 @@ class ConfigFileLoader {
     if (fileInfo.jsonPath.isEmpty) {
       _data = json5Decode(_text);
       _text = jsonEncode(_data);
-    }
-    else {
+    } else {
       var data = <Object?>[];
 
       var jsonPath = JsonPath(fileInfo.jsonPath);
@@ -371,16 +379,15 @@ class ConfigFileLoader {
     var i = 0;
 
     var result = text
-      .replaceAll(r'\\', '\x01')
-      .replaceAll(r"\'", '\x02')
-      .replaceAll(r'\"', '\x03')
-      .replaceAllMapped(keywords.rexRepeatable, (match) {
-        return '${match.group(1)}^${(++i).toString().padLeft(5, '0')}${match.group(2)}';
-      })
-      .replaceAll('\x03', r'\"')
-      .replaceAll('\x02', r"\'")
-      .replaceAll('\x01', r'\\')
-    ;
+        .replaceAll(r'\\', '\x01')
+        .replaceAll(r"\'", '\x02')
+        .replaceAll(r'\"', '\x03')
+        .replaceAllMapped(keywords.rexRepeatable, (match) {
+          return '${match.group(1)}^${(++i).toString().padLeft(5, '0')}${match.group(2)}';
+        })
+        .replaceAll('\x03', r'\"')
+        .replaceAll('\x02', r"\'")
+        .replaceAll('\x01', r'\\');
 
     return result;
   }

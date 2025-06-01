@@ -1,10 +1,8 @@
-
 import 'package:glob/glob.dart';
 import 'package:xnx/ext/path.dart';
 import 'package:xnx/ext/string.dart';
 
 class PathFilter {
-
   //////////////////////////////////////////////////////////////////////////////
 
   bool isNot = false;
@@ -32,8 +30,8 @@ class PathFilter {
     var nameOrPath = (isPath ? path : Path.basename(path));
 
     var hasMatch = (mask?.matches(nameOrPath) ?? true) &&
-                   (regex?.hasMatch(nameOrPath) ?? true);
-   
+        (regex?.hasMatch(nameOrPath) ?? true);
+
     return (isNot ? !hasMatch : hasMatch);
   }
 
@@ -44,7 +42,9 @@ class PathFilter {
     regexPattern ??= this.regexPattern;
 
     mask = (maskPattern?.isBlank() ?? true ? null : Glob(maskPattern ?? ''));
-    regex = (regexPattern?.isBlank() ?? true ? null : RegExp(regexPattern ?? '', caseSensitive: !Path.isWindowsFS));
+    regex = (regexPattern?.isBlank() ?? true
+        ? null
+        : RegExp(regexPattern ?? '', caseSensitive: !Path.isWindowsFS));
 
     return ((mask != null) || (regex != null));
   }

@@ -6,15 +6,16 @@ import 'package:xnx/ext/file.dart';
 import 'package:xnx/ext/glob.dart';
 
 class FileOper {
-
   //////////////////////////////////////////////////////////////////////////////
 
-  static void createDirSync(List<String> dirNames, {bool isListOnly = false, bool isSilent = false}) {
+  static void createDirSync(List<String> dirNames,
+      {bool isListOnly = false, bool isSilent = false}) {
     var dirNameLists = Path.argsToLists(dirNames, oper: 'create directory');
     var dirNameList = dirNameLists[0];
 
     for (var currDirName in dirNameList) {
-      if (currDirName.isBlank() || Path.fileSystem.directory(currDirName).existsSync()) {
+      if (currDirName.isBlank() ||
+          Path.fileSystem.directory(currDirName).existsSync()) {
         return;
       }
 
@@ -30,10 +31,17 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void deleteSync(List<String> paths, {bool isListOnly = false, bool isRequired = false, bool isSilent = false}) {
+  static void deleteSync(List<String> paths,
+      {bool isListOnly = false,
+      bool isRequired = false,
+      bool isSilent = false}) {
     var pathLists = Path.argsToLists(paths, oper: 'delete directory');
 
-    listSync(pathLists[0], isRequired: isRequired, isSilent: isSilent, isSorted: true, isMinimal: false, listProc: (entities, entityNo, repeatNo, subPath) {
+    listSync(pathLists[0],
+        isRequired: isRequired,
+        isSilent: isSilent,
+        isSorted: true,
+        isMinimal: false, listProc: (entities, entityNo, repeatNo, subPath) {
       if (entityNo < 0) {
         return true;
       }
@@ -42,7 +50,8 @@ class FileOper {
 
       if (entity.existsSync()) {
         if (!isSilent) {
-          print('${isListOnly ? 'Will delete' : 'Deleting'} ${entity is Directory ? 'dir' : 'file'} "${entity.path}"');
+          print(
+              '${isListOnly ? 'Will delete' : 'Deleting'} ${entity is Directory ? 'dir' : 'file'} "${entity.path}"');
         }
 
         if (!isListOnly) {
@@ -64,7 +73,8 @@ class FileOper {
       var path = pathList[i];
       path = Path.getFullPath(path);
 
-      if (!GlobExt.isGlobPattern(path) && Path.fileSystem.directory(path).existsSync()) {
+      if (!GlobExt.isGlobPattern(path) &&
+          Path.fileSystem.directory(path).existsSync()) {
         path = Path.join(path, GlobExt.all);
       }
 
@@ -73,7 +83,8 @@ class FileOper {
 
     var isMinimal = !GlobExt.isRecursive(pathList[0]);
 
-    listSync(pathList, isSilent: isSilent, isSorted: true, isMinimal: isMinimal, listProc: (entities, entityNo, repeatNo, subPath) {
+    listSync(pathList, isSilent: isSilent, isSorted: true, isMinimal: isMinimal,
+        listProc: (entities, entityNo, repeatNo, subPath) {
       if (entityNo < 0) {
         return true;
       }
@@ -92,11 +103,17 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static List<FileSystemEntity> listSync(List<String> paths, {
-      int repeats = 1, bool isSorted = true, bool isMinimal = false, bool isRequired = true, bool isSilent = false,
-      bool Function(List<FileSystemEntity> entities, int entityNo, int repeatNo, String? subPath)? listProc,
-      int Function(FileSystemEntity entity1, FileSystemEntity entity2)? sortProc
-    }) {
+  static List<FileSystemEntity> listSync(List<String> paths,
+      {int repeats = 1,
+      bool isSorted = true,
+      bool isMinimal = false,
+      bool isRequired = true,
+      bool isSilent = false,
+      bool Function(List<FileSystemEntity> entities, int entityNo, int repeatNo,
+              String? subPath)?
+          listProc,
+      int Function(FileSystemEntity entity1, FileSystemEntity entity2)?
+          sortProc}) {
     // Get list of file system entities to walk through
 
     var pathCount = paths.length;
@@ -119,8 +136,7 @@ class FileOper {
         if (!isMinimal) {
           entities.addAll(currDir.listSync(recursive: true));
         }
-      }
-      else {
+      } else {
         // If path is an existing file, then the list is just a single file
 
         var file = Path.fileSystem.file(currPath);
@@ -128,8 +144,7 @@ class FileOper {
         if (file.existsSync()) {
           currDirNameLen = (currPath.length - Path.basename(currPath).length);
           entities.add(file);
-        }
-        else {
+        } else {
           // If we've got here, then either path contains wildcard(s), or it
           // simply does not exist
 
@@ -137,12 +152,13 @@ class FileOper {
           var currDirName = parts[0];
           var currPattern = parts[1];
 
-          if (!currDirName.isBlank() && (currDirName != DirectoryExt.curDirAbbr)) {
+          if (!currDirName.isBlank() &&
+              (currDirName != DirectoryExt.curDirAbbr)) {
             if (!Path.fileSystem.directory(currDirName).existsSync()) {
               if (isRequired) {
-                throw Exception('Top source directory is not found: "${currDir.path}"');
-              }
-              else {
+                throw Exception(
+                    'Top source directory is not found: "${currDir.path}"');
+              } else {
                 continue;
               }
             }
@@ -178,7 +194,8 @@ class FileOper {
         _removeSubPaths(entities, isFast: (sortProc == null));
       }
 
-      dirNameLen -= _shortenSubPaths(entities, (DirectoryExt.curDirAbbr + Path.separator));
+      dirNameLen -= _shortenSubPaths(
+          entities, (DirectoryExt.curDirAbbr + Path.separator));
 
       if (dirNameLen < 0) {
         dirNameLen = 0;
@@ -197,8 +214,7 @@ class FileOper {
               break;
             }
           }
-        }
-        else {
+        } else {
           listProc(entities, -1, -1, null);
         }
       }
@@ -213,7 +229,8 @@ class FileOper {
   // Internal methods
   //////////////////////////////////////////////////////////////////////////////
 
-  static int _removeSubPaths(List<FileSystemEntity> entities, {bool isFast = true}) {
+  static int _removeSubPaths(List<FileSystemEntity> entities,
+      {bool isFast = true}) {
     var entitiesToRemove = <FileSystemEntity>[];
     var pathCount = entities.length;
 
@@ -275,8 +292,7 @@ class FileOper {
       if (entityPath.startsWith(prefix)) {
         if (entity is Directory) {
           entity = Path.fileSystem.directory(entity.path.substring(prefixLen));
-        }
-        else if (entity is File) {
+        } else if (entity is File) {
           entity = Path.fileSystem.file(entity.path.substring(prefixLen));
         }
 
@@ -290,11 +306,12 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void sort(List<FileSystemEntity> entities, {int Function(FileSystemEntity entity1, FileSystemEntity entity2)? sortProc}) {
+  static void sort(List<FileSystemEntity> entities,
+      {int Function(FileSystemEntity entity1, FileSystemEntity entity2)?
+          sortProc}) {
     if (sortProc != null) {
       entities.sort(sortProc);
-    }
-    else {
+    } else {
       entities.sort((e1, e2) {
         var result = 0;
 
@@ -307,17 +324,22 @@ class FileOper {
 
           var pathCompCount1 = pathComps1.length;
           var pathCompCount2 = pathComps2.length;
-          var pathCompCountMin = (pathCompCount1 < pathCompCount2 ? pathCompCount1 : pathCompCount2);
+          var pathCompCountMin = (pathCompCount1 < pathCompCount2
+              ? pathCompCount1
+              : pathCompCount2);
 
           for (var i = 0; (result == 0) && (i < pathCompCountMin); i++) {
             result = pathComps1[i].compareTo(pathComps2[i]);
           }
 
           if (result == 0) {
-            result = (pathCompCount1 < pathCompCount2 ? -1 : pathCompCount1 > pathCompCount2 ? 1 : 0);
+            result = (pathCompCount1 < pathCompCount2
+                ? -1
+                : pathCompCount1 > pathCompCount2
+                    ? 1
+                    : 0);
           }
-        }
-        else {
+        } else {
           result = (isDir1 && !isDir2 ? -1 : 1);
         }
 
@@ -328,22 +350,36 @@ class FileOper {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static void xferSync(List<String> paths, {bool isListOnly = false, bool isMove = false, bool isNewerOnly = false, bool isSilent = false}) {
-    var pathLists = Path.argsToLists(paths, oper: (isMove ? 'move' : 'copy'), isLastSeparate: true);
+  static void xferSync(List<String> paths,
+      {bool isListOnly = false,
+      bool isMove = false,
+      bool isNewerOnly = false,
+      bool isSilent = false}) {
+    var pathLists = Path.argsToLists(paths,
+        oper: (isMove ? 'move' : 'copy'), isLastSeparate: true);
     var toDirName = pathLists[1][0];
 
-    listSync(pathLists[0], isSilent: isSilent, isSorted: true, isMinimal: true, listProc: (entities, entityNo, repeatNo, subPath) {
-      if (entityNo < 0) { // empty list
+    listSync(pathLists[0], isSilent: isSilent, isSorted: true, isMinimal: true,
+        listProc: (entities, entityNo, repeatNo, subPath) {
+      if (entityNo < 0) {
+        // empty list
         throw Exception('No file or directory found: "${paths[0]}"');
       }
 
       var entity = entities[entityNo];
 
       if (entity is Directory) {
-        entity.xferSync(Path.join(toDirName, subPath), isListOnly: isListOnly, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
-      }
-      else if (entity is File) {
-        entity.xferSync(toDirName, isListOnly: isListOnly, isMove: isMove, isNewerOnly: isNewerOnly, isSilent: isSilent);
+        entity.xferSync(Path.join(toDirName, subPath),
+            isListOnly: isListOnly,
+            isMove: isMove,
+            isNewerOnly: isNewerOnly,
+            isSilent: isSilent);
+      } else if (entity is File) {
+        entity.xferSync(toDirName,
+            isListOnly: isListOnly,
+            isMove: isMove,
+            isNewerOnly: isNewerOnly,
+            isSilent: isSilent);
       }
 
       return true;
@@ -351,5 +387,4 @@ class FileOper {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }

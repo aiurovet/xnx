@@ -31,7 +31,8 @@ void main() {
         expect(parts[0], '');
         expect(parts[1], 'sub-dir**$pathSep*abc*.def');
 
-        parts = GlobExt.splitPattern('top-dir${pathSep}sub-dir**$pathSep*abc*.def');
+        parts =
+            GlobExt.splitPattern('top-dir${pathSep}sub-dir**$pathSep*abc*.def');
         expect(parts[0], 'top-dir');
         expect(parts[1], 'sub-dir**$pathSep*abc*.def');
 

@@ -8,7 +8,6 @@ import 'package:xnx/ext/string.dart';
 import 'package:xnx/xnx.dart';
 
 class Command extends ShellCmd {
-
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
@@ -31,7 +30,9 @@ class Command extends ShellCmd {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  Command({String? source, Config? config, this.isToVar = false, Logger? logger}) : super(source) {
+  Command(
+      {String? source, Config? config, this.isToVar = false, Logger? logger})
+      : super(source) {
     _logger = logger;
   }
 
@@ -51,7 +52,7 @@ class Command extends ShellCmd {
     final curMode = (isFound ? (curStat.mode & 0x1FF) : null);
 
     // Skip if the file is not found or the mode is the same
-  
+
     newMode = newMode & 0x1FF; // UNIX permissions only
 
     if ((curMode == null) || (newMode == curMode)) {
@@ -59,14 +60,18 @@ class Command extends ShellCmd {
     }
 
     // Execute the mode change
-  
+
     var text = 'chmod ${newMode.toRadixString(8)} "$path"';
     Command(source: text).exec();
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  String exec({String? newText, bool canExec = true, bool? runInShell, bool canShow = true}) {
+  String exec(
+      {String? newText,
+      bool canExec = true,
+      bool? runInShell,
+      bool canShow = true}) {
     if (newText != null) {
       parse(newText);
     }
@@ -109,8 +114,7 @@ class Command extends ShellCmd {
         args.insert(0, program);
         Xnx(logger: _logger).exec(args);
         isSuccess = true;
-      }
-      else {
+      } else {
         if (program.isBlank()) {
           // Shouldn't happen, but just in case
           throw Exception('Executable is not defined for $text');
@@ -119,11 +123,9 @@ class Command extends ShellCmd {
         result = runSync(environment: fullEnv, runInShell: runInShell);
         isSuccess = (result.exitCode == 0);
       }
-    }
-    on Error catch (e) {
+    } on Error catch (e) {
       errMsg = e.toString();
-    }
-    on Exception catch (e) {
+    } on Exception catch (e) {
       errMsg = e.toString();
     }
 
@@ -135,10 +137,10 @@ class Command extends ShellCmd {
           _logger?.out(outLines);
           outLines = '';
         }
-      }
-      else {
+      } else {
         _logger?.error('Exit code: ${result.exitCode}');
-        _logger?.error('\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
+        _logger?.error(
+            '\n*** Error:\n\n${result.stderr ?? 'No error or warning message found'}');
       }
     }
 
@@ -180,13 +182,13 @@ class Command extends ShellCmd {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  static String print(Logger? logger, List<String> args, {bool isSilent = false, bool isToVar = false}) {
+  static String print(Logger? logger, List<String> args,
+      {bool isSilent = false, bool isToVar = false}) {
     var out = args.join(' ');
 
     if (isToVar) {
       return out.trim();
-    }
-    else if (!isSilent) {
+    } else if (!isSilent) {
       logger?.out(out);
     }
 
@@ -194,5 +196,4 @@ class Command extends ShellCmd {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
 }
